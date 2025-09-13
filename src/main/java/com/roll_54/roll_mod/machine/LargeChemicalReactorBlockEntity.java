@@ -2,11 +2,13 @@ package com.roll_54.roll_mod.machine;
 
 import aztech.modern_industrialization.machines.init.MIMachineRecipeTypes;
 import aztech.modern_industrialization.machines.init.MachineTier;
+import aztech.modern_industrialization.machines.recipe.MachineRecipeType;
 import com.roll_54.roll_mod.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 import net.swedz.extended_industrialization.EI;
+import net.swedz.tesseract.neoforge.compat.mi.component.craft.multiplied.EuCostTransformers;
 import net.swedz.tesseract.neoforge.compat.mi.machine.blockentity.multiblock.multiplied.ElectricMultipliedCraftingMultiblockBlockEntity;
 
 public class LargeChemicalReactorBlockEntity
@@ -15,7 +17,7 @@ public class LargeChemicalReactorBlockEntity
     public enum Mode { LCR, UCR }
 
     private Mode mode = Mode.LCR;
-    // private MachineRecipeType<?> activeType; // розкоментуй, коли імпортуєш тип
+    private MachineRecipeType activeType = MIMachineRecipeTypes.CHEMICAL_REACTOR;
     private int dynamicBatch = 128;
 
     public LargeChemicalReactorBlockEntity(BlockPos pos, BlockState state) {
@@ -23,11 +25,11 @@ public class LargeChemicalReactorBlockEntity
                 ModBlockEntities.LARGE_CHEMICAL_REACTOR_BE.get(),
                 pos, state,
                 EI.id("large_chemical_reactor"),
- /* new ShapeTemplate[] { ... } */ null,     // TODO
-         MachineTier.LV,
-  MIMachineRecipeTypes.CHEMICAL_REACTOR,
-  128,
-                /* EU transform  */ /* EuCostTransformers.none() */ null        // TODO
+                new aztech.modern_industrialization.machines.multiblocks.ShapeTemplate[0],
+                MachineTier.LV,
+                MIMachineRecipeTypes.CHEMICAL_REACTOR,
+                128,
+                EuCostTransformers.none()
         );
         updateActiveType();
     }
@@ -42,9 +44,8 @@ public class LargeChemicalReactorBlockEntity
         if (this.mode != m) {
             this.mode = m;
             updateActiveType();
-            cancelCurrentRecipeIfAny();
             setChanged();
-            sync(); // якщо маєш власну синхронізацію
+            sync();
         }
     }
 
@@ -54,10 +55,11 @@ public class LargeChemicalReactorBlockEntity
 
     private void updateActiveType() {
         if (mode == Mode.LCR) {
-            // this.activeType = MIMachineRecipeTypes.CHEMICAL_REACTOR;
+            this.activeType = MIMachineRecipeTypes.CHEMICAL_REACTOR;
             this.dynamicBatch = 128;
         } else {
-            // this.activeType = MITweaksRecipeTypes.UPGRADED_CHEMICAL_REACTOR; // з MI-Tweaks
+            // Create the upgraded chemical reactor recipe type on demand
+            this.activeType = MIMachineRecipeTypes.create("upgraded_chemical_reactor");
             this.dynamicBatch = computeUcrBatchFromCoils();
         }
     }
@@ -78,20 +80,19 @@ public class LargeChemicalReactorBlockEntity
         return CoilTier.UNKNOWN;
     }
 
-    /* =========== ПОШУК РЕЦЕПТУ =========== */
+    /* =========== ДИНАМІЧНІ ПАРАМЕТРИ =========== */
 
     @Override
-    protected java.util.Optional/*<? extends MachineRecipe>*/ findMatchingRecipe() {
+    public MachineRecipeType getRecipeType() {
         updateActiveType();
-        setDynamicBatchSize(this.dynamicBatch);
-        // return findRecipeInType(activeType);
-        return java.util.Optional.empty(); // TODO: поверни реальний пошук
+        return activeType;
     }
 
-    private void setDynamicBatchSize(int b) { this.dynamicBatch = b; }
-
     @Override
-    protected int getConfiguredBatchSize() { return dynamicBatch; }
+    public int getMaxMultiplier() {
+        updateActiveType();
+        return dynamicBatch;
+    }
 
     /* =========== NBT =========== */
 

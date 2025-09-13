@@ -24,8 +24,19 @@ public class LCRMenu extends AbstractContainerMenu {
         }
 
         addDataSlot(new DataSlot() {
-            @Override public int get() { return mode; }
-            @Override public void set(int value) { mode = value; }
+            @Override
+            public int get() {
+                var be = level.getBlockEntity(pos);
+                if (be instanceof LargeChemicalReactorBlockEntity lcr) {
+                    return lcr.getModeInt();
+                }
+                return 0;
+            }
+
+            @Override
+            public void set(int value) {
+                mode = value;
+            }
         });
 
         // TODO: додай слоти інвентарю/машини за потреби
