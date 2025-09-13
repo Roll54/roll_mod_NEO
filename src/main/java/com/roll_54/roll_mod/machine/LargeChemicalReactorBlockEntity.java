@@ -2,6 +2,9 @@ package com.roll_54.roll_mod.machine;
 
 import aztech.modern_industrialization.machines.init.MIMachineRecipeTypes;
 import aztech.modern_industrialization.machines.init.MachineTier;
+import aztech.modern_industrialization.machines.recipe.MachineRecipe;
+import aztech.modern_industrialization.machines.recipe.MachineRecipeType;
+import aztech.modern_industrialization.machines.recipe.MachineRecipeTypes;
 import com.roll_54.roll_mod.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -15,7 +18,7 @@ public class LargeChemicalReactorBlockEntity
     public enum Mode { LCR, UCR }
 
     private Mode mode = Mode.LCR;
-    // private MachineRecipeType<?> activeType; // розкоментуй, коли імпортуєш тип
+    private MachineRecipeType<?> activeType;
     private int dynamicBatch = 128;
 
     public LargeChemicalReactorBlockEntity(BlockPos pos, BlockState state) {
@@ -23,11 +26,11 @@ public class LargeChemicalReactorBlockEntity
                 ModBlockEntities.LARGE_CHEMICAL_REACTOR_BE.get(),
                 pos, state,
                 EI.id("large_chemical_reactor"),
- /* new ShapeTemplate[] { ... } */ null,     // TODO
-         MachineTier.LV,
-  MIMachineRecipeTypes.CHEMICAL_REACTOR,
-  128,
-                /* EU transform  */ /* EuCostTransformers.none() */ null        // TODO
+                new aztech.modern_industrialization.machines.multiblocks.ShapeTemplate[] {},
+                MachineTier.LV,
+                MIMachineRecipeTypes.CHEMICAL_REACTOR,
+                128,
+                null
         );
         updateActiveType();
     }
@@ -54,10 +57,10 @@ public class LargeChemicalReactorBlockEntity
 
     private void updateActiveType() {
         if (mode == Mode.LCR) {
-            // this.activeType = MIMachineRecipeTypes.CHEMICAL_REACTOR;
+            this.activeType = MIMachineRecipeTypes.CHEMICAL_REACTOR;
             this.dynamicBatch = 128;
         } else {
-            // this.activeType = MITweaksRecipeTypes.UPGRADED_CHEMICAL_REACTOR; // з MI-Tweaks
+            this.activeType = MachineRecipeTypes.get(new net.minecraft.resources.ResourceLocation("modern_industrialization", "upgraded_chemical_reactor"));
             this.dynamicBatch = computeUcrBatchFromCoils();
         }
     }
@@ -74,21 +77,30 @@ public class LargeChemicalReactorBlockEntity
     private enum CoilTier { CUPRONICKEL, KANTHAL, UNKNOWN }
 
     private CoilTier getInstalledCoilTier() {
-        // TODO: зчитати coil із вашого компонента/shape (теги або компонент типу CoilsComponent)
+        if (level == null) {
+            return CoilTier.UNKNOWN;
+        }
+        var block = level.getBlockState(worldPosition.above()).getBlock();
+        var id = net.minecraft.core.registries.BuiltInRegistries.BLOCK.getKey(block);
+        if (id != null) {
+            String path = id.getPath();
+            if (path.contains("kanthal")) {
+                return CoilTier.KANTHAL;
+            }
+            if (path.contains("cupronickel")) {
+                return CoilTier.CUPRONICKEL;
+            }
+        }
         return CoilTier.UNKNOWN;
     }
 
     /* =========== ПОШУК РЕЦЕПТУ =========== */
 
     @Override
-    protected java.util.Optional/*<? extends MachineRecipe>*/ findMatchingRecipe() {
+    protected java.util.Optional<? extends MachineRecipe> findMatchingRecipe() {
         updateActiveType();
-        setDynamicBatchSize(this.dynamicBatch);
-        // return findRecipeInType(activeType);
-        return java.util.Optional.empty(); // TODO: поверни реальний пошук
+        return findRecipeInType(activeType);
     }
-
-    private void setDynamicBatchSize(int b) { this.dynamicBatch = b; }
 
     @Override
     protected int getConfiguredBatchSize() { return dynamicBatch; }

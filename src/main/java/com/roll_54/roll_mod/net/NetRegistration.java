@@ -15,7 +15,6 @@ public final class NetRegistration {
     @SubscribeEvent
     public static void register(RegisterPayloadHandlersEvent event) {
         var registrar = event.registrar(Roll_mod.MODID);
-c
         registrar.playToServer(
                 C2SSwitchModePayload.TYPE,
                 C2SSwitchModePayload.STREAM_CODEC,
@@ -23,7 +22,7 @@ c
         );
     }
 
-   private static void handleSwitchMode(final C2SSwitchModePayload msg, final IPayloadContext ctx) {
+    private static void handleSwitchMode(final C2SSwitchModePayload msg, final IPayloadContext ctx) {
         ctx.workHandler().submitAsync(() -> {
             ServerPlayer player = (ServerPlayer) ctx.player().orElse(null);
             if (player == null) return;
