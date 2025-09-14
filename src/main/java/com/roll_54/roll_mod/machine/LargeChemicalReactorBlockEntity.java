@@ -1,12 +1,14 @@
 package com.roll_54.roll_mod.machine;
 
+import aztech.modern_industrialization.machines.BEP;
 import aztech.modern_industrialization.machines.init.MIMachineRecipeTypes;
 import aztech.modern_industrialization.machines.init.MachineTier;
-import com.roll_54.roll_mod.registry.ModBlockEntities;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
 import net.swedz.extended_industrialization.EI;
+import com.roll_54.roll_mod.registry.ModBlockEntities;
 import net.swedz.tesseract.neoforge.compat.mi.machine.blockentity.multiblock.multiplied.ElectricMultipliedCraftingMultiblockBlockEntity;
 
 public class LargeChemicalReactorBlockEntity
@@ -20,14 +22,13 @@ public class LargeChemicalReactorBlockEntity
 
     public LargeChemicalReactorBlockEntity(BlockPos pos, BlockState state) {
         super(
-                ModBlockEntities.LARGE_CHEMICAL_REACTOR_BE.get(),
-                pos, state,
+                new BEP(ModBlockEntities.LARGE_CHEMICAL_REACTOR_BE.get(), pos, state),
                 EI.id("large_chemical_reactor"),
- /* new ShapeTemplate[] { ... } */ null,     // TODO
-         MachineTier.LV,
-  MIMachineRecipeTypes.CHEMICAL_REACTOR,
-  128,
-                /* EU transform  */ /* EuCostTransformers.none() */ null        // TODO
+                null, // TODO shape
+                MachineTier.LV,
+                MIMachineRecipeTypes.CHEMICAL_REACTOR,
+                128,
+                null // TODO EU transform
         );
         updateActiveType();
     }
@@ -42,7 +43,6 @@ public class LargeChemicalReactorBlockEntity
         if (this.mode != m) {
             this.mode = m;
             updateActiveType();
-            cancelCurrentRecipeIfAny();
             setChanged();
             sync(); // якщо маєш власну синхронізацію
         }
@@ -80,30 +80,5 @@ public class LargeChemicalReactorBlockEntity
 
     /* =========== ПОШУК РЕЦЕПТУ =========== */
 
-    @Override
-    protected java.util.Optional/*<? extends MachineRecipe>*/ findMatchingRecipe() {
-        updateActiveType();
-        setDynamicBatchSize(this.dynamicBatch);
-        // return findRecipeInType(activeType);
-        return java.util.Optional.empty(); // TODO: поверни реальний пошук
-    }
-
     private void setDynamicBatchSize(int b) { this.dynamicBatch = b; }
-
-    @Override
-    protected int getConfiguredBatchSize() { return dynamicBatch; }
-
-    /* =========== NBT =========== */
-
-    @Override
-    protected void saveAdditional(CompoundTag tag) {
-        super.saveAdditional(tag);
-        tag.putInt("mode", getModeInt());
-    }
-
-    @Override
-    public void load(CompoundTag tag) {
-        super.load(tag);
-        if (tag.contains("mode")) setModeInt(tag.getInt("mode"));
-    }
 }

@@ -11,7 +11,7 @@ import static com.roll_54.roll_mod.Roll_mod.MODID;
 
 public record C2SSwitchModePayload(BlockPos pos) implements CustomPacketPayload {
     public static final Type<C2SSwitchModePayload> TYPE =
-            new Type<>(new ResourceLocation(MODID, "c2s_switch_mode"));
+            new Type<>(ResourceLocation.fromNamespaceAndPath(MODID, "c2s_switch_mode"));
 
     public static final StreamCodec<RegistryFriendlyByteBuf, C2SSwitchModePayload> STREAM_CODEC =
             StreamCodec.of(
