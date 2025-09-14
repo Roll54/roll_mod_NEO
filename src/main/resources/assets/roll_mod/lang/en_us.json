@@ -1,5 +1,13 @@
 {
-  "itemGroup.roll_mod": "Example Mod Tab",
-  "block.roll_mod.example_block": "Example Block",
-  "item.roll_mod.example_item": "Example Item"
+  "item.roll_mod.copper_gear": "Copper Gear",
+  "item.roll_mod.chemical_core": "Chemical Core",
+
+  "itemGroup.roll_mod.main": "Roll Mod",
+
+  "block.roll_mod.large_chemical_reactor": "Large Chemical Reactor",
+
+  "message.roll_mod.nether_storm.start": "A nether storm is coming. Hold your breath, or perish!",
+  "message.roll_mod.nether_storm.end": "The storm has stopped... but for how long?",
+
+  "tag.item.roll_mod.storm_protective": "Storm Protective"
 }

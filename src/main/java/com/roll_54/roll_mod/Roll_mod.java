@@ -1,8 +1,7 @@
 package com.roll_54.roll_mod;
 
-import com.roll_54.roll_mod.client.ClientSetup;
-import com.roll_54.roll_mod.net.NetRegistration;
-import com.roll_54.roll_mod.registry.ModMenus;
+import com.roll_54.roll_mod.init.ItemGroups;
+import com.roll_54.roll_mod.init.ItemRegistry;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -19,27 +18,19 @@ public final class Roll_mod {
     public Roll_mod(ModContainer container) {
         // Модова шина подій (lifecycle)
         IEventBus modBus = container.getEventBus();
-
-        // === Реєстри, які реально потрібні для машини ===
-        ModMenus.MENUS.register(modBus);            // меню (container) для GUI
-        modBus.addListener(NetRegistration::register); // мережеві payload-и (C2S switch mode)
-
-        // === Lifecycle ===
-        modBus.addListener(this::onCommonSetup);
-        modBus.addListener(this::onClientSetup);
+        ItemRegistry.register(modBus);
+        ItemGroups.register(modBus);
 
         LOGGER.info("[{}] init complete.", MODID);
     }
 
     private void onCommonSetup(final FMLCommonSetupEvent event) {
         // Тут можна ініціалізувати інтеграції/дані, якщо потрібно.
-        // Напр., якщо маєш власні тег-скани, capabilities, тощо.
         LOGGER.info("[{}] common setup", MODID);
     }
 
     private void onClientSetup(final FMLClientSetupEvent event) {
         // Прив’язка меню -> екран (GUI)
-        ClientSetup.init();
         LOGGER.info("[{}] client setup", MODID);
     }
 }
