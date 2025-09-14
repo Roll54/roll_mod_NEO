@@ -1,6 +1,8 @@
 package com.roll_54.roll_mod.netherstorm;
 
 import com.roll_54.roll_mod.Roll_mod;
+import dev.emi.emi.config.EmiConfig;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -27,8 +29,11 @@ public class StormHandler {
 
     /** Тег для речей, що захищають від шторму (маски тощо) */
     public static final TagKey<Item> STORM_PROTECTIVE_TAG =
-            TagKey.create(net.minecraft.core.registries.Registries.ITEM,
-                    ResourceLocation.fromNamespaceAndPath(Roll_mod.MODID, "storm_protective"));
+            TagKey.create(
+                    Registries.ITEM,
+                    ResourceLocation.parse("roll_mod:storm_protective")
+            );
+
 
     /** Лінива ініціалізація стану при першому тіку */
     private static void initIfNeeded(MinecraftServer server) {
@@ -72,6 +77,15 @@ public class StormHandler {
         }
     }
 
+    //Перевірка на захист від шторму ДЛЯ ВСІЄЇ БРОНІ, а то хулє ми шапку надягаємо і нам добре?
+    private static boolean isWearingFullProtectiveSet(ServerPlayer player) {
+        return player.getItemBySlot(EquipmentSlot.HEAD).is(STORM_PROTECTIVE_TAG)
+                && player.getItemBySlot(EquipmentSlot.CHEST).is(STORM_PROTECTIVE_TAG)
+                && player.getItemBySlot(EquipmentSlot.LEGS).is(STORM_PROTECTIVE_TAG)
+                && player.getItemBySlot(EquipmentSlot.FEET).is(STORM_PROTECTIVE_TAG);
+    }
+
+
     private static void applyStormInNether(MinecraftServer server) {
         ServerLevel nether = server.getLevel(Level.NETHER);
         if (nether == null) return;
@@ -80,20 +94,38 @@ public class StormHandler {
             // пропускаємо креатив/спектатор
             var gm = player.gameMode.getGameModeForPlayer();
             if (gm.isCreative() || gm == GameType.SPECTATOR) continue;
-            ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
-            boolean isProtected = helmet.is(STORM_PROTECTIVE_TAG);
 
-            if (isProtected) {
+            // Якщо повний сет захисту — шторм не діє + знімаємо погані ефекти
+            if (isWearingFullProtectiveSet(player)) {
+                // гарантовано нема wither/poison під час шторму з повним сетом
+                player.removeEffect(MobEffects.WITHER);
+                player.removeEffect(MobEffects.POISON);
+                // можеш також прибрати інші «штормові» ефекти, якщо треба:
+                // player.removeEffect(MobEffects.WEAKNESS);
+                // player.removeEffect(MobEffects.CONFUSION);
+                // player.removeEffect(MobEffects.BLINDNESS);
+                continue;
+            }
+
+            // Інакше — частковий захист: маска в шоломі
+            ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
+            boolean hasProtectiveHelmet = helmet.is(STORM_PROTECTIVE_TAG);
+
+            if (hasProtectiveHelmet) {
                 // кожні 20 тік — зношувати шолом/маску
                 if (player.tickCount % 20 == 0) {
                     helmet.hurtAndBreak(1, player, EquipmentSlot.HEAD);
                 }
+                // За бажанням: можна зробити «легші» дебафи або взагалі нічого.
+                // Зараз — нічого не накладаємо.
             } else {
-                // Накладаємо негативні ефекти
-                player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 1600, 3));   // 80с Weakness IV
-                player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0));   // 10с Nausea I
-                player.addEffect(new MobEffectInstance(MobEffects.WITHER, 200, 4));      // 10с Wither V
-                player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200, 0));   // 10с Blindness I
+                // Повного сету немає і шолома немає — накладаємо негативні ефекти
+                player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 1600, 3)); // 80с Weakness IV
+                player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0)); // 10с Nausea I
+                player.addEffect(new MobEffectInstance(MobEffects.WITHER, 200, 4));    // 10с Wither V
+                player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200, 0)); // 10с Blindness I
+                // poison за бажанням — ти згадував саме про неї:
+                player.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 2));    // 10с Poison III
             }
         }
     }
