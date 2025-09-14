@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.netherstorm;
 
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.suggestion.Suggestions;
@@ -26,30 +27,48 @@ public class StormCommands {
     public static void onRegisterCommands(RegisterCommandsEvent e) {
         var dispatcher = e.getDispatcher();
 
-        // /rollmod netherstorm <action>
         LiteralArgumentBuilder<CommandSourceStack> root =
                 literal("rollmod")
                         .requires(src -> src.hasPermission(2))
                         .then(literal("netherstorm")
-                                .then(argument("action", StringArgumentType.word())
-                                        .suggests(StormCommands::suggestActions)
+                                // /rollmod netherstorm start [ticks]
+                                .then(literal("start")
                                         .executes(ctx -> {
-                                            String action = StringArgumentType.getString(ctx, "action")
-                                                    .toLowerCase(Locale.ROOT);
-                                            switch (action) {
-                                                case "start" -> StormHandler.forceStart(ctx.getSource().getServer());
-                                                case "end"   -> StormHandler.forceEnd(ctx.getSource().getServer());
-                                                case "status" -> ctx.getSource().sendSuccess(
-                                                        () -> Component.literal(
-                                                                "active=" + StormHandler.isStormActive() + ", stormTicks=" + StormHandler.getStormTicks() +
-                                                                        ", stormDuration=" + StormHandler.getStormDuration() +
-                                                                        ", untilNext=" + StormHandler.getTicksUntilNextStorm()
-                                                        ), false);
-                                                default -> ctx.getSource().sendFailure(
-                                                        Component.translatable("command.roll_mod_neo.netherstorm.invalid"));
-                                            }
+                                            StormHandler.forceStart(ctx.getSource().getServer(), null); // null = random
+                                            ctx.getSource().sendSuccess(() -> Component.literal("Started NetherStorm (random duration)"), false);
                                             return 1;
-                                        })));
+                                        })
+                                        .then(argument("ticks", IntegerArgumentType.integer(1))
+                                                .executes(ctx -> {
+                                                    int ticks = IntegerArgumentType.getInteger(ctx, "ticks");
+                                                    StormHandler.forceStart(ctx.getSource().getServer(), ticks);
+                                                    ctx.getSource().sendSuccess(() -> Component.literal("Started NetherStorm for " + ticks + " ticks"), false);
+                                                    return 1;
+                                                })
+                                        )
+                                )
+                                // /rollmod netherstorm end
+                                .then(literal("end")
+                                        .executes(ctx -> {
+                                            StormHandler.forceEnd(ctx.getSource().getServer());
+                                            ctx.getSource().sendSuccess(() -> Component.literal("Ended NetherStorm"), false);
+                                            return 1;
+                                        })
+                                )
+                                // /rollmod netherstorm status
+                                .then(literal("status")
+                                        .executes(ctx -> {
+                                            ctx.getSource().sendSuccess(
+                                                    () -> Component.literal(
+                                                            "active=" + StormHandler.isStormActive() +
+                                                                    ", stormTicks=" + StormHandler.getStormTicks() +
+                                                                    ", stormDuration=" + StormHandler.getStormDuration() +
+                                                                    ", untilNext=" + StormHandler.getTicksUntilNextStorm()
+                                                    ), false);
+                                            return 1;
+                                        })
+                                )
+                        );
 
         dispatcher.register(root);
     }
@@ -58,13 +77,12 @@ public class StormCommands {
             com.mojang.brigadier.context.CommandContext<CommandSourceStack> ctx,
             SuggestionsBuilder builder
     ) {
-        // Показуємо локалізовані підказки, але підставляємо сирі значення
         for (String s : ACTIONS) {
             Component hint = switch (s) {
-                case "start"  -> Component.translatable("command.roll_mod_neo.netherstorm.start");
-                case "end"    -> Component.translatable("command.roll_mod_neo.netherstorm.end");
+                case "start" -> Component.translatable("command.roll_mod_neo.netherstorm.start");
+                case "end" -> Component.translatable("command.roll_mod_neo.netherstorm.end");
                 case "status" -> Component.translatable("command.roll_mod_neo.netherstorm.status");
-                default       -> Component.literal(s);
+                default -> Component.literal(s);
             };
             builder.suggest(s, hint);
         }
