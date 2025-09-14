@@ -178,6 +178,9 @@ dependencies {
     implementation "curse.maven:mi-tweaks-1068413:6905715"
     implementation "curse.maven:extended-industrialization-1068418:6974753"
 
+    implementation "curse.maven:fzzy-config-1005914:6843496"
+    implementation "curse.maven:kotlin-for-forge-351264:6994056"
+
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

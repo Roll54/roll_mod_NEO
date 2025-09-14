@@ -9,5 +9,14 @@
   "message.roll_mod.nether_storm.start": "У Незері насувається шторм Затримайте дихання, або помріть!",
   "message.roll_mod.nether_storm.end": "Шторм зупинився, а наскільки довго?",
 
-  "tag.item.roll_mod.storm_protective": "Захист від шторму"
+  "tag.item.roll_mod.storm_protective": "Захист від шторму",
+  "comment1": "just dev schizo shit down",
+  "item.roll_mod.supersteel_gear": "Суперсталевa шестерня",
+  "loreitem.roll_mod.supersteel_gear.tooltip_line1": "Кована під екстремальним тиском.",
+  "loreitem.roll_mod.supersteel_gear.tooltip_line2": "Розрахована на мегапаскалі.",
+
+  "item.roll_mod.super_circuit": "Суперсхема",
+  "loreitem.roll_mod.super_circuit.tooltip_line1": "Квантово-заблоковані тракти.",
+  "loreitem.roll_mod.super_circuit.tooltip_line2": "Екранування шуму 0.1 дБ.",
+  "loreitem.roll_mod.super_circuit.tooltip_line3": "Потребує калібрування перед використанням."
 }

@@ -9,5 +9,15 @@
   "message.roll_mod.nether_storm.start": "A nether storm is coming. Hold your breath, or perish!",
   "message.roll_mod.nether_storm.end": "The storm has stopped... but for how long?",
 
-  "tag.item.roll_mod.storm_protective": "Storm Protective"
+  "tag.item.roll_mod.storm_protective": "Storm Protective",
+
+  "comment1": "just dev schizo shit down",
+  "item.roll_mod.supersteel_gear": "Supersteel Gear",
+  "loreitem.roll_mod.supersteel_gear.tooltip_line1": "Forged under extreme pressure.",
+  "loreitem.roll_mod.supersteel_gear.tooltip_line2": "Rated for megapascals.",
+
+  "item.roll_mod.super_circuit": "Super Circuit",
+  "loreitem.roll_mod.super_circuit.tooltip_line1": "Quantum-locked pathways.",
+  "loreitem.roll_mod.super_circuit.tooltip_line2": "Noise-shielded at 0.1 dB.",
+  "loreitem.roll_mod.super_circuit.tooltip_line3": "Calibration required before use."
 }
