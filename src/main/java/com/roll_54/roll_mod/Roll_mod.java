@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod;
 
+import com.roll_54.roll_mod.ModArmor.ModArmorMaterials;
 import com.roll_54.roll_mod.init.ItemGroups;
 import com.roll_54.roll_mod.init.ItemRegistry;
 import net.neoforged.bus.api.IEventBus;
@@ -17,9 +18,11 @@ public final class Roll_mod {
 
     public Roll_mod(ModContainer container) {
         // Модова шина подій (lifecycle)
+
         IEventBus modBus = container.getEventBus();
         ItemRegistry.register(modBus);
         ItemGroups.register(modBus);
+        ModArmorMaterials.register(modBus);
 
         LOGGER.info("[{}] init complete.", MODID);
     }

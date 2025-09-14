@@ -41,8 +41,7 @@ public class StormCommands {
                                                 case "end"   -> StormHandler.forceEnd(ctx.getSource().getServer());
                                                 case "status" -> ctx.getSource().sendSuccess(
                                                         () -> Component.literal(
-                                                                "active=" + StormHandler.isStormActive() +
-                                                                        ", stormTicks=" + StormHandler.getStormTicks() +
+                                                                "active=" + StormHandler.isStormActive() + ", stormTicks=" + StormHandler.getStormTicks() +
                                                                         ", stormDuration=" + StormHandler.getStormDuration() +
                                                                         ", untilNext=" + StormHandler.getTicksUntilNextStorm()
                                                         ), false);
