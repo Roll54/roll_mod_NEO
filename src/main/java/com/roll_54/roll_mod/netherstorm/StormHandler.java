@@ -1,11 +1,9 @@
 package com.roll_54.roll_mod.netherstorm;
 
 import com.roll_54.roll_mod.Roll_mod;
-import dev.emi.emi.config.EmiConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -21,10 +19,9 @@ import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -89,7 +86,7 @@ public class StormHandler {
             state.dirty();
 
             // 🔥 Нове: спавн лічильником
-            if (++spawnTickCounter >= 400) { // 400 тік = 20 секунд
+            if (++spawnTickCounter >= 18000) { // 400 тік = 20 секунд
                 spawnStormMobs(server);
                 spawnTickCounter = 0;
             }
@@ -225,6 +222,7 @@ public class StormHandler {
             }
         }
     }
+
     static void forceEnd(MinecraftServer server) {
         initIfNeeded(server);
         if (state != null && state.stormActive) endStorm(server);
@@ -243,6 +241,7 @@ public class StormHandler {
             spawnAroundPlayer(nether, player, EntityType.BLAZE);
         }
     }
+
     private static void spawnWitherPack(ServerLevel level, ServerPlayer player, int count) {
         // Спершу знаходимо одну БАЗОВУ валідну позицію біля гравця (щоб зграя була поруч)
         BlockPos base = findGroundedPosNearPlayer(level, player, 12, 16);
@@ -306,7 +305,9 @@ public class StormHandler {
         return null;
     }
 
-    /** Від заданої точки шукає найближчу «землю під ногами»: спускаємось вниз, трохи перевіряємо вгору. */
+    /**
+     * Від заданої точки шукає найближчу «землю під ногами»: спускаємось вниз, трохи перевіряємо вгору.
+     */
     @org.jetbrains.annotations.Nullable
     private static BlockPos findGroundedPosFrom(ServerLevel level, BlockPos from, int verticalScan) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(from.getX(), from.getY(), from.getZ());
@@ -334,6 +335,7 @@ public class StormHandler {
 
         return pos.immutable();
     }
+
     /**
      * Підвищує MAX_HEALTH на 50% і відновлює повний HP.
      */
@@ -348,6 +350,8 @@ public class StormHandler {
     /**
      * Пробує кілька разів знайти валідну позицію біля гравця і заспавнити моба з бафом HP.
      */
+    //TODO перенести в більш розумний міксін, ідіот ти на роллі..
+    //todo заміняти спавн звичайних мобів на візер скелетів під час шторму через міксін
     private static void spawnAroundPlayer(ServerLevel level, ServerPlayer player, EntityType<? extends Mob> type) {
         RandomSource rnd = level.random;
         final int RADIUS = 12;
@@ -420,12 +424,22 @@ public class StormHandler {
     private static void tryEquipWitherSkeleton(ServerLevel level, Mob mob) {
         if (mob.getType() != EntityType.WITHER_SKELETON) return;
 
-        var itemLookup = level.registryAccess().lookupOrThrow(Registries.ITEM);
-        var swordKey = ResourceKey.create(Registries.ITEM, ResourceLocation.parse("minecraft:netherite_sword"));
-        itemLookup.get(swordKey).ifPresent(holder -> {
-            ItemStack sword = new ItemStack(holder.value());
-            mob.setItemSlot(EquipmentSlot.MAINHAND, sword);
-            mob.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
-        });
+        // Меч у руку
+        mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_SWORD));
+        mob.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
+
+        // Повний сет броні
+        mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.NETHERITE_HELMET));
+        mob.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.NETHERITE_CHESTPLATE));
+        mob.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.NETHERITE_LEGGINGS));
+        mob.setItemSlot(EquipmentSlot.FEET, new ItemStack(Items.NETHERITE_BOOTS));
+
+        mob.setDropChance(EquipmentSlot.HEAD, 0.0f);
+        mob.setDropChance(EquipmentSlot.CHEST, 0.0f);
+        mob.setDropChance(EquipmentSlot.LEGS, 0.0f);
+        mob.setDropChance(EquipmentSlot.FEET, 0.0f);
+
+        // Позначимо, що цей моб — «штормовий», щоб потім перевіряти в івентах/дропі
+        mob.getPersistentData().putBoolean("roll_mod:storm_spawn", true);
     }
 }

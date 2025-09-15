@@ -33,6 +33,21 @@ public final class ItemGroups {
                         // додай свої предмети у вкладку
                         output.accept(ItemRegistry.COPPER_GEAR.get());
                         output.accept(ItemRegistry.CHEMICAL_CORE.get());
+                        output.accept(ItemRegistry.SUPERSTEEL_GEAR.get());
+                        output.accept(ItemRegistry.SUPER_CIRCUIT.get());
+                        output.accept(ItemRegistry.METEORITE_METAL_INGOT.get());
+
+                        // 🟨 Hazmat-броня
+                        output.accept(ItemRegistry.HAZMAT_HELMET.get());
+                        output.accept(ItemRegistry.HAZMAT_CHESTPLATE.get());
+                        output.accept(ItemRegistry.HAZMAT_LEGGINGS.get());
+                        output.accept(ItemRegistry.HAZMAT_BOOTS.get());
+
+                        // 🔵 Meteorite-броня
+                        output.accept(ItemRegistry.METEORITE_HELMET.get());
+                        output.accept(ItemRegistry.METEORITE_CHESTPLATE.get());
+                        output.accept(ItemRegistry.METEORITE_LEGGINGS.get());
+                        output.accept(ItemRegistry.METEORITE_BOOTS.get());
                     })
                     .build()
     );

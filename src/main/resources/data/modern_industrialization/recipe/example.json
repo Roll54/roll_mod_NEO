@@ -1,0 +1,17 @@
+{
+  "type": "modern_industrialization:mixer",
+  "eu": 8,
+  "duration": 600,
+  "fluid_inputs": [
+    { "fluid": "modern_industrialization:heavy_fuel", "amount": 1000 },
+    { "fluid": "modern_industrialization:uu_matter", "amount": 1000 }
+  ],
+  "fluid_outputs": [
+    { "fluid": "modern_industrialization:styrene_butadiene_rubber", "amount": 6000 }
+  ],
+  "process_conditions": [
+    {
+      "type": "roll_mod:nether_storm_active"}
+
+  ]
+}

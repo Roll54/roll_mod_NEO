@@ -3,6 +3,10 @@
     "roll_mod:hazmat_helmet",
     "roll_mod:hazmat_chestplate",
     "roll_mod:hazmat_leggings",
-    "roll_mod:hazmat_boots"
+    "roll_mod:hazmat_boots",
+    "extended_industrialization:nano_helmet",
+    "extended_industrialization:nano_gravichestplate",
+    "extended_industrialization:nano_leggings",
+    "extended_industrialization:nano_boots"
   ]
 }

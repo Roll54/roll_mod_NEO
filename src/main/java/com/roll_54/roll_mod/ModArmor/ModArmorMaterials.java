@@ -75,7 +75,6 @@ public final class ModArmorMaterials {
      *                      List<ArmorMaterial.Layer> layers,
      *                      float toughness,
      *                      float knockbackResistance)
-     *
      * NOTE: Per-slot durability bases are now vanilla constants; you can't pass custom per-slot multipliers via API.
      */
     private static ArmorMaterial createMaterial(String name,
