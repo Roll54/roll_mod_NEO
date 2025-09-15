@@ -20,6 +20,7 @@
   "message.roll_mod.nether_storm.end": "Шторм зупинився, а наскільки довго?",
 
   "tag.item.roll_mod.storm_protective": "Захист від шторму",
+  "mi.condition.roll_mod.nether_storm.active": "Потрібен активний шторм у Незері",
 
   "loreitem.roll_mod.hazmat_helmet.tooltip_line1": "Без цього не вижити в Незері в наші дні.",
   "loreitem.roll_mod.hazmat_helmet.tooltip_line2": "Естетика покинула чат...",

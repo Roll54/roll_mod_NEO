@@ -12,8 +12,8 @@ public final class MIConditionsBootstrap {
 
         aztech.modern_industrialization.machines.recipe.condition.MachineProcessConditions.register(
                 STORM,
-                NetherStormProcessCondition.CODEC,
-                NetherStormProcessCondition.STREAM_CODEC
+                CustomProcessCondition.CODEC,
+                CustomProcessCondition.STREAM_CODEC
         );
         com.roll_54.roll_mod.Roll_mod.LOGGER.info("[MI] Registered process condition {}", STORM);
 

@@ -22,7 +22,7 @@
   "message.roll_mod.nether_storm.end": "The storm has stopped... but for how long?",
 
   "tag.item.roll_mod.storm_protective": "Storm Protective",
-
+  "mi.condition.roll_mod.nether_storm.active": "Requires the nether storm to be active",
 
   "item.roll_mod.meteorite_metal_ingot": "Meteorite Ingot",
   "loreitem.roll_mod.meteorite_metal_ingot.tooltip_line1": "A fragment forged in cosmic fire.",
