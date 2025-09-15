@@ -1,32 +1,39 @@
 package com.roll_54.roll_mod.mi;
 
 import aztech.modern_industrialization.machines.recipe.condition.MachineProcessConditions;
+import com.roll_54.roll_mod.Roll_mod;
 import net.minecraft.resources.ResourceLocation;
 
 public final class MIConditionsBootstrap {
     private MIConditionsBootstrap() {}
 
     public static void init() {
-        var STORM = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("roll_mod", "nether_storm_active");
-        var STORM_IN_DIM = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("roll_mod", "nether_storm_active_in_dimension");
+        Roll_mod.LOGGER.info("[MI] Starting process condition registration");
 
-        aztech.modern_industrialization.machines.recipe.condition.MachineProcessConditions.register(
-                STORM,
+        var stormId = ResourceLocation.fromNamespaceAndPath("roll_mod", "nether_storm_active");
+        Roll_mod.LOGGER.info("[MI] Created id {}", stormId);
+
+        var stormDimId = ResourceLocation.fromNamespaceAndPath("roll_mod", "nether_storm_active_in_dimension");
+        Roll_mod.LOGGER.info("[MI] Created id {}", stormDimId);
+
+        Roll_mod.LOGGER.info("[MI] Registering {}", stormId);
+        MachineProcessConditions.register(
+                stormId,
                 CustomProcessCondition.CODEC,
                 CustomProcessCondition.STREAM_CODEC
         );
-        com.roll_54.roll_mod.Roll_mod.LOGGER.info("[MI] Registered process condition {}", STORM);
+        Roll_mod.LOGGER.info("[MI] Registered {}", stormId);
 
-        aztech.modern_industrialization.machines.recipe.condition.MachineProcessConditions.register(
-                STORM_IN_DIM,
+        Roll_mod.LOGGER.info("[MI] Registering {}", stormDimId);
+        MachineProcessConditions.register(
+                stormDimId,
                 NetherStormInDimensionProcessCondition.CODEC,
                 NetherStormInDimensionProcessCondition.STREAM_CODEC
         );
-        com.roll_54.roll_mod.Roll_mod.LOGGER.info("[MI] Registered process condition {}", STORM_IN_DIM);
+        Roll_mod.LOGGER.info("[MI] Registered {}", stormDimId);
 
         // sanity-check, що воно реально в реєстрі
-        var check = aztech.modern_industrialization.machines.recipe.condition.MachineProcessConditions
-                .getCodec(STORM);
-        com.roll_54.roll_mod.Roll_mod.LOGGER.info("[MI] Lookup '{}': {}", STORM, (check != null ? "OK" : "MISSING"));
+        var check = MachineProcessConditions.getCodec(stormId);
+        Roll_mod.LOGGER.info("[MI] Lookup '{}': {}", stormId, (check != null ? "OK" : "MISSING"));
     }
 }

@@ -11,7 +11,7 @@
   ],
   "process_conditions": [
     {
-      "type": "roll_mod:nether_storm_active"}
-
+      "type": "roll_mod:nether_storm_active"
+    }
   ]
 }
