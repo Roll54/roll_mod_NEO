@@ -4,7 +4,6 @@ import com.roll_54.roll_mod.ModArmor.ModArmorMaterials;
 import com.roll_54.roll_mod.init.ItemGroups;
 import com.roll_54.roll_mod.init.ItemRegistry;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
-import com.roll_54.roll_mod.mi.NetherStormProcessCondition;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -25,6 +24,8 @@ public final class Roll_mod {
         ItemRegistry.register(modBus);
         ItemGroups.register(modBus);
         ModArmorMaterials.register(modBus);
+        modBus.addListener(this::onCommonSetup);
+        modBus.addListener(this::onClientSetup);
 
         LOGGER.info("[{}] init complete.", MODID);
     }

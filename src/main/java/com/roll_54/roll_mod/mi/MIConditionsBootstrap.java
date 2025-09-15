@@ -2,31 +2,40 @@ package com.roll_54.roll_mod.mi;
 
 import aztech.modern_industrialization.machines.recipe.condition.MachineProcessConditions;
 import net.minecraft.resources.ResourceLocation;
+import org.slf4j.Logger;
 
 public final class MIConditionsBootstrap {
+    private static final Logger LOGGER = com.roll_54.roll_mod.Roll_mod.LOGGER;
+
     private MIConditionsBootstrap() {}
 
     public static void init() {
-        var STORM = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("roll_mod", "nether_storm_active");
-        var STORM_IN_DIM = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("roll_mod", "nether_storm_active_in_dimension");
+        LOGGER.debug("[MI] Starting condition registration");
 
-        aztech.modern_industrialization.machines.recipe.condition.MachineProcessConditions.register(
+        var STORM = ResourceLocation.fromNamespaceAndPath("roll_mod", "nether_storm_active");
+        LOGGER.debug("[MI] Created id for nether storm condition: {}", STORM);
+        var STORM_IN_DIM = ResourceLocation.fromNamespaceAndPath("roll_mod", "nether_storm_active_in_dimension");
+        LOGGER.debug("[MI] Created id for nether storm in dimension condition: {}", STORM_IN_DIM);
+
+        LOGGER.debug("[MI] Registering {}", STORM);
+        MachineProcessConditions.register(
                 STORM,
-                NetherStormProcessCondition.CODEC,
-                NetherStormProcessCondition.STREAM_CODEC
+                CustomProcessCondition.CODEC,
+                CustomProcessCondition.STREAM_CODEC
         );
-        com.roll_54.roll_mod.Roll_mod.LOGGER.info("[MI] Registered process condition {}", STORM);
+        LOGGER.debug("[MI] Registered {}", STORM);
 
-        aztech.modern_industrialization.machines.recipe.condition.MachineProcessConditions.register(
+        LOGGER.debug("[MI] Registering {}", STORM_IN_DIM);
+        MachineProcessConditions.register(
                 STORM_IN_DIM,
                 NetherStormInDimensionProcessCondition.CODEC,
                 NetherStormInDimensionProcessCondition.STREAM_CODEC
         );
-        com.roll_54.roll_mod.Roll_mod.LOGGER.info("[MI] Registered process condition {}", STORM_IN_DIM);
+        LOGGER.debug("[MI] Registered {}", STORM_IN_DIM);
 
         // sanity-check, що воно реально в реєстрі
-        var check = aztech.modern_industrialization.machines.recipe.condition.MachineProcessConditions
-                .getCodec(STORM);
-        com.roll_54.roll_mod.Roll_mod.LOGGER.info("[MI] Lookup '{}': {}", STORM, (check != null ? "OK" : "MISSING"));
+        LOGGER.debug("[MI] Performing lookup check for {}", STORM);
+        var check = MachineProcessConditions.getCodec(STORM);
+        LOGGER.debug("[MI] Lookup '{}': {}", STORM, (check != null ? "OK" : "MISSING"));
     }
 }

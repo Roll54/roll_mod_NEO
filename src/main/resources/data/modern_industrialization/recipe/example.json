@@ -10,8 +10,6 @@
     { "fluid": "modern_industrialization:styrene_butadiene_rubber", "amount": 6000 }
   ],
   "process_conditions": [
-    {
-      "type": "roll_mod:nether_storm_active"}
-
+    { "type": "roll_mod:nether_storm_active" }
   ]
 }
