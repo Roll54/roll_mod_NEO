@@ -47,8 +47,8 @@ public class ItemRegistry {
             () -> new TooltipItem.Builder()
                     .props(new Item.Properties())
                     .tooltipLines(2)
-                    .nameColor(0x2ECC71)  // emerald
-                    .loreColor(0x7DFFB0)  // light mint
+                    .nameColor(0x3B2AB8)
+                    .loreColor(0x005acf)
                     .build()
     );
 
@@ -116,7 +116,7 @@ public class ItemRegistry {
             )
                     .tooltipLines(2)
                     .nameColor(0x3B2AB8)  // глибокий синій
-                    .loreColor(0xE0E0FF)  // світло-біло-блакитний
+                    .loreColor(0x005acf)  // світло-біло-блакитний
                     .build()
     );
 
@@ -129,7 +129,7 @@ public class ItemRegistry {
             )
                     .tooltipLines(2)
                     .nameColor(0x3B2AB8)
-                    .loreColor(0xE0E0FF)
+                    .loreColor(0x005acf)
                     .build()
     );
 
@@ -142,7 +142,7 @@ public class ItemRegistry {
             )
                     .tooltipLines(2)
                     .nameColor(0x3B2AB8)
-                    .loreColor(0xE0E0FF)
+                    .loreColor(0x005acf)
                     .build()
     );
 
@@ -155,7 +155,7 @@ public class ItemRegistry {
             )
                     .tooltipLines(2)
                     .nameColor(0x3B2AB8)
-                    .loreColor(0xE0E0FF)
+                    .loreColor(0x005acf)
                     .build()
     );
 
