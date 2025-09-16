@@ -9,6 +9,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -21,38 +22,57 @@ import java.util.UUID;
 public final class ItemGroups {
     private ItemGroups() {}
 
+    // 🔼 спочатку реєстр
     public static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Roll_mod.MODID);
 
+    // 🔽 а потім уже MAIN і DEV_TAB
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = TABS.register(
             "main",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.main"))
                     .icon(ItemGroups::createCustomHeadIcon)
-                    .displayItems((params, output) -> {
-                        // додай свої предмети у вкладку
-                        output.accept(ItemRegistry.COPPER_GEAR.get());
-                        output.accept(ItemRegistry.CHEMICAL_CORE.get());
-                        output.accept(ItemRegistry.SUPERSTEEL_GEAR.get());
-                        output.accept(ItemRegistry.SUPER_CIRCUIT.get());
-                        output.accept(ItemRegistry.METEORITE_METAL_INGOT.get());
+                    .displayItems((params, out) -> {
+                        add(out, ItemRegistry.METEORITE_METAL_INGOT);
 
-                        // 🟨 Hazmat-броня
-                        output.accept(ItemRegistry.HAZMAT_HELMET.get());
-                        output.accept(ItemRegistry.HAZMAT_CHESTPLATE.get());
-                        output.accept(ItemRegistry.HAZMAT_LEGGINGS.get());
-                        output.accept(ItemRegistry.HAZMAT_BOOTS.get());
+                        // Hazmat-броня
+                        add(out, ItemRegistry.HAZMAT_HELMET);
+                        add(out, ItemRegistry.HAZMAT_CHESTPLATE);
+                        add(out, ItemRegistry.HAZMAT_LEGGINGS);
+                        add(out, ItemRegistry.HAZMAT_BOOTS);
 
-                        // 🔵 Meteorite-броня
-                        output.accept(ItemRegistry.METEORITE_HELMET.get());
-                        output.accept(ItemRegistry.METEORITE_CHESTPLATE.get());
-                        output.accept(ItemRegistry.METEORITE_LEGGINGS.get());
-                        output.accept(ItemRegistry.METEORITE_BOOTS.get());
+                        // Meteorite-броня
+                        add(out, ItemRegistry.METEORITE_HELMET);
+                        add(out, ItemRegistry.METEORITE_CHESTPLATE);
+                        add(out, ItemRegistry.METEORITE_LEGGINGS);
+                        add(out, ItemRegistry.METEORITE_BOOTS);
+                        add(out, ItemRegistry.METEORITE_SWORD);
+                        add(out, ItemRegistry.METEORITE_PICKAXE);
+                        add(out, ItemRegistry.METEORITE_AXE);
+                        add(out, ItemRegistry.METEORITE_SHOVEL);
+                        add(out, ItemRegistry.METEORITE_HOE);
+
                     })
                     .build()
     );
 
-    /** Підписати в конструкторі моду: ItemGroups.register(modBus); */
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> DEV_TAB = TABS.register(
+            "dev",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.roll_mod.dev"))
+                    .icon(() -> new ItemStack(Items.DEBUG_STICK))
+                    .displayItems((params, out) -> {
+                        for (DeferredHolder<Item, ? extends Item> entry : ItemRegistry.ITEMS.getEntries()) {
+                            out.accept(entry.get());
+                        }
+                    })
+                    .build()
+    );
+
+    private static <T extends Item> void add(CreativeModeTab.Output out, DeferredHolder<Item, T> h) {
+        out.accept(h.get());
+    }
+
     public static void register(IEventBus modBus) {
         TABS.register(modBus);
     }

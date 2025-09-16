@@ -3,7 +3,7 @@ package com.roll_54.roll_mod.mi;
 import aztech.modern_industrialization.machines.recipe.MachineRecipe;
 import aztech.modern_industrialization.machines.recipe.condition.MachineProcessCondition;
 import com.mojang.serialization.MapCodec;
-import com.roll_54.roll_mod.netherstorm.StormHandler;
+import com.roll_54.roll_mod.Netherstorm.StormHandler;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;

@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.netherstorm;
+package com.roll_54.roll_mod.Netherstorm;
 
 import com.roll_54.roll_mod.Roll_mod;
 import net.minecraft.core.BlockPos;

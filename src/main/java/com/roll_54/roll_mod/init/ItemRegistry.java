@@ -2,9 +2,11 @@ package com.roll_54.roll_mod.init;
 
 import com.roll_54.roll_mod.ModArmor.HazmatBootsItem;
 import com.roll_54.roll_mod.ModArmor.ModArmorMaterials;
+import com.roll_54.roll_mod.ModItems.ModToolTiers;
 import com.roll_54.roll_mod.ModItems.TooltipArmorItem;
 import com.roll_54.roll_mod.ModItems.TooltipItem;
 import com.roll_54.roll_mod.Roll_mod;
+import com.roll_54.roll_mod.Util.TooltipManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.ArmorItem;
@@ -13,9 +15,13 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import static com.roll_54.roll_mod.init.ItemGroups.TABS;
+
+
 public class ItemRegistry {
 
-    private ItemRegistry(){}
+    private ItemRegistry() {
+    }
 
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(Registries.ITEM, Roll_mod.MODID);
@@ -51,7 +57,6 @@ public class ItemRegistry {
                     .loreColor(0x005acf)
                     .build()
     );
-
 
 
     // БРОНІКИ!!!
@@ -159,6 +164,60 @@ public class ItemRegistry {
                     .build()
     );
 
+    public static final DeferredHolder<Item, Item> METEORITE_SWORD = ITEMS.register(
+            "meteorite_sword",
+            () -> new TooltipManager.TooltipSwordItem(
+                    ModToolTiers.METEORITE_METAL, 12f, -2.4f,
+                    new Item.Properties(),
+                    2,                // 2 рядки лору
+                    0x3B2AB8,         // колір назви
+                    0x005ACF          // колір лору
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> METEORITE_PICKAXE = ITEMS.register(
+            "meteorite_pickaxe",
+            () -> new TooltipManager.TooltipPickaxeItem(
+                    ModToolTiers.METEORITE_METAL, 6f, -2.8f,
+                    new Item.Properties(),
+                    2,
+                    0x3B2AB8,
+                    0x005ACF
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> METEORITE_AXE = ITEMS.register(
+            "meteorite_axe",
+            () -> new TooltipManager.TooltipAxeItem(
+                    ModToolTiers.METEORITE_METAL, 11f, -3.0f,
+                    new Item.Properties(),
+                    2,
+                    0x3B2AB8,
+                    0x005ACF
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> METEORITE_SHOVEL = ITEMS.register(
+            "meteorite_shovel",
+            () -> new TooltipManager.TooltipShovelItem(
+                    ModToolTiers.METEORITE_METAL, 5f, -3.0f,
+                    new Item.Properties(),
+                    2,
+                    0x3B2AB8,
+                    0x005ACF
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> METEORITE_HOE = ITEMS.register(
+            "meteorite_hoe",
+            () -> new TooltipManager.TooltipHoeItem(
+                    ModToolTiers.METEORITE_METAL, 2f, -1.0f,
+                    new Item.Properties(),
+                    2,
+                    0x3B2AB8,
+                    0x005ACF
+            )
+    );
 
 
     public static void register(IEventBus modBus) {

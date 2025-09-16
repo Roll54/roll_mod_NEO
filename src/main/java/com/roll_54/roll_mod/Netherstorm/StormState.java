@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.netherstorm;
+package com.roll_54.roll_mod.Netherstorm;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

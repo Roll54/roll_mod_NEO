@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.debug;
 
 import com.roll_54.roll_mod.Roll_mod;
-import com.roll_54.roll_mod.netherstorm.StormHandler;
+import com.roll_54.roll_mod.Netherstorm.StormHandler;
 import net.minecraft.core.registries.Registries;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
