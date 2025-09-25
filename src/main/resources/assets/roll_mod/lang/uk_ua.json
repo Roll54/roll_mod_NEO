@@ -13,11 +13,16 @@
   "item.roll_mod.meteorite_boots": "Метеоритні чоботи",
 
   "itemGroup.roll_mod.main": "Roll Mod",
+  "itemGroup.roll_mod.dev": "§сМод ролла,КОЖЕН ПРЕДМЕТ!",
 
   "block.roll_mod.large_chemical_reactor": "Великий хімічний реактор",
 
   "message.roll_mod.nether_storm.start": "У Незері насувається шторм Затримайте дихання, або помріть!",
   "message.roll_mod.nether_storm.end": "Шторм зупинився, а наскільки довго?",
+  "message.roll_mod.cb.no_access.creative": "Ролл не настільки тупий, що б дати вам доступ до цього.)))",
+  "message.roll_mod.cb.no_access.survival": "Цей блок доступний тільки для адміністрації.",
+  "message.roll_mod.cb.no_access.other": "This block is not available.",
+  "message.roll_mod.cb.no_access.setblock": "Командні блоки ТІЛЬКИ для Ролла!",
 
   "tag.item.roll_mod.storm_protective": "Захист від шторму",
   "mi.condition.roll_mod.nether_storm.active": "Потрібен активний шторм у Незері",
@@ -57,5 +62,20 @@
   "item.roll_mod.super_circuit": "Суперсхема",
   "loreitem.roll_mod.super_circuit.tooltip_line1": "Квантово-заблоковані тракти.",
   "loreitem.roll_mod.super_circuit.tooltip_line2": "Екранування шуму 0.1 дБ.",
-  "loreitem.roll_mod.super_circuit.tooltip_line3": "Потребує калібрування перед використанням."
+  "loreitem.roll_mod.super_circuit.tooltip_line3": "Потребує калібрування перед використанням.",
+
+  "item.roll_mod.meteorite_sword": "Метеоритовий Меч",
+  "loreitem.roll_mod.meteorite_sword.tooltip_line1": "Викуваний зі впалих зірок",
+
+  "item.roll_mod.meteorite_pickaxe": "Метеоритна Кірка",
+  "loreitem.roll_mod.meteorite_pickaxe.tooltip_line1": "Добуває навіть найтвердіший камінь",
+
+  "item.roll_mod.meteorite_axe": "Метеоритна Сокира",
+  "loreitem.roll_mod.meteorite_axe.tooltip_line1": "Рубає з космічною силою",
+
+  "item.roll_mod.meteorite_shovel": "Метеоритна Лопата",
+  "loreitem.roll_mod.meteorite_shovel.tooltip_line1": "Копає швидше за аналоги",
+
+  "item.roll_mod.meteorite_hoe": "Метеоритна Мотика",
+  "loreitem.roll_mod.meteorite_hoe.tooltip_line1": "Ґрунт схиляється перед її дотиком"
 }

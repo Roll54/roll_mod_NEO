@@ -1,0 +1,71 @@
+{
+  "type": "silentgear:simple",
+  "parent": "silentgear:empty",
+
+  "crafting": {
+    "can_salvage": true,
+    "categories": ["metal", "endgame"],
+    "gear_type_blacklist": [],
+    "ingredient": { "item": "roll_mod:meteorite_metal_ingot" },
+    "part_substitutes": {}
+  },
+
+  "display": {
+    "color": "#0d20b8",
+    "main_texture_type": "HIGH_CONTRAST",
+    "name": { "translate": "material.roll_mod.meteorite_metal" },
+    "name_prefix": ""
+  },
+
+  "properties": {
+    "silentgear:main": {
+      "durability": 3200.0,
+      "attack_damage": 12.5,
+      "attack_speed": -0.1,
+      "harvest_speed": 13.0,
+      "enchantment_value": 18.0,
+
+      "armor": 24.0,
+      "armor/helmet": 4.0,
+      "armor/chestplate": 8.0,
+      "armor/leggings": 7.0,
+      "armor/boots": 5.0,
+      "armor_durability": 46.0,
+      "armor_toughness": 12.0,
+
+      "magic_damage": 2.0,
+      "magic_armor": 6.0,
+      "ranged_damage": 2.0,
+      "projectile_accuracy": 1.1,
+      "projectile_speed": 1.0,
+
+      "rarity": 90.0,
+      "repair_value": 0.6,
+
+      "harvest_tier": {
+        "name": "meteorite_metal",
+        "level_hint": "5",
+        "incorrect_blocks_for_tool": "roll_mod:incorrect_for_meteorite_tools"
+      },
+
+      "traits": [
+        { "trait": "silentgear:hard", "level": 4, "conditions": [] },
+        { "trait": "silentgear:sturdy", "level": 2, "conditions": [] },
+        { "trait": "silentgear:magnetic", "level": 1, "conditions": [] },
+      ]
+    },
+
+    "silentgear:tip": {
+      "durability": { "operation": "ADD", "value": 400.0 },
+      "rarity": { "operation": "ADD", "value": 15.0 },
+      "harvest_tier": {
+        "name": "meteorite_metal",
+        "level_hint": "5",
+        "incorrect_blocks_for_tool": "roll_mod:incorrect_for_meteorite_tools"
+      },
+      "traits": [
+        { "trait": "silentgear:magmatic", "level": 1, "conditions": [] }
+      ]
+    }
+  }
+}

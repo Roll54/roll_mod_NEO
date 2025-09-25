@@ -15,11 +15,16 @@
   "item.roll_mod.meteorite_boots": "Meteorite Boots",
 
   "itemGroup.roll_mod.main": "Roll Mod",
+  "itemGroup.roll_mod.dev": "§сRoll Mod EVERY ITEM",
 
   "block.roll_mod.large_chemical_reactor": "Large Chemical Reactor",
 
   "message.roll_mod.nether_storm.start": "A nether storm is coming. Hold your breath, or perish!",
   "message.roll_mod.nether_storm.end": "The storm has stopped... but for how long?",
+  "message.roll_mod.cb.no_access.creative": "Roll isn’t foolish enough to let you use this.)))",
+  "message.roll_mod.cb.no_access.survival": "The block is only accessible to the administration.",
+  "message.roll_mod.cb.no_access.other": "This block is not available.",
+  "message.roll_mod.cb.no_access.setblock": "Command blocks ONLY for roll_54",
 
   "tag.item.roll_mod.storm_protective": "Storm Protective",
   "mi.condition.roll_mod.nether_storm.active": "Requires the nether storm to be active",
@@ -27,6 +32,28 @@
   "item.roll_mod.meteorite_metal_ingot": "Meteorite Ingot",
   "loreitem.roll_mod.meteorite_metal_ingot.tooltip_line1": "A fragment forged in cosmic fire.",
   "loreitem.roll_mod.meteorite_metal_ingot.tooltip_line2": "Resonates faintly with starlight.",
+
+
+  "item.roll_mod.meteorite_sword": "Meteorite Sword",
+  "loreitem.roll_mod.meteorite_sword.tooltip_line1": "Forged from fallen stars",
+  "loreitem.roll_mod.meteorite_sword.tooltip_line2": "Its edge never dulls",
+
+  "item.roll_mod.meteorite_pickaxe": "Meteorite Pickaxe",
+  "loreitem.roll_mod.meteorite_pickaxe.tooltip_line1": "Mines even the hardest stone",
+  "loreitem.roll_mod.meteorite_pickaxe.tooltip_line2": "Glows faintly in darkness",
+
+  "item.roll_mod.meteorite_axe": "Meteorite Axe",
+  "loreitem.roll_mod.meteorite_axe.tooltip_line1": "Chops with cosmic force",
+  "loreitem.roll_mod.meteorite_axe.tooltip_line2": "Said to split trees in one swing",
+
+  "item.roll_mod.meteorite_shovel": "Meteorite Shovel",
+  "loreitem.roll_mod.meteorite_shovel.tooltip_line1": "Digs faster than steel",
+  "loreitem.roll_mod.meteorite_shovel.tooltip_line2": "Leaves a shining trail",
+
+  "item.roll_mod.meteorite_hoe": "Meteorite Hoe",
+  "loreitem.roll_mod.meteorite_hoe.tooltip_line1": "Soil bends to its touch",
+  "loreitem.roll_mod.meteorite_hoe.tooltip_line2": "Blessed by the heavens",
+
 
   "comment1": "just dev schizo shit down",
 
@@ -39,4 +66,5 @@
   "loreitem.roll_mod.super_circuit.tooltip_line1": "Quantum-locked pathways.",
   "loreitem.roll_mod.super_circuit.tooltip_line2": "Noise-shielded at 0.1 dB.",
   "loreitem.roll_mod.super_circuit.tooltip_line3": "Calibration required before use."
+
 }

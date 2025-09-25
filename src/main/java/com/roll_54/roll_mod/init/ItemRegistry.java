@@ -169,7 +169,7 @@ public class ItemRegistry {
             () -> new TooltipManager.TooltipSwordItem(
                     ModToolTiers.METEORITE_METAL, 12f, -2.4f,
                     new Item.Properties(),
-                    2,                // 2 рядки лору
+                    1,                // 2 рядки лору
                     0x3B2AB8,         // колір назви
                     0x005ACF          // колір лору
             )
@@ -180,7 +180,7 @@ public class ItemRegistry {
             () -> new TooltipManager.TooltipPickaxeItem(
                     ModToolTiers.METEORITE_METAL, 6f, -2.8f,
                     new Item.Properties(),
-                    2,
+                    1,
                     0x3B2AB8,
                     0x005ACF
             )
@@ -191,7 +191,7 @@ public class ItemRegistry {
             () -> new TooltipManager.TooltipAxeItem(
                     ModToolTiers.METEORITE_METAL, 11f, -3.0f,
                     new Item.Properties(),
-                    2,
+                    1,
                     0x3B2AB8,
                     0x005ACF
             )
@@ -202,7 +202,7 @@ public class ItemRegistry {
             () -> new TooltipManager.TooltipShovelItem(
                     ModToolTiers.METEORITE_METAL, 5f, -3.0f,
                     new Item.Properties(),
-                    2,
+                    1,
                     0x3B2AB8,
                     0x005ACF
             )
@@ -213,7 +213,7 @@ public class ItemRegistry {
             () -> new TooltipManager.TooltipHoeItem(
                     ModToolTiers.METEORITE_METAL, 2f, -1.0f,
                     new Item.Properties(),
-                    2,
+                    1,
                     0x3B2AB8,
                     0x005ACF
             )

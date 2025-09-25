@@ -336,9 +336,6 @@ public class StormHandler {
         return pos.immutable();
     }
 
-    /**
-     * Підвищує MAX_HEALTH на 50% і відновлює повний HP.
-     */
     private static void applyHealthBuff(Mob mob) {
         var max = mob.getAttribute(Attributes.MAX_HEALTH);
         if (max != null) {
@@ -355,7 +352,7 @@ public class StormHandler {
     private static void spawnAroundPlayer(ServerLevel level, ServerPlayer player, EntityType<? extends Mob> type) {
         RandomSource rnd = level.random;
         final int RADIUS = 12;
-        final int TRIES = 12;
+        final int TRIES = 4;
 
         for (int i = 0; i < TRIES; i++) {
             int dx = rnd.nextIntBetweenInclusive(-RADIUS, RADIUS);
