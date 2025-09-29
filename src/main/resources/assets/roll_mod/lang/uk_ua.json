@@ -29,27 +29,19 @@
 
   "loreitem.roll_mod.hazmat_helmet.tooltip_line1": "Без цього не вижити в Незері в наші дні.",
   "loreitem.roll_mod.hazmat_helmet.tooltip_line2": "Естетика покинула чат...",
-
   "loreitem.roll_mod.hazmat_chestplate.tooltip_line1": "Надійний захист від сірчаної бурі.",
   "loreitem.roll_mod.hazmat_chestplate.tooltip_line2": "3,6 рентгена. Не багато, але й не мало.",
-
   "loreitem.roll_mod.hazmat_leggings.tooltip_line1": "Захищає ноги від незерського середовища.",
-
   "loreitem.roll_mod.hazmat_boots.tooltip_line1": "Крокуй крізь Незер без страху.",
-  "loreitem.roll_mod.hazmat_boots.tooltip_line2": "Вони вже дурнопахнуть, ти їх навіть не надягав...",
-
+  "loreitem.roll_mod.hazmat_boots.tooltip_line2": "Вони вже пахнуть погано, а ти їх навіть не надягав...",
   "loreitem.roll_mod.meteorite_helmet.tooltip_line1": "Міцність, загартована космічним вогнем.",
   "loreitem.roll_mod.meteorite_helmet.tooltip_line2": "Ти носиш уламок, що впав із небес.",
-
   "loreitem.roll_mod.meteorite_chestplate.tooltip_line1": "Неймовірно міцна броня з космосу.",
   "loreitem.roll_mod.meteorite_chestplate.tooltip_line2": "Супротивники відчують вагу галактики.",
-
   "loreitem.roll_mod.meteorite_leggings.tooltip_line1": "Броня, що витримує удари зірок.",
   "loreitem.roll_mod.meteorite_leggings.tooltip_line2": "Не спробуй бігати — вони тяжчі за совість.",
-
   "loreitem.roll_mod.meteorite_boots.tooltip_line1": "Космічні чоботи, що гартують кожен крок.",
   "loreitem.roll_mod.meteorite_boots.tooltip_line2": "Земля під ногами трішки ревнує.",
-
   "item.roll_mod.meteorite_metal_ingot": "Метеоритний злиток",
   "loreitem.roll_mod.meteorite_metal_ingot.tooltip_line1": "Фрагмент, загартований космічним полум’ям.",
   "loreitem.roll_mod.meteorite_metal_ingot.tooltip_line2": "Ледь відлунює сяйвом зір.",
@@ -64,18 +56,20 @@
   "loreitem.roll_mod.super_circuit.tooltip_line2": "Екранування шуму 0.1 дБ.",
   "loreitem.roll_mod.super_circuit.tooltip_line3": "Потребує калібрування перед використанням.",
 
-  "item.roll_mod.meteorite_sword": "Метеоритовий Меч",
+  "item.roll_mod.meteorite_sword": "Метеоритовий меч",
   "loreitem.roll_mod.meteorite_sword.tooltip_line1": "Викуваний зі впалих зірок",
 
-  "item.roll_mod.meteorite_pickaxe": "Метеоритна Кірка",
+  "item.roll_mod.meteorite_pickaxe": "Метеоритне кайло",
   "loreitem.roll_mod.meteorite_pickaxe.tooltip_line1": "Добуває навіть найтвердіший камінь",
 
-  "item.roll_mod.meteorite_axe": "Метеоритна Сокира",
+  "item.roll_mod.meteorite_axe": "Метеоритна сокира",
   "loreitem.roll_mod.meteorite_axe.tooltip_line1": "Рубає з космічною силою",
 
-  "item.roll_mod.meteorite_shovel": "Метеоритна Лопата",
+  "item.roll_mod.meteorite_shovel": "Метеоритна лопата",
   "loreitem.roll_mod.meteorite_shovel.tooltip_line1": "Копає швидше за аналоги",
 
-  "item.roll_mod.meteorite_hoe": "Метеоритна Мотика",
-  "loreitem.roll_mod.meteorite_hoe.tooltip_line1": "Ґрунт схиляється перед її дотиком"
+  "item.roll_mod.meteorite_hoe": "Метеоритна мотика",
+  "loreitem.roll_mod.meteorite_hoe.tooltip_line1": "Ґрунт схиляється перед її дотиком",
+
+  "material.roll_mod.meteorite_metal": "§9Метеоритний метал"
 }

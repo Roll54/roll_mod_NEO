@@ -19,19 +19,19 @@
 
   "properties": {
     "silentgear:main": {
-      "durability": 3200.0,
-      "attack_damage": 12.5,
+      "durability": 4200.0,
+      "attack_damage": 16.5,
       "attack_speed": -0.1,
-      "harvest_speed": 13.0,
-      "enchantment_value": 18.0,
+      "harvest_speed": 16.0,
+      "enchantment_value": 24.0,
 
-      "armor": 24.0,
-      "armor/helmet": 4.0,
-      "armor/chestplate": 8.0,
-      "armor/leggings": 7.0,
-      "armor/boots": 5.0,
-      "armor_durability": 46.0,
-      "armor_toughness": 12.0,
+      "armor": 44.0,
+      "armor/helmet": 8.0,
+      "armor/chestplate": 14.0,
+      "armor/leggings": 12.0,
+      "armor/boots": 10.0,
+      "armor_durability": 50.0,
+      "armor_toughness": 14.0,
 
       "magic_damage": 2.0,
       "magic_armor": 6.0,
@@ -51,7 +51,7 @@
       "traits": [
         { "trait": "silentgear:hard", "level": 4, "conditions": [] },
         { "trait": "silentgear:sturdy", "level": 2, "conditions": [] },
-        { "trait": "silentgear:magnetic", "level": 1, "conditions": [] },
+        { "trait": "silentgear:magnetic", "level": 1, "conditions": [] }
       ]
     },
 

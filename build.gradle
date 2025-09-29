@@ -51,6 +51,7 @@ repositories {
     maven {
         url "https://cursemaven.com"
     }
+
 }
 
 base {
@@ -159,7 +160,8 @@ dependencies {
 
     implementation "dev.emi:emi-neoforge:${emi_version}"
     implementation "curse.maven:guideme-1173950:6812025"
-
+    implementation files("jars/silent-gear-1.21.1-neoforge-4.0.28.1.jar")
+    implementation files("jars/silent-lib-1.21.1-neoforge-10.5.1.jar")
 
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
         version {
