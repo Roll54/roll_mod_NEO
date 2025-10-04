@@ -49,6 +49,7 @@ public final class ModArmorMaterials {
                     () -> Ingredient.of(Items.IRON_INGOT),
                     2.0f,
                     0.1f
+
             ));
 
     /** Call in your mod constructor: ModArmorMaterials.register(modBus); */

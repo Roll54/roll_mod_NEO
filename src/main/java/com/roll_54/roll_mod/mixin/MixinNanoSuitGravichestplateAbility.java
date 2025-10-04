@@ -9,7 +9,7 @@ public class MixinNanoSuitGravichestplateAbility {
 
     /**
      * @author roll_54
-     * @reason Змінює дефолтну ємність з 16,777,216 на 54,000,000. Це Дуже красіве число!!!
+     * @reason Changes the default capacity from 16,777,216 to 54,000,000. It's a very fancy number!!!
      */
     @Overwrite
     public long overrideEnergyCapacity() {

@@ -65,7 +65,7 @@ public class ItemRegistry {
             () -> new TooltipArmorItem.Builder(
                     Holder.direct(ModArmorMaterials.HAZMAT_ARMOR.get()),
                     ArmorItem.Type.HELMET,
-                    new Item.Properties().stacksTo(1)
+                    new Item.Properties().stacksTo(1).durability(2400)
             )
                     .tooltipLines(2)
                     .nameColor(0xe8c52a)  // золотий
@@ -78,7 +78,7 @@ public class ItemRegistry {
             () -> new TooltipArmorItem.Builder(
                     Holder.direct(ModArmorMaterials.HAZMAT_ARMOR.get()),
                     ArmorItem.Type.CHESTPLATE,
-                    new Item.Properties().stacksTo(1)
+                    new Item.Properties().stacksTo(1).durability(2400)
             )
                     .tooltipLines(2)
                     .nameColor(0xe8c52a)
@@ -91,7 +91,7 @@ public class ItemRegistry {
             () -> new TooltipArmorItem.Builder(
                     Holder.direct(ModArmorMaterials.HAZMAT_ARMOR.get()),
                     ArmorItem.Type.LEGGINGS,
-                    new Item.Properties().stacksTo(1)
+                    new Item.Properties().stacksTo(1).durability(2400)
             )
                     .tooltipLines(1)
                     .nameColor(0xe8c52a)
@@ -104,7 +104,7 @@ public class ItemRegistry {
             () -> new HazmatBootsItem.Builder(
                     Holder.direct(ModArmorMaterials.HAZMAT_ARMOR.get()),
                     ArmorItem.Type.BOOTS,
-                    new Item.Properties().stacksTo(1)
+                    new Item.Properties().stacksTo(1).durability(2400)
             )
                     .tooltipLines(2)
                     .nameColor(0xe8c52a)
@@ -117,7 +117,7 @@ public class ItemRegistry {
             () -> new TooltipArmorItem.Builder(
                     Holder.direct(ModArmorMaterials.METEORITE_ARMOR.get()),
                     ArmorItem.Type.HELMET,
-                    new Item.Properties().stacksTo(1)
+                    new Item.Properties().stacksTo(1).durability(3400)
             )
                     .tooltipLines(2)
                     .nameColor(0x3B2AB8)  // глибокий синій
@@ -130,7 +130,7 @@ public class ItemRegistry {
             () -> new TooltipArmorItem.Builder(
                     Holder.direct(ModArmorMaterials.METEORITE_ARMOR.get()),
                     ArmorItem.Type.CHESTPLATE,
-                    new Item.Properties().stacksTo(1)
+                    new Item.Properties().stacksTo(1).durability(3400)
             )
                     .tooltipLines(2)
                     .nameColor(0x3B2AB8)
@@ -143,7 +143,7 @@ public class ItemRegistry {
             () -> new TooltipArmorItem.Builder(
                     Holder.direct(ModArmorMaterials.METEORITE_ARMOR.get()),
                     ArmorItem.Type.LEGGINGS,
-                    new Item.Properties().stacksTo(1)
+                    new Item.Properties().stacksTo(1).durability(3400)
             )
                     .tooltipLines(2)
                     .nameColor(0x3B2AB8)
@@ -156,7 +156,7 @@ public class ItemRegistry {
             () -> new TooltipArmorItem.Builder(
                     Holder.direct(ModArmorMaterials.METEORITE_ARMOR.get()),
                     ArmorItem.Type.BOOTS,
-                    new Item.Properties().stacksTo(1)
+                    new Item.Properties().stacksTo(1).durability(3400)
             )
                     .tooltipLines(2)
                     .nameColor(0x3B2AB8)
@@ -168,7 +168,7 @@ public class ItemRegistry {
             "meteorite_sword",
             () -> new TooltipManager.TooltipSwordItem(
                     ModToolTiers.METEORITE_METAL, 12f, -2.4f,
-                    new Item.Properties(),
+                    new Item.Properties().durability(3400),
                     1,                // 2 рядки лору
                     0x3B2AB8,         // колір назви
                     0x005ACF          // колір лору

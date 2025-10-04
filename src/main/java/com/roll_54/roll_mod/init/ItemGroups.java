@@ -5,8 +5,6 @@ import com.mojang.authlib.properties.Property;
 import com.roll_54.roll_mod.Roll_mod;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
@@ -20,8 +18,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.UUID;
 
 public final class ItemGroups {
-    private ItemGroups() {}
-
     // 🔼 спочатку реєстр
     public static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Roll_mod.MODID);
