@@ -5,141 +5,96 @@ import net.minecraft.world.item.*;
 
 import java.util.List;
 public class TooltipManager {
-    //Sword
+
+    private static Component colorName(Component base, TooltipOptions opts) {
+        if (opts != null && opts.hasNameColor()) {
+            return base.copy().withStyle(s -> s.withColor(opts.nameColorHex()));
+        }
+        return base;
+    }
+
+    private static void addLore(ItemStack stack, TooltipOptions opts, List<Component> tooltip, TooltipFlag flag) {
+        if (opts == null || !opts.hasLore()) return;
+        TooltipStyler.addLore(stack, opts.loreLines(), opts.loreColorHex(), tooltip, flag);
+    }
+
+    // ---------------- SWORD ----------------
     public static class TooltipSwordItem extends SwordItem {
-        private final int tooltipLines;
-        private final Integer nameColorHex;
-        private final Integer loreColorHex;
+        private final TooltipOptions opts;
 
         public TooltipSwordItem(Tier tier, float attackDamage, float attackSpeed,
-                                Properties props, int tooltipLines,
-                                Integer nameColorHex, Integer loreColorHex) {
+                                Properties props, TooltipOptions opts) {
             super(tier, props.attributes(SwordItem.createAttributes(tier, attackDamage, attackSpeed)));
-            if (tooltipLines < 1) throw new IllegalArgumentException("tooltipLines must be >= 1");
-            this.tooltipLines = tooltipLines;
-            this.nameColorHex = nameColorHex;
-            this.loreColorHex = loreColorHex;
+            this.opts = (opts == null) ? TooltipOptions.NONE : opts;
         }
 
-        @Override
-        public Component getName(ItemStack stack) {
-            return TooltipStyler.colorName(super.getName(stack), nameColorHex);
-        }
-
-        @Override
-        public void appendHoverText(ItemStack stack, TooltipContext ctx,
-                                    List<Component> tooltip, TooltipFlag flag) {
-            TooltipStyler.addLore(stack, tooltipLines, loreColorHex, tooltip, flag);
+        @Override public Component getName(ItemStack stack) { return colorName(super.getName(stack), opts); }
+        @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+            addLore(stack, opts, tooltip, flag);
         }
     }
-    //Pickaxe
+
+    // ---------------- PICKAXE ----------------
     public static class TooltipPickaxeItem extends PickaxeItem {
-        private final int tooltipLines;
-        private final Integer nameColorHex;
-        private final Integer loreColorHex;
+        private final TooltipOptions opts;
 
         public TooltipPickaxeItem(Tier tier, float attackDamage, float attackSpeed,
-                                  Properties props, int tooltipLines,
-                                  Integer nameColorHex, Integer loreColorHex) {
+                                  Properties props, TooltipOptions opts) {
             super(tier, props.attributes(PickaxeItem.createAttributes(tier, attackDamage, attackSpeed)));
-            if (tooltipLines < 1) throw new IllegalArgumentException("tooltipLines must be >= 1");
-            this.tooltipLines = tooltipLines;
-            this.nameColorHex = nameColorHex;
-            this.loreColorHex = loreColorHex;
+            this.opts = (opts == null) ? TooltipOptions.NONE : opts;
         }
 
-        @Override
-        public Component getName(ItemStack stack) {
-            return TooltipStyler.colorName(super.getName(stack), nameColorHex);
-        }
-
-        @Override
-        public void appendHoverText(ItemStack stack, TooltipContext ctx,
-                                    List<Component> tooltip, TooltipFlag flag) {
-            TooltipStyler.addLore(stack, tooltipLines, loreColorHex, tooltip, flag);
+        @Override public Component getName(ItemStack stack) { return colorName(super.getName(stack), opts); }
+        @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+            addLore(stack, opts, tooltip, flag);
         }
     }
-    //Axe
 
+    // ---------------- AXE ----------------
     public static class TooltipAxeItem extends AxeItem {
-        private final int tooltipLines;
-        private final Integer nameColorHex;
-        private final Integer loreColorHex;
+        private final TooltipOptions opts;
 
         public TooltipAxeItem(Tier tier, float attackDamage, float attackSpeed,
-                              Properties props, int tooltipLines,
-                              Integer nameColorHex, Integer loreColorHex) {
+                              Properties props, TooltipOptions opts) {
             super(tier, props.attributes(AxeItem.createAttributes(tier, attackDamage, attackSpeed)));
-            if (tooltipLines < 1) throw new IllegalArgumentException("tooltipLines must be >= 1");
-            this.tooltipLines = tooltipLines;
-            this.nameColorHex = nameColorHex;
-            this.loreColorHex = loreColorHex;
+            this.opts = (opts == null) ? TooltipOptions.NONE : opts;
         }
 
-        @Override
-        public Component getName(ItemStack stack) {
-            return TooltipStyler.colorName(super.getName(stack), nameColorHex);
-        }
-
-        @Override
-        public void appendHoverText(ItemStack stack, TooltipContext ctx,
-                                    List<Component> tooltip, TooltipFlag flag) {
-            TooltipStyler.addLore(stack, tooltipLines, loreColorHex, tooltip, flag);
+        @Override public Component getName(ItemStack stack) { return colorName(super.getName(stack), opts); }
+        @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+            addLore(stack, opts, tooltip, flag);
         }
     }
-    //Shovel
+
+    // ---------------- SHOVEL ----------------
     public static class TooltipShovelItem extends ShovelItem {
-        private final int tooltipLines;
-        private final Integer nameColorHex;
-        private final Integer loreColorHex;
+        private final TooltipOptions opts;
 
         public TooltipShovelItem(Tier tier, float attackDamage, float attackSpeed,
-                                 Properties props, int tooltipLines,
-                                 Integer nameColorHex, Integer loreColorHex) {
+                                 Properties props, TooltipOptions opts) {
             super(tier, props.attributes(ShovelItem.createAttributes(tier, attackDamage, attackSpeed)));
-            if (tooltipLines < 1) throw new IllegalArgumentException("tooltipLines must be >= 1");
-            this.tooltipLines = tooltipLines;
-            this.nameColorHex = nameColorHex;
-            this.loreColorHex = loreColorHex;
+            this.opts = (opts == null) ? TooltipOptions.NONE : opts;
         }
 
-        @Override
-        public Component getName(ItemStack stack) {
-            return TooltipStyler.colorName(super.getName(stack), nameColorHex);
-        }
-
-        @Override
-        public void appendHoverText(ItemStack stack, TooltipContext ctx,
-                                    List<Component> tooltip, TooltipFlag flag) {
-            TooltipStyler.addLore(stack, tooltipLines, loreColorHex, tooltip, flag);
+        @Override public Component getName(ItemStack stack) { return colorName(super.getName(stack), opts); }
+        @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+            addLore(stack, opts, tooltip, flag);
         }
     }
-    //hoe KEKW
+
+    // ---------------- HOE ----------------
     public static class TooltipHoeItem extends HoeItem {
-        private final int tooltipLines;
-        private final Integer nameColorHex;
-        private final Integer loreColorHex;
+        private final TooltipOptions opts;
 
         public TooltipHoeItem(Tier tier, float attackDamage, float attackSpeed,
-                              Properties props, int tooltipLines,
-                              Integer nameColorHex, Integer loreColorHex) {
+                              Properties props, TooltipOptions opts) {
             super(tier, props.attributes(HoeItem.createAttributes(tier, attackDamage, attackSpeed)));
-            if (tooltipLines < 1) throw new IllegalArgumentException("tooltipLines must be >= 1");
-            this.tooltipLines = tooltipLines;
-            this.nameColorHex = nameColorHex;
-            this.loreColorHex = loreColorHex;
+            this.opts = (opts == null) ? TooltipOptions.NONE : opts;
         }
 
-        @Override
-        public Component getName(ItemStack stack) {
-            return TooltipStyler.colorName(super.getName(stack), nameColorHex);
-        }
-
-        @Override
-        public void appendHoverText(ItemStack stack, TooltipContext ctx,
-                                    List<Component> tooltip, TooltipFlag flag) {
-            TooltipStyler.addLore(stack, tooltipLines, loreColorHex, tooltip, flag);
+        @Override public Component getName(ItemStack stack) { return colorName(super.getName(stack), opts); }
+        @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+            addLore(stack, opts, tooltip, flag);
         }
     }
-
 }
