@@ -1,9 +1,9 @@
 package com.roll_54.roll_mod.ModItems;
 
+import com.roll_54.roll_mod.Util.TooltipManager;
+import com.roll_54.roll_mod.Util.TooltipOptions;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
@@ -12,41 +12,22 @@ import net.minecraft.world.item.TooltipFlag;
 import java.util.List;
 
 public class TooltipArmorItem extends ArmorItem {
-    private final int tooltipLines;
-    private final Integer nameColorHex;
-    private final Integer loreColorHex;
+    private final TooltipOptions opts;
 
-    public TooltipArmorItem(Holder<ArmorMaterial> material, Type type, Properties props,
-                            int tooltipLines, Integer nameColorHex, Integer loreColorHex) {
+    public TooltipArmorItem(Holder<ArmorMaterial> material, Type type, Properties props, TooltipOptions opts) {
         super(material, type, props);
-        this.tooltipLines = tooltipLines;
-        this.nameColorHex = nameColorHex;
-        this.loreColorHex = loreColorHex;
+        this.opts = (opts == null) ? TooltipOptions.NONE : opts;
     }
 
     @Override
     public Component getName(ItemStack stack) {
-        MutableComponent base = (MutableComponent) super.getName(stack);
-        if (nameColorHex != null) {
-            return base.withStyle(style -> style.withColor(nameColorHex));
-        }
-        return base;
+        return TooltipManager.colorName(super.getName(stack), opts);
     }
 
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context,
                                 List<Component> tooltip, TooltipFlag flag) {
-        ResourceLocation key = stack.getItem().builtInRegistryHolder().key().location();
-        String path = key.getPath();
-
-        for (int i = 1; i <= tooltipLines; i++) {
-            String locKey = "loreitem.roll_mod." + path + ".tooltip_line" + i;
-            MutableComponent line = Component.translatable(locKey);
-            if (loreColorHex != null) {
-                line = line.withStyle(style -> style.withColor(loreColorHex));
-            }
-            tooltip.add(line);
-        }
+        TooltipManager.addLore(stack, opts, tooltip, flag);
     }
 
     // Builder
@@ -80,7 +61,7 @@ public class TooltipArmorItem extends ArmorItem {
         }
 
         public TooltipArmorItem build() {
-            return new TooltipArmorItem(material, type, props, tooltipLines, nameColorHex, loreColorHex);
+            return new TooltipArmorItem(material, type, props, new TooltipOptions(tooltipLines, nameColorHex, loreColorHex));
         }
     }
 }

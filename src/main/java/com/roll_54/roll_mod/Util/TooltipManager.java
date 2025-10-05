@@ -6,16 +6,30 @@ import net.minecraft.world.item.*;
 import java.util.List;
 public class TooltipManager {
 
-    private static Component colorName(Component base, TooltipOptions opts) {
+    public static Component colorName(Component base, TooltipOptions opts) {
         if (opts != null && opts.hasNameColor()) {
             return base.copy().withStyle(s -> s.withColor(opts.nameColorHex()));
         }
         return base;
     }
 
-    private static void addLore(ItemStack stack, TooltipOptions opts, List<Component> tooltip, TooltipFlag flag) {
+    public static void addLore(ItemStack stack, TooltipOptions opts, List<Component> tooltip, TooltipFlag flag) {
         if (opts == null || !opts.hasLore()) return;
         TooltipStyler.addLore(stack, opts.loreLines(), opts.loreColorHex(), tooltip, flag);
+    }
+
+    public static class TooltipItem extends Item {
+        private final TooltipOptions opts;
+
+        public TooltipItem(Properties props, TooltipOptions opts) {
+            super(props);
+            this.opts = (opts == null) ? TooltipOptions.NONE : opts;
+        }
+
+        @Override public Component getName(ItemStack stack) { return colorName(super.getName(stack), opts); }
+        @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+            addLore(stack, opts, tooltip, flag);
+        }
     }
 
     // ---------------- SWORD ----------------
