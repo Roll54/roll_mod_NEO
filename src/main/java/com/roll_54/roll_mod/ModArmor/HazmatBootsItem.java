@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.ModArmor;
 
 import com.roll_54.roll_mod.ModItems.TooltipArmorItem;
+import com.roll_54.roll_mod.Util.TooltipOptions;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -26,10 +27,8 @@ public class HazmatBootsItem extends TooltipArmorItem {
     public HazmatBootsItem(Holder<ArmorMaterial> material,
                            ArmorItem.Type type,
                            Item.Properties props,
-                           int tooltipLines,
-                           Integer nameColorHex,
-                           Integer loreColorHex) {
-        super(material, type, props, tooltipLines, nameColorHex, loreColorHex);
+                           TooltipOptions opts) {
+        super(material, type, props, opts);
     }
 
     @Override
