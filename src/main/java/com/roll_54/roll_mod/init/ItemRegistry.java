@@ -9,8 +9,12 @@ import com.roll_54.roll_mod.Util.TooltipOptions;
 import com.roll_54.roll_mod.Util.TooltipManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -431,9 +435,8 @@ public class ItemRegistry {
             "golden_baton",
             () -> new Item(new Item.Properties().food(
                     new FoodProperties.Builder()
-                            .nutrition(5)
-                            .saturationMod(3f)
-                            .alwaysEat()
+                            .nutrition(15)
+                            .saturationModifier(3f)
                             .fast()
                             .effect(() -> new MobEffectInstance(MobEffects.DIG_SPEED, 1800, 1), 1.0f)
                             .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 3000, 0), 1.0f)
