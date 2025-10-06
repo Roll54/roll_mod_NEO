@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.Netherstorm;
 
-import com.roll_54.roll_mod.Roll_mod;
+import com.roll_54.roll_mod.RollMod;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -29,7 +29,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import javax.annotation.Nullable;
 import java.util.Random;
 
-@EventBusSubscriber(modid = Roll_mod.MODID) // змініть MODID тут і у StormShared
+@EventBusSubscriber(modid = RollMod.MODID) // змініть MODID тут і у StormShared
 public class StormHandler {
 
     private static StormState state;
@@ -278,7 +278,7 @@ public class StormHandler {
             // 3) Додаємо в світ, а потім на наступному тіку видаємо зброю
             if (level.addFreshEntity(mob)) {
                 var pName = player.getGameProfile().getName();
-                Roll_mod.LOGGER.info("[NetherStorm] Spawned PACK wither_skeleton #{}/{} at {} {} {} near {}",
+                RollMod.LOGGER.info("[NetherStorm] Spawned PACK wither_skeleton #{}/{} at {} {} {} near {}",
                         (++spawned), count, pos.getX(), pos.getY(), pos.getZ(), pName);
 
                 // видати меч на наступному тіку — стабільніше за миттєве спорядження
@@ -396,7 +396,7 @@ public class StormHandler {
 
             if (level.addFreshEntity(mob)) {
                 // Логуємо спавн
-                Roll_mod.LOGGER.info(
+                RollMod.LOGGER.info(
                         "[NetherStorm] Spawned {} at {} {} {} near {}",
                         type.toShortString(), pos.getX(), pos.getY(), pos.getZ(),
                         player.getGameProfile().getName()

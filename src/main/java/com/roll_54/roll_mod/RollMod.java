@@ -12,12 +12,12 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@Mod(Roll_mod.MODID)
-public final class Roll_mod {
+@Mod(RollMod.MODID)
+public final class RollMod {
     public static final String MODID = "roll_mod";
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
-    public Roll_mod(ModContainer container) {
+    public RollMod(ModContainer container) {
         // Модова шина подій (lifecycle)
 
         IEventBus modBus = container.getEventBus();

@@ -1,6 +1,6 @@
 //package com.roll_54.roll_mod.Util;
 //
-//import com.roll_54.roll_mod.Roll_mod;
+//import com.roll_54.roll_mod.RollMod;
 //import net.minecraft.server.level.ServerPlayer;
 //import net.minecraft.network.chat.Component;
 //import net.minecraft.ChatFormatting;
@@ -8,7 +8,7 @@
 //import net.neoforged.fml.common.EventBusSubscriber;
 //import net.neoforged.neoforge.event.CommandEvent;
 //
-//@EventBusSubscriber(modid = Roll_mod.MODID)
+//@EventBusSubscriber(modid = RollMod.MODID)
 //public class CommandBlockSetblockGuard {
 //
 //    @SubscribeEvent

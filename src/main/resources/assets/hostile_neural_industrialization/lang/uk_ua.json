@@ -1,0 +1,17 @@
+{
+  "block.hostile_neural_industrialization.electric_simulation_chamber": "Електрична Камера Симуляції",
+  "block.hostile_neural_industrialization.large_loot_fabricator": "Великий Фабрикатор Луту",
+  "block.hostile_neural_industrialization.large_simulation_chamber": "Велика Камера Симуляції",
+  "block.hostile_neural_industrialization.mono_loot_fabricator": "Моно Фабрикатор Луту",
+  "block.hostile_neural_industrialization.prediction_machine_casing": "Корпус Машини Передбачень",
+  "item.hostile_neural_industrialization.guidebook": "HNI Довідник",
+  "itemGroup.hostile_neural_industrialization.hostile_neural_industrialization": "Ворожа нейронна індустріалізація",
+  "rei_categories.hostile_neural_industrialization.electric_simulation_chamber": "Електрична Камера Симуляції",
+  "rei_categories.hostile_neural_industrialization.large_loot_fabricator": "Великий Фабрикатор Луту",
+  "rei_categories.hostile_neural_industrialization.large_simulation_chamber": "Велика Камера Симуляції",
+  "rei_categories.hostile_neural_industrialization.mono_loot_fabricator": "Моно Фабрикатор Луту",
+  "text.hostile_neural_industrialization.guidebook_tooltip": "Нейронна мережа повинна рости.",
+  "text.hostile_neural_industrialization.loot_selector_description": "Натисніть, щоб відкрити панель вибору луту.",
+  "text.hostile_neural_industrialization.loot_selector_member_name": "%dx %s",
+  "text.hostile_neural_industrialization.loot_selector_title": "Вибрати вихід луту"
+}

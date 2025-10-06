@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.Util;
 
 
-import com.roll_54.roll_mod.Roll_mod;
+import com.roll_54.roll_mod.RollMod;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -10,7 +10,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 
-@EventBusSubscriber(modid = Roll_mod.MODID) // реєстрація на ігровому (Forge) bus
+@EventBusSubscriber(modid = RollMod.MODID) // реєстрація на ігровому (Forge) bus
 public final class EndPortalOnlyPlayers {
     private EndPortalOnlyPlayers() {}
 
@@ -28,7 +28,7 @@ public final class EndPortalOnlyPlayers {
 
         if (touchesEnd) {
             e.setCanceled(true);
-             Roll_mod.LOGGER.debug("[EndPortalOnlyPlayers] Blocked {} ({}) from {} -> {}, Кординат X Y Z: {} {} {} ХТОСЬ НАМАГАВСЯ ДЮПАТИ!", entity.getName().getString(), entity.getType().toShortString(), from.location(),
+             RollMod.LOGGER.debug("[EndPortalOnlyPlayers] Blocked {} ({}) from {} -> {}, Кординат X Y Z: {} {} {} ХТОСЬ НАМАГАВСЯ ДЮПАТИ!", entity.getName().getString(), entity.getType().toShortString(), from.location(),
                      to.location(), entity.getBlockX(), entity.getBlockY(), entity.getBlockZ());
         }
     }

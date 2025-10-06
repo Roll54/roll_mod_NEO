@@ -7,7 +7,7 @@ import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
-import static com.roll_54.roll_mod.Roll_mod.MODID;
+import static com.roll_54.roll_mod.RollMod.MODID;
 
 public class ModTags {
     public static class Blocks {

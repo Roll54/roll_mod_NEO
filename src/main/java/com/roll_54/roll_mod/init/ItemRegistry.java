@@ -4,7 +4,7 @@ import com.roll_54.roll_mod.ModArmor.HazmatBootsItem;
 import com.roll_54.roll_mod.ModArmor.ModArmorMaterials;
 import com.roll_54.roll_mod.ModItems.ModToolTiers;
 import com.roll_54.roll_mod.ModItems.TooltipArmorItem;
-import com.roll_54.roll_mod.Roll_mod;
+import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.Util.TooltipOptions;
 import com.roll_54.roll_mod.Util.TooltipManager;
 import net.minecraft.core.Holder;
@@ -33,7 +33,7 @@ public class ItemRegistry {
 
 
     public static final DeferredRegister<Item> ITEMS =
-            DeferredRegister.create(Registries.ITEM, Roll_mod.MODID);
+            DeferredRegister.create(Registries.ITEM, RollMod.MODID);
 
 
     private static DeferredHolder<Item, Item> registerSimple(String name) {

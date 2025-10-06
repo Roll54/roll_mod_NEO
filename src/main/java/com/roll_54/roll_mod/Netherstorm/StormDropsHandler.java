@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.Netherstorm;
 
-import com.roll_54.roll_mod.Roll_mod;
+import com.roll_54.roll_mod.RollMod;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -9,7 +9,7 @@ import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 
-@EventBusSubscriber(modid = Roll_mod.MODID)
+@EventBusSubscriber(modid = RollMod.MODID)
 public class StormDropsHandler {
 
     @SubscribeEvent

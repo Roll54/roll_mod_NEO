@@ -1,14 +1,12 @@
 package com.roll_54.roll_mod.Util;
 
-import com.roll_54.roll_mod.Roll_mod;
+import com.roll_54.roll_mod.RollMod;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextColor;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.vehicle.MinecartCommandBlock;
-import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.CommandBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,7 +19,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 /*
     Смішна хуйня, Сашадідух чорт який придумав що йому треба опка на серваку на якому я адмін, ну тепер тільки я можу мати таку превілегію, але з командою що робити... Оу чорт.
  */
-@EventBusSubscriber(modid = Roll_mod.MODID)
+@EventBusSubscriber(modid = RollMod.MODID)
 public final class CommandBlockGuard {
     private CommandBlockGuard() {}
 

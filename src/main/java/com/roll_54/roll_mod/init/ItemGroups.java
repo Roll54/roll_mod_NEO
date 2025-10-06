@@ -2,7 +2,7 @@ package com.roll_54.roll_mod.init;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.roll_54.roll_mod.Roll_mod;
+import com.roll_54.roll_mod.RollMod;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -20,7 +20,7 @@ import java.util.UUID;
 public final class ItemGroups {
     // 🔼 спочатку реєстр
     public static final DeferredRegister<CreativeModeTab> TABS =
-            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, Roll_mod.MODID);
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, RollMod.MODID);
 
     // 🔽 а потім уже MAIN і DEV_TAB
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = TABS.register(

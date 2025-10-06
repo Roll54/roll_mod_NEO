@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.ModArmor;
 
-import com.roll_54.roll_mod.Roll_mod;
+import com.roll_54.roll_mod.RollMod;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -23,7 +23,7 @@ public final class ModArmorMaterials {
     private ModArmorMaterials() {}
 
     public static final DeferredRegister<ArmorMaterial> ARMOR_MATERIALS =
-            DeferredRegister.create(Registries.ARMOR_MATERIAL, Roll_mod.MODID);
+            DeferredRegister.create(Registries.ARMOR_MATERIAL, RollMod.MODID);
 
     // ===== HAZMAT =====
     public static final DeferredHolder<ArmorMaterial, ArmorMaterial> HAZMAT_ARMOR =
@@ -88,7 +88,7 @@ public final class ModArmorMaterials {
         // One layer; texture paths expected at:
         // assets/roll_mod/textures/models/armor/<name>_layer_1.png
         // assets/roll_mod/textures/models/armor/<name>_layer_2.png
-        var textureId = ResourceLocation.fromNamespaceAndPath(Roll_mod.MODID, name);
+        var textureId = ResourceLocation.fromNamespaceAndPath(RollMod.MODID, name);
         var layer = new ArmorMaterial.Layer(textureId);
 
         return new ArmorMaterial(

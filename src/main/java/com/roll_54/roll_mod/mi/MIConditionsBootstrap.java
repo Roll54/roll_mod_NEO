@@ -1,11 +1,12 @@
 package com.roll_54.roll_mod.mi;
 
 import aztech.modern_industrialization.machines.recipe.condition.MachineProcessConditions;
+import com.roll_54.roll_mod.RollMod;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 
 public final class MIConditionsBootstrap {
-    private static final Logger LOGGER = com.roll_54.roll_mod.Roll_mod.LOGGER;
+    private static final Logger LOGGER = RollMod.LOGGER;
 
     private MIConditionsBootstrap() {}
 
