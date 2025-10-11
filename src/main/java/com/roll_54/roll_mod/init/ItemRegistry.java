@@ -521,13 +521,13 @@ public class ItemRegistry {
             "neuro_processing_unit", TooltipOptions.nameAndLore(RED, 1, RED)
     );
     public static final DeferredHolder<Item, Item> WETWERE_CIRCUIT = registerTooltip(
-            "wetwere_circuit", TooltipOptions.nameAndLore(RED, 1, RED)
+            "wetwere_circuit", TooltipOptions.nameAndLore(0x3707aa, 1, RED)
     );
     public static final DeferredHolder<Item, Item> IRIDIUM_DIOXIDE_DUST = ITEMS.register("iridium_dioxide_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> IRIDIUM_METAL_RESIDUE_DUST = ITEMS.register("iridium_metal_residue_dust", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> SKULK_SPORES = registerTooltip(
-            "skulk_spores", TooltipOptions.name(0xAA00AA)
+            "skulk_spores", TooltipOptions.name(0x3707aa)
     );
     public static final DeferredHolder<Item, Item> AGAR_GEL = ITEMS.register("agar_gel", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> AGAR_DUST = ITEMS.register("agar_dust", () -> new Item(new Item.Properties()));
