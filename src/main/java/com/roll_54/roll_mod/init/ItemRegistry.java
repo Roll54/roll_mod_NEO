@@ -30,6 +30,7 @@ public class ItemRegistry {
     private static final int RED = 0xFF5555;        // §c
     private static final int BLUE = 0x5555FF;       // §9
     private static final int GREEN = 0x55FF55;
+    private static final int LIGHT_GREN = 0x73ff85;
 
 
     public static final DeferredRegister<Item> ITEMS =
@@ -247,7 +248,7 @@ public class ItemRegistry {
 
     // Дзеркало з жовтою назвою
     public static final DeferredHolder<Item, Item> MIRROR = registerTooltip(
-            "mirror", TooltipOptions.name(YELLOW)
+            "mirror", TooltipOptions.name(LIGHT_GREN)
     );
 
     // === T2 (фіолетові) ===
