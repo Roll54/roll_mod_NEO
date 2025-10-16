@@ -65,8 +65,6 @@ public class StormHandler {
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post e) {
         var server = e.getServer();
-        if (server == null) return;
-
         initIfNeeded(server);
         if (state == null) return;
 
