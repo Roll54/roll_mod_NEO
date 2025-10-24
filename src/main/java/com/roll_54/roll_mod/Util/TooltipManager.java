@@ -30,6 +30,10 @@ public class TooltipManager {
         @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
             addLore(stack, opts, tooltip, flag);
         }
+        @Override
+        public boolean isFoil(ItemStack stack) {
+            return opts != null && opts.glow(); // <— ось тут предмет отримує вічне світіння
+        }
     }
 
     // ---------------- SWORD ----------------
@@ -46,6 +50,7 @@ public class TooltipManager {
         @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
             addLore(stack, opts, tooltip, flag);
         }
+
     }
 
     // ---------------- PICKAXE ----------------
@@ -62,6 +67,7 @@ public class TooltipManager {
         @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
             addLore(stack, opts, tooltip, flag);
         }
+
     }
 
     // ---------------- AXE ----------------

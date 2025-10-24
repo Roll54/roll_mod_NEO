@@ -264,5 +264,27 @@
   "item.roll_mod.neuron_cells": "Skulk Neurons",
 
   "item.roll_mod.sodium_sulfate": "Sodium Sulfate",
-  "item.roll_mod.mining_drone": "Mining Drone"
+  "item.roll_mod.mining_drone": "Mining Drone",
+  "item.roll_mod.obsidian_dust": "Obsidian_dust",
+  "item.roll_mod.quantum_star": "Quantum Star",
+  "loreitem.roll_mod.quantum_star.tooltip_line1": "Stabilazed energy of nether",
+
+  "item.roll_mod.enderium_prediction_matrix": "Enderium Prediction Matrix",
+  "loreitem.roll_mod.enderium_prediction_matrix.tooltip_line1": "An incredibly durable matrix used to replicate powerful creatures.",
+
+  "item.roll_mod.nether_star_prediction_matrix": "Nether Star Prediction Matrix",
+  "loreitem.roll_mod.nether_star_prediction_matrix.tooltip_line1": "Such beings cannot be recreated with ordinary technology.",
+
+  "item.roll_mod.nether_star_plate": "Nether Star Plate",
+  "item.roll_mod.nether_star_large_plate": "Large Nether Star Plate",
+  "item.roll_mod.nether_star_ring": "Nether Star Ring",
+  "item.roll_mod.research_paper": "Blank Research Paper",
+  "item.roll_mod.carbon_mesh": "Carbon Mesh",
+  "item.roll_mod.carbon_fiber": "Carbon Fiber",
+  "item.roll_mod.standard_wafer_soc": "SoC Wafer",
+  "item.roll_mod.standard_wafer": "Wafer",
+  "item.roll_mod.standard_wafer_not": "NOT Wafer",
+  "item.roll_mod.standard_wafer_or": "OR Wafer",
+  "item.roll_mod.standard_wafer_xor": "XOR Wafer",
+  "item.roll_mod.standard_wafer_ram": "RAM Wafer"
 }

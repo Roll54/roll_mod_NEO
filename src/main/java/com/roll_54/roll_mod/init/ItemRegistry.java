@@ -24,13 +24,15 @@ public class ItemRegistry {
 
     private ItemRegistry() {
     }
-    private static final int AQUA = 0x55FFFF;       // §b
+    private static final int AQUA = 0x55FFFF;// §b
+    private static final int SKULK_BLUE = 0x19c8ff; // my own
     private static final int YELLOW = 0xFFFF55;     // §e
     private static final int LIGHT_PURPLE = 0xFF55FF; // §d
     private static final int RED = 0xFF5555;        // §c
     private static final int BLUE = 0x5555FF;       // §9
     private static final int GREEN = 0x55FF55;
     private static final int LIGHT_GREN = 0x73ff85;
+
 
 
     public static final DeferredRegister<Item> ITEMS =
@@ -59,15 +61,15 @@ public class ItemRegistry {
 
     public static final DeferredHolder<Item, Item> SUPERSTEEL_GEAR = registerTooltip(
             "supersteel_gear",
-            new TooltipOptions(2, 0xFF8C00, 0xE0B000)
+            new TooltipOptions(2, 0xFF8C00, 0xE0B000, false)
     );
     public static final DeferredHolder<Item, Item> SUPER_CIRCUIT = registerTooltip(
             "super_circuit",
-            new TooltipOptions(3, 0x00C8A0, 0x00C8A0)
+            new TooltipOptions(3, 0x00C8A0, 0x00C8A0, false)
     );
     public static final DeferredHolder<Item, Item> METEORITE_METAL_INGOT = registerTooltip(
             "meteorite_metal_ingot",
-            new TooltipOptions(2, 0x3B2AB8, 0x005acf)
+            new TooltipOptions(2, 0x3B2AB8, 0x005acf, false)
     );
 
 
@@ -253,7 +255,7 @@ public class ItemRegistry {
 
     // === T2 (фіолетові) ===
     public static final DeferredHolder<Item, Item> PURPLE_BOULE = registerTooltip(
-            "purple_boule", TooltipOptions.nameAndLore(LIGHT_PURPLE, 1, LIGHT_PURPLE)
+            "purple_boule", TooltipOptions.name(LIGHT_PURPLE)
     );
     public static final DeferredHolder<Item, Item> PURPLE_WAFER = registerTooltip(
             "purple_wafer", TooltipOptions.name(LIGHT_PURPLE)
@@ -262,60 +264,45 @@ public class ItemRegistry {
             "purple_wafer_nor", TooltipOptions.name(LIGHT_PURPLE)
     );
     public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOR_CHIP = registerTooltip(
-            "purple_wafer_nor_chip", TooltipOptions.nameAndLore(LIGHT_PURPLE, 1, LIGHT_PURPLE)
+            "purple_wafer_nor_chip", TooltipOptions.name(LIGHT_PURPLE)
     );
     public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOT = registerTooltip(
             "purple_wafer_not", TooltipOptions.name(LIGHT_PURPLE)
     );
     public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOT_CHIP = registerTooltip(
-            "purple_wafer_not_chip", TooltipOptions.nameAndLore(LIGHT_PURPLE, 1, LIGHT_PURPLE)
+            "purple_wafer_not_chip", TooltipOptions.name(LIGHT_PURPLE)
     );
     public static final DeferredHolder<Item, Item> PURPLE_WAFER_OR = registerTooltip(
             "purple_wafer_or", TooltipOptions.name(LIGHT_PURPLE)
     );
     public static final DeferredHolder<Item, Item> PURPLE_WAFER_OR_CHIP = registerTooltip(
-            "purple_wafer_or_chip", TooltipOptions.nameAndLore(LIGHT_PURPLE, 1, LIGHT_PURPLE)
+            "purple_wafer_or_chip", TooltipOptions.name(LIGHT_PURPLE)
     );
     public static final DeferredHolder<Item, Item> PURPLE_WAFER_XNOR = registerTooltip(
             "purple_wafer_xnor", TooltipOptions.name(LIGHT_PURPLE)
     );
     public static final DeferredHolder<Item, Item> PURPLE_WAFER_XNOR_CHIP = registerTooltip(
-            "purple_wafer_xnor_chip", TooltipOptions.nameAndLore(LIGHT_PURPLE, 1, LIGHT_PURPLE)
+            "purple_wafer_xnor_chip", TooltipOptions.name(LIGHT_PURPLE)
     );
 
     // === T1 (сині/звичайні) ===
-    public static final DeferredHolder<Item, Item> BLUE_BOULE = registerTooltip(
-            "blue_boule", new TooltipOptions(1, null, null)
-    );
-    public static final DeferredHolder<Item, Item> BLUE_WAFER = registerTooltip(
-            "blue_wafer", new TooltipOptions(1, null, null)
-    );
-    public static final DeferredHolder<Item, Item> BLUE_WAFER_RAM = registerTooltip(
-            "blue_wafer_ram", new TooltipOptions(1, null, null)
-    );
-    public static final DeferredHolder<Item, Item> BLUE_WAFER_RAM_CHIP = ITEMS.register(
-            "blue_wafer_ram_chip", () -> new Item(new Item.Properties())
-    );
-    public static final DeferredHolder<Item, Item> BLUE_WAFER_NOR = registerTooltip(
-            "blue_wafer_nor", new TooltipOptions(1, null, null)
-    );
-    public static final DeferredHolder<Item, Item> BLUE_WAFER_NOR_CHIP = registerTooltip(
-            "blue_wafer_nor_chip", new TooltipOptions(1, null, null)
-    );
-    public static final DeferredHolder<Item, Item> BLUE_WAFER_SOC = registerTooltip(
-            "blue_wafer_soc", new TooltipOptions(1, null, null)
-    );
-    public static final DeferredHolder<Item, Item> BLUE_WAFER_SOC_CHIP = registerTooltip(
-            "blue_wafer_soc_chip", new TooltipOptions(1, null, null)
-    );
-
+    public static final DeferredHolder<Item, Item> BLUE_BOULE = registerTooltip("blue_boule", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER = registerTooltip("blue_wafer", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_RAM = registerTooltip("blue_wafer_ram", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_RAM_CHIP = registerTooltip("blue_wafer_ram_chip", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_NOR = registerTooltip("blue_wafer_nor", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_NOR_CHIP = registerTooltip("blue_wafer_nor_chip", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_SOC = registerTooltip("blue_wafer_soc", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_SOC_CHIP = registerTooltip("blue_wafer_soc_chip", TooltipOptions.name(BLUE));
     // Нано
-    public static final DeferredHolder<Item, Item> NANO_WAFER = registerTooltip(
-            "nano_wafer", TooltipOptions.nameAndLore(AQUA, 1, AQUA)
-    );
-    public static final DeferredHolder<Item, Item> NANO_CHIP = registerTooltip(
-            "nano_chip", TooltipOptions.name(AQUA)
-    );
+    public static final DeferredHolder<Item, Item> NANO_WAFER = registerTooltip("nano_wafer", TooltipOptions.nameAndLore(AQUA, 1, AQUA));
+    public static final DeferredHolder<Item, Item> NANO_CHIP = registerTooltip("nano_chip", TooltipOptions.name(AQUA));
+    public static final DeferredHolder<Item, Item> STANDARD_WAFER_SOC = ITEMS.register("standard_wafer_soc", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> STANDARD_WAFER = ITEMS.register("standard_wafer", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> STANDARD_WAFER_NOT = ITEMS.register("standard_wafer_not", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> STANDARD_WAFER_OR = ITEMS.register("standard_wafer_or", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> STANDARD_WAFER_XOR = ITEMS.register("standard_wafer_xor", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> STANDARD_WAFER_RAM = ITEMS.register("standard_wafer_ram", () -> new Item(new Item.Properties()));
 
     // Програмовані плати
     public static final DeferredHolder<Item, Item> CIRCUIT_1 = ITEMS.register("1_circuit", () -> new Item(new Item.Properties()));
@@ -359,6 +346,9 @@ public class ItemRegistry {
     );
 
     // «Дослідження»
+    public static final DeferredHolder<Item, Item> RESEARCH_PAPER = registerTooltip(
+            "research_paper", TooltipOptions.name(LIGHT_PURPLE)
+    );
     public static final DeferredHolder<Item, Item> RESEARCH_HET = registerTooltip(
             "research_het", TooltipOptions.name(LIGHT_PURPLE)
     );
@@ -372,19 +362,20 @@ public class ItemRegistry {
             "research_rocket_4", TooltipOptions.name(LIGHT_PURPLE)
     );
 
+
     // Броня (заготовки, стак по 1, з тултіпом)
     public static final DeferredHolder<Item, Item> GRAVIK_CASING = ITEMS.register("gravik_casing", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_QUANTUM_HELMET = registerTooltip(
-            "raw_quantum_helmet", new Item.Properties().stacksTo(1), new TooltipOptions(1, null, null)
+            "raw_quantum_helmet", new Item.Properties().stacksTo(1), new TooltipOptions(1, null, null, false)
     );
     public static final DeferredHolder<Item, Item> RAW_QUANTUM_CHESTPLATE = registerTooltip(
-            "raw_quantum_chestplate", new Item.Properties().stacksTo(1), new TooltipOptions(1, null, null)
+            "raw_quantum_chestplate", new Item.Properties().stacksTo(1), new TooltipOptions(1, null, null, false)
     );
     public static final DeferredHolder<Item, Item> RAW_QUANTUM_LEGGINGS = registerTooltip(
-            "raw_quantum_leggings", new Item.Properties().stacksTo(1), new TooltipOptions(1, null, null)
+            "raw_quantum_leggings", new Item.Properties().stacksTo(1), new TooltipOptions(1, null, null, false)
     );
     public static final DeferredHolder<Item, Item> RAW_QUANTUM_BOOTS = registerTooltip(
-            "raw_quantum_boots", new Item.Properties().stacksTo(1), new TooltipOptions(1, null, null)
+            "raw_quantum_boots", new Item.Properties().stacksTo(1), new TooltipOptions(1, null, null, false)
     );
 
     // Ін’єкції
@@ -439,8 +430,8 @@ public class ItemRegistry {
                             .nutrition(15)
                             .saturationModifier(3f)
                             .fast()
-                            .effect(() -> new MobEffectInstance(MobEffects.DIG_SPEED, 1800, 1), 1.0f)
-                            .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 3000, 0), 1.0f)
+                            .effect(() -> new MobEffectInstance(MobEffects.DIG_SPEED, 18000, 1), 1.0f)
+                            .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 30000, 0), 1.0f)
                             .build()
             ))
     );
@@ -471,7 +462,6 @@ public class ItemRegistry {
 
     public static final DeferredHolder<Item, Item> VANADIUM_DUST = ITEMS.register("vanadium_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> VANADIUM_DUST_CLEAN = ITEMS.register("vanadium_dust_clean", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> NETHER_STAR_DUST = ITEMS.register("nether_star_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_SHELDONITE = ITEMS.register("raw_sheldonite", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> PLATINUM_GROUP_SLUDGE = ITEMS.register("platinum_group_sludge", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_PLATINUM_DUST = ITEMS.register("raw_platinum_dust", () -> new Item(new Item.Properties()));
@@ -486,7 +476,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> PLATINUM_SLUDGE_RESIDUE = ITEMS.register("platinum_sludge_residue", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> GRAVI_ENGINE_MK_1 = ITEMS.register("gravi_engine_mk_1", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RUTHENIUM_COIN = registerTooltip(
-            "ruthenium_coin", new TooltipOptions(1, null, null)
+            "ruthenium_coin", new TooltipOptions(1, null, null, false)
     );
     public static final DeferredHolder<Item, Item> RAW_PYROCHLORE = ITEMS.register("raw_pyrochlore", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> PYROCHLORE_DUST = ITEMS.register("pyrochlore_dust", () -> new Item(new Item.Properties()));
@@ -522,29 +512,44 @@ public class ItemRegistry {
             "neuro_processing_unit", TooltipOptions.nameAndLore(RED, 1, RED)
     );
     public static final DeferredHolder<Item, Item> WETWERE_CIRCUIT = registerTooltip(
-            "wetwere_circuit", TooltipOptions.nameAndLore(0x3707aa, 1, RED)
+            "wetwere_circuit", TooltipOptions.nameAndLore(SKULK_BLUE, 1, RED)
     );
     public static final DeferredHolder<Item, Item> IRIDIUM_DIOXIDE_DUST = ITEMS.register("iridium_dioxide_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> IRIDIUM_METAL_RESIDUE_DUST = ITEMS.register("iridium_metal_residue_dust", () -> new Item(new Item.Properties()));
 
-    public static final DeferredHolder<Item, Item> SKULK_SPORES = registerTooltip(
-            "skulk_spores", TooltipOptions.name(0x3707aa)
+    public static final DeferredHolder<Item, Item> SKULK_SPORES = registerTooltip("skulk_spores", TooltipOptions.name(SKULK_BLUE)
     );
     public static final DeferredHolder<Item, Item> AGAR_GEL = ITEMS.register("agar_gel", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> AGAR_DUST = ITEMS.register("agar_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> PETRI_DISH_SKULK = registerTooltip(
-            "petri_dish_skulk", TooltipOptions.nameAndLore(LIGHT_PURPLE, 1, LIGHT_PURPLE)
+            "petri_dish_skulk", TooltipOptions.nameAndLore(SKULK_BLUE, 1, SKULK_BLUE)
     );
     public static final DeferredHolder<Item, Item> STEM_CELLS = registerTooltip(
-            "stem_cells", TooltipOptions.name(AQUA)
+            "stem_cells", TooltipOptions.name(SKULK_BLUE)
     );
     public static final DeferredHolder<Item, Item> NEURON_CELLS = registerTooltip(
-            "neuron_cells", TooltipOptions.name(LIGHT_PURPLE)
+            "neuron_cells", TooltipOptions.name(SKULK_BLUE)
     );
 
     public static final DeferredHolder<Item, Item> SODIUM_SULFATE = ITEMS.register("sodium_sulfate", () -> new Item(new Item.Properties()));
     // Англомовний нейм лишив як є (з KubeJS)
     public static final DeferredHolder<Item, Item> MINING_DRONE = ITEMS.register("mining_drone", () -> new Item(new Item.Properties()));
+
+    public static final DeferredHolder<Item, Item> OBSIDIAN_DUST = ITEMS.register("obsidian_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> QUANTUM_STAR = registerTooltip(
+            "quantum_star", TooltipOptions.nameAndLore(LIGHT_PURPLE, 1, LIGHT_PURPLE)
+    );
+
+    public static final DeferredHolder<Item, Item> CARBON_FIBER = ITEMS.register("carbon_fiber", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> CARBON_MESH = ITEMS.register("carbon_mesh", () -> new Item(new Item.Properties()));
+
+    // --- Матриці прогнозу ---
+    public static final DeferredHolder<Item, Item> PREDICTION_MATRIX_ENDERIUM = registerTooltip("enderium_prediction_matrix", TooltipOptions.nameAndLore(0x0b4748, 1, 0x0b4748));
+    public static final DeferredHolder<Item, Item> PREDICTION_MATRIX_NETHER_STAR = registerTooltip("nether_star_prediction_matrix", new TooltipOptions(1, 0xedd080, 0xedd080, true));
+    public static final DeferredHolder<Item, Item> NETHER_STAR_PLATE = registerTooltip("nether_star_plate", TooltipOptions.nameAndGlow(0xedd080));
+    public static final DeferredHolder<Item, Item> NETHER_STAR_LARGE_PLATE = registerTooltip("nether_star_large_plate", TooltipOptions.nameAndGlow(0xedd080));
+    public static final DeferredHolder<Item, Item> NETHER_STAR_RING = registerTooltip("nether_star_ring", TooltipOptions.nameAndGlow(0xedd080));
+    public static final DeferredHolder<Item, Item> NETHER_STAR_DUST = registerTooltip("nether_star_dust", TooltipOptions.nameAndGlow(0xedd080));
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }

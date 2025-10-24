@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Overwrite;
 
 @Mixin(NanoSuitGravichestplateAbility.class)
-public class MixinNanoSuitGravichestplateAbility {
+public class NanoSuitGravichestplateAbilityMixin {
 
     /**
      * @author roll_54

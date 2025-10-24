@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.Util;
 
-public record TooltipOptions(int loreLines, Integer nameColorHex, Integer loreColorHex) {
-    public static final TooltipOptions NONE = new TooltipOptions(0, null, null);
+public record TooltipOptions(int loreLines, Integer nameColorHex, Integer loreColorHex, boolean glow) {
+    public static final TooltipOptions NONE = new TooltipOptions(0, null, null, false);
 
     public TooltipOptions {
         if (loreLines < 0) throw new IllegalArgumentException("loreLines must be >= 0");
@@ -12,18 +12,27 @@ public record TooltipOptions(int loreLines, Integer nameColorHex, Integer loreCo
     public boolean hasLore() { return loreLines > 0; }
 
     // --- factory helpers ---
-    /** Тільки колір назви */
+    /** custom color*/
     public static TooltipOptions name(int nameHex) {
-        return new TooltipOptions(0, nameHex, null);
+        return new TooltipOptions(0, nameHex, null, false);
+    }
+    /** custom Name color + glow */
+    public static TooltipOptions nameAndGlow(int nameHex) {
+        return new TooltipOptions(0, nameHex, null, true);
     }
 
-    /** Тільки лор: N рядків із кольором лору */
+    /** custom lore*/
     public static TooltipOptions lore(int lines, int loreHex) {
-        return new TooltipOptions(lines, null, loreHex);
+        return new TooltipOptions(lines, null, loreHex, false);
     }
 
-    /** І колір назви, і лор: N рядків з кольором лору */
+    /** custom color + custom lore color */
     public static TooltipOptions nameAndLore(int nameHex, int lines, int loreHex) {
-        return new TooltipOptions(lines, nameHex, loreHex);
+        return new TooltipOptions(lines, nameHex, loreHex, false);
+    }
+
+    /** everything */
+    public static TooltipOptions nameLoreGlow(int nameHex, int lines, int loreHex) {
+        return new TooltipOptions(lines, nameHex, loreHex, true);
     }
 }

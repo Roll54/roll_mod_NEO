@@ -30,7 +30,12 @@ public class TooltipArmorItem extends ArmorItem {
         TooltipManager.addLore(stack, opts, tooltip, flag);
     }
 
-    // Builder
+    @Override
+    public boolean isFoil(ItemStack stack) {
+        return opts != null && opts.glow();
+    }
+
+    // ---------------- BUILDER ----------------
     public static class Builder {
         private final Holder<ArmorMaterial> material;
         private final ArmorItem.Type type;
@@ -38,6 +43,7 @@ public class TooltipArmorItem extends ArmorItem {
         private int tooltipLines = 0;
         private Integer nameColorHex = null;
         private Integer loreColorHex = null;
+        private boolean textureGlow = false;
 
         public Builder(Holder<ArmorMaterial> material, ArmorItem.Type type, Properties props) {
             this.material = material;
@@ -60,8 +66,15 @@ public class TooltipArmorItem extends ArmorItem {
             return this;
         }
 
+        /** Вмикає або вимикає ванільне світіння текстури */
+        public Builder textureGlow(boolean glow) {
+            this.textureGlow = glow;
+            return this;
+        }
+
         public TooltipArmorItem build() {
-            return new TooltipArmorItem(material, type, props, new TooltipOptions(tooltipLines, nameColorHex, loreColorHex));
+            return new TooltipArmorItem(material, type, props,
+                    new TooltipOptions(tooltipLines, nameColorHex, loreColorHex, textureGlow));
         }
     }
 }

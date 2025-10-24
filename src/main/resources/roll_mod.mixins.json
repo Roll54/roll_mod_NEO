@@ -4,7 +4,7 @@
   "package": "com.roll_54.roll_mod.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "MixinNanoSuitGravichestplateAbility",
+    "NanoSuitGravichestplateAbilityMixin",
     "ArmorReductionMixin"
   ],
   "client": [
