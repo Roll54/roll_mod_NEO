@@ -11,6 +11,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -58,8 +59,16 @@ public final class ItemGroups {
                     .title(Component.translatable("itemGroup.roll_mod.dev"))
                     .icon(() -> new ItemStack(Items.DEBUG_STICK))
                     .displayItems((params, out) -> {
+
                         for (DeferredHolder<Item, ? extends Item> entry : ItemRegistry.ITEMS.getEntries()) {
                             out.accept(entry.get());
+                        }
+                        for (DeferredHolder<Block, ? extends Block> entry : BlockRegistry.BLOCKS.getEntries()) {
+                            Block block = entry.get();
+                            Item item = block.asItem();
+                            if (item != Items.AIR) {
+                                out.accept(item);
+                            }
                         }
                     })
                     .build()

@@ -550,6 +550,8 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> NETHER_STAR_LARGE_PLATE = registerTooltip("nether_star_large_plate", TooltipOptions.nameAndGlow(0xedd080));
     public static final DeferredHolder<Item, Item> NETHER_STAR_RING = registerTooltip("nether_star_ring", TooltipOptions.nameAndGlow(0xedd080));
     public static final DeferredHolder<Item, Item> NETHER_STAR_DUST = registerTooltip("nether_star_dust", TooltipOptions.nameAndGlow(0xedd080));
+
+
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }

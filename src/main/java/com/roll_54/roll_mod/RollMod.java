@@ -1,9 +1,11 @@
 package com.roll_54.roll_mod;
 
 import com.roll_54.roll_mod.ModArmor.ModArmorMaterials;
+import com.roll_54.roll_mod.init.BlockRegistry;
 import com.roll_54.roll_mod.init.ItemGroups;
 import com.roll_54.roll_mod.init.ItemRegistry;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
+import net.neoforged.bus.EventBus;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
@@ -20,12 +22,14 @@ public final class RollMod {
     public RollMod(ModContainer container) {
         // Модова шина подій (lifecycle)
 
-        IEventBus modBus = container.getEventBus();
-        ItemRegistry.register(modBus);
-        ItemGroups.register(modBus);
-        ModArmorMaterials.register(modBus);
-        modBus.addListener(this::onCommonSetup);
-        modBus.addListener(this::onClientSetup);
+        IEventBus eventBus = container.getEventBus();
+        ItemRegistry.register(eventBus);
+        BlockRegistry.register(eventBus);
+        ItemGroups.register(eventBus);
+        ModArmorMaterials.register(eventBus);
+        eventBus.addListener(this::onCommonSetup);
+        eventBus.addListener(this::onClientSetup);
+
 
         LOGGER.info("[{}] init complete.", MODID);
     }
