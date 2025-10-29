@@ -5,8 +5,11 @@ import com.roll_54.roll_mod.init.BlockRegistry;
 import com.roll_54.roll_mod.init.ItemGroups;
 import com.roll_54.roll_mod.init.ItemRegistry;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.neoforged.bus.EventBus;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -43,5 +46,8 @@ public final class RollMod {
     private void onClientSetup(final FMLClientSetupEvent event) {
         // Прив’язка меню -> екран (GUI)
         LOGGER.info("[{}] client setup", MODID);
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LATEX_DANDELION.get(), RenderType.cutout());
+        }
     }
-}
+
+

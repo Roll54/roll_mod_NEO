@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.Util;
+package com.roll_54.roll_mod.util;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;

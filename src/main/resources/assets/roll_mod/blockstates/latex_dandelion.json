@@ -1,0 +1,11 @@
+{
+  "variants": {
+    "age=0": { "model": "roll_mod:block/latex_dandelion_stage0" },
+    "age=1": { "model": "roll_mod:block/latex_dandelion_stage1" },
+    "age=2": { "model": "roll_mod:block/latex_dandelion_stage2" },
+    "age=3": { "model": "roll_mod:block/latex_dandelion_stage3" },
+    "age=4": { "model": "roll_mod:block/latex_dandelion_stage4" },
+    "age=5": { "model": "roll_mod:block/latex_dandelion_stage5" },
+    "age=6": { "model": "roll_mod:block/latex_dandelion_stage6" }
+  }
+}

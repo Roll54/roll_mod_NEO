@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.ModItems;
 
-import com.roll_54.roll_mod.Util.ModTags;
+import com.roll_54.roll_mod.util.ModTags;
 import com.roll_54.roll_mod.init.ItemRegistry;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;

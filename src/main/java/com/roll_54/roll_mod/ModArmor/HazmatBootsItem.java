@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.ModArmor;
 
 import com.roll_54.roll_mod.ModItems.TooltipArmorItem;
-import com.roll_54.roll_mod.Util.TooltipOptions;
+import com.roll_54.roll_mod.util.TooltipOptions;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;

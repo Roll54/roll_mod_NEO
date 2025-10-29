@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.Util;
+package com.roll_54.roll_mod.util;
 
 public record TooltipOptions(int loreLines, Integer nameColorHex, Integer loreColorHex, boolean glow) {
     public static final TooltipOptions NONE = new TooltipOptions(0, null, null, false);

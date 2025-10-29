@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.Util;
+package com.roll_54.roll_mod.util;
 
 import com.roll_54.roll_mod.RollMod;
 import net.minecraft.network.chat.Component;

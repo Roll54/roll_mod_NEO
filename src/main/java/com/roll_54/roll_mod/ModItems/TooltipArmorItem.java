@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.ModItems;
 
-import com.roll_54.roll_mod.Util.TooltipManager;
-import com.roll_54.roll_mod.Util.TooltipOptions;
+import com.roll_54.roll_mod.util.TooltipManager;
+import com.roll_54.roll_mod.util.TooltipOptions;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ArmorItem;

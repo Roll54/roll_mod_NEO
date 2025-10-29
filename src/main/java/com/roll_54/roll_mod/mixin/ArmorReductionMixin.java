@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.mixin;
 
-import com.roll_54.roll_mod.Config.GeneralConfig;
+import com.roll_54.roll_mod.сonfig.GeneralConfig;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -9,8 +9,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import static com.roll_54.roll_mod.Config.GeneralConfig.CUSTOM_PVP;
 
 /**
  * Replacement of the vanilla armor absorption formula.

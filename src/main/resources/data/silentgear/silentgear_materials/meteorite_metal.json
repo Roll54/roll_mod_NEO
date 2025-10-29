@@ -62,10 +62,7 @@
         "name": "meteorite_metal",
         "level_hint": "5",
         "incorrect_blocks_for_tool": "roll_mod:incorrect_for_meteorite_tools"
-      },
-      "traits": [
-        { "trait": "silentgear:magmatic", "level": 1, "conditions": [] }
-      ]
+      }
     }
   }
 }

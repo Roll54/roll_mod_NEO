@@ -5,8 +5,8 @@ import com.roll_54.roll_mod.ModArmor.ModArmorMaterials;
 import com.roll_54.roll_mod.ModItems.ModToolTiers;
 import com.roll_54.roll_mod.ModItems.TooltipArmorItem;
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.Util.TooltipOptions;
-import com.roll_54.roll_mod.Util.TooltipManager;
+import com.roll_54.roll_mod.util.TooltipOptions;
+import com.roll_54.roll_mod.util.TooltipManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -14,6 +14,7 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -551,6 +552,15 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> NETHER_STAR_RING = registerTooltip("nether_star_ring", TooltipOptions.nameAndGlow(0xedd080));
     public static final DeferredHolder<Item, Item> NETHER_STAR_DUST = registerTooltip("nether_star_dust", TooltipOptions.nameAndGlow(0xedd080));
 
+    //DANDELIONS YAMMI!
+    public static final DeferredHolder<Item, Item> LATEX_DANDELION_SEED =
+            ITEMS.register("latex_dandelion_seed",
+                    () -> new ItemNameBlockItem(
+                            BlockRegistry.LATEX_DANDELION.get(), // ← твій блок
+                            new Item.Properties()
+                    )
+            );
+    public static final DeferredHolder<Item, Item> LATEX_DANDELION_STEM = ITEMS.register("latex_dandelion_stem", () -> new Item(new Item.Properties()));
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
