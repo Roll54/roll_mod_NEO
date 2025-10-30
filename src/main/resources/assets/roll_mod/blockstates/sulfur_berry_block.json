@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "age=0": { "model": "roll_mod:block/sulfur_berry_stage0" },
+    "age=1": { "model": "roll_mod:block/sulfur_berry_stage1" },
+    "age=2": { "model": "roll_mod:block/sulfur_berry_stage2" },
+    "age=3": { "model": "roll_mod:block/sulfur_berry_stage3" }
+  }
+}

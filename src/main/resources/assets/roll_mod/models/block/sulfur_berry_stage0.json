@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "roll_mod:block/sulfur_berry_stage0"
+  }
+}

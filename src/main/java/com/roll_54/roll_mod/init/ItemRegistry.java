@@ -12,10 +12,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemNameBlockItem;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -561,7 +558,25 @@ public class ItemRegistry {
                     )
             );
     public static final DeferredHolder<Item, Item> LATEX_DANDELION_STEM = ITEMS.register("latex_dandelion_stem", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> LATEX_DANDELION_FLOWER = ITEMS.register("latex_dandelion_flower", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> RAW_LATEX = ITEMS.register("raw_latex", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> RAW_RUBBER = ITEMS.register("raw_rubber", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> RUBBER_INGOT = ITEMS.register("rubber_ingot", () -> new Item(new Item.Properties()));
 
+
+    public static final DeferredHolder<Item, Item> SULFUR_BERRY =
+            ITEMS.register("sulfur_berry",
+                    () -> new BlockItem(
+                            BlockRegistry.SULFUR_BERRY_BLOCK.get(),
+                            new Item.Properties()
+                                    .food(new FoodProperties.Builder()
+                                            .nutrition(2)
+                                            .saturationModifier(0.4f)
+                                            .fast()
+                                            .effect(() -> new MobEffectInstance(ModEffects.SULFUR_POISONING, 200, 0), 0.2f)
+                                            .build())
+                    )
+            );
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }

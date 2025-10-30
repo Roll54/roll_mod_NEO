@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.init;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.block.LatexDandelion;
+import com.roll_54.roll_mod.block.SulfurBerryBlock;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -44,6 +45,20 @@ public class BlockRegistry {
                                     .noOcclusion()
                     )
             );
+
+    public static final DeferredHolder<Block, SulfurBerryBlock> SULFUR_BERRY_BLOCK =
+            BLOCKS.register("sulfur_berry_block",
+                    () -> new SulfurBerryBlock(
+                            BlockBehaviour.Properties.of()
+                                    .mapColor(MapColor.PLANT)
+                                    .noCollission()
+                                    .randomTicks()
+                                    .instabreak()
+                                    .sound(SoundType.CROP)
+                                    .noOcclusion()
+                    )
+            );
+
 
     static {
         ITEMS.registerSimpleBlockItem(TREATED_PLANKS);

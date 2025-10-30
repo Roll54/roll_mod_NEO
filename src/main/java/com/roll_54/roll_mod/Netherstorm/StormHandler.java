@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.Netherstorm;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.init.BlockRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -22,6 +23,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -145,8 +148,11 @@ public class StormHandler {
                 player.addEffect(new MobEffectInstance(MobEffects.WITHER, 200, 4));    // 10с Wither V
                 player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200, 0)); // 10с Blindness I
                 // poison за бажанням — ти згадував саме про неї:
-                player.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 2));    // 10с Poison III
             }
+
+        }
+        if (state != null && state.stormTicks % 3000 == 0) { // кожні ~10 секунд
+            tryGrowSulfurBerries(nether);
         }
     }
 
@@ -436,5 +442,39 @@ public class StormHandler {
 
         // Позначимо, що цей моб — «штормовий», щоб потім перевіряти в івентах/дропі
         mob.getPersistentData().putBoolean("roll_mod:storm_spawn", true);
+    }
+
+    private static void tryGrowSulfurBerries(ServerLevel nether) {
+        RandomSource random = nether.random;
+
+        // Скільки спроб за тік
+        for (int i = 0; i < 10; i++) {
+            // випадкові координати поблизу гравця
+            ServerPlayer player = nether.getRandomPlayer();
+            if (player == null) return;
+
+            int x = player.getBlockX() + random.nextIntBetweenInclusive(-16, 16);
+            int z = player.getBlockZ() + random.nextIntBetweenInclusive(-16, 16);
+            int y = player.getBlockY() + random.nextIntBetweenInclusive(-4, 4);
+
+            BlockPos pos = new BlockPos(x, y, z);
+            BlockPos above = pos.above();
+
+            // перевірка: пісок душ або ґрунт душ
+            var state = nether.getBlockState(pos);
+            if ((state.is(Blocks.SOUL_SAND) || state.is(Blocks.SOUL_SOIL))
+                    && nether.isEmptyBlock(above)) {
+
+                var berryBlock = BlockRegistry.SULFUR_BERRY_BLOCK.get().defaultBlockState();
+
+                // якщо має властивість age — виставляємо 0
+                if (berryBlock.hasProperty(BlockStateProperties.AGE_7)) {
+                    berryBlock = berryBlock.setValue(BlockStateProperties.AGE_7, 0);
+                }
+
+                nether.setBlock(above, berryBlock, 3);
+                RollMod.LOGGER.info("[NetherStorm] Grew sulfur berry at {}, {}, {}", x, y + 1, z);
+            }
+        }
     }
 }

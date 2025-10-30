@@ -290,5 +290,9 @@
   "item.roll_mod.standard_wafer_not": "Пластина NOT",
   "item.roll_mod.standard_wafer_or": "Пластина OR",
   "item.roll_mod.standard_wafer_xor": "Пластина XOR",
-  "item.roll_mod.standard_wafer_ram": "Пластина RAM"
+  "item.roll_mod.standard_wafer_ram": "Пластина RAM",
+  "block.roll_mod.latex_dandelion": "Латексна кульбаба",
+  "item.roll_mod.latex_dandelion_seed": "Насіння латексної кульбаби",
+  "item.roll_mod.latex_dandelion_stem": "Стебло латексної кульбаби",
+  "item.roll_mod.latex_dandelion_flower": "Квітка латексної кульбаби"
 }

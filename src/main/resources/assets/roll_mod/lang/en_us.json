@@ -286,5 +286,9 @@
   "item.roll_mod.standard_wafer_not": "NOT Wafer",
   "item.roll_mod.standard_wafer_or": "OR Wafer",
   "item.roll_mod.standard_wafer_xor": "XOR Wafer",
-  "item.roll_mod.standard_wafer_ram": "RAM Wafer"
+  "item.roll_mod.standard_wafer_ram": "RAM Wafer",
+  "block.roll_mod.latex_dandelion": "Latex Dandelion",
+  "item.roll_mod.latex_dandelion_seed": "Latex Dandelion Seeds",
+  "item.roll_mod.latex_dandelion_stem": "Latex Dandelion Stem",
+  "item.roll_mod.latex_dandelion_flower": "Latex Dandelion Flower"
 }
