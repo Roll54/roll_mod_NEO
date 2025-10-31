@@ -1,83 +1,59 @@
 {
   "item.roll_mod.copper_gear": "Copper Gear",
   "item.roll_mod.chemical_core": "Chemical Core",
-
-
-
   "item.roll_mod.hazmat_helmet": "Hazmat Helmet",
   "item.roll_mod.hazmat_chestplate": "Hazmat Chestplate",
   "item.roll_mod.hazmat_leggings": "Hazmat Leggings",
   "item.roll_mod.hazmat_boots": "Hazmat Boots",
-
   "item.roll_mod.meteorite_helmet": "Meteorite Helmet",
   "item.roll_mod.meteorite_chestplate": "Meteorite Chestplate",
   "item.roll_mod.meteorite_leggings": "Meteorite Leggings",
   "item.roll_mod.meteorite_boots": "Meteorite Boots",
-
   "itemGroup.roll_mod.main": "Roll Mod",
   "itemGroup.roll_mod.dev": "§сRoll Mod EVERY ITEM",
-
   "block.roll_mod.large_chemical_reactor": "Large Chemical Reactor",
-
   "message.roll_mod.nether_storm.start": "A nether storm is coming. Hold your breath, or perish!",
   "message.roll_mod.nether_storm.end": "The storm has stopped... but for how long?",
   "message.roll_mod.cb.no_access.creative": "Roll isn’t foolish enough to let you use this.)))",
   "message.roll_mod.cb.no_access.survival": "The block is only accessible to the administration.",
   "message.roll_mod.cb.no_access.other": "This block is not available.",
   "message.roll_mod.cb.no_access.setblock": "Command blocks ONLY for roll_54",
-
   "tag.item.roll_mod.storm_protective": "Storm Protective",
   "mi.condition.roll_mod.nether_storm.active": "Requires the nether storm to be active",
-
   "item.roll_mod.meteorite_metal_ingot": "Meteorite Ingot",
   "loreitem.roll_mod.meteorite_metal_ingot.tooltip_line1": "A fragment forged in cosmic fire.",
   "loreitem.roll_mod.meteorite_metal_ingot.tooltip_line2": "Resonates faintly with starlight.",
-
-
   "item.roll_mod.meteorite_sword": "Meteorite Sword",
   "loreitem.roll_mod.meteorite_sword.tooltip_line1": "Forged from fallen stars",
   "loreitem.roll_mod.meteorite_sword.tooltip_line2": "Its edge never dulls",
-
   "item.roll_mod.meteorite_pickaxe": "Meteorite Pickaxe",
   "loreitem.roll_mod.meteorite_pickaxe.tooltip_line1": "Mines even the hardest stone",
   "loreitem.roll_mod.meteorite_pickaxe.tooltip_line2": "Glows faintly in darkness",
-
   "item.roll_mod.meteorite_axe": "Meteorite Axe",
   "loreitem.roll_mod.meteorite_axe.tooltip_line1": "Chops with cosmic force",
   "loreitem.roll_mod.meteorite_axe.tooltip_line2": "Said to split trees in one swing",
-
   "item.roll_mod.meteorite_shovel": "Meteorite Shovel",
   "loreitem.roll_mod.meteorite_shovel.tooltip_line1": "Digs faster than steel",
   "loreitem.roll_mod.meteorite_shovel.tooltip_line2": "Leaves a shining trail",
-
   "item.roll_mod.meteorite_hoe": "Meteorite Hoe",
   "loreitem.roll_mod.meteorite_hoe.tooltip_line1": "Soil bends to its touch",
   "loreitem.roll_mod.meteorite_hoe.tooltip_line2": "Blessed by the heavens",
-
-
   "comment1": "just dev schizo shit down",
-
-
   "item.roll_mod.supersteel_gear": "Supersteel Gear",
   "loreitem.roll_mod.supersteel_gear.tooltip_line1": "Forged under extreme pressure.",
   "loreitem.roll_mod.supersteel_gear.tooltip_line2": "Rated for megapascals.",
-
   "item.roll_mod.super_circuit": "Super Circuit",
   "loreitem.roll_mod.super_circuit.tooltip_line1": "Quantum-locked pathways.",
   "loreitem.roll_mod.super_circuit.tooltip_line2": "Noise-shielded at 0.1 dB.",
   "loreitem.roll_mod.super_circuit.tooltip_line3": "Calibration required before use.",
   "item.roll_mod.fr2_sheet": "Phenolic Sheet",
   "item.roll_mod.fr4_sheet": "Fiberglass Sheet",
-
   "item.roll_mod.smd_resistor": "SMD Resistor",
   "item.roll_mod.smd_capacitor": "SMD Capacitor",
   "item.roll_mod.smd_diode": "SMD Diode",
   "item.roll_mod.smd_transistor": "SMD Transistor",
-
   "item.roll_mod.amethyst_oscillator": "Amethyst Oscillator",
-
   "item.roll_mod.mirror": "Mirror",
-
   "item.roll_mod.purple_boule": "Variably-Doped Monocrystalline Silicon",
   "loreitem.roll_mod.purple_boule.tooltip_line1": "WE ARE LOOKING FOR AN ARTIST!",
   "item.roll_mod.purple_wafer": "Variable Wafer",
@@ -93,7 +69,6 @@
   "item.roll_mod.purple_wafer_xnor": "Variable XNOR Wafer",
   "item.roll_mod.purple_wafer_xnor_chip": "Variable XNOR Chip",
   "loreitem.roll_mod.purple_wafer_xnor_chip.tooltip_line1": "WE ARE LOOKING FOR AN ARTIST!",
-
   "item.roll_mod.blue_boule": "Lapotron-Doped Monocrystalline Silicon",
   "loreitem.roll_mod.blue_boule.tooltip_line1": "WE ARE LOOKING FOR AN ARTIST!",
   "item.roll_mod.blue_wafer": "Lapotron Wafer",
@@ -109,25 +84,20 @@
   "loreitem.roll_mod.blue_wafer_soc.tooltip_line1": "WE ARE LOOKING FOR AN ARTIST!",
   "item.roll_mod.blue_wafer_soc_chip": "Lapotron SoC Chip",
   "loreitem.roll_mod.blue_wafer_soc_chip.tooltip_line1": "WE ARE LOOKING FOR AN ARTIST!",
-
   "item.roll_mod.nano_wafer": "Nano Wafer",
   "loreitem.roll_mod.nano_wafer.tooltip_line1": "Supports 1.54 nm process",
   "item.roll_mod.nano_chip": "Nano Processor",
-
   "item.roll_mod.1_circuit": "Programmable Board \"1\"",
   "item.roll_mod.2_circuit": "Programmable Board \"2\"",
   "item.roll_mod.3_circuit": "Programmable Board \"3\"",
   "item.roll_mod.4_circuit": "Programmable Board \"4\"",
   "item.roll_mod.5_circuit": "Programmable Board \"5\"",
   "item.roll_mod.6_circuit": "Programmable Board \"6\"",
-
   "item.roll_mod.pvc_ingot": "PVC Ingot",
   "item.roll_mod.pvc_plate": "PVC Plate",
-
   "item.roll_mod.advanced_conveyor": "Advanced Conveyor",
   "item.roll_mod.advanced_piston": "Advanced Piston",
   "item.roll_mod.advanced_robot_arm": "Advanced Robotic Arm",
-
   "item.roll_mod.mixed_cosmic_t2": "Cosmic Composite MK2",
   "item.roll_mod.nose_mk1": "Rocket Nose Cone Model-1",
   "item.roll_mod.nose_mk2": "Rocket Nose Cone Model-2",
@@ -145,15 +115,12 @@
   "item.roll_mod.fin_mk2": "Rocket Fin Model-2",
   "item.roll_mod.fin_mk3": "Rocket Fin Model-3",
   "item.roll_mod.fin_mk4": "Rocket Fin Model-4",
-
   "item.roll_mod.sensor": "Sensor",
   "item.roll_mod.satellite": "Satellite",
-
   "item.roll_mod.research_het": "Research: \"VePT\"",
   "item.roll_mod.research_rocket_2": "Research: \"Rocket MK2\"",
   "item.roll_mod.research_rocket_3": "Research: \"Rocket MK3\"",
   "item.roll_mod.research_rocket_4": "Research: \"Rocket MK4\"",
-
   "item.roll_mod.gravik_casing": "Gravity Vest Frame",
   "item.roll_mod.raw_quantum_helmet": "Quantum Helmet Frame",
   "loreitem.roll_mod.raw_quantum_helmet.tooltip_line1": "You cannot wear this",
@@ -163,15 +130,12 @@
   "loreitem.roll_mod.raw_quantum_leggings.tooltip_line1": "You cannot wear this",
   "item.roll_mod.raw_quantum_boots": "Quantum Boots Frame",
   "loreitem.roll_mod.raw_quantum_boots.tooltip_line1": "You cannot wear this",
-
   "item.roll_mod.syringe": "Syringe",
   "item.roll_mod.injection_regen": "Injection \"Good as New\"",
   "loreitem.roll_mod.injection_regen.tooltip_line1": "Restores 7.5 hearts and grants regeneration",
   "item.roll_mod.injection_resistance": "Injection \"Bandera Strength\"",
   "item.roll_mod.injection_speed": "Injection \"Sonic Speed\"",
   "item.roll_mod.injection_fire_res": "Injection \"Obsidian Skin\"",
-
-
   "item.roll_mod.calcium_oxide": "Calcium Oxide",
   "item.roll_mod.calcium_hydroxide": "Calcium Hydroxide",
   "item.roll_mod.energium_dust": "Energium Dust",
@@ -183,27 +147,20 @@
   "item.roll_mod.energium_normal_dirty_crystal": "Medium Unrefined Energium Crystal",
   "item.roll_mod.energium_large_dirty_crystal": "Large Unrefined Energium Crystal",
   "item.roll_mod.alumina_dust": "Alumina Dust",
-
   "item.roll_mod.lapotron_large_crystal": "Lapotron Crystal",
   "item.roll_mod.lapotron_lens": "Lapotron Lens",
   "item.roll_mod.lapotron_laser": "Lapotron Laser",
-
   "item.roll_mod.superconducting_magnet_base": "Superconducting Magnet Base",
   "item.roll_mod.superconducting_magnet": "Superconducting Magnet",
   "item.roll_mod.superconducting_module": "Superconducting Magnet Module",
-
   "item.roll_mod.chunkloader_core": "Chunkloader Core",
-
   "item.roll_mod.golden_baton": "Golden Baton",
-
   "item.roll_mod.nonub": "Certificate that you are no longer a noob",
-
   "item.roll_mod.sunnarium_glass_mk1": "Radiant Glass Model-1",
   "item.roll_mod.sunnarium_glass_mk2": "Radiant Glass Model-2",
   "item.roll_mod.sunnarium_glass_mk3": "Radiant Glass Model-3",
   "item.roll_mod.sunnarium_glass_mk4": "Radiant Glass Model-4",
   "item.roll_mod.sunnarium_glass_mk5": "Radiant Glass Model-5",
-
   "item.roll_mod.raw_fluorite": "Fluorite",
   "item.roll_mod.fluorite_tiny_dust": "Tiny Fluorite Dust",
   "item.roll_mod.fluorite_dust": "Fluorite Dust",
@@ -213,7 +170,6 @@
   "item.roll_mod.ilminite_dust": "Ilmenite Dust",
   "item.roll_mod.rutile_iron": "Rutile-Iron Dust",
   "item.roll_mod.calcium_dust": "Calcium Dust",
-
   "item.roll_mod.vanadium_dust": "Vanadium-Magnetite Dust",
   "item.roll_mod.vanadium_dust_clean": "Clean Vanadium Dust",
   "item.roll_mod.nether_star_dust": "Nether Star Dust",
@@ -227,7 +183,6 @@
   "item.roll_mod.rarest_metal_dust": "Rarest Metals Dust",
   "item.roll_mod.iridium_metal_residue": "Iridium Metal Residue",
   "item.roll_mod.iridium_chloride": "Iridium Chloride",
-
   "item.roll_mod.platinum_sludge_residue": "Platinum Sludge Residue",
   "item.roll_mod.gravi_engine_mk_1": "Gravity Engine MK1",
   "item.roll_mod.ruthenium_coin": "Ruthenium Coin",
@@ -238,13 +193,11 @@
   "item.roll_mod.minestar_logo": "Minestar Logo",
   "item.roll_mod.enriched_sunnarium": "Enriched Sunnarium",
   "item.roll_mod.enriched_sunnarium_mk2": "Enriched Sunnarium MK2",
-
   "item.roll_mod.raw_crystal_chip": "Raw Crystal Chip",
   "item.roll_mod.raw_crystal_chip_parts": "Raw Crystal Chip Parts",
   "item.roll_mod.engraved_crystal_chip": "Crystal Processor",
   "item.roll_mod.emitter": "Emitter",
   "item.roll_mod.quartz_lamp": "Quartz Lamp",
-
   "item.roll_mod.petri_dish": "Petri Dish",
   "item.roll_mod.wetwere_circuit_board": "Biotech Board",
   "item.roll_mod.wetwere_printed_circuit_board": "Biotech Printed Board",
@@ -254,7 +207,6 @@
   "loreitem.roll_mod.wetwere_circuit.tooltip_line1": "A symbiosis of biology and technological perfection",
   "item.roll_mod.iridium_dioxide_dust": "Iridium Dioxide Dust",
   "item.roll_mod.iridium_metal_residue_dust": "Iridium Metal Residue Dust",
-
   "item.roll_mod.skulk_spores": "Skulk Spores",
   "item.roll_mod.agar_gel": "Agar Gel",
   "item.roll_mod.agar_dust": "Agar Dust",
@@ -262,19 +214,15 @@
   "loreitem.roll_mod.petri_dish_skulk.tooltip_line1": "I hope it won't summon the Warden...",
   "item.roll_mod.stem_cells": "Stem Cells",
   "item.roll_mod.neuron_cells": "Skulk Neurons",
-
   "item.roll_mod.sodium_sulfate": "Sodium Sulfate",
   "item.roll_mod.mining_drone": "Mining Drone",
   "item.roll_mod.obsidian_dust": "Obsidian_dust",
   "item.roll_mod.quantum_star": "Quantum Star",
   "loreitem.roll_mod.quantum_star.tooltip_line1": "Stabilazed energy of nether",
-
   "item.roll_mod.enderium_prediction_matrix": "Enderium Prediction Matrix",
   "loreitem.roll_mod.enderium_prediction_matrix.tooltip_line1": "An incredibly durable matrix used to replicate powerful creatures.",
-
   "item.roll_mod.nether_star_prediction_matrix": "Nether Star Prediction Matrix",
   "loreitem.roll_mod.nether_star_prediction_matrix.tooltip_line1": "Such beings cannot be recreated with ordinary technology.",
-
   "item.roll_mod.nether_star_plate": "Nether Star Plate",
   "item.roll_mod.nether_star_large_plate": "Large Nether Star Plate",
   "item.roll_mod.nether_star_ring": "Nether Star Ring",
@@ -291,29 +239,21 @@
   "item.roll_mod.latex_dandelion_seed": "Latex Dandelion Seeds",
   "item.roll_mod.latex_dandelion_stem": "Latex Dandelion Stem",
   "item.roll_mod.latex_dandelion_flower": "Latex Dandelion Flower",
-
-  "item.roll_mod.transmission": "Трансмісія",
-  "loreitem.roll_mod.transmission.tooltip_line1": "Серце кожного механізму, що передає потужність далі.",
-
-  "item.roll_mod.magnalium_engine": "Магналієвий двигун",
-  "loreitem.roll_mod.magnalium_engine.tooltip_line1": "Легкий, але міцний — витвір інженерної елегантності.",
-  "loreitem.roll_mod.magnalium_engine.tooltip_line2": "Обертайся, світе, бо цей двигун не зупиняється.",
-
-  "item.roll_mod.soap_stone_dust": "Тальковий пил",
-  "item.roll_mod.manganese_oxide": "Оксид марганцю",
-  "item.roll_mod.treated_plate": "Просочена пластина",
-
+  "item.roll_mod.transmission": "Transmission",
+  "loreitem.roll_mod.transmission.tooltip_line1": "The heart of every machine, carrying power forward.",
+  "item.roll_mod.magnalium_engine": "Magnalium Engine",
+  "loreitem.roll_mod.magnalium_engine.tooltip_line1": "Light yet sturdy—a marvel of engineering elegance.",
+  "loreitem.roll_mod.magnalium_engine.tooltip_line2": "Keep spinning, world—this engine never stops.",
+  "item.roll_mod.soap_stone_dust": "Soapstone Dust",
+  "item.roll_mod.manganese_oxide": "Manganese Oxide",
+  "item.roll_mod.treated_plate": "Treated Plate",
   "item.roll_mod.sulfur_jam": "Сірчане варення",
   "item.roll_mod.sulfur_berry_pie": "Пиріг із сірчаних ягід",
-
   "item.roll_mod.raw_latex": "Сирий латекс",
-  "item.roll_mod.raw_rubber": "Сира гума",
+  "item.roll_mod.raw_rubber": "Raw Rubber",
   "item.roll_mod.rubber_ingot": "Гумовий злиток",
-
   "item.roll_mod.sulfur_berry": "Сірчана ягода",
-
   "block.roll_mod.treated_planks": "Просочені дошки",
   "block.roll_mod.treated_log": "Просочене колодо",
-
   "block.roll_mod.sulfur_berry_block": "Кущ сірчаних ягід"
 }

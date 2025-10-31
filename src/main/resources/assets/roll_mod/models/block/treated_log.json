@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "roll_mod:block/treated_log",
+    "end": "roll_mod:block/treated_log_top"
+  }
+}
