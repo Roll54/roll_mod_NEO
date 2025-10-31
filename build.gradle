@@ -158,7 +158,7 @@ dependencies {
 
     implementation "me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}"
 
-    implementation "dev.emi:emi-neoforge:${emi_version}"
+    implementation "curse.maven:rhino-416294:7104526"
     implementation "curse.maven:guideme-1173950:6812025"
     implementation files("jars/silent-gear-1.21.1-neoforge-4.0.28.1.jar")
     implementation files("jars/silent-lib-1.21.1-neoforge-10.5.1.jar")
@@ -171,10 +171,11 @@ dependencies {
     }
 
     implementation "net.swedz:tesseract-api-neoforge:${tesseract_version}"
-    implementation "dev.latvian.mods:kubejs-neoforge:${kubejs_version}"
-    implementation "curse.maven:mi-tweaks-1068413:6905715"
-    implementation "curse.maven:extended-industrialization-1068418:6974753"
+    implementation "curse.maven:kubejs-238086:7143884"
+    implementation "curse.maven:mi-tweaks-1068413:7024055"
+    implementation "curse.maven:extended-industrialization-1068418:7169246"
     implementation "curse.maven:crafttweaker-239197:6929483"
+    implementation "curse.maven:emi-580555:6420931"
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

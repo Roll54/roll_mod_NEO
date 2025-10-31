@@ -9,14 +9,11 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -72,7 +69,7 @@ public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
         }
     }
 
-    // 💥 Головна фішка — вибух при ламанні під час шторму
+    // 💥 Main trick, explode when netherStorm is active
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (!level.isClientSide && level instanceof ServerLevel server) {
@@ -121,32 +118,24 @@ public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
         int i = state.getValue(AGE);
         boolean isMature = i == 3;
-
-        // 🧨 Перевірка на Незер + активний шторм
         if (!level.isClientSide && level.dimension().equals(Level.NETHER) && StormHandler.isStormActive()) {
             if (level instanceof ServerLevel server) {
                 level.explode(
-                        player,
+                        null,
                         pos.getX() + 0.5,
                         pos.getY() + 0.5,
                         pos.getZ() + 0.5,
                         3.5F,
                         Level.ExplosionInteraction.BLOCK
                 );
-
-                // опціонально — накладаємо отруту або сірчане задушення
-                player.addEffect(new MobEffectInstance(MobEffects.POISON, 200, 1));
-                player.hurt(server.damageSources().magic(), 6.0F);
-
                 RollMod.LOGGER.info("[SulfurBerry] Player {} tried to harvest during NetherStorm at {} {} {} — 💥",
                         player.getName().getString(), pos.getX(), pos.getY(), pos.getZ());
             }
 
-            // Не даємо зібрати ягоду
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
-        // 🍇 Звичайна поведінка — без шторму
+        // normal logic, without storm
         if (i > 1) {
             int count = 1 + level.random.nextInt(2);
             popResource(level, pos, new ItemStack(ItemRegistry.SULFUR_BERRY.get(), count + (isMature ? 1 : 0)));
@@ -168,7 +157,6 @@ public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
     }
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
-        // ✅ тільки Soul Sand або Soul Soil
         return state.is(Blocks.SOUL_SAND) || state.is(Blocks.SOUL_SOIL);
     }
     @Override

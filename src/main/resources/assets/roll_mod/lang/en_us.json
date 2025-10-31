@@ -290,5 +290,30 @@
   "block.roll_mod.latex_dandelion": "Latex Dandelion",
   "item.roll_mod.latex_dandelion_seed": "Latex Dandelion Seeds",
   "item.roll_mod.latex_dandelion_stem": "Latex Dandelion Stem",
-  "item.roll_mod.latex_dandelion_flower": "Latex Dandelion Flower"
+  "item.roll_mod.latex_dandelion_flower": "Latex Dandelion Flower",
+
+  "item.roll_mod.transmission": "Трансмісія",
+  "loreitem.roll_mod.transmission.tooltip_line1": "Серце кожного механізму, що передає потужність далі.",
+
+  "item.roll_mod.magnalium_engine": "Магналієвий двигун",
+  "loreitem.roll_mod.magnalium_engine.tooltip_line1": "Легкий, але міцний — витвір інженерної елегантності.",
+  "loreitem.roll_mod.magnalium_engine.tooltip_line2": "Обертайся, світе, бо цей двигун не зупиняється.",
+
+  "item.roll_mod.soap_stone_dust": "Тальковий пил",
+  "item.roll_mod.manganese_oxide": "Оксид марганцю",
+  "item.roll_mod.treated_plate": "Просочена пластина",
+
+  "item.roll_mod.sulfur_jam": "Сірчане варення",
+  "item.roll_mod.sulfur_berry_pie": "Пиріг із сірчаних ягід",
+
+  "item.roll_mod.raw_latex": "Сирий латекс",
+  "item.roll_mod.raw_rubber": "Сира гума",
+  "item.roll_mod.rubber_ingot": "Гумовий злиток",
+
+  "item.roll_mod.sulfur_berry": "Сірчана ягода",
+
+  "block.roll_mod.treated_planks": "Просочені дошки",
+  "block.roll_mod.treated_log": "Просочене колодо",
+
+  "block.roll_mod.sulfur_berry_block": "Кущ сірчаних ягід"
 }

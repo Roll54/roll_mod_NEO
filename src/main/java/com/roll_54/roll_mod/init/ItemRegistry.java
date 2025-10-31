@@ -433,6 +433,33 @@ public class ItemRegistry {
                             .build()
             ))
     );
+    // 🍯 Варення з сірчаних ягід
+    public static final DeferredHolder<Item, Item> SULFUR_JAM = ITEMS.register(
+            "sulfur_jam",
+            () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .nutrition(6) // легке підживлення
+                            .saturationModifier(0.6f)
+                            .effect(() -> new MobEffectInstance(MobEffects.POISON, 200, 1), 0.25f) // 25% шанс отруїтись
+                            .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 2000, 0), 1.0f)
+                            .fast()
+                            .build()
+            ))
+    );
+
+    // 🥧 Пиріг із сірчаних ягід
+    public static final DeferredHolder<Item, Item> SULFUR_BERRY_PIE = ITEMS.register(
+            "sulfur_berry_pie",
+            () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .nutrition(12)
+                            .saturationModifier(1.2f)
+                            .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 2400, 2), 1.0f) // дає золоті серця
+                            .effect(() -> new MobEffectInstance(ModEffects.SULFUR_POISONING, 600, 0), 0.2f) // 20% шанс отримати твою власну хворобу
+                            .build()
+            ))
+    );
+
 
     // «Кінець» (синя назва)
     public static final DeferredHolder<Item, Item> NONUB = registerTooltip(
@@ -577,6 +604,13 @@ public class ItemRegistry {
                                             .build())
                     )
             );
+
+    public static final DeferredHolder<Item, Item> TRANSMISSION = registerTooltip("transmission", TooltipOptions.nameAndLore(0x8E9D7A, 1, 0x8E9D7A));
+    public static final DeferredHolder<Item, Item> MAGNALIUM_ENGINE = registerTooltip("magnalium_engine", TooltipOptions.nameAndLore(0x8E9D7A, 2, 0x8E9D7A));
+    public static final DeferredHolder<Item, Item> SOAP_STONE_DUST = ITEMS.register("soap_stone_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MANGANESE_OXIDE = ITEMS.register("manganese_oxide", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> TREATED_PLATE = ITEMS.register("treated_plate", () -> new Item(new Item.Properties()));
+
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }
