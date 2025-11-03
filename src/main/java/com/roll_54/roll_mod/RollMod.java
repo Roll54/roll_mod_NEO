@@ -1,10 +1,7 @@
 package com.roll_54.roll_mod;
 
 import com.roll_54.roll_mod.ModArmor.ModArmorMaterials;
-import com.roll_54.roll_mod.init.BlockRegistry;
-import com.roll_54.roll_mod.init.ItemGroups;
-import com.roll_54.roll_mod.init.ItemRegistry;
-import com.roll_54.roll_mod.init.ModEffects;
+import com.roll_54.roll_mod.init.*;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -34,6 +31,7 @@ public final class RollMod {
         ModArmorMaterials.register(eventBus);
         eventBus.addListener(this::onCommonSetup);
         eventBus.addListener(this::onClientSetup);
+        SoundRegistry.SOUND_EVENTS.register(eventBus);
 
 
         LOGGER.info("[{}] init complete.", MODID);
@@ -50,6 +48,10 @@ public final class RollMod {
         LOGGER.info("[{}] client setup", MODID);
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LATEX_DANDELION.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SULFUR_BERRY_BLOCK.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.ROLL_PLUSH.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LEDOK_PLUSH.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LORP_OOO_PLUSH.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.YAN_PLUSH.get(), RenderType.cutout());
         }
     }
 

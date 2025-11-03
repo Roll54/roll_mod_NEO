@@ -319,5 +319,10 @@
   "block.roll_mod.treated_planks": "Просочені дошки",
   "block.roll_mod.treated_log": "Просочена колода",
 
-  "block.roll_mod.sulfur_berry_block": "Сірчана ягода"
+  "block.roll_mod.sulfur_berry_block": "Сірчана ягода",
+
+  "block.roll_mod.roll_plush": "Плюшевий Roll",
+  "block.roll_mod.yan_plush": "Плюшевий Yan",
+  "block.roll_mod.ledok_plush": "Плюшевий LeDok",
+  "block.roll_mod.lorp_ooo_plush": "Плюшевий Lorp_OOO"
 }

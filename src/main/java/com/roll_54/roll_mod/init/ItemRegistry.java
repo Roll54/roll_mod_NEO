@@ -8,6 +8,8 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.util.TooltipOptions;
 import com.roll_54.roll_mod.util.TooltipManager;
 import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -16,6 +18,8 @@ import net.minecraft.world.item.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import static com.roll_54.roll_mod.init.BlockRegistry.*;
 
 
 public class ItemRegistry {
@@ -606,11 +610,14 @@ public class ItemRegistry {
             );
 
     public static final DeferredHolder<Item, Item> TRANSMISSION = registerTooltip("transmission", TooltipOptions.nameAndLore(0x8E9D7A, 1, 0x8E9D7A));
-    public static final DeferredHolder<Item, Item> MAGNALIUM_ENGINE = registerTooltip("magnalium_engine", TooltipOptions.nameAndLore(0x8E9D7A, 2, 0x8E9D7A));
+    public static final DeferredHolder<Item, Item> MAGNALIUM_ENGINE = registerTooltip("magnalium_engine", TooltipOptions.   nameAndLore(0x8E9D7A, 2, 0x8E9D7A));
     public static final DeferredHolder<Item, Item> SOAP_STONE_DUST = ITEMS.register("soap_stone_dust", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> MANGANESE_OXIDE = ITEMS.register("manganese_oxide", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MANGANESE_OXIDE = ITEMS.register("manganese_oxide", () -> new Item(new Item.Properties().component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true).component(DataComponents.RARITY, Rarity.RARE)));
     public static final DeferredHolder<Item, Item> TREATED_PLATE = ITEMS.register("treated_plate", () -> new Item(new Item.Properties()));
-
+    public static final DeferredHolder<Item, BlockItem> ROLL_PLUSH_ITEM = ITEMS.register("roll_plush", () -> new BlockItem(ROLL_PLUSH.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> YAN_PLUSH_ITEM = ITEMS.register("yan_plush", () -> new BlockItem(YAN_PLUSH.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> LEDOK_PLUSH_ITEM = ITEMS.register("ledok_plush", () -> new BlockItem(LEDOK_PLUSH.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> LORP_OOO_PLUSH_ITEM = ITEMS.register("lorp_ooo_plush", () -> new BlockItem(LORP_OOO_PLUSH.get(), new Item.Properties()));
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }

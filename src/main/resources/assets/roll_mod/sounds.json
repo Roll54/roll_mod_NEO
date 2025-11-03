@@ -1,0 +1,7 @@
+{
+  "plush.chipunk": {
+    "sounds": [
+      { "name": "roll_mod:chipunk", "volume": 1.0, "pitch": 1.0 }
+    ]
+  }
+}

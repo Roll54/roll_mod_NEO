@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.init;
 
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.block.FacingPlushBlock;
 import com.roll_54.roll_mod.block.LatexDandelion;
 import com.roll_54.roll_mod.block.SulfurBerryBlock;
 import net.minecraft.world.item.Item;
@@ -59,6 +60,26 @@ public class BlockRegistry {
                     )
             );
 
+    public static final DeferredBlock<Block> ROLL_PLUSH = BLOCKS.registerBlock(
+            "roll_plush",
+            FacingPlushBlock::new, // колона
+            BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion()
+    );
+    public static final DeferredBlock<Block> YAN_PLUSH = BLOCKS.registerBlock(
+            "yan_plush",
+            FacingPlushBlock::new, // колона
+            BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion()
+    );
+    public static final DeferredBlock<Block> LEDOK_PLUSH = BLOCKS.registerBlock(
+            "ledok_plush",
+            FacingPlushBlock::new, // колона
+            BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion()
+    );
+    public static final DeferredBlock<Block> LORP_OOO_PLUSH = BLOCKS.registerBlock(
+            "lorp_ooo_plush",
+            FacingPlushBlock::new, // колона
+            BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion()
+    );
 
     static {
         ITEMS.registerSimpleBlockItem(TREATED_PLANKS);

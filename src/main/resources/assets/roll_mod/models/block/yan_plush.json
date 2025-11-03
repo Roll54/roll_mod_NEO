@@ -1,0 +1,267 @@
+{
+	"format_version": "1.21.6",
+	"credit": "Made with Blockbench",
+	"texture_size": [64, 64],
+	"textures": {
+		"1": "roll_mod:block/yan_plush",
+		"particle": "roll_mod:block/yan_plush"
+	},
+	"elements": [
+		{
+			"name": "Голова",
+			"from": [4, 11, 6],
+			"to": [12, 19, 14],
+			"rotation": {"angle": 0, "axis": "y", "origin": [1, 0, 1]},
+			"faces": {
+				"north": {"uv": [2, 2, 4, 4], "texture": "#1"},
+				"east": {"uv": [0, 2, 2, 4], "texture": "#1"},
+				"south": {"uv": [6, 2, 8, 4], "texture": "#1"},
+				"west": {"uv": [4, 2, 6, 4], "texture": "#1"},
+				"up": {"uv": [4, 2, 2, 0], "texture": "#1", "cullface": "up"},
+				"down": {"uv": [6, 0, 4, 2], "texture": "#1"}
+			}
+		},
+		{
+			"name": "Голова шар",
+			"from": [3.875, 11, 5.8],
+			"to": [12.125, 19.25, 14.05],
+			"rotation": {"angle": 0, "axis": "y", "origin": [3, 6, 7]},
+			"faces": {
+				"north": {"uv": [10, 2, 12, 4], "texture": "#1"},
+				"east": {"uv": [8, 2, 10, 4], "texture": "#1"},
+				"south": {"uv": [14, 2, 16, 4], "texture": "#1"},
+				"west": {"uv": [12, 2, 14, 4], "texture": "#1"},
+				"up": {"uv": [12, 2, 10, 0], "texture": "#1"},
+				"down": {"uv": [14, 0, 12, 2], "texture": "#1"}
+			}
+		},
+		{
+			"name": "Груди",
+			"from": [4, 6, 7],
+			"to": [12, 11, 12],
+			"faces": {
+				"north": {"uv": [5, 5, 7, 6.25], "texture": "#1"},
+				"east": {"uv": [4, 5, 5, 6.25], "texture": "#1"},
+				"south": {"uv": [8, 5, 10, 6.25], "texture": "#1"},
+				"west": {"uv": [7, 5, 8, 6.25], "texture": "#1"},
+				"up": {"uv": [5, 4, 7, 5], "texture": "#1"},
+				"down": {"uv": [7, 4, 9, 5], "texture": "#1"}
+			}
+		},
+		{
+			"name": "Груди шар",
+			"from": [3.75, 6.25, 6.75],
+			"to": [12.25, 11.75, 12.25],
+			"rotation": {"angle": 0, "axis": "y", "origin": [7, 8, 6]},
+			"faces": {
+				"north": {"uv": [5, 9, 7, 10.25], "texture": "#1"},
+				"east": {"uv": [4, 9, 5, 10.25], "texture": "#1"},
+				"south": {"uv": [8, 9, 10, 10.25], "texture": "#1"},
+				"west": {"uv": [7, 9, 8, 10.25], "texture": "#1"},
+				"up": {"uv": [5, 8, 7, 9], "texture": "#1"},
+				"down": {"uv": [7, 8, 9, 9], "texture": "#1"}
+			}
+		},
+		{
+			"name": "Живіт ближній",
+			"from": [3.5, 0, 6.5],
+			"to": [12.5, 7, 9.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 1, 1]},
+			"faces": {
+				"north": {"uv": [5, 6, 7, 8], "texture": "#1"},
+				"east": {"uv": [4.5, 6.25, 5, 8], "texture": "#1"},
+				"west": {"uv": [7, 6.25, 7.5, 8], "texture": "#1"},
+				"up": {"uv": [7, 5.75, 5, 6.5], "texture": "#1"},
+				"down": {"uv": [9, 4.5, 7, 5], "texture": "#1", "cullface": "down"}
+			}
+		},
+		{
+			"name": "Живіт дальній",
+			"from": [3.5, 0, 9.5],
+			"to": [12.5, 7, 12.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 1, 1]},
+			"faces": {
+				"east": {"uv": [4, 6.25, 4.5, 8], "texture": "#1"},
+				"south": {"uv": [8, 6.25, 10, 8], "texture": "#1"},
+				"west": {"uv": [7.5, 6.25, 8, 8], "texture": "#1"},
+				"up": {"uv": [10, 5.75, 8, 6.5], "texture": "#1"},
+				"down": {"uv": [9, 4, 7, 4.5], "texture": "#1", "cullface": "down"}
+			}
+		},
+		{
+			"name": "Живіт шар",
+			"from": [3.375, 0, 6.3],
+			"to": [12.625, 7.25, 12.55],
+			"rotation": {"angle": 0, "axis": "y", "origin": [-1, 1, 8]},
+			"faces": {
+				"north": {"uv": [5, 10, 7, 12], "texture": "#1"},
+				"east": {"uv": [4, 10.25, 5, 12], "texture": "#1"},
+				"south": {"uv": [8, 10.25, 10, 12], "texture": "#1"},
+				"west": {"uv": [7, 10.25, 8, 12], "texture": "#1"},
+				"up": {"uv": [7, 10, 5, 8.5], "texture": "#1"},
+				"down": {"uv": [7, 8, 9, 9], "texture": "#1", "cullface": "down"}
+			}
+		},
+		{
+			"name": "Рука ліва",
+			"from": [18, 3.5, 8],
+			"to": [21, 10.5, 11],
+			"rotation": {"angle": 45, "axis": "z", "origin": [16, -0.5, 0]},
+			"faces": {
+				"north": {"uv": [11, 5, 12, 8], "texture": "#1"},
+				"east": {"uv": [10, 5, 11, 8], "texture": "#1"},
+				"south": {"uv": [13, 5, 14, 8], "texture": "#1"},
+				"west": {"uv": [12, 5, 13, 8], "texture": "#1"},
+				"up": {"uv": [11, 4, 11.75, 5], "texture": "#1"},
+				"down": {"uv": [12.5, 5, 11.75, 4], "texture": "#1"}
+			}
+		},
+		{
+			"name": "Рука ліва шар",
+			"from": [18.0359, 3.4341, 7.875],
+			"to": [21.2859, 10.6841, 11.125],
+			"rotation": {"angle": 45, "axis": "z", "origin": [16.17678, -0.67678, -0.25]},
+			"faces": {
+				"north": {"uv": [11, 9, 12, 12], "texture": "#1"},
+				"east": {"uv": [10, 9, 11, 12], "texture": "#1"},
+				"south": {"uv": [14, 9, 13, 12], "texture": "#1"},
+				"west": {"uv": [12, 9, 13, 12], "texture": "#1"},
+				"up": {"uv": [11, 8, 11.75, 9], "texture": "#1"},
+				"down": {"uv": [12.5, 9, 11.75, 8], "texture": "#1"}
+			}
+		},
+		{
+			"name": "Рука права",
+			"from": [-0.5, -7.5, 8],
+			"to": [2.5, -0.5, 11],
+			"rotation": {"angle": -45, "axis": "z", "origin": [15.5, -0.5, 0]},
+			"faces": {
+				"north": {"uv": [9, 13, 10, 16], "texture": "#1"},
+				"east": {"uv": [8, 13, 9, 16], "texture": "#1"},
+				"south": {"uv": [11, 13, 12, 16], "texture": "#1"},
+				"west": {"uv": [10, 13, 11, 16], "texture": "#1"},
+				"up": {"uv": [9, 12, 9.75, 13], "texture": "#1"},
+				"down": {"uv": [10.5, 13, 9.75, 12], "texture": "#1"}
+			}
+		},
+		{
+			"name": "Рука права шар",
+			"from": [-0.5384, -7.4634, 7.875],
+			"to": [2.7116, -0.2134, 11.125],
+			"rotation": {"angle": -45, "axis": "z", "origin": [15.32322, -0.32322, 0]},
+			"faces": {
+				"north": {"uv": [13, 13, 14, 16], "texture": "#1"},
+				"east": {"uv": [12.0375, 13, 13.0375, 16], "texture": "#1"},
+				"south": {"uv": [15, 13, 16, 16], "texture": "#1"},
+				"west": {"uv": [14, 13, 15, 16], "texture": "#1"},
+				"up": {"uv": [13, 12, 13.75, 13], "texture": "#1"},
+				"down": {"uv": [14.5, 13, 13.75, 12], "texture": "#1"}
+			}
+		},
+		{
+			"name": "Нога ліва",
+			"from": [12, 0.01, 3],
+			"to": [15, 3.01, 11],
+			"rotation": {"angle": -22.5, "axis": "y", "origin": [16, 0, -1]},
+			"faces": {
+				"north": {"uv": [2, 4, 3, 5], "texture": "#1"},
+				"east": {"uv": [2, 5, 3, 8], "rotation": 270, "texture": "#1"},
+				"south": {"uv": [1, 4, 2, 5], "texture": "#1"},
+				"west": {"uv": [0, 5, 1, 8], "rotation": 90, "texture": "#1"},
+				"up": {"uv": [2, 8, 1, 5], "texture": "#1"},
+				"down": {"uv": [3, 5, 4, 8], "texture": "#1", "cullface": "down"}
+			}
+		},
+		{
+			"name": "Нога ліва шар",
+			"from": [11.98785, -0.09, 2.8897],
+			"to": [15.23785, 3.16, 11.1397],
+			"rotation": {"angle": -22.5, "axis": "y", "origin": [15.8647, 0, -1.32664]},
+			"faces": {
+				"north": {"uv": [2, 9, 3, 8], "texture": "#1"},
+				"east": {"uv": [0, 9, 1, 12], "rotation": 270, "texture": "#1"},
+				"south": {"uv": [1, 8, 2, 9], "texture": "#1"},
+				"west": {"uv": [2, 9, 3, 12], "rotation": 90, "texture": "#1"},
+				"up": {"uv": [2, 12, 1, 9], "texture": "#1"},
+				"down": {"uv": [4, 12, 3, 9], "rotation": 180, "texture": "#1", "cullface": "down"}
+			}
+		},
+		{
+			"name": "Нога права",
+			"from": [1, 0.01, 3],
+			"to": [4, 3.01, 11],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [0, 0, 0]},
+			"faces": {
+				"north": {"uv": [6, 12, 7, 13], "texture": "#1"},
+				"east": {"uv": [5, 13, 4, 16], "rotation": 270, "texture": "#1"},
+				"south": {"uv": [5, 12, 6, 13], "rotation": 270, "texture": "#1"},
+				"west": {"uv": [6, 16, 7, 13], "rotation": 270, "texture": "#1"},
+				"up": {"uv": [7, 16, 8, 13], "texture": "#1"},
+				"down": {"uv": [6, 13, 5, 16], "texture": "#1", "cullface": "down"}
+			}
+		},
+		{
+			"name": "Нога права шар",
+			"from": [0.8, -0.09, 2.76903],
+			"to": [4.05, 3.16, 11.01903],
+			"rotation": {"angle": 22.5, "axis": "y", "origin": [-0.09567, 0, -0.23097]},
+			"faces": {
+				"north": {"uv": [2, 12, 3, 13], "texture": "#1"},
+				"east": {"uv": [1, 13, 0, 16], "rotation": 270, "texture": "#1"},
+				"south": {"uv": [1, 12, 2, 13], "rotation": 270, "texture": "#1"},
+				"west": {"uv": [2, 16, 3, 13], "rotation": 270, "texture": "#1"},
+				"up": {"uv": [3, 16, 4, 13], "texture": "#1"},
+				"down": {"uv": [2, 13, 1, 16], "texture": "#1", "cullface": "down"}
+			}
+		}
+	],
+	"display": {
+		"thirdperson_righthand": {
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"firstperson_righthand": {
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"ground": {
+			"scale": [0.5, 0.5, 0.5]
+		},
+		"gui": {
+			"rotation": [30, 145, 0],
+			"translation": [0, -0.75, 0]
+		},
+		"head": {
+			"translation": [0, 14, 0]
+		},
+		"fixed": {
+			"translation": [0, -2.5, 0],
+			"scale": [0.75, 0.75, 0.75]
+		}
+	},
+	"groups": [
+		{
+			"name": "Yan",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [
+				{
+					"name": "Тіло",
+					"origin": [0, 0, 0],
+					"color": 0,
+					"children": [0, 1, 2, 3, 4, 5, 6]
+				},
+				{
+					"name": "Руки",
+					"origin": [16, 0, 0],
+					"color": 0,
+					"children": [7, 8, 9, 10]
+				},
+				{
+					"name": "Ноги",
+					"origin": [16, 0, 0],
+					"color": 0,
+					"children": [11, 12, 13, 14]
+				}
+			]
+		}
+	]
+}
