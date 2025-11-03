@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "facing=up":    { "model": "roll_mod:block/yan_plush", "x": -90 },
+    "facing=down":  { "model": "roll_mod:block/yan_plush", "x": 90 },
+    "facing=north": { "model": "roll_mod:block/yan_plush" },
+    "facing=south": { "model": "roll_mod:block/yan_plush", "y": 180 },
+    "facing=west":  { "model": "roll_mod:block/yan_plush", "y": 270 },
+    "facing=east":  { "model": "roll_mod:block/yan_plush", "y": 90 }
+  }
+}
