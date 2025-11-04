@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "roll_mod:roll_plush"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ]
+}

@@ -1,95 +1,87 @@
 {
   "type": "minecraft:block",
+  "functions": [
+    {
+      "function": "minecraft:explosion_decay"
+    }
+  ],
   "pools": [
     {
-      "bonus_rolls": 0.0,
+      "bonus_rolls": 0,
       "conditions": [
         {
+          "block": "roll_mod:sulfur_berry_block",
           "condition": "minecraft:block_state_property",
-          "block": "roll_mod:latex_dandelion",
           "properties": {
-            "age": "6"
+            "age": "3"
           }
         }
       ],
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "roll_mod:latex_dandelion_seed",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1.0,
-                "max": 2.0
-              }
-            },
-            {
-              "function": "minecraft:apply_bonus",
-              "enchantment": "minecraft:fortune",
-              "formula": "minecraft:binomial_with_bonus_count",
-              "parameters": {
-                "extra": 1,
-                "probability": 0.5714286
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "roll_mod:latex_dandelion_stem",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2.0,
-                "max": 5.0
-              }
-            },
-            {
-              "function": "minecraft:apply_bonus",
-              "enchantment": "minecraft:fortune",
-              "formula": "minecraft:binomial_with_bonus_count",
-              "parameters": {
-                "extra": 2,
-                "probability": 0.5714286
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "roll_mod:latex_dandelion_flower",
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 5.0,
-                "max": 10.0
-              }
-            },
-            {
-              "function": "minecraft:apply_bonus",
-              "enchantment": "minecraft:fortune",
-              "formula": "minecraft:binomial_with_bonus_count",
-              "parameters": {
-                "extra": 3,
-                "probability": 0.5714286
-              }
-            }
-          ]
+          "name": "roll_mod:sulfur_berry"
         }
       ],
-      "rolls": 1.0
-    }
-  ],
-  "functions": [
+      "functions": [
+        {
+          "add": false,
+          "count": {
+            "type": "minecraft:uniform",
+            "max": 3,
+            "min": 2
+          },
+          "function": "minecraft:set_count"
+        },
+        {
+          "enchantment": "minecraft:fortune",
+          "formula": "minecraft:uniform_bonus_count",
+          "function": "minecraft:apply_bonus",
+          "parameters": {
+            "bonusMultiplier": 1
+          }
+        }
+      ],
+      "rolls": 1
+    },
     {
-      "function": "minecraft:explosion_decay"
+      "bonus_rolls": 0,
+      "conditions": [
+        {
+          "block": "roll_mod:sulfur_berry_block",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "age": "2"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "roll_mod:sulfur_berry"
+        }
+      ],
+      "functions": [
+        {
+          "add": false,
+          "count": {
+            "type": "minecraft:uniform",
+            "max": 2,
+            "min": 1
+          },
+          "function": "minecraft:set_count"
+        },
+        {
+          "enchantment": "minecraft:fortune",
+          "formula": "minecraft:uniform_bonus_count",
+          "function": "minecraft:apply_bonus",
+          "parameters": {
+            "bonusMultiplier": 1
+          }
+        }
+      ],
+      "rolls": 1
     }
   ],
-  "random_sequence": "roll_mod:blocks/latex_dandelion"
+  "random_sequence": "roll_mod:blocks/sulfur_berry_block"
 }

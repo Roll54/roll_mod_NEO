@@ -10,8 +10,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -29,6 +27,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+import net.neoforged.neoforge.common.CommonHooks;
 
 import static com.roll_54.roll_mod.Netherstorm.StormHandler.isStormActive;
 
@@ -44,10 +43,7 @@ public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
         this.registerDefaultState(this.stateDefinition.any().setValue(AGE, 0));
     }
 
-    @Override
-    protected MapCodec<? extends BushBlock> codec() {
-        return CODEC;
-    }
+    public MapCodec<SulfurBerryBlock> codec() { return CODEC; }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
@@ -63,10 +59,14 @@ public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         int age = state.getValue(AGE);
-        if (age < 6 && level.getRawBrightness(pos.above(), 0) >= 9 && random.nextInt(5) == 0) {
-            level.setBlock(pos, state.setValue(AGE, age + 1), 2);
-            level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(state));
+        if (age < 3 && level.getRawBrightness(pos.above(), 0) >= 9
+                && CommonHooks.canCropGrow(level, pos, state, random.nextInt(5) == 0)) {
+            BlockState newState = state.setValue(AGE, age + 1);
+            level.setBlock(pos, newState, 2);
+            CommonHooks.fireCropGrowPost(level, pos, state);
+            level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(newState));
         }
+
     }
 
     // 💥 Main trick, explode when netherStorm is active
@@ -105,7 +105,7 @@ public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
 
     @Override
     public void performBonemeal(ServerLevel level, RandomSource random, BlockPos pos, BlockState state) {
-        int newAge = Math.min(6, state.getValue(AGE) + 1);
+        int newAge = Math.min(3, state.getValue(AGE) + 1); // <-- 3, не 6
         level.setBlock(pos, state.setValue(AGE, newAge), 2);
     }
 
@@ -152,8 +152,9 @@ public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
             return super.useWithoutItem(state, level, pos, player, hitResult);
         }
     }
+    @Override
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
-        return new ItemStack(ItemRegistry.SULFUR_BERRY);
+        return new ItemStack(ItemRegistry.SULFUR_BERRY.get());
     }
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
@@ -165,5 +166,4 @@ public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
         BlockState ground = level.getBlockState(below);
         return mayPlaceOn(ground, level, below);
     }
-
 }

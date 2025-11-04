@@ -1,0 +1,36 @@
+{
+  "ores": [
+    {
+      "ore_name": "tungsten",
+      "item_name": "raw_tungsten",
+      "hex_color": "#9ca3af",
+      "bases": ["mars", "moon", "stone", "netherrack"],
+      "overlay": "lapis",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "nickel",
+      "item_name": "raw_nickel",
+      "hex_color": "#d6c38b",
+      "bases": ["mars", "stone"],
+      "overlay": "redstone",
+      "item_base": "copper"
+    },
+    {
+      "ore_name": "iridium",
+      "item_name": "raw_iridium",
+      "hex_color": "#b1d0ff",
+      "bases": ["all"],
+      "overlay": "diamond",
+      "item_base": "iridium"
+    },
+    {
+      "ore_name": "uranium",
+      "item_name": "raw_uranium",
+      "hex_color": "#9aff39",
+      "bases": ["moon", "stone"],
+      "overlay": "quartz",
+      "item_base": "uranium"
+    }
+  ]
+}
