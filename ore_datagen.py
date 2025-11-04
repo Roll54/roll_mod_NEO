@@ -352,23 +352,57 @@ def parse_bases(arg: str) -> List[str]:
 def main():
     ap = argparse.ArgumentParser(description="Generate ore textures/models/blockstates/loot for multiple bases + overlay + item base")
     ap.add_argument("-w", "--workspace", default=detect_default_workspace(), help="Path to workspace (root of your mod)")
-    ap.add_argument("-o", "--ore-name", required=True, help="Ore material name (used in filenames), e.g. tungsten")
-    ap.add_argument("-i", "--item-name", required=True, help="Drop item registry name, e.g. raw_tungsten")
-    ap.add_argument("-c", "--hex-color", required=True, help="Hex color for tint (e.g. #3b2ab8 or 3b2ab8)")
-    ap.add_argument("-B", "--bases", required=True, type=parse_bases, help="Comma-separated bases (mars,moon,stone,netherrack) or 'all'")
-    ap.add_argument("-O", "--overlay", required=True, choices=VALID_OVERLAYS, help="Overlay (exactly one)")
-    ap.add_argument("-I", "--item-base", required=True, choices=VALID_ITEM_BASES, help="Item base (exactly one)")
+
+    # індивідуальний режим
+    ap.add_argument("-o", "--ore-name", help="Ore material name, e.g. tungsten")
+    ap.add_argument("-i", "--item-name", help="Drop item registry name, e.g. raw_tungsten")
+    ap.add_argument("-c", "--hex-color", help="Hex color for tint (e.g. #3b2ab8 or 3b2ab8)")
+    ap.add_argument("-B", "--bases", type=parse_bases, help="Comma-separated bases (mars,moon,stone,netherrack) or 'all'")
+    ap.add_argument("-O", "--overlay", choices=VALID_OVERLAYS, help="Overlay (exactly one)")
+    ap.add_argument("-I", "--item-base", choices=VALID_ITEM_BASES, help="Item base (exactly one)")
+
+    # режим batch
+    ap.add_argument("-b", "--batch", help="Path to batch JSON file with multiple ores")
 
     args = ap.parse_args()
     gen = OreDataGenerator(args.workspace)
-    gen.generate_ore_sets(
-        ore_name=args.ore_name,
-        item_name=args.item_name,
-        hex_color=args.hex_color,
-        bases=args.bases,
-        overlay=args.overlay,
-        item_base=args.item_base
-    )
+
+    if args.batch:
+        batch_path = Path(args.batch)
+        if not batch_path.exists():
+            raise FileNotFoundError(f"Batch file not found: {batch_path}")
+        with open(batch_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        for entry in data.get("ores", []):
+            ore_name = entry["ore_name"]
+            item_name = entry["item_name"]
+            hex_color = entry["hex_color"]
+            bases = parse_bases(",".join(entry["bases"]) if isinstance(entry["bases"], list) else entry["bases"])
+            overlay = entry["overlay"]
+            item_base = entry["item_base"]
+
+            print(f"\n=== Processing {ore_name} ===")
+            gen.generate_ore_sets(
+                ore_name=ore_name,
+                item_name=item_name,
+                hex_color=hex_color,
+                bases=bases,
+                overlay=overlay,
+                item_base=item_base
+            )
+    else:
+        # звичайний CLI-режим
+        if not all([args.ore_name, args.item_name, args.hex_color, args.bases, args.overlay, args.item_base]):
+            ap.error("Either --batch or all of (-o, -i, -c, -B, -O, -I) must be provided.")
+        gen.generate_ore_sets(
+            ore_name=args.ore_name,
+            item_name=args.item_name,
+            hex_color=args.hex_color,
+            bases=args.bases,
+            overlay=args.overlay,
+            item_base=args.item_base
+        )
 
 if __name__ == "__main__":
     main()
