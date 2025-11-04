@@ -174,18 +174,18 @@ class OreDataGenerator:
         print(f"Created raw item model: {out_path}")
         return out_path
 
-    def create_blockstates(self, block_id: str, texture_block_model_id: str) -> Path:
-        # minable=1 -> regen glow (your existing model), minable=0 -> our normal model
+    def create_blockstates(self, block_id: str) -> Path:
+        # Звичайний blockstate без параметрів
         blockstates_data = {
             "variants": {
-                "minable=1": { "model": "roll_mod:block/regen_block_on" },
-                "minable=0": { "model": f"roll_mod:block/{texture_block_model_id}" }
+                "": {"model": f"roll_mod:block/{block_id}"}
             }
         }
+
         out_path = self.blockstates_path / f"{block_id}.json"
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(blockstates_data, f, indent=2)
-        print(f"Created blockstates: {out_path}")
+        print(f"Created simple blockstate: {out_path}")
         return out_path
 
     def create_loot_table(self, block_id: str, item_name: str) -> Path:
@@ -281,7 +281,7 @@ class OreDataGenerator:
             block_item_model = self.create_block_item_model(block_id)
 
             # blockstates: minable switch; model for minable=0 must be same as block_id
-            blockstates = self.create_blockstates(block_id, block_id)
+            blockstates = self.create_blockstates(block_id)
 
             # loot table for this block
             loot_table = self.create_loot_table(block_id, item_name)
