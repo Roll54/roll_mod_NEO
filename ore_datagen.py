@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import List, Optional
 from PIL import Image
 
-VALID_BASES = ["mars", "moon", "stone", "netherrack"]
+VALID_BASES = ["mars", "moon", "stone", "netherrack", "deepslate", "venus", "mercury"]
 VALID_OVERLAYS = ["coal", "copper", "diamond", "gold", "iron", "lapis", "redstone", "quartz"]
 VALID_ITEM_BASES = ["copper", "gold", "iridium", "iron", "uranium"]
 
@@ -357,7 +357,7 @@ def main():
     ap.add_argument("-o", "--ore-name", help="Ore material name, e.g. tungsten")
     ap.add_argument("-i", "--item-name", help="Drop item registry name, e.g. raw_tungsten")
     ap.add_argument("-c", "--hex-color", help="Hex color for tint (e.g. #3b2ab8 or 3b2ab8)")
-    ap.add_argument("-B", "--bases", type=parse_bases, help="Comma-separated bases (mars,moon,stone,netherrack) or 'all'")
+    ap.add_argument("-B", "--bases", type=parse_bases, help="Comma-separated bases (mars,moon,stone,netherrack,deepslate,venus,mercury) or 'all'")
     ap.add_argument("-O", "--overlay", choices=VALID_OVERLAYS, help="Overlay (exactly one)")
     ap.add_argument("-I", "--item-base", choices=VALID_ITEM_BASES, help="Item base (exactly one)")
 
