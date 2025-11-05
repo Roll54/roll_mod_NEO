@@ -2,12 +2,15 @@
 """
 Minecraft Ore Data Generator (multi-base + overlay + item-base)
 
-- Bases: one or many of [mars, moon, stone, netherrack] or 'all'
-- Overlay: exactly one of [coal, copper, diamond, gold, iron, lapis, redstone, quartz]
-- Item base (raw template): exactly one of [copper, gold, iridium, iron, uranium]
-- Output block texture name: <base>_<overlay>_<ore_name>.png
-- Models/block, blockstates, item models are generated per-base (distinct block IDs).
-- Loot tables are generated per-base: data/roll_mod/loot_tables/blocks/<block_id>.json
+- Bases: one or many of [mars, moon, stone, netherrack, deepslate, venus, mercury] or 'all'
+- Overlay: exactly one of [coal, copper, diamond, gold, iron, lapis, redstone, quartz, lead, osmium, tin, uranium, zinc]
+- Item base (raw template): exactly one of [copper, gold, iridium, iron, uranium, coal, quartz, diamond, tin, osmium, zinc]
+
+Naming (overlay is NOT used in names/IDs anymore):
+- Block texture name:        <base>_<ore_name>.png
+- Block id / model / state:  <base>_<ore_name>
+- Raw item texture/model:    <item_name>.png/json   (e.g. raw_tungsten)
+- Dust item texture/model:   <ore_name>_dust.png/json
 
 Source templates are loaded from:
   src/main/resources/assets/roll_mod/py_datagen/blocks/(sub_layers|overlays)
@@ -109,6 +112,13 @@ class OreDataGenerator:
         p2 = self.datagen_root / "items" / f"{item_base}.png"
         return self._require_file(p2, f"item base '{item_base}'")
 
+    def get_item_template_path(self, template_name: str) -> Path:
+        # e.g. "dust"
+        p = self.item_bases_dir / f"{template_name}.png"
+        if p.exists(): return p
+        p2 = self.datagen_root / "items" / f"{template_name}.png"
+        return self._require_file(p2, f"item template '{template_name}'")
+
     # ------------ create outputs ------------
     def create_block_texture(self, base_name: str, overlay_name: str, ore_name: str, hex_color: str) -> Path:
         sub_layer_path = self.get_block_sub_layer_path(base_name)
@@ -121,7 +131,7 @@ class OreDataGenerator:
         overlay_tinted = self.apply_color_multiply(overlay, hex_color)
 
         result = Image.alpha_composite(base_layer, overlay_tinted)
-        out_name = f"{base_name}_{overlay_name}_{ore_name}.png"
+        out_name = f"{base_name}_{ore_name}.png"   # overlay removed from filename
         out_path = self.textures_path / "block" / out_name
         result.save(out_path)
         print(f"Created block texture: {out_path}")
@@ -136,8 +146,18 @@ class OreDataGenerator:
         print(f"Created item texture: {out_path}")
         return out_path
 
+    def create_dust_texture(self, material_name: str, hex_color: str) -> Path:
+        # uses neutral dust template
+        base_path = self.get_item_template_path("dust")
+        base_img = Image.open(base_path).convert('RGBA')
+        tinted = self.apply_color_multiply(base_img, hex_color)
+        out_path = self.textures_path / "item" / f"{material_name}_dust.png"
+        tinted.save(out_path)
+        print(f"Created dust item texture: {out_path}")
+        return out_path
+
     def create_block_model(self, block_id: str, texture_key: str) -> Path:
-        # texture_key like "roll_mod:block/<base>_<overlay>_<ore>"
+        # texture_key like "roll_mod:block/<base>_<ore>"
         model_data = {
             "parent": "minecraft:block/cube_all",
             "textures": {
@@ -151,7 +171,6 @@ class OreDataGenerator:
         return out_path
 
     def create_block_item_model(self, block_id: str) -> Path:
-        # Block item model just points to the block model
         model_data = {
             "parent": f"roll_mod:block/{block_id}"
         }
@@ -174,14 +193,25 @@ class OreDataGenerator:
         print(f"Created raw item model: {out_path}")
         return out_path
 
+    def create_dust_item_model(self, material_name: str) -> Path:
+        model_data = {
+            "parent": "item/generated",
+            "textures": {
+                "layer0": f"roll_mod:item/{material_name}_dust"
+            }
+        }
+        out_path = self.models_path / "item" / f"{material_name}_dust.json"
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(model_data, f, indent=2)
+        print(f"Created dust item model: {out_path}")
+        return out_path
+
     def create_blockstates(self, block_id: str) -> Path:
-        # Звичайний blockstate без параметрів
         blockstates_data = {
             "variants": {
                 "": {"model": f"roll_mod:block/{block_id}"}
             }
         }
-
         out_path = self.blockstates_path / f"{block_id}.json"
         with open(out_path, "w", encoding="utf-8") as f:
             json.dump(blockstates_data, f, indent=2)
@@ -189,7 +219,6 @@ class OreDataGenerator:
         return out_path
 
     def create_loot_table(self, block_id: str, item_name: str) -> Path:
-        # Follows the provided template
         loot = {
             "type": "minecraft:block",
             "pools": [
@@ -259,31 +288,31 @@ class OreDataGenerator:
         print(f"Item Name     : {item_name}")
         print(f"Hex Color     : {hex_color}")
         print(f"Bases         : {', '.join(bases)}")
-        print(f"Overlay       : {overlay}")
+        print(f"Overlay       : {overlay}   (used for tint mask only; not in names)")
         print(f"Item Base     : {item_base}")
 
-        # one shared raw item texture/model
+        # Shared items (raw + dust)
         item_texture = self.create_item_texture(item_name, item_base, hex_color)
         raw_item_model = self.create_raw_item_model(item_name)
+
+        dust_texture = self.create_dust_texture(ore_name, hex_color)
+        dust_item_model = self.create_dust_item_model(ore_name)
 
         results = []
 
         for base in bases:
-            # texture filename: <base>_<overlay>_<ore_name>.png
+            # texture filename: <base>_<ore_name>.png
             block_texture = self.create_block_texture(base, overlay, ore_name, hex_color)
 
-            # block id per base: <base>_<overlay>_<ore_name>
-            block_id = f"{base}_{overlay}_{ore_name}"
+            # block id per base: <base>_<ore_name>
+            block_id = f"{base}_{ore_name}"
 
-            # block model & block-item model point to texture "roll_mod:block/<base>_<overlay>_<ore_name>"
-            texture_key = f"roll_mod:block/{base}_{overlay}_{ore_name}"
+            # block model & block-item model point to texture "roll_mod:block/<base>_<ore_name>"
+            texture_key = f"roll_mod:block/{base}_{ore_name}"
             block_model = self.create_block_model(block_id, texture_key)
             block_item_model = self.create_block_item_model(block_id)
 
-            # blockstates: minable switch; model for minable=0 must be same as block_id
             blockstates = self.create_blockstates(block_id)
-
-            # loot table for this block
             loot_table = self.create_loot_table(block_id, item_name)
 
             results.append({
@@ -300,6 +329,8 @@ class OreDataGenerator:
         return {
             "item_texture": item_texture,
             "raw_item_model": raw_item_model,
+            "dust_texture": dust_texture,
+            "dust_item_model": dust_item_model,
             "blocks": results
         }
 
@@ -358,7 +389,7 @@ def main():
     ap.add_argument("-i", "--item-name", help="Drop item registry name, e.g. raw_tungsten")
     ap.add_argument("-c", "--hex-color", help="Hex color for tint (e.g. #3b2ab8 or 3b2ab8)")
     ap.add_argument("-B", "--bases", type=parse_bases, help="Comma-separated bases (mars,moon,stone,netherrack,deepslate,venus,mercury) or 'all'")
-    ap.add_argument("-O", "--overlay", choices=VALID_OVERLAYS, help="Overlay (exactly one)")
+    ap.add_argument("-O", "--overlay", choices=VALID_OVERLAYS, help="Overlay (exactly one; only affects render)")
     ap.add_argument("-I", "--item-base", choices=VALID_ITEM_BASES, help="Item base (exactly one)")
 
     # режим batch
