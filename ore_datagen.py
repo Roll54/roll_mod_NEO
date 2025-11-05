@@ -41,7 +41,7 @@ class OreDataGenerator:
 
         # DATA output (loot tables)
         self.data_path = self.workspace_path / "src" / "main" / "resources" / "data" / "roll_mod"
-        self.loot_tables_blocks_path = self.data_path / "loot_tables" / "blocks"
+        self.loot_tables_blocks_path = self.data_path / "loot_table" / "blocks"
 
         # Datagen sources
         self.datagen_root = self.workspace_path / "src" / "main" / "resources" / "assets" / "roll_mod" / "py_datagen"

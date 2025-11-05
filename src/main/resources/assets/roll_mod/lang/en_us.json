@@ -259,5 +259,6 @@
   "block.roll_mod.roll_plush": "Плюшевий Roll",
   "block.roll_mod.yan_plush": "Плюшевий Yan",
   "block.roll_mod.ledok_plush": "Плюшевий LeDok",
-  "block.roll_mod.lorp_ooo_plush": "Плюшевий Lorp_OOO"
+  "block.roll_mod.lorp_ooo_plush": "Плюшевий Lorp_OOO",
+  "itemGroup.roll_mod.py_datagen": "Datagen items"
 }

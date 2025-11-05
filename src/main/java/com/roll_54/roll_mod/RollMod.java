@@ -1,13 +1,13 @@
 package com.roll_54.roll_mod;
 
 import com.roll_54.roll_mod.ModArmor.ModArmorMaterials;
+import com.roll_54.roll_mod.PYDatagen.PYBlocks;
+import com.roll_54.roll_mod.PYDatagen.PYItems;
 import com.roll_54.roll_mod.init.*;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.neoforged.bus.EventBus;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
@@ -27,6 +27,8 @@ public final class RollMod {
         ItemRegistry.register(eventBus);
         BlockRegistry.register(eventBus);
         ItemGroups.register(eventBus);
+        PYBlocks.register(eventBus);
+        PYItems.register(eventBus);
         ModEffects.EFFECTS.register(eventBus);
         ModArmorMaterials.register(eventBus);
         eventBus.addListener(this::onCommonSetup);

@@ -2,6 +2,8 @@ package com.roll_54.roll_mod.init;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
+import com.roll_54.roll_mod.PYDatagen.PYBlocks;
+import com.roll_54.roll_mod.PYDatagen.PYItems;
 import com.roll_54.roll_mod.RollMod;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -64,6 +66,8 @@ public final class ItemGroups {
                             out.accept(entry.get());
                         }
                         for (DeferredHolder<Block, ? extends Block> entry : BlockRegistry.BLOCKS.getEntries()) {
+                            if (PYBlocks.ORE_BLOCKS.getEntries().contains(entry)) continue; // ← пропускаємо руди
+
                             Block block = entry.get();
                             Item item = block.asItem();
                             if (item != Items.AIR) {
@@ -74,6 +78,30 @@ public final class ItemGroups {
                     .build()
     );
 
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> PY_DATAGEN_TAB = TABS.register(
+            "py_datagen",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.roll_mod.py_datagen"))
+                    .icon(() -> new ItemStack(BlockRegistry.ROLL_PLUSH.get()))
+                    .displayItems((params, out) -> {
+
+                        // усі предмети із PYItems
+                        for (DeferredHolder<Item, ? extends Item> entry : PYItems.ORE_ITEMS.getEntries()) {
+                            out.accept(entry.get());
+                        }
+
+                        // усі блоки із PYBlocks
+                        for (DeferredHolder<Block, ? extends Block> entry : PYBlocks.ORE_BLOCKS.getEntries()) {
+                            Block block = entry.get();
+                            Item item = block.asItem();
+                            if (item != net.minecraft.world.item.Items.AIR) {
+                                out.accept(item);
+                            }
+                        }
+
+                    })
+                    .build()
+    );
     private static <T extends Item> void add(CreativeModeTab.Output out, DeferredHolder<Item, T> h) {
         out.accept(h.get());
     }
