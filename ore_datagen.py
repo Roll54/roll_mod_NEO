@@ -23,8 +23,8 @@ from typing import List, Optional
 from PIL import Image
 
 VALID_BASES = ["mars", "moon", "stone", "netherrack", "deepslate", "venus", "mercury"]
-VALID_OVERLAYS = ["coal", "copper", "diamond", "gold", "iron", "lapis", "redstone", "quartz"]
-VALID_ITEM_BASES = ["copper", "gold", "iridium", "iron", "uranium"]
+VALID_OVERLAYS = ["coal", "copper", "diamond", "gold", "iron", "lapis", "redstone", "quartz","lead","osmium","tin","uranium","zinc"]
+VALID_ITEM_BASES = ["copper", "gold", "iridium", "iron", "uranium", "coal", "quartz", "diamond", "tin","osmium","zinc"]
 
 class OreDataGenerator:
     def __init__(self, workspace_path: str):

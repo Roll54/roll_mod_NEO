@@ -1,36 +1,204 @@
 {
   "ores": [
     {
-      "ore_name": "tungsten",
-      "item_name": "raw_tungsten",
-      "hex_color": "#9ca3af",
-      "bases": ["mars", "moon", "stone", "netherrack"],
-      "overlay": "lapis",
-      "item_base": "iron"
-    },
-    {
-      "ore_name": "nickel",
-      "item_name": "raw_nickel",
-      "hex_color": "#d6c38b",
-      "bases": ["mars", "stone"],
-      "overlay": "redstone",
+      "ore_name": "mica",
+      "item_name": "raw_mica",
+      "hex_color": "#6fb82a",
+      "bases": ["stone", "deepslate"],
+      "overlay": "copper",
       "item_base": "copper"
     },
     {
-      "ore_name": "iridium",
-      "item_name": "raw_iridium",
-      "hex_color": "#b1d0ff",
-      "bases": ["all"],
-      "overlay": "diamond",
-      "item_base": "iridium"
+      "ore_name": "kyanite",
+      "item_name": "raw_kyanite",
+      "hex_color": "#748a88",
+      "bases": ["stone", "venus"],
+      "overlay": "iron",
+      "item_base": "iron"
     },
     {
-      "ore_name": "uranium",
-      "item_name": "raw_uranium",
-      "hex_color": "#9aff39",
-      "bases": ["moon", "stone"],
+      "ore_name": "hematite",
+      "item_name": "raw_hematite",
+      "hex_color": "#d1553f",
+      "bases": ["stone", "mars"],
+      "overlay": "redstone",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "yellow_limonite",
+      "item_name": "raw_yellow_limonite",
+      "hex_color": "#a38933",
+      "bases": ["stone", "netherrack"],
+      "overlay": "gold",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "biotite",
+      "item_name": "raw_biotite",
+      "hex_color": "#582c8a",
+      "bases": ["deepslate", "moon"],
+      "overlay": "lapis",
+      "item_base": "gold"
+    },
+    {
+      "ore_name": "magnetite",
+      "item_name": "raw_magnetite",
+      "hex_color": "#211f21",
+      "bases": ["stone", "deepslate"],
+      "overlay": "iron",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "garnierite",
+      "item_name": "raw_garnierite",
+      "hex_color": "#174722",
+      "bases": ["stone", "venus"],
+      "overlay": "copper",
+      "item_base": "copper"
+    },
+    {
+      "ore_name": "pentlandite",
+      "item_name": "raw_pentlandite",
+      "hex_color": "#5e5924",
+      "bases": ["mars", "stone"],
       "overlay": "quartz",
-      "item_base": "uranium"
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "chalcopyrite",
+      "item_name": "raw_chalcopyrite",
+      "hex_color": "#5c5345",
+      "bases": ["stone", "netherrack"],
+      "overlay": "copper",
+      "item_base": "copper"
+    },
+    {
+      "ore_name": "certus_quartz",
+      "item_name": "raw_certus_quartz",
+      "hex_color": "#8dbce3",
+      "bases": ["netherrack", "moon"],
+      "overlay": "lapis",
+      "item_base": "quartz"
+    },
+    {
+      "ore_name": "pyrochlore",
+      "item_name": "raw_pyrochlore",
+      "hex_color": "#0e4435",
+      "bases": ["stone", "deepslate"],
+      "overlay": "redstone",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "pyrope",
+      "item_name": "raw_pyrope",
+      "hex_color": "#42122d",
+      "bases": ["stone", "venus"],
+      "overlay": "gold",
+      "item_base": "copper"
+    },
+    {
+      "ore_name": "apatite",
+      "item_name": "raw_apatite",
+      "hex_color": "#24bbed",
+      "bases": ["venus", "moon"],
+      "overlay": "copper",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "galena",
+      "item_name": "raw_galena",
+      "hex_color": "#3e3945",
+      "bases": ["stone", "mars"],
+      "overlay": "lead",
+      "item_base": "gold"
+    },
+    {
+      "ore_name": "pyrolusite",
+      "item_name": "raw_pyrolusite",
+      "hex_color": "#3e4c4d",
+      "bases": ["deepslate", "stone"],
+      "overlay": "iron",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "chromite",
+      "item_name": "raw_chromite",
+      "hex_color": "#73435e",
+      "bases": ["stone", "netherrack"],
+      "overlay": "redstone",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "malachite",
+      "item_name": "raw_malachite",
+      "hex_color": "#22e3b9",
+      "bases": ["stone", "venus"],
+      "overlay": "copper",
+      "item_base": "copper"
+    },
+    {
+      "ore_name": "fluorite",
+      "item_name": "raw_fluorite",
+      "hex_color": "#375e34",
+      "bases": ["stone", "moon"],
+      "overlay": "uranium",
+      "item_base": "zinc"
+    },
+    {
+      "ore_name": "pyrite",
+      "item_name": "raw_pyrite",
+      "hex_color": "#c99347",
+      "bases": ["stone", "mars"],
+      "overlay": "gold",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "cinnabar",
+      "item_name": "raw_cinnabar",
+      "hex_color": "#8a604c",
+      "bases": ["stone", "netherrack"],
+      "overlay": "redstone",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "peridot",
+      "item_name": "raw_peridot",
+      "hex_color": "#8ab867",
+      "bases": ["stone", "deepslate"],
+      "overlay": "gold",
+      "item_base": "copper"
+    },
+    {
+      "ore_name": "sodalite",
+      "item_name": "raw_sodalite",
+      "hex_color": "#4a78d0",
+      "bases": ["stone", "moon"],
+      "overlay": "lapis",
+      "item_base": "zinc"
+    },
+    {
+      "ore_name": "tetrahedrite",
+      "item_name": "raw_tetrahedrite",
+      "hex_color": "#9a5733",
+      "bases": ["netherrack", "mars"],
+      "overlay": "iron",
+      "item_base": "copper"
+    },
+    {
+      "ore_name": "stibnite",
+      "item_name": "raw_stibnite",
+      "hex_color": "#6a5c8e",
+      "bases": ["netherrack", "venus"],
+      "overlay": "lead",
+      "item_base": "gold"
+    },
+    {
+      "ore_name": "ilmenite",
+      "item_name": "raw_ilmenite",
+      "hex_color": "#4B4C5B",
+      "bases": ["venus", "stone"],
+      "overlay": "tin",
+      "item_base": "iron"
     }
   ]
 }
