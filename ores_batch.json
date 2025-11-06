@@ -4,7 +4,7 @@
       "ore_name": "mica",
       "item_name": "raw_mica",
       "hex_color": "#6fb82a",
-      "bases": ["stone", "deepslate"],
+      "bases": ["stone", "deepslate", "netherrack"],
       "overlay": "copper",
       "item_base": "copper"
     },
@@ -44,7 +44,7 @@
       "ore_name": "magnetite",
       "item_name": "raw_magnetite",
       "hex_color": "#211f21",
-      "bases": ["stone", "deepslate"],
+      "bases": ["all"],
       "overlay": "iron",
       "item_base": "iron"
     },
@@ -68,7 +68,7 @@
       "ore_name": "chalcopyrite",
       "item_name": "raw_chalcopyrite",
       "hex_color": "#5c5345",
-      "bases": ["stone", "netherrack"],
+      "bases": ["stone", "netherrack", "moon"],
       "overlay": "copper",
       "item_base": "copper"
     },
@@ -140,7 +140,7 @@
       "ore_name": "fluorite",
       "item_name": "raw_fluorite",
       "hex_color": "#375e34",
-      "bases": ["stone", "moon"],
+      "bases": ["stone", "moon", "netherrack"],
       "overlay": "uranium",
       "item_base": "zinc"
     },
@@ -198,6 +198,158 @@
       "hex_color": "#4B4C5B",
       "bases": ["venus", "stone"],
       "overlay": "tin",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "blue_topaz",
+      "item_name": "raw_blue_topaz",
+      "hex_color": "#3e9dcf",
+      "bases": ["venus", "netherrack"],
+      "overlay": "diamond",
+      "item_base": "quartz"
+    },
+    {
+      "ore_name": "topaz",
+      "item_name": "raw_topaz",
+      "hex_color": "#f3a63c",
+      "bases": ["mars", "netherrack"],
+      "overlay": "gold",
+      "item_base": "gold"
+    },
+    {
+      "ore_name": "chalcocite",
+      "item_name": "raw_chalcocite",
+      "hex_color": "#454545",
+      "bases": ["deepslate", "netherrack"],
+      "overlay": "iron",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "bornite",
+      "item_name": "raw_bornite",
+      "hex_color": "#684a9d",
+      "bases": ["moon", "netherrack"],
+      "overlay": "copper",
+      "item_base": "copper"
+    },
+    {
+      "ore_name": "sulfur",
+      "item_name": "raw_sulfur",
+      "hex_color": "#e2ca00",
+      "bases": ["netherrack"],
+      "overlay": "redstone",
+      "item_base": "uranium"
+    },
+    {
+      "ore_name": "sphalerite",
+      "item_name": "raw_sphalerite",
+      "hex_color": "#6c6f39",
+      "bases": ["stone", "netherrack"],
+      "overlay": "lead",
+      "item_base": "zinc"
+    },
+    {
+      "ore_name": "monazite",
+      "item_name": "raw_monazite",
+      "hex_color": "#a60073",
+      "bases": ["mercury", "netherrack"],
+      "overlay": "tin",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "ruby",
+      "item_name": "raw_ruby",
+      "hex_color": "#a82424",
+      "bases": ["end", "netherrack", "stone"],
+      "overlay": "lapis",
+      "item_base": "diamond"
+    },
+    {
+      "ore_name": "redstone",
+      "item_name": "raw_redstone",
+      "hex_color": "#b40f0f",
+      "bases": ["mars", "netherrack","stone"],
+      "overlay": "redstone",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "saltpeter",
+      "item_name": "raw_saltpeter",
+      "hex_color": "#eae6cf",
+      "bases": ["stone", "netherrack"],
+      "overlay": "quartz",
+      "item_base": "quartz"
+    },
+    {
+      "ore_name": "emerald",
+      "item_name": "raw_emerald",
+      "hex_color": "#3fe65b",
+      "bases": ["venus", "netherrack"],
+      "overlay": "gold",
+      "item_base": "diamond"
+    },
+    {
+      "ore_name": "beryllium",
+      "item_name": "raw_beryllium",
+      "hex_color": "#007c20",
+      "bases": ["deepslate", "netherrack"],
+      "overlay": "iron",
+      "item_base": "tin"
+    },
+    {
+      "ore_name": "tantalite",
+      "item_name": "raw_tantalite",
+      "hex_color": "#5b4032",
+      "bases": ["stone", "netherrack"],
+      "overlay": "uranium",
+      "item_base": "osmium"
+    },
+    {
+      "ore_name": "molybdenite",
+      "item_name": "raw_molybdenite",
+      "hex_color": "#4c4f63",
+      "bases": ["moon", "netherrack"],
+      "overlay": "lead",
+      "item_base": "osmium"
+    },
+    {
+      "ore_name": "wulfenite",
+      "item_name": "raw_wulfenite",
+      "hex_color": "#f28b2c",
+      "bases": ["netherrack", "netherrack"],
+      "overlay": "gold",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "powellite",
+      "item_name": "raw_powellite",
+      "hex_color": "#a3a978",
+      "bases": ["mercury", "netherrack"],
+      "overlay": "tin",
+      "item_base": "zinc"
+    },
+    {
+      "ore_name": "molybdenum",
+      "item_name": "raw_molybdenum",
+      "hex_color": "#6a7ca0",
+      "bases": ["mars", "netherrack"],
+      "overlay": "osmium",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "gold",
+      "item_name": "raw_gold",
+      "hex_color": "#ffd700",
+      "bases": ["stone", "netherrack", "deepslate"],
+      "overlay": "gold",
+      "item_base": "gold"
+    },
+    {
+      "ore_name": "goethite",
+      "item_name": "raw_goethite",
+      "hex_color": "#6b5731",
+      "bases": ["deepslate", "netherrack","stone"],
+      "overlay": "coal",
       "item_base": "iron"
     }
   ]

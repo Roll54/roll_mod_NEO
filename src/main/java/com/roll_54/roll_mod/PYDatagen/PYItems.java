@@ -93,4 +93,61 @@ public class PYItems {
 
     public static final DeferredHolder<Item, Item> ILMENITE_RAW = registerSimpleItem("raw_ilmenite");
     public static final DeferredHolder<Item, Item> ILMENITE_DUST = registerSimpleItem("ilmenite_dust");
+
+    public static final DeferredHolder<Item, Item> BLUE_TOPAZ_RAW = registerSimpleItem("raw_blue_topaz");
+    public static final DeferredHolder<Item, Item> BLUE_TOPAZ_DUST = registerSimpleItem("blue_topaz_dust");
+
+    public static final DeferredHolder<Item, Item> TOPAZ_RAW = registerSimpleItem("raw_topaz");
+    public static final DeferredHolder<Item, Item> TOPAZ_DUST = registerSimpleItem("topaz_dust");
+
+    public static final DeferredHolder<Item, Item> CHALCOCITE_RAW = registerSimpleItem("raw_chalcocite");
+    public static final DeferredHolder<Item, Item> CHALCOCITE_DUST = registerSimpleItem("chalcocite_dust");
+
+    public static final DeferredHolder<Item, Item> BORNITE_RAW = registerSimpleItem("raw_bornite");
+    public static final DeferredHolder<Item, Item> BORNITE_DUST = registerSimpleItem("bornite_dust");
+
+    public static final DeferredHolder<Item, Item> SULFUR_RAW = registerSimpleItem("raw_sulfur");
+    public static final DeferredHolder<Item, Item> SULFUR_DUST = registerSimpleItem("sulfur_dust");
+
+    public static final DeferredHolder<Item, Item> SPHALERITE_RAW = registerSimpleItem("raw_sphalerite");
+    public static final DeferredHolder<Item, Item> SPHALERITE_DUST = registerSimpleItem("sphalerite_dust");
+
+    public static final DeferredHolder<Item, Item> MONAZITE_RAW = registerSimpleItem("raw_monazite");
+    public static final DeferredHolder<Item, Item> MONAZITE_DUST = registerSimpleItem("monazite_dust");
+
+    public static final DeferredHolder<Item, Item> RUBY_RAW = registerSimpleItem("raw_ruby");
+    public static final DeferredHolder<Item, Item> RUBY_DUST = registerSimpleItem("ruby_dust");
+
+    public static final DeferredHolder<Item, Item> REDSTONE_RAW = registerSimpleItem("raw_redstone");
+    public static final DeferredHolder<Item, Item> REDSTONE_DUST = registerSimpleItem("redstone_dust");
+
+    public static final DeferredHolder<Item, Item> SALTPETER_RAW = registerSimpleItem("raw_saltpeter");
+    public static final DeferredHolder<Item, Item> SALTPETER_DUST = registerSimpleItem("saltpeter_dust");
+
+    public static final DeferredHolder<Item, Item> EMERALD_RAW = registerSimpleItem("raw_emerald");
+    public static final DeferredHolder<Item, Item> EMERALD_DUST = registerSimpleItem("emerald_dust");
+
+    public static final DeferredHolder<Item, Item> BERYLLIUM_RAW = registerSimpleItem("raw_beryllium");
+    public static final DeferredHolder<Item, Item> BERYLLIUM_DUST = registerSimpleItem("beryllium_dust");
+
+    public static final DeferredHolder<Item, Item> TANTALITE_RAW = registerSimpleItem("raw_tantalite");
+    public static final DeferredHolder<Item, Item> TANTALITE_DUST = registerSimpleItem("tantalite_dust");
+
+    public static final DeferredHolder<Item, Item> MOLYBDENITE_RAW = registerSimpleItem("raw_molybdenite");
+    public static final DeferredHolder<Item, Item> MOLYBDENITE_DUST = registerSimpleItem("molybdenite_dust");
+
+    public static final DeferredHolder<Item, Item> WULFENITE_RAW = registerSimpleItem("raw_wulfenite");
+    public static final DeferredHolder<Item, Item> WULFENITE_DUST = registerSimpleItem("wulfenite_dust");
+
+    public static final DeferredHolder<Item, Item> POWELLITE_RAW = registerSimpleItem("raw_powellite");
+    public static final DeferredHolder<Item, Item> POWELLITE_DUST = registerSimpleItem("powellite_dust");
+
+    public static final DeferredHolder<Item, Item> MOLYBDENUM_RAW = registerSimpleItem("raw_molybdenum");
+    public static final DeferredHolder<Item, Item> MOLYBDENUM_DUST = registerSimpleItem("molybdenum_dust");
+
+    public static final DeferredHolder<Item, Item> GOLD_RAW = registerSimpleItem("raw_gold");
+    public static final DeferredHolder<Item, Item> GOLD_DUST = registerSimpleItem("gold_dust");
+
+    public static final DeferredHolder<Item, Item> GOETHITE_RAW = registerSimpleItem("raw_goethite");
+    public static final DeferredHolder<Item, Item> GOETHITE_DUST = registerSimpleItem("goethite_dust");
 }

@@ -44,10 +44,9 @@ public class PYBlocks {
         ORE_BLOCKS.register(eventBus);
     }
 
-
-
     public static final DeferredHolder<Block, Block> STONE_MICA = registerSimpleBlock("stone_mica", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> DEEPSLATE_MICA = registerSimpleBlock("deepslate_mica", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_MICA = registerSimpleBlock("netherrack_mica", ORE_PROPERTIES);
 
     public static final DeferredHolder<Block, Block> STONE_KYANITE = registerSimpleBlock("stone_kyanite", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> VENUS_KYANITE = registerSimpleBlock("venus_kyanite", ORE_PROPERTIES);
@@ -61,8 +60,14 @@ public class PYBlocks {
     public static final DeferredHolder<Block, Block> DEEPSLATE_BIOTITE = registerSimpleBlock("deepslate_biotite", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> MOON_BIOTITE = registerSimpleBlock("moon_biotite", ORE_PROPERTIES);
 
+    public static final DeferredHolder<Block, Block> MARS_MAGNETITE = registerSimpleBlock("mars_magnetite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> MOON_MAGNETITE = registerSimpleBlock("moon_magnetite", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> STONE_MAGNETITE = registerSimpleBlock("stone_magnetite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_MAGNETITE = registerSimpleBlock("netherrack_magnetite", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> DEEPSLATE_MAGNETITE = registerSimpleBlock("deepslate_magnetite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> VENUS_MAGNETITE = registerSimpleBlock("venus_magnetite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> MERCURY_MAGNETITE = registerSimpleBlock("mercury_magnetite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> END_MAGNETITE = registerSimpleBlock("end_magnetite", ORE_PROPERTIES);
 
     public static final DeferredHolder<Block, Block> STONE_GARNIERITE = registerSimpleBlock("stone_garnierite", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> VENUS_GARNIERITE = registerSimpleBlock("venus_garnierite", ORE_PROPERTIES);
@@ -72,6 +77,7 @@ public class PYBlocks {
 
     public static final DeferredHolder<Block, Block> STONE_CHALCOPYRITE = registerSimpleBlock("stone_chalcopyrite", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> NETHERRACK_CHALCOPYRITE = registerSimpleBlock("netherrack_chalcopyrite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> MOON_CHALCOPYRITE = registerSimpleBlock("moon_chalcopyrite", ORE_PROPERTIES);
 
     public static final DeferredHolder<Block, Block> NETHERRACK_CERTUS_QUARTZ = registerSimpleBlock("netherrack_certus_quartz", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> MOON_CERTUS_QUARTZ = registerSimpleBlock("moon_certus_quartz", ORE_PROPERTIES);
@@ -99,6 +105,7 @@ public class PYBlocks {
 
     public static final DeferredHolder<Block, Block> STONE_FLUORITE = registerSimpleBlock("stone_fluorite", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> MOON_FLUORITE = registerSimpleBlock("moon_fluorite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_FLUORITE = registerSimpleBlock("netherrack_fluorite", ORE_PROPERTIES);
 
     public static final DeferredHolder<Block, Block> STONE_PYRITE = registerSimpleBlock("stone_pyrite", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> MARS_PYRITE = registerSimpleBlock("mars_pyrite", ORE_PROPERTIES);
@@ -120,5 +127,64 @@ public class PYBlocks {
 
     public static final DeferredHolder<Block, Block> VENUS_ILMENITE = registerSimpleBlock("venus_ilmenite", ORE_PROPERTIES);
     public static final DeferredHolder<Block, Block> STONE_ILMENITE = registerSimpleBlock("stone_ilmenite", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> VENUS_BLUE_TOPAZ = registerSimpleBlock("venus_blue_topaz", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_BLUE_TOPAZ = registerSimpleBlock("netherrack_blue_topaz", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> MARS_TOPAZ = registerSimpleBlock("mars_topaz", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_TOPAZ = registerSimpleBlock("netherrack_topaz", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> DEEPSLATE_CHALCOCITE = registerSimpleBlock("deepslate_chalcocite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_CHALCOCITE = registerSimpleBlock("netherrack_chalcocite", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> MOON_BORNITE = registerSimpleBlock("moon_bornite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_BORNITE = registerSimpleBlock("netherrack_bornite", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> NETHERRACK_SULFUR = registerSimpleBlock("netherrack_sulfur", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> STONE_SPHALERITE = registerSimpleBlock("stone_sphalerite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_SPHALERITE = registerSimpleBlock("netherrack_sphalerite", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> MERCURY_MONAZITE = registerSimpleBlock("mercury_monazite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_MONAZITE = registerSimpleBlock("netherrack_monazite", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> END_RUBY = registerSimpleBlock("end_ruby", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_RUBY = registerSimpleBlock("netherrack_ruby", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> STONE_RUBY = registerSimpleBlock("stone_ruby", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> MARS_REDSTONE = registerSimpleBlock("mars_redstone", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_REDSTONE = registerSimpleBlock("netherrack_redstone", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> STONE_REDSTONE = registerSimpleBlock("stone_redstone", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> STONE_SALTPETER = registerSimpleBlock("stone_saltpeter", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_SALTPETER = registerSimpleBlock("netherrack_saltpeter", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> VENUS_EMERALD = registerSimpleBlock("venus_emerald", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_EMERALD = registerSimpleBlock("netherrack_emerald", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> DEEPSLATE_BERYLLIUM = registerSimpleBlock("deepslate_beryllium", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_BERYLLIUM = registerSimpleBlock("netherrack_beryllium", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> STONE_TANTALITE = registerSimpleBlock("stone_tantalite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_TANTALITE = registerSimpleBlock("netherrack_tantalite", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> MOON_MOLYBDENITE = registerSimpleBlock("moon_molybdenite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_MOLYBDENITE = registerSimpleBlock("netherrack_molybdenite", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> NETHERRACK_WULFENITE = registerSimpleBlock("netherrack_wulfenite", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> MERCURY_POWELLITE = registerSimpleBlock("mercury_powellite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_POWELLITE = registerSimpleBlock("netherrack_powellite", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> MARS_MOLYBDENUM = registerSimpleBlock("mars_molybdenum", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_MOLYBDENUM = registerSimpleBlock("netherrack_molybdenum", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> STONE_GOLD = registerSimpleBlock("stone_gold", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_GOLD = registerSimpleBlock("netherrack_gold", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> DEEPSLATE_GOLD = registerSimpleBlock("deepslate_gold", ORE_PROPERTIES);
+
+    public static final DeferredHolder<Block, Block> DEEPSLATE_GOETHITE = registerSimpleBlock("deepslate_goethite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> NETHERRACK_GOETHITE = registerSimpleBlock("netherrack_goethite", ORE_PROPERTIES);
+    public static final DeferredHolder<Block, Block> STONE_GOETHITE = registerSimpleBlock("stone_goethite", ORE_PROPERTIES);
 
 }

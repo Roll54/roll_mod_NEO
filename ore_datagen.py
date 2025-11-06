@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import List, Optional
 from PIL import Image
 
-VALID_BASES = ["mars", "moon", "stone", "netherrack", "deepslate", "venus", "mercury"]
+VALID_BASES = ["mars", "moon", "stone", "netherrack", "deepslate", "venus", "mercury", "end"]
 VALID_OVERLAYS = ["coal", "copper", "diamond", "gold", "iron", "lapis", "redstone", "quartz","lead","osmium","tin","uranium","zinc"]
 VALID_ITEM_BASES = ["copper", "gold", "iridium", "iron", "uranium", "coal", "quartz", "diamond", "tin","osmium","zinc"]
 
