@@ -99,6 +99,12 @@
     "roll_mod:deepslate_gold",
     "roll_mod:deepslate_goethite",
     "roll_mod:netherrack_goethite",
-    "roll_mod:stone_goethite"
+    "roll_mod:stone_goethite",
+    "roll_mod:moon_hematite",
+    "roll_mod:netherrack_hematite",
+    "roll_mod:deepslate_hematite",
+    "roll_mod:venus_hematite",
+    "roll_mod:mercury_hematite",
+    "roll_mod:end_hematite"
   ]
 }

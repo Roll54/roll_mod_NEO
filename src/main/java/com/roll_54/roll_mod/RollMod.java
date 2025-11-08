@@ -1,8 +1,7 @@
 package com.roll_54.roll_mod;
 
 import com.roll_54.roll_mod.ModArmor.ModArmorMaterials;
-import com.roll_54.roll_mod.PYDatagen.PYBlocks;
-import com.roll_54.roll_mod.PYDatagen.PYItems;
+import com.roll_54.roll_mod.PYDatagen.PYOreDataGen;
 import com.roll_54.roll_mod.init.*;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
@@ -27,8 +26,8 @@ public final class RollMod {
         ItemRegistry.register(eventBus);
         BlockRegistry.register(eventBus);
         ItemGroups.register(eventBus);
-        PYBlocks.register(eventBus);
-        PYItems.register(eventBus);
+        PYOreDataGen.register(eventBus);
+//        PYItems.register(eventBus);
         ModEffects.EFFECTS.register(eventBus);
         ModArmorMaterials.register(eventBus);
         eventBus.addListener(this::onCommonSetup);
