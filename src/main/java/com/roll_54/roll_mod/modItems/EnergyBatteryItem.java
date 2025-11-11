@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.modItems;
 
 import aztech.modern_industrialization.MIComponents;
+import com.roll_54.roll_mod.util.EnergyFormatUtils;
 import com.roll_54.roll_mod.сonfig.GeneralConfig;
 import com.roll_54.roll_mod.data.ToggleableItem;
 import dev.technici4n.grandpower.api.ILongEnergyStorage;
@@ -86,9 +87,13 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
 
             // ⚡️ Оновити дані на сервері й клієнті
             player.getInventory().setChanged();
+
+            Component stateText = Component.translatable(
+                    newState ? "tooltip.roll_mod.on" : "tooltip.roll_mod.off"
+            ).withStyle(newState ? ChatFormatting.GREEN : ChatFormatting.RED);
+
             player.displayClientMessage(
-                    Component.literal("Батарейка " + (newState ? "УВІМКНЕНА" : "ВИМКНЕНА"))
-                            .withStyle(newState ? ChatFormatting.GREEN : ChatFormatting.RED),
+                    Component.translatable("tooltip.roll_mod.battery_toggled", stateText),
                     true
             );
         }
@@ -112,7 +117,7 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
 
         if (GeneralConfig.isDebug) {
             System.out.println("[Battery] === Tick start ===");
-            System.out.println("[Battery] Поточна енергія батарейки: " + stored + " FE");
+            System.out.println("[Battery] Поточна енергія батарейки: " + stored + " EU");
             System.out.println("[Battery] Тумблер активний: " + active);
             System.out.println("[Battery] Перевіряємо предмети в інвентарі гравця " + player.getName().getString() + "...");
             System.out.println("[Battery] ==============================");
@@ -151,9 +156,9 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
                     setStoredEnergy(stack, stored - received);
                     stored -= received;
                     if (GeneralConfig.isDebug)
-                        System.out.println("   ✅ [Capability] Передано " + received + " FE у " + name);
+                        System.out.println("   ✅ [Capability] Передано " + received + " EU у " + name);
                 } else if (GeneralConfig.isDebug) {
-                    System.out.println("   ❌ [Capability] Предмет не прийняв енергію (0 FE).");
+                    System.out.println("   ❌ [Capability] Предмет не прийняв енергію (0 EU).");
                 }
             }
 
@@ -186,7 +191,7 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
                         setStoredEnergy(stack, stored - inserted);
                         stored -= inserted;
                         if (GeneralConfig.isDebug)
-                            System.out.println("   ✅ [" + (comp == miEnergy ? "MI" : "EI") + " Write] Передано " + inserted + " FE у " + name);
+                            System.out.println("   ✅ [" + (comp == miEnergy ? "MI" : "EI") + " Write] Передано " + inserted + " EU у " + name);
                     } else if (GeneralConfig.isDebug) {
                         System.out.println("   ⚠️ [" + (comp == miEnergy ? "MI" : "EI") + " Write] Повний або не прийняв енергію (inserted=0)");
                     }
@@ -219,10 +224,18 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
         long cap = getEnergyCapacity(stack);
         boolean active = isActivated(stack);
 
-        tooltip.add(Component.literal("Енергія: " + stored + " / " + cap + " FE")
+        String formattedStored = EnergyFormatUtils.formatEnergy(stored);
+        String formattedCap = EnergyFormatUtils.formatEnergy(cap);
+
+        tooltip.add(Component.translatable("tooltip.roll_mod.energy", formattedStored, formattedCap)
                 .withStyle(ChatFormatting.AQUA));
-        tooltip.add(Component.literal("Режим: " + (active ? "УВІМКНЕНО" : "ВИМКНЕНО"))
+
+        tooltip.add(Component.translatable("tooltip.roll_mod.mode",
+                        Component.translatable(active ? "tooltip.roll_mod.on" : "tooltip.roll_mod.off"))
                 .withStyle(active ? ChatFormatting.GREEN : ChatFormatting.RED));
-        tooltip.add(Component.literal("ПКМ для перемикання").withStyle(ChatFormatting.GRAY));
+
+        tooltip.add(Component.translatable("tooltip.roll_mod.toggle_hint")
+                .withStyle(ChatFormatting.GRAY));
+
     }
 }

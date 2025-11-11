@@ -5,7 +5,7 @@ package com.roll_54.roll_mod.util;
  * 1 second = 20 ticks
  */
 
-public class TimeUtil {
+public class TimeFormatUtil {
 
     /**
      * Converts ticks into a formatted time string like "1h 23m 5s".

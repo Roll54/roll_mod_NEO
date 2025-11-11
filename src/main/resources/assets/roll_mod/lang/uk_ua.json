@@ -325,7 +325,21 @@
   "message.roll_mod.storm_scanner.status_inactive": "Стан шторму: §aСпокійний",
   "message.roll_mod.storm_scanner.time_until_end": "До кінця шторму: %s",
   "message.roll_mod.storm_scanner.time_until_start": "До початку шторму: %s",
-  "message.roll_mod.storm_scanner.detailed_info": "Детальніша інформація виведена в чат,"
+  "message.roll_mod.storm_scanner.detailed_info": "Детальніша інформація виведена в чат,",
+  "message.roll_mod.storm_scanner.not_enough_energy": "⚠ Недостатньо енергії (%s / %s EU) для сканування!",
+  "item.roll_mod.lv_storm_scanner":"LV Сканер шторму",
+  "item.roll_mod.hv_storm_scanner":"HV Сканер шторму",
+  "tooltip.roll_mod.storm_hint.1": "Right-click Щоб просканувати стан шторму",
+  "tooltip.roll_mod.hv_storm_hint.2": "Покращена версія сканера, яка виводить час до початку або закінчення шторму",
+
+  "item.roll_mod.redstone_battery": "Редстоунова батарея",
+  "item.roll_mod.energium_battery": "Енергієвий кристал",
+  "item.roll_mod.lapotron_battery_t1": "Лапотронний кристал",
+  "item.roll_mod.lapotron_battery_t2": "Лапотронний кластер",
+  "item.roll_mod.lapotron_battery_t3": "Лапотронне скупчення",
+  "item.roll_mod.ultra_battery": "Ультимативна батарея",
+
+  "message.roll_mod.gravity_chestplate.warning": "⚡ Недостатньо енергії для польоту!",
 
   "itemGroup.roll_mod.py_datagen": "Датаген предмети",
 

@@ -609,10 +609,92 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, BlockItem> YAN_PLUSH_ITEM = ITEMS.register("yan_plush", () -> new BlockItem(YAN_PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, BlockItem> LEDOK_PLUSH_ITEM = ITEMS.register("ledok_plush", () -> new BlockItem(LEDOK_PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, BlockItem> LORP_OOO_PLUSH_ITEM = ITEMS.register("lorp_ooo_plush", () -> new BlockItem(LORP_OOO_PLUSH.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, Item> STORM_SCANNER = ITEMS.register("storm_scanner", () -> new StormScannerItem(new Item.Properties(), 1));
-    public static final DeferredHolder<Item, Item> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties(), 2));
+    public static final DeferredHolder<Item, StormScannerItem> LV_STORM_SCANNER = ITEMS.register("lv_storm_scanner", () -> new StormScannerItem(new Item.Properties(), 1, 0xff1500, 1_000_000));
+    public static final DeferredHolder<Item, StormScannerItem> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties(), 2, 0xff1500, 10_000_000));
     public static final DeferredHolder<Item, EnergyBatteryItem> TEST_BATTERY = ITEMS.register("nano_battery", () -> new EnergyBatteryItem(new Item.Properties(), 20_000_000L, 20_000L, 200_000L, 0x00FFFF));
+    // 🔋 REDSTONE BATTERY
+    public static final DeferredHolder<Item, EnergyBatteryItem> REDSTONE_BATTERY =
+            ITEMS.register("redstone_battery",
+                    () -> new EnergyBatteryItem(
+                            new Item.Properties()
+                                    .stacksTo(1)
+                                    .rarity(Rarity.UNCOMMON),
+                            1_000_000L,   // 1M EU
+                            75_000L,      // input
+                            75_000L,      // output
+                            0xb12e2e      // червоний
+                    )
+            );
 
+    // 💎 ENERGIUM BATTERY
+    public static final DeferredHolder<Item, EnergyBatteryItem> ENERGIUM_BATTERY =
+            ITEMS.register("energium_battery",
+                    () -> new EnergyBatteryItem(
+                            new Item.Properties()
+                                    .stacksTo(1)
+                                    .rarity(Rarity.RARE),
+                            10_000_000L,  // 10M EU
+                            150_000L,     // input
+                            150_000L,     // output
+                            0xFF4444      // яскраво-червоний
+                    )
+            );
+
+    // 💠 LAPOTRON T1
+    public static final DeferredHolder<Item, EnergyBatteryItem> LAPOTRON_BATTERY_T1 =
+            ITEMS.register("lapotron_battery_t1",
+                    () -> new EnergyBatteryItem(
+                            new Item.Properties()
+                                    .stacksTo(1)
+                                    .rarity(Rarity.EPIC),
+                            1_000_000_000L, // 1G EU
+                            20_000_000L,    // input
+                            20_000_000L,    // output
+                            0x3B6BFF        // синій
+                    )
+            );
+
+    // 💠 LAPOTRON T2
+    public static final DeferredHolder<Item, EnergyBatteryItem> LAPOTRON_BATTERY_T2 =
+            ITEMS.register("lapotron_battery_t2",
+                    () -> new EnergyBatteryItem(
+                            new Item.Properties()
+                                    .stacksTo(1)
+                                    .rarity(Rarity.EPIC),
+                            50_000_000_000L, // 50G EU
+                            20_000_000L,     // input
+                            20_000_000L,     // output
+                            0x0077FF         // глибокий синій
+                    )
+            );
+
+    // 💠 LAPOTRON T3
+    public static final DeferredHolder<Item, EnergyBatteryItem> LAPOTRON_BATTERY_T3 =
+            ITEMS.register("lapotron_battery_t3",
+                    () -> new EnergyBatteryItem(
+                            new Item.Properties()
+                                    .stacksTo(1)
+                                    .rarity(Rarity.EPIC),
+                            500_000_000_000L, // 500G EU
+                            20_000_000L,      // input
+                            20_000_000L,      // output
+                            0x00FFFF          // бірюзовий
+                    )
+            );
+
+    // ⚡ CUSTOM ULTRA BATTERY (твоя 1T EU)
+    public static final DeferredHolder<Item, EnergyBatteryItem> ULTRA_BATTERY =
+            ITEMS.register("ultra_battery",
+                    () -> new EnergyBatteryItem(
+                            new Item.Properties()
+                                    .stacksTo(1)
+                                    .rarity(Rarity.EPIC),
+                            1_000_000_000_000L, // 1T EU
+                            50_000_000L,        // input
+                            50_000_000L,        // output
+                            0xFFD700            // золотий
+                    )
+            );
 
 
     public static void register(IEventBus modBus) {

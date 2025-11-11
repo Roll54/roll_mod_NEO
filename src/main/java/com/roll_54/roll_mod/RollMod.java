@@ -18,6 +18,7 @@ import net.swedz.tesseract.neoforge.compat.mi.TesseractMI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 @Mod(RollMod.MODID)
 public final class RollMod {
     public static final String MODID = "roll_mod";
@@ -63,7 +64,9 @@ public final class RollMod {
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LEDOK_PLUSH.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LORP_OOO_PLUSH.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.YAN_PLUSH.get(), RenderType.cutout());
-        }
+
+    }
+
     }
 
 

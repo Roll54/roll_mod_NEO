@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.init;
 
+import aztech.modern_industrialization.MIComponents;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.roll_54.roll_mod.PYDatagen.PYOreDataGen;
@@ -39,7 +40,7 @@ public final class ItemGroups {
                         add(out, ItemRegistry.HAZMAT_LEGGINGS);
                         add(out, ItemRegistry.HAZMAT_BOOTS);
 
-                        // Meteorite-броня
+                        // Meteorite-armor
                         add(out, ItemRegistry.METEORITE_HELMET);
                         add(out, ItemRegistry.METEORITE_CHESTPLATE);
                         add(out, ItemRegistry.METEORITE_LEGGINGS);
@@ -49,6 +50,15 @@ public final class ItemGroups {
                         add(out, ItemRegistry.METEORITE_AXE);
                         add(out, ItemRegistry.METEORITE_SHOVEL);
                         add(out, ItemRegistry.METEORITE_HOE);
+                        // Scanners
+                        add(out, ItemRegistry.LV_STORM_SCANNER);
+                        ItemStack lvScanner = new ItemStack(ItemRegistry.LV_STORM_SCANNER.get());
+                        lvScanner.set(MIComponents.ENERGY.get(), 1_000_000L);
+                        out.accept(lvScanner);
+                        add(out, ItemRegistry.HV_STORM_SCANNER);
+                        ItemStack hvScanner = new ItemStack(ItemRegistry.HV_STORM_SCANNER.get());
+                        hvScanner.set(MIComponents.ENERGY.get(), 10_000_000L);
+                        out.accept(hvScanner);
 
                     })
                     .build()

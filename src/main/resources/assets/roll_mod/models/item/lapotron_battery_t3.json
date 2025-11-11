@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "roll_mod:item/lv_storm_scanner"
+    "layer0": "roll_mod:item/lapotron_battery_t3"
   }
 }

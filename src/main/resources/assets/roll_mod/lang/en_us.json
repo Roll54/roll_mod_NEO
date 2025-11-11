@@ -261,7 +261,28 @@
   "message.roll_mod.storm_scanner.time_until_end": "До кінця шторму: %s",
   "message.roll_mod.storm_scanner.time_until_start": "До початку шторму: %s",
   "message.roll_mod.storm_scanner.detailed_info": "Детальніша інформація виведена в чат,",
-  "item.roll_mod.lv_storm_scanner":"LV Сканер шторму",
+  "message.roll_mod.storm_scanner.not_enough_energy": "⚠ not enough energy (%s / %s EU) for scanning!",
+  "item.roll_mod.lv_storm_scanner":"LV Storm scanner",
+  "item.roll_mod.hv_storm_scanner":"HV Storm scanner",
+  "tooltip.roll_mod.storm_hint.1": "Provides information on the current storm status",
+  "tooltip.roll_mod.storm_hint.2": "Right-click to scan storm status",
+  "tooltip.roll_mod.hv_storm_hint.2": "Improved version of the scanner that shows time until storm start or end",
+
+  "tooltip.roll_mod.energy": "Energy: %s / %s EU",
+  "tooltip.roll_mod.mode": "Mode: %s",
+  "tooltip.roll_mod.toggle_hint": "Right-click to toggle",
+  "tooltip.roll_mod.on": "ON",
+  "tooltip.roll_mod.off": "OFF",
+  "tooltip.roll_mod.battery_toggled": "Battery: %s",
+
+  "item.roll_mod.redstone_battery": "Redstone Battery",
+  "item.roll_mod.energium_battery": "Energium Battery",
+  "item.roll_mod.lapotron_battery_t1": "Lapotron Battery Mk.I",
+  "item.roll_mod.lapotron_battery_t2": "Lapotron Battery Mk.II",
+  "item.roll_mod.lapotron_battery_t3": "Lapotron Battery Mk.III",
+  "item.roll_mod.ultra_battery": "Ultra Battery",
+
+  "message.roll_mod.gravity_chestplate.warning": "⚡ Not enough energy!",
 
   "itemGroup.roll_mod.py_datagen": "Datagen items",
 
