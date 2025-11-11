@@ -1,14 +1,15 @@
 package com.roll_54.roll_mod.init;
 
-import com.roll_54.roll_mod.ModArmor.HazmatBootsItem;
-import com.roll_54.roll_mod.ModArmor.ModArmorMaterials;
-import com.roll_54.roll_mod.ModItems.ModToolTiers;
-import com.roll_54.roll_mod.ModItems.TooltipArmorItem;
+import com.roll_54.roll_mod.modArmor.HazmatBootsItem;
+import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
+import com.roll_54.roll_mod.modItems.EnergyBatteryItem;
+import com.roll_54.roll_mod.modItems.ModToolTiers;
+import com.roll_54.roll_mod.modItems.StormScannerItem;
+import com.roll_54.roll_mod.modItems.TooltipArmorItem;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.util.TooltipOptions;
 import com.roll_54.roll_mod.util.TooltipManager;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -478,20 +479,12 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> SUNNARIUM_GLASS_MK5 = ITEMS.register("sunnarium_glass_mk5", () -> new Item(new Item.Properties()));
 
     // Старі крафти / руда-хімія
-    public static final DeferredHolder<Item, Item> RAW_FLUORITE = ITEMS.register("raw_fluorite", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> FLUORITE_TINY_DUST = ITEMS.register("fluorite_tiny_dust", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> FLUORITE_DUST = ITEMS.register("fluorite_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SODIUM_BISULFATE = ITEMS.register("sodium_bisulfate", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> RUTILE_DUST = ITEMS.register("rutile_dust", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> RUTILE_DUST_SMALL = ITEMS.register("rutile_dust_small", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> ILMINITE_DUST = ITEMS.register("ilminite_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RUTILE_IRON = ITEMS.register("rutile_iron", () -> new Item(new Item.Properties()));
-
     public static final DeferredHolder<Item, Item> CALCIUM_DUST = ITEMS.register("calcium_dust", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> VANADIUM_DUST = ITEMS.register("vanadium_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> VANADIUM_DUST_CLEAN = ITEMS.register("vanadium_dust_clean", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> RAW_SHELDONITE = ITEMS.register("raw_sheldonite", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> PLATINUM_GROUP_SLUDGE = ITEMS.register("platinum_group_sludge", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_PLATINUM_DUST = ITEMS.register("raw_platinum_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_PALLADIUM_DUST = ITEMS.register("raw_palladium_dust", () -> new Item(new Item.Properties()));
@@ -507,8 +500,6 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> RUTHENIUM_COIN = registerTooltip(
             "ruthenium_coin", new TooltipOptions(1, null, null, false)
     );
-    public static final DeferredHolder<Item, Item> RAW_PYROCHLORE = ITEMS.register("raw_pyrochlore", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> PYROCHLORE_DUST = ITEMS.register("pyrochlore_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SUNNARIUM_GLASS = registerTooltip(
             "sunnarium_glass", TooltipOptions.name(AQUA)
     );
@@ -618,6 +609,12 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, BlockItem> YAN_PLUSH_ITEM = ITEMS.register("yan_plush", () -> new BlockItem(YAN_PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, BlockItem> LEDOK_PLUSH_ITEM = ITEMS.register("ledok_plush", () -> new BlockItem(LEDOK_PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, BlockItem> LORP_OOO_PLUSH_ITEM = ITEMS.register("lorp_ooo_plush", () -> new BlockItem(LORP_OOO_PLUSH.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, Item> STORM_SCANNER = ITEMS.register("storm_scanner", () -> new StormScannerItem(new Item.Properties(), 1));
+    public static final DeferredHolder<Item, Item> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties(), 2));
+    public static final DeferredHolder<Item, EnergyBatteryItem> TEST_BATTERY = ITEMS.register("nano_battery", () -> new EnergyBatteryItem(new Item.Properties(), 20_000_000L, 20_000L, 200_000L, 0x00FFFF));
+
+
+
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }

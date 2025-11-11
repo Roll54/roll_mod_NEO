@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.block;
 
 import com.mojang.serialization.MapCodec;
-import com.roll_54.roll_mod.Netherstorm.StormHandler;
+import com.roll_54.roll_mod.netherstorm.StormHandler;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.init.ItemRegistry;
 import net.minecraft.core.BlockPos;
@@ -29,7 +29,7 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.CommonHooks;
 
-import static com.roll_54.roll_mod.Netherstorm.StormHandler.isStormActive;
+import static com.roll_54.roll_mod.netherstorm.StormHandler.isStormActive;
 
 public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
     public static final MapCodec<SulfurBerryBlock> CODEC = simpleCodec(SulfurBerryBlock::new);

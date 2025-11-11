@@ -36,7 +36,7 @@
       "ore_name": "biotite",
       "item_name": "raw_biotite",
       "hex_color": "#582c8a",
-      "bases": ["deepslate", "moon"],
+      "bases": ["deepslate", "moon", "netherrack"],
       "overlay": "lapis",
       "item_base": "gold"
     },
@@ -92,7 +92,7 @@
       "ore_name": "pyrope",
       "item_name": "raw_pyrope",
       "hex_color": "#42122d",
-      "bases": ["stone", "venus"],
+      "bases": ["stone", "end"],
       "overlay": "gold",
       "item_base": "copper"
     },
@@ -116,7 +116,7 @@
       "ore_name": "pyrolusite",
       "item_name": "raw_pyrolusite",
       "hex_color": "#3e4c4d",
-      "bases": ["deepslate", "stone"],
+      "bases": ["mars", "end"],
       "overlay": "iron",
       "item_base": "iron"
     },
@@ -148,7 +148,7 @@
       "ore_name": "pyrite",
       "item_name": "raw_pyrite",
       "hex_color": "#c99347",
-      "bases": ["stone", "mars"],
+      "bases": ["stone", "mars", "end", "netherrack"],
       "overlay": "gold",
       "item_base": "iron"
     },
@@ -260,7 +260,7 @@
       "ore_name": "ruby",
       "item_name": "raw_ruby",
       "hex_color": "#a82424",
-      "bases": ["end", "netherrack", "stone"],
+      "bases": ["end", "netherrack", "stone", "deepslate"],
       "overlay": "lapis",
       "item_base": "diamond"
     },
@@ -268,7 +268,7 @@
       "ore_name": "redstone",
       "item_name": "raw_redstone",
       "hex_color": "#b40f0f",
-      "bases": ["mars", "netherrack","stone"],
+      "bases": ["mars", "netherrack","stone", "deepslate"],
       "overlay": "redstone",
       "item_base": "iron"
     },
@@ -300,8 +300,8 @@
       "ore_name": "tantalite",
       "item_name": "raw_tantalite",
       "hex_color": "#5b4032",
-      "bases": ["stone", "netherrack"],
-      "overlay": "uranium",
+      "bases": ["mars"],
+      "overlay": "iron",
       "item_base": "osmium"
     },
     {
@@ -340,7 +340,7 @@
       "ore_name": "gold",
       "item_name": "raw_gold",
       "hex_color": "#ffd700",
-      "bases": ["stone", "netherrack", "deepslate"],
+      "bases": ["stone", "netherrack", "deepslate", "end", "venus"],
       "overlay": "gold",
       "item_base": "gold"
     },
@@ -417,7 +417,7 @@
       "item_base": "copper"
     },
     {
-      "ore_name": "scheelite",
+      "ore_name": " ",
       "item_name": "raw_scheelite",
       "hex_color": "#aebd1d",
       "bases": ["stone", "deepslate", "end"],
@@ -439,6 +439,54 @@
       "bases": ["stone", "deepslate", "end","mars"],
       "overlay": "diamond",
       "item_base": "uranium"
+    },
+    {
+      "ore_name": "uraninite",
+      "item_name": "raw_uraninite",
+      "hex_color": "#4a7a35",
+      "bases": ["end"],
+      "overlay": "lead",
+      "item_base": "uranium"
+    },
+    {
+      "ore_name": "thorium",
+      "item_name": "raw_thorium",
+      "hex_color": "#4e6320",
+      "bases": ["end"],
+      "overlay": "zinc",
+      "item_base": "uranium"
+    },
+    {
+      "ore_name": "pitchblende",
+      "item_name": "raw_pitchblende",
+      "hex_color": "#2e5c09",
+      "bases": ["end"],
+      "overlay": "uranium",
+      "item_base": "copper"
+    },
+    {
+      "ore_name": "cassiterite",
+      "item_name": "raw_cassiterite",
+      "hex_color": "#9096c0",
+      "bases": ["stone", "deepslate"],
+      "overlay": "tin",
+      "item_base": "iron"
+    },
+    {
+      "ore_name": "rhodochrosite",
+      "item_name": "raw_rhodochrosite",
+      "hex_color": "#f46a65",
+      "bases": ["end"],
+      "overlay": "iron",
+      "item_base": "quartz"
+    },
+    {
+      "ore_name": "lead",
+      "item_name": "raw_lead",
+      "hex_color": "#6a7ca0",
+      "bases": ["stone", "deepslate", "end"],
+      "overlay": "osmium",
+      "item_base": "copper"
     }
   ]
 }

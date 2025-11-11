@@ -58,7 +58,7 @@ public final class ItemGroups {
             "dev",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.dev"))
-                    .icon(() -> new ItemStack(Items.DEBUG_STICK))
+                    .icon(() -> new ItemStack(ItemRegistry.SULFUR_BERRY.get()))
                     .displayItems((params, out) -> {
 
                         for (DeferredHolder<Item, ? extends Item> entry : ItemRegistry.ITEMS.getEntries()) {

@@ -58,7 +58,7 @@ base {
     archivesName = mod_id
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
 neoForge {
     // Specify the version of NeoForge to use.
@@ -86,6 +86,7 @@ neoForge {
             server()
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            jvmArguments=["-Xmx16G", "-XX:+UseZGC"]
         }
 
         // This run config launches GameTestServer and runs all registered gametests, then exits.
@@ -176,6 +177,9 @@ dependencies {
     implementation "curse.maven:extended-industrialization-1068418:7169246"
     implementation "curse.maven:crafttweaker-239197:6929483"
     implementation "curse.maven:emi-580555:6420931"
+
+    //jar in jar
+    api jarJar("dev.technici4n:GrandPower:${project.grandpower_version}")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.
