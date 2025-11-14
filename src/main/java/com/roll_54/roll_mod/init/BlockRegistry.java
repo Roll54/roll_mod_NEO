@@ -4,6 +4,7 @@ package com.roll_54.roll_mod.init;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.block.FacingPlushBlock;
 import com.roll_54.roll_mod.block.LatexDandelion;
+import com.roll_54.roll_mod.block.RollPlushBlock;
 import com.roll_54.roll_mod.block.SulfurBerryBlock;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -62,7 +63,7 @@ public class BlockRegistry {
 
     public static final DeferredBlock<Block> ROLL_PLUSH = BLOCKS.registerBlock(
             "roll_plush",
-            FacingPlushBlock::new, // колона
+            RollPlushBlock::new, // колона
             BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion()
     );
     public static final DeferredBlock<Block> YAN_PLUSH = BLOCKS.registerBlock(

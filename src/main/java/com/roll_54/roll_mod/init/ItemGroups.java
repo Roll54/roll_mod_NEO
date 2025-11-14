@@ -52,13 +52,66 @@ public final class ItemGroups {
                         add(out, ItemRegistry.METEORITE_HOE);
                         // Scanners
                         add(out, ItemRegistry.LV_STORM_SCANNER);
+
                         ItemStack lvScanner = new ItemStack(ItemRegistry.LV_STORM_SCANNER.get());
                         lvScanner.set(MIComponents.ENERGY.get(), 1_000_000L);
                         out.accept(lvScanner);
+
                         add(out, ItemRegistry.HV_STORM_SCANNER);
+
                         ItemStack hvScanner = new ItemStack(ItemRegistry.HV_STORM_SCANNER.get());
                         hvScanner.set(MIComponents.ENERGY.get(), 10_000_000L);
                         out.accept(hvScanner);
+
+                        //lunar clock
+                        add(out, ItemRegistry.LUNAR_PHASE_CLOCK);
+
+                        ItemStack lunarClock = new ItemStack(ItemRegistry.LUNAR_PHASE_CLOCK.get());
+                        lunarClock.set(MIComponents.ENERGY.get(), 5_000_000L);
+                        out.accept(lunarClock);
+
+                        //batteries
+                        add(out, ItemRegistry.REDSTONE_BATTERY);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.REDSTONE_BATTERY.get());
+                            full.set(MIComponents.ENERGY.get(), 1_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.ENERGIUM_BATTERY);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.ENERGIUM_BATTERY.get());
+                            full.set(MIComponents.ENERGY.get(), 10_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.LAPOTRON_BATTERY_T1);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.LAPOTRON_BATTERY_T1.get());
+                            full.set(MIComponents.ENERGY.get(), 1_000_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.LAPOTRON_BATTERY_T2);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.LAPOTRON_BATTERY_T2.get());
+                            full.set(MIComponents.ENERGY.get(), 50_000_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.LAPOTRON_BATTERY_T3);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.LAPOTRON_BATTERY_T3.get());
+                            full.set(MIComponents.ENERGY.get(), 500_000_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.ULTRA_BATTERY);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.ULTRA_BATTERY.get());
+                            full.set(MIComponents.ENERGY.get(), 1_000_000_000_000L);
+                            out.accept(full);
+                        }
 
                     })
                     .build()

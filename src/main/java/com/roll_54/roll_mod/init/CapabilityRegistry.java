@@ -18,6 +18,7 @@ public class CapabilityRegistry {
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.ULTRA_BATTERY.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.HV_STORM_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.LV_STORM_SCANNER.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.LUNAR_PHASE_CLOCK.get());
 
     }
 }

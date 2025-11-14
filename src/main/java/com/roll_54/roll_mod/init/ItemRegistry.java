@@ -2,10 +2,7 @@ package com.roll_54.roll_mod.init;
 
 import com.roll_54.roll_mod.modArmor.HazmatBootsItem;
 import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
-import com.roll_54.roll_mod.modItems.EnergyBatteryItem;
-import com.roll_54.roll_mod.modItems.ModToolTiers;
-import com.roll_54.roll_mod.modItems.StormScannerItem;
-import com.roll_54.roll_mod.modItems.TooltipArmorItem;
+import com.roll_54.roll_mod.modItems.*;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.util.TooltipOptions;
 import com.roll_54.roll_mod.util.TooltipManager;
@@ -696,6 +693,7 @@ public class ItemRegistry {
                     )
             );
 
+    public static final DeferredHolder<Item, LunarClockItem> LUNAR_PHASE_CLOCK = ITEMS.register("moon_phase_clock", () -> new LunarClockItem(new Item.Properties()));
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);

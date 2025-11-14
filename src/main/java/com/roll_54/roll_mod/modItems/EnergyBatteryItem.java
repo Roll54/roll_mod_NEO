@@ -8,6 +8,8 @@ import dev.technici4n.grandpower.api.ILongEnergyStorage;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
@@ -97,8 +99,8 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
                     true
             );
         }
+        level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP, SoundSource.PLAYERS, 0.6f, 1.4f);
 
-        // ⚙️ Не забувай повернути sidedSuccess, щоб пакет пішов і на клієнт
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
 

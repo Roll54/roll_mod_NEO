@@ -284,6 +284,19 @@
 
   "message.roll_mod.gravity_chestplate.warning": "⚡ Not enough energy!",
 
+
+  "item.roll_mod.moon_phase_clock": "Lunar Clock",
+  "tooltip.roll_mod.lunar_clock.no_energy": "⚡ Not enough energy!",
+  "tooltip.roll_mod.lunar_clock.phase.0": "Full Moon",
+  "tooltip.roll_mod.lunar_clock.phase.1": "Waning Gibbous",
+  "tooltip.roll_mod.lunar_clock.phase.2": "Last Quarter",
+  "tooltip.roll_mod.lunar_clock.phase.3": "Waning Crescent",
+  "tooltip.roll_mod.lunar_clock.phase.4": "New Moon",
+  "tooltip.roll_mod.lunar_clock.phase.5": "Waxing Crescent",
+  "tooltip.roll_mod.lunar_clock.phase.6": "First Quarter",
+  "tooltip.roll_mod.lunar_clock.phase.7": "Waxing Gibbous",
+  "tooltip.roll_mod.lunar_clock.desc": "Shows the current lunar phase when right-clicked.",
+
   "itemGroup.roll_mod.py_datagen": "Datagen items",
 
   "block.roll_mod.stone_mica": "Mica Ore",

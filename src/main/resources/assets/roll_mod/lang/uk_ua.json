@@ -329,7 +329,7 @@
   "message.roll_mod.storm_scanner.not_enough_energy": "⚠ Недостатньо енергії (%s / %s EU) для сканування!",
   "item.roll_mod.lv_storm_scanner":"LV Сканер шторму",
   "item.roll_mod.hv_storm_scanner":"HV Сканер шторму",
-  "tooltip.roll_mod.storm_hint.1": "Right-click Щоб просканувати стан шторму",
+  "tooltip.roll_mod.storm_hint.1": "Клацніть ПКМ, Щоб просканувати стан шторму",
   "tooltip.roll_mod.hv_storm_hint.2": "Покращена версія сканера, яка виводить час до початку або закінчення шторму",
 
   "item.roll_mod.redstone_battery": "Редстоунова батарея",
@@ -340,6 +340,25 @@
   "item.roll_mod.ultra_battery": "Ультимативна батарея",
 
   "message.roll_mod.gravity_chestplate.warning": "⚡ Недостатньо енергії для польоту!",
+
+  "item.roll_mod.moon_phase_clock": "Місячний годинник",
+  "tooltip.roll_mod.lunar_clock.no_energy": "⚡ Недостатньо енергії!",
+  "tooltip.roll_mod.lunar_clock.phase.0": "Повня",
+  "tooltip.roll_mod.lunar_clock.phase.1": "Спадаючий опуклий місяць",
+  "tooltip.roll_mod.lunar_clock.phase.2": "Остання чверть",
+  "tooltip.roll_mod.lunar_clock.phase.3": "Старий місяць",
+  "tooltip.roll_mod.lunar_clock.phase.4": "Молодик",
+  "tooltip.roll_mod.lunar_clock.phase.5": "Молодий місяць",
+  "tooltip.roll_mod.lunar_clock.phase.6": "Перша чверть",
+  "tooltip.roll_mod.lunar_clock.phase.7": "Зростаючий опуклий місяць",
+  "tooltip.roll_mod.lunar_clock.desc": "Клацніть ПКМ, щоб дізнатись поточну фазу місяця",
+
+  "tooltip.roll_mod.energy": "Енергія: %s / %s EU",
+  "tooltip.roll_mod.mode": "Режим: %s",
+  "tooltip.roll_mod.toggle_hint": "Клацніть ПКМ, щоб перемкнути",
+  "tooltip.roll_mod.on": "УВІМК.",
+  "tooltip.roll_mod.off": "ВИМК.",
+  "tooltip.roll_mod.battery_toggled": "Стан батареї: %s",
 
   "itemGroup.roll_mod.py_datagen": "Датаген предмети",
 
