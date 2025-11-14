@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.netherstorm;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.init.BlockRegistry;
+import com.roll_54.roll_mod.init.ModEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
@@ -30,9 +31,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
-@EventBusSubscriber(modid = RollMod.MODID) // змініть MODID тут і у StormShared
+@EventBusSubscriber(modid = RollMod.MODID)
 public class StormHandler {
 
     private static StormState state;
@@ -87,7 +90,7 @@ public class StormHandler {
             state.dirty();
 
             // 🔥 Нове: спавн лічильником
-            if (++spawnTickCounter >= 18000) { // 400 тік = 20 секунд
+            if (++spawnTickCounter >= 18000) {
                 spawnStormMobs(server);
                 spawnTickCounter = 0;
             }
@@ -112,17 +115,8 @@ public class StormHandler {
             var gm = player.gameMode.getGameModeForPlayer();
             if (gm.isCreative() || gm == GameType.SPECTATOR) continue;
 
-            // Якщо повний сет захисту — шторм не діє + знімаємо погані ефекти
-            if (isWearingFullProtectiveSet(player)) {
-                // гарантовано нема wither/poison під час шторму з повним сетом
-                player.removeEffect(MobEffects.WITHER);
-                player.removeEffect(MobEffects.POISON);
-                // можеш також прибрати інші «штормові» ефекти, якщо треба:
-                // player.removeEffect(MobEffects.WEAKNESS);
-                // player.removeEffect(MobEffects.CONFUSION);
-                // player.removeEffect(MobEffects.BLINDNESS);
-                continue;
-            }
+          //   Якщо повний сет захисту — шторм не діє + знімаємо погані ефекти
+
 
 //            if (player.tickCount % 400 == 0) {
 //                spawnAroundPlayer(nether, player, EntityType.WITHER_SKELETON);
@@ -131,23 +125,46 @@ public class StormHandler {
 //            }
 
             // Інакше — частковий захист: маска в шоломі
-            ItemStack helmet = player.getItemBySlot(EquipmentSlot.HEAD);
-            boolean hasProtectiveHelmet = helmet.is(STORM_PROTECTIVE_TAG);
+            boolean hasFullSet = true;
+            List<ItemStack> armorPieces = new ArrayList<>();
 
-            if (hasProtectiveHelmet) {
-                // кожні 20 тік — зношувати шолом/маску
-                if (player.tickCount % 20 == 0) {
-                    helmet.hurtAndBreak(1, player, EquipmentSlot.HEAD);
+            for (EquipmentSlot slot : EquipmentSlot.values()) {
+                if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
+
+                    ItemStack piece = player.getItemBySlot(slot);
+                    armorPieces.add(piece);
+
+                    if (!piece.is(STORM_PROTECTIVE_TAG)) {
+                        hasFullSet = false;
+                    }
                 }
-                // За бажанням: можна зробити «легші» дебафи або взагалі нічого.
-                // Зараз — нічого не накладаємо.
+            }
+
+            if (hasFullSet) {
+                // 🔧 Зношення кожні 20 тік
+                if (player.tickCount % 20 == 1) {
+                    for (int i = 0; i < armorPieces.size(); i++) {
+                        ItemStack piece = armorPieces.get(i);
+
+                        if (piece.is(STORM_PROTECTIVE_TAG)) {
+                            EquipmentSlot slot = EquipmentSlot.values()[i + 2]; // HEAD..FEET are after HAND slots
+                            piece.hurtAndBreak(1, player, slot);
+                        }
+                    }
+                }
+
             } else {
-                // Повного сету немає і шолома немає — накладаємо негативні ефекти
-                player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 1600, 3)); // 80с Weakness IV
-                player.addEffect(new MobEffectInstance(MobEffects.CONFUSION, 200, 0)); // 10с Nausea I
-                player.addEffect(new MobEffectInstance(MobEffects.WITHER, 200, 4));    // 10с Wither V
-                player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200, 0)); // 10с Blindness I
-                // poison за бажанням — ти згадував саме про неї:
+                // ❌ Немає повного сету → негативні ефекти
+                player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 1600, 3));
+                player.addEffect(new MobEffectInstance(ModEffects.SULFUR_POISONING, 200, 4));
+                player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200, 0));
+            }
+
+
+            if (isWearingFullProtectiveSet(player)) {
+                // гарантовано нема wither/poison під час шторму з повним сетом
+                player.removeEffect(ModEffects.SULFUR_POISONING);
+                player.removeEffect(MobEffects.POISON);
             }
 
         }
@@ -191,6 +208,11 @@ public class StormHandler {
     }
 
     // Публічне API (можна викликати з команд)
+
+    private static StormState getState(ServerLevel level) {
+        return StormState.get(level.getServer().overworld());
+    }
+
     public static boolean isStormActive() {
         return state != null && state.stormActive;
     }

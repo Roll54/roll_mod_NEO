@@ -30,7 +30,7 @@ public final class GeneralConfig {
     static final ModConfigSpec SPEC = BUILDER.pop().build();
 
     /** КЕШ — лише його читаємо в ігрових івентах */
-    public static volatile boolean isDebug = true;
+    public static volatile boolean isDebug = false;
     public static volatile boolean isCustomPvP = true;
     public static volatile Set<Item> items = Set.of(); // якщо будете використовувати
 
