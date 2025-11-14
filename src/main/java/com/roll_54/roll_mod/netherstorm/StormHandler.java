@@ -115,14 +115,6 @@ public class StormHandler {
             var gm = player.gameMode.getGameModeForPlayer();
             if (gm.isCreative() || gm == GameType.SPECTATOR) continue;
 
-          //   Якщо повний сет захисту — шторм не діє + знімаємо погані ефекти
-
-
-//            if (player.tickCount % 400 == 0) {
-//                spawnAroundPlayer(nether, player, EntityType.WITHER_SKELETON);
-//                spawnAroundPlayer(nether, player, EntityType.PIGLIN_BRUTE);
-//                spawnAroundPlayer(nether, player, EntityType.BLAZE);
-//            }
 
             // Інакше — частковий захист: маска в шоломі
             boolean hasFullSet = true;

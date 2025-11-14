@@ -110,110 +110,73 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
         if (level.isClientSide) return;
         if (!(entity instanceof Player player)) return;
 
-        // === Тумблер активності ===
-        boolean active = isActivated(stack);
-        if (!active) return; // батарейка вимкнена
-
+        if (!isActivated(stack)) return;
         long stored = getStoredEnergy(stack);
         if (stored <= 0) return;
 
-        if (GeneralConfig.isDebug) {
-            System.out.println("[Battery] === Tick start ===");
-            System.out.println("[Battery] Поточна енергія батарейки: " + stored + " EU");
-            System.out.println("[Battery] Тумблер активний: " + active);
-            System.out.println("[Battery] Перевіряємо предмети в інвентарі гравця " + player.getName().getString() + "...");
-            System.out.println("[Battery] ==============================");
+        // 1) Броня
+        for (ItemStack armor : player.getInventory().armor) {
+            tryChargeItem(stack, armor, "armor");
+            if (getStoredEnergy(stack) <= 0) return;
         }
 
+        // 2) Офхенд
+        for (ItemStack off : player.getInventory().offhand) {
+            tryChargeItem(stack, off, "offhand");
+            if (getStoredEnergy(stack) <= 0) return;
+        }
+
+        // 3) Предмети в рюкзаку
         for (int i = 0; i < player.getInventory().items.size(); i++) {
             ItemStack other = player.getInventory().items.get(i);
+            if (other == stack) continue;
             if (other.isEmpty()) continue;
-            if (other == stack) continue; // не заряджаємо саму себе
-            if (other.getItem() instanceof EnergyBatteryItem) continue; // не заряджаємо інші батарейки
 
-            String name = other.getHoverName().getString();
-            if (GeneralConfig.isDebug) System.out.println("[Battery] Слот " + i + ": " + name);
+            tryChargeItem(stack, other, "slot " + i);
+            if (getStoredEnergy(stack) <= 0) return;
+        }
+    }
 
-            ILongEnergyStorage target = null;
+    private void tryChargeItem(ItemStack battery, ItemStack targetStack, String debugName) {
+        if (targetStack.isEmpty()) return;
+        long stored = getStoredEnergy(battery);
+        if (stored <= 0) return;
 
-            // === Спроба знайти GrandPower capability ===
-            try {
-                target = other.getCapability(ILongEnergyStorage.ITEM);
-            } catch (Exception ignored) {}
+        // Capability GrandPower
+        ILongEnergyStorage target = null;
+        try { target = targetStack.getCapability(ILongEnergyStorage.ITEM); } catch (Exception ignored) {}
 
-            // === Якщо нема — пробуємо Forge Energy ===
-            if (target == null) {
-                try {
-                    var forge = other.getCapability(net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.ITEM);
-                    if (forge != null) target = ILongEnergyStorage.of(forge);
-                } catch (Exception ignored) {}
-            }
+        long received = 0;
 
-            // === Основна передача через capability ===
-            long received = 0L;
-            if (target != null) {
-                long toSend = Math.min(getEnergyMaxOutput(stack), stored);
-                received = target.receive(toSend, false);
-                if (received > 0) {
-                    setStoredEnergy(stack, stored - received);
-                    stored -= received;
-                    if (GeneralConfig.isDebug)
-                        System.out.println("   ✅ [Capability] Передано " + received + " EU у " + name);
-                } else if (GeneralConfig.isDebug) {
-                    System.out.println("   ❌ [Capability] Предмет не прийняв енергію (0 EU).");
-                }
-            }
+        if (target != null) {
+            long toSend = Math.min(getEnergyMaxOutput(battery), stored);
+            received = target.receive(toSend, false);
 
-            // === Якщо capability не знайдено або не прийняв — MI/EI компоненти ===
-            if (received == 0) {
-                try {
-                    var miEnergy = aztech.modern_industrialization.MIComponents.ENERGY.get();
-
-                    // визначаємо, який компонент є
-                    var comp = aztech.modern_industrialization.MIComponents.ENERGY.get();
-                    if (!other.has(comp)) {
-                        if (GeneralConfig.isDebug)
-                            System.out.println("   ⚠️ [MI Write] У предмета немає energy-компонента (MI/EI).");
-                        continue;
-                    }
-
-                    long energy = other.getOrDefault(comp, 0L);
-                    long capacity = 0L;
-
-                    if (other.getItem() instanceof ISimpleEnergyItem simple)
-                        capacity = simple.getEnergyCapacity(other);
-                    if (capacity <= 0L) capacity = 10_000_000L; // запасне значення
-
-                    long toSend = Math.min(getEnergyMaxOutput(stack), stored);
-                    long space = Math.max(0, capacity - energy);
-                    long inserted = Math.min(toSend, space);
-
-                    if (inserted > 0) {
-                        other.set(comp, energy + inserted);
-                        setStoredEnergy(stack, stored - inserted);
-                        stored -= inserted;
-                        if (GeneralConfig.isDebug)
-                            System.out.println("   ✅ [" + (comp == miEnergy ? "MI" : "EI") + " Write] Передано " + inserted + " EU у " + name);
-                    } else if (GeneralConfig.isDebug) {
-                        System.out.println("   ⚠️ [" + (comp == miEnergy ? "MI" : "EI") + " Write] Повний або не прийняв енергію (inserted=0)");
-                    }
-                } catch (Exception ex) {
-                    if (GeneralConfig.isDebug) {
-                        System.out.println("   ⚠️ [Write] Помилка під час запису енергії: " + ex);
-                        ex.printStackTrace();
-                    }
-                }
-            }
-
-            // === Якщо батарейка розрядилась — зупиняємо цикл ===
-            if (stored <= 0) {
-                if (GeneralConfig.isDebug)
-                    System.out.println("[Battery] ⚡ Енергія батарейки вичерпана.");
-                break;
+            if (received > 0) {
+                setStoredEnergy(battery, stored - received);
+                return;
             }
         }
 
-        if (GeneralConfig.isDebug) System.out.println("[Battery] === Tick end ===");
+        // Modern Industrialization / EI component
+        var energyComp = aztech.modern_industrialization.MIComponents.ENERGY.get();
+
+        if (targetStack.has(energyComp)) {
+            long cur = targetStack.getOrDefault(energyComp, 0L);
+            long cap = 1_000_000_000L;
+
+            if (targetStack.getItem() instanceof ISimpleEnergyItem simple)
+                cap = simple.getEnergyCapacity(targetStack);
+
+            long toSend = Math.min(getEnergyMaxOutput(battery), stored);
+            long space = cap - cur;
+
+            if (space > 0) {
+                long insert = Math.min(space, toSend);
+                targetStack.set(energyComp, cur + insert);
+                setStoredEnergy(battery, stored - insert);
+            }
+        }
     }
 
     // === Tooltip ===
