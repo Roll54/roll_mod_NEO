@@ -1,6 +1,8 @@
 {
   "ores": [
     {
+      "uk_ua_name": "Слюда",
+      "en_us_name": "Mica",
       "ore_name": "mica",
       "item_name": "raw_mica",
       "hex_color": "#6fb82a",
@@ -9,6 +11,8 @@
       "item_base": "copper"
     },
     {
+      "uk_ua_name": "Кіаніт",
+      "en_us_name": "Kyanite",
       "ore_name": "kyanite",
       "item_name": "raw_kyanite",
       "hex_color": "#748a88",
@@ -17,6 +21,8 @@
       "item_base": "amethyst"
     },
     {
+      "uk_ua_name": "Гематит",
+      "en_us_name": "Hematite",
       "ore_name": "hematite",
       "item_name": "raw_hematite",
       "hex_color": "#d1553f",
@@ -25,6 +31,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Жовтий лімоніт",
+      "en_us_name": "Yellow Limonite",
       "ore_name": "yellow_limonite",
       "item_name": "raw_yellow_limonite",
       "hex_color": "#a38933",
@@ -33,6 +41,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Біотит",
+      "en_us_name": "Biotite",
       "ore_name": "biotite",
       "item_name": "raw_biotite",
       "hex_color": "#582c8a",
@@ -41,6 +51,8 @@
       "item_base": "gold"
     },
     {
+      "uk_ua_name": "Магнетит",
+      "en_us_name": "Magnetite",
       "ore_name": "magnetite",
       "item_name": "raw_magnetite",
       "hex_color": "#211f21",
@@ -49,6 +61,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Гарнієрит",
+      "en_us_name": "Garnierite",
       "ore_name": "garnierite",
       "item_name": "raw_garnierite",
       "hex_color": "#174722",
@@ -57,6 +71,8 @@
       "item_base": "copper"
     },
     {
+      "uk_ua_name": "Пентландит",
+      "en_us_name": "Pentlandite",
       "ore_name": "pentlandite",
       "item_name": "raw_pentlandite",
       "hex_color": "#5e5924",
@@ -65,6 +81,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Халькопірит",
+      "en_us_name": "Chalcopyrite",
       "ore_name": "chalcopyrite",
       "item_name": "raw_chalcopyrite",
       "hex_color": "#5c5345",
@@ -73,6 +91,8 @@
       "item_base": "copper"
     },
     {
+      "uk_ua_name": "Цертусовий кварц",
+      "en_us_name": "Certus Quartz",
       "ore_name": "certus_quartz",
       "item_name": "raw_certus_quartz",
       "hex_color": "#8dbce3",
@@ -81,6 +101,8 @@
       "item_base": "quartz"
     },
     {
+      "uk_ua_name": "Пірохлор",
+      "en_us_name": "Pyrochlore",
       "ore_name": "pyrochlore",
       "item_name": "raw_pyrochlore",
       "hex_color": "#0e4435",
@@ -89,6 +111,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Піроп",
+      "en_us_name": "Pyrope",
       "ore_name": "pyrope",
       "item_name": "raw_pyrope",
       "hex_color": "#42122d",
@@ -97,6 +121,8 @@
       "item_base": "copper"
     },
     {
+      "uk_ua_name": "Апатит",
+      "en_us_name": "Apatite",
       "ore_name": "apatite",
       "item_name": "raw_apatite",
       "hex_color": "#24bbed",
@@ -105,6 +131,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Галена",
+      "en_us_name": "Galena",
       "ore_name": "galena",
       "item_name": "raw_galena",
       "hex_color": "#3e3945",
@@ -113,6 +141,8 @@
       "item_base": "gold"
     },
     {
+      "uk_ua_name": "Піролюзит",
+      "en_us_name": "Pyrolusite",
       "ore_name": "pyrolusite",
       "item_name": "raw_pyrolusite",
       "hex_color": "#3e4c4d",
@@ -121,14 +151,18 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Хроміт",
+      "en_us_name": "Chromite",
       "ore_name": "chromite",
       "item_name": "raw_chromite",
       "hex_color": "#733853",
-      "bases": ["end", "moon","mars"],
+      "bases": ["end", "moon", "mars"],
       "overlay": "redstone",
       "item_base": "quartz"
     },
     {
+      "uk_ua_name": "Малахіт",
+      "en_us_name": "Malachite",
       "ore_name": "malachite",
       "item_name": "raw_malachite",
       "hex_color": "#22e3b9",
@@ -137,6 +171,8 @@
       "item_base": "copper"
     },
     {
+      "uk_ua_name": "Флюорит",
+      "en_us_name": "Fluorite",
       "ore_name": "fluorite",
       "item_name": "raw_fluorite",
       "hex_color": "#375e34",
@@ -145,6 +181,8 @@
       "item_base": "zinc"
     },
     {
+      "uk_ua_name": "Пірит",
+      "en_us_name": "Pyrite",
       "ore_name": "pyrite",
       "item_name": "raw_pyrite",
       "hex_color": "#c99347",
@@ -153,6 +191,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Кіновар",
+      "en_us_name": "Cinnabar",
       "ore_name": "cinnabar",
       "item_name": "raw_cinnabar",
       "hex_color": "#8a604c",
@@ -161,6 +201,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Перидот",
+      "en_us_name": "Peridot",
       "ore_name": "peridot",
       "item_name": "raw_peridot",
       "hex_color": "#8ab867",
@@ -169,6 +211,8 @@
       "item_base": "copper"
     },
     {
+      "uk_ua_name": "Содаліт",
+      "en_us_name": "Sodalite",
       "ore_name": "sodalite",
       "item_name": "raw_sodalite",
       "hex_color": "#4a78d0",
@@ -177,6 +221,8 @@
       "item_base": "amethyst"
     },
     {
+      "uk_ua_name": "Тетраедрит",
+      "en_us_name": "Tetrahedrite",
       "ore_name": "tetrahedrite",
       "item_name": "raw_tetrahedrite",
       "hex_color": "#9a5733",
@@ -185,6 +231,8 @@
       "item_base": "copper"
     },
     {
+      "uk_ua_name": "Стибніт",
+      "en_us_name": "Stibnite",
       "ore_name": "stibnite",
       "item_name": "raw_stibnite",
       "hex_color": "#6a5c8e",
@@ -193,6 +241,8 @@
       "item_base": "gold"
     },
     {
+      "uk_ua_name": "Ільменіт",
+      "en_us_name": "Ilmenite",
       "ore_name": "ilmenite",
       "item_name": "raw_ilmenite",
       "hex_color": "#4B4C5B",
@@ -201,6 +251,8 @@
       "item_base": "copper"
     },
     {
+      "uk_ua_name": "Блакитний топаз",
+      "en_us_name": "Blue Topaz",
       "ore_name": "blue_topaz",
       "item_name": "raw_blue_topaz",
       "hex_color": "#3e9dcf",
@@ -209,6 +261,8 @@
       "item_base": "quartz"
     },
     {
+      "uk_ua_name": "Топаз",
+      "en_us_name": "Topaz",
       "ore_name": "topaz",
       "item_name": "raw_topaz",
       "hex_color": "#f3a63c",
@@ -217,6 +271,8 @@
       "item_base": "quartz"
     },
     {
+      "uk_ua_name": "Халкоцит",
+      "en_us_name": "Chalcocite",
       "ore_name": "chalcocite",
       "item_name": "raw_chalcocite",
       "hex_color": "#454545",
@@ -225,6 +281,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Борніт",
+      "en_us_name": "Bornite",
       "ore_name": "bornite",
       "item_name": "raw_bornite",
       "hex_color": "#684a9d",
@@ -233,6 +291,8 @@
       "item_base": "copper"
     },
     {
+      "uk_ua_name": "Сірка",
+      "en_us_name": "Sulfur",
       "ore_name": "sulfur",
       "item_name": "raw_sulfur",
       "hex_color": "#e2ca00",
@@ -241,6 +301,8 @@
       "item_base": "uranium"
     },
     {
+      "uk_ua_name": "Сфалерит",
+      "en_us_name": "Sphalerite",
       "ore_name": "sphalerite",
       "item_name": "raw_sphalerite",
       "hex_color": "#6c6f39",
@@ -249,6 +311,8 @@
       "item_base": "zinc"
     },
     {
+      "uk_ua_name": "Монацит",
+      "en_us_name": "Monazite",
       "ore_name": "monazite",
       "item_name": "raw_monazite",
       "hex_color": "#a60073",
@@ -257,6 +321,8 @@
       "item_base": "amethyst"
     },
     {
+      "uk_ua_name": "Рубін",
+      "en_us_name": "Ruby",
       "ore_name": "ruby",
       "item_name": "raw_ruby",
       "hex_color": "#a82424",
@@ -265,14 +331,18 @@
       "item_base": "diamond"
     },
     {
+      "uk_ua_name": "Редстоунова руда",
+      "en_us_name": "Redstone Ore",
       "ore_name": "redstone",
       "item_name": "raw_redstone",
       "hex_color": "#b40f0f",
-      "bases": ["mars", "netherrack","stone", "deepslate"],
+      "bases": ["mars", "netherrack", "stone", "deepslate"],
       "overlay": "redstone",
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Селітра",
+      "en_us_name": "Saltpeter",
       "ore_name": "saltpeter",
       "item_name": "raw_saltpeter",
       "hex_color": "#eae6cf",
@@ -281,6 +351,8 @@
       "item_base": "quartz"
     },
     {
+      "uk_ua_name": "Смарагд",
+      "en_us_name": "Emerald",
       "ore_name": "emerald",
       "item_name": "raw_emerald",
       "hex_color": "#3fe65b",
@@ -289,6 +361,8 @@
       "item_base": "diamond"
     },
     {
+      "uk_ua_name": "Берилій",
+      "en_us_name": "Beryllium",
       "ore_name": "beryllium",
       "item_name": "raw_beryllium",
       "hex_color": "#007c20",
@@ -297,6 +371,8 @@
       "item_base": "tin"
     },
     {
+      "uk_ua_name": "Танталіт",
+      "en_us_name": "Tantalite",
       "ore_name": "tantalite",
       "item_name": "raw_tantalite",
       "hex_color": "#5b4032",
@@ -305,6 +381,8 @@
       "item_base": "osmium"
     },
     {
+      "uk_ua_name": "Молібденіт",
+      "en_us_name": "Molybdenite",
       "ore_name": "molybdenite",
       "item_name": "raw_molybdenite",
       "hex_color": "#4c4f63",
@@ -313,6 +391,8 @@
       "item_base": "osmium"
     },
     {
+      "uk_ua_name": "Вульфеніт",
+      "en_us_name": "Wulfenite",
       "ore_name": "wulfenite",
       "item_name": "raw_wulfenite",
       "hex_color": "#f28b2c",
@@ -321,6 +401,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Повеліт",
+      "en_us_name": "Powellite",
       "ore_name": "powellite",
       "item_name": "raw_powellite",
       "hex_color": "#a3a978",
@@ -329,6 +411,8 @@
       "item_base": "zinc"
     },
     {
+      "uk_ua_name": "Молібден",
+      "en_us_name": "Molybdenum",
       "ore_name": "molybdenum",
       "item_name": "raw_molybdenum",
       "hex_color": "#6a7ca0",
@@ -337,6 +421,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Золото",
+      "en_us_name": "Gold",
       "ore_name": "gold",
       "item_name": "raw_gold",
       "hex_color": "#ffd700",
@@ -345,14 +431,18 @@
       "item_base": "gold"
     },
     {
+      "uk_ua_name": "Гетит",
+      "en_us_name": "Goethite",
       "ore_name": "goethite",
       "item_name": "raw_goethite",
       "hex_color": "#6b5731",
-      "bases": ["deepslate", "netherrack","stone"],
+      "bases": ["deepslate", "netherrack", "stone"],
       "overlay": "coal",
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Ванадій-магнетит",
+      "en_us_name": "Vanadium Magnetite",
       "ore_name": "vanadium_magnetite",
       "item_name": "raw_vanadium_magnetite",
       "hex_color": "#f26800",
@@ -361,6 +451,8 @@
       "item_base": "quartz"
     },
     {
+      "uk_ua_name": "Рутил",
+      "en_us_name": "Rutile",
       "ore_name": "rutile",
       "item_name": "raw_rutile",
       "hex_color": "#5b4d48",
@@ -369,6 +461,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Срібло",
+      "en_us_name": "Silver",
       "ore_name": "silver",
       "item_name": "raw_silver",
       "hex_color": "#9096c0",
@@ -377,6 +471,8 @@
       "item_base": "osmium"
     },
     {
+      "uk_ua_name": "Боксит",
+      "en_us_name": "Bauxite",
       "ore_name": "bauxite",
       "item_name": "raw_bauxite",
       "hex_color": "#ac5b15",
@@ -385,6 +481,8 @@
       "item_base": "zinc"
     },
     {
+      "uk_ua_name": "Сіль",
+      "en_us_name": "Salt",
       "ore_name": "salt",
       "item_name": "raw_salt",
       "hex_color": "#f2ede3",
@@ -393,6 +491,8 @@
       "item_base": "quartz"
     },
     {
+      "uk_ua_name": "Кам'яна сіль",
+      "en_us_name": "Rock Salt",
       "ore_name": "rock_salt",
       "item_name": "raw_rock_salt",
       "hex_color": "#d89c69",
@@ -401,6 +501,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Лепідоліт",
+      "en_us_name": "Lepidolite",
       "ore_name": "lepidolite",
       "item_name": "raw_lepidolite",
       "hex_color": "#8e55a8",
@@ -409,6 +511,8 @@
       "item_base": "amethyst"
     },
     {
+      "uk_ua_name": "Вольфрамат",
+      "en_us_name": "Tungstate",
       "ore_name": "tungstate",
       "item_name": "raw_tungstate",
       "hex_color": "#4d154b",
@@ -417,7 +521,9 @@
       "item_base": "copper"
     },
     {
-      "ore_name": " ",
+      "uk_ua_name": "Шеєліт",
+      "en_us_name": "Scheelite",
+      "ore_name": "scheelite",
       "item_name": "raw_scheelite",
       "hex_color": "#aebd1d",
       "bases": ["stone", "deepslate", "end"],
@@ -425,6 +531,8 @@
       "item_base": "coal"
     },
     {
+      "uk_ua_name": "Літій",
+      "en_us_name": "Lithium",
       "ore_name": "lithium",
       "item_name": "raw_lithium",
       "hex_color": "#a8aabd",
@@ -433,14 +541,18 @@
       "item_base": "coal"
     },
     {
+      "uk_ua_name": "Куперіт",
+      "en_us_name": "Cooperite",
       "ore_name": "sheldonite",
       "item_name": "raw_sheldonite",
       "hex_color": "#ffd36a",
-      "bases": ["stone", "deepslate", "end","mars"],
+      "bases": ["stone", "deepslate", "end", "mars"],
       "overlay": "diamond",
       "item_base": "uranium"
     },
     {
+      "uk_ua_name": "Уранініт",
+      "en_us_name": "Uraninite",
       "ore_name": "uraninite",
       "item_name": "raw_uraninite",
       "hex_color": "#4a7a35",
@@ -449,6 +561,8 @@
       "item_base": "uranium"
     },
     {
+      "uk_ua_name": "Торій",
+      "en_us_name": "Thorium",
       "ore_name": "thorium",
       "item_name": "raw_thorium",
       "hex_color": "#4e6320",
@@ -457,6 +571,8 @@
       "item_base": "uranium"
     },
     {
+      "uk_ua_name": "Пітчбленд",
+      "en_us_name": "Pitchblende",
       "ore_name": "pitchblende",
       "item_name": "raw_pitchblende",
       "hex_color": "#2e5c09",
@@ -465,6 +581,8 @@
       "item_base": "copper"
     },
     {
+      "uk_ua_name": "Каситерит",
+      "en_us_name": "Cassiterite",
       "ore_name": "cassiterite",
       "item_name": "raw_cassiterite",
       "hex_color": "#9096c0",
@@ -473,6 +591,8 @@
       "item_base": "iron"
     },
     {
+      "uk_ua_name": "Родохрозит",
+      "en_us_name": "Rhodochrosite",
       "ore_name": "rhodochrosite",
       "item_name": "raw_rhodochrosite",
       "hex_color": "#f46a65",
@@ -481,6 +601,8 @@
       "item_base": "quartz"
     },
     {
+      "uk_ua_name": "Свинець",
+      "en_us_name": "Lead",
       "ore_name": "lead",
       "item_name": "raw_lead",
       "hex_color": "#6a7ca0",

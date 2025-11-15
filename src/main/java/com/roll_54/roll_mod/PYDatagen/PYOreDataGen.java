@@ -58,8 +58,15 @@ public class PYOreDataGen {
             String id = prefix + "_" + oreName;
             registerSimpleBlock(id, props);
         }
-        // реєстрація предметів raw_ і _dust
+        // Базові предмети
         registerSimpleItem("raw_" + oreName);
+        registerSimpleItem("crushed_" + oreName + "_ore");
+        registerSimpleItem("impure_" + oreName + "_dust");
+
+        registerSimpleItem("refined_" + oreName + "_ore");
+        registerSimpleItem("pure_" + oreName + "_dust");
+        
+        registerSimpleItem("purified_" + oreName + "_ore");
         registerSimpleItem(oreName + "_dust");
     }
 
