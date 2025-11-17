@@ -2,6 +2,10 @@ package com.roll_54.roll_mod.PYDatagen;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.init.ItemRegistry;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
@@ -55,8 +59,11 @@ public class PYOreDataGen {
      */
     private static void registerOreVariants(String oreName, BlockBehaviour.Properties props, String... dimensions) {
         for (String prefix : dimensions) {
+
             String id = prefix + "_" + oreName;
+
             registerSimpleBlock(id, props);
+
         }
         // Базові предмети
         registerSimpleItem("raw_" + oreName);
@@ -99,8 +106,9 @@ public class PYOreDataGen {
         registerOreVariants("fluorite", ORE_PROPERTIES, "stone", "moon", "netherrack");
         registerOreVariants("pyrite", ORE_PROPERTIES, "stone", "mars", "netherrack", "end");
         registerOreVariants("cinnabar", ORE_PROPERTIES, "stone", "netherrack");
-        registerOreVariants("peridot", ORE_PROPERTIES, "stone", "deepslate");
-        registerOreVariants("sodalite", ORE_PROPERTIES, "stone", "moon");
+        registerOreVariants("peridot", ORE_PROPERTIES, "end");
+        registerOreVariants("sodalite", ORE_PROPERTIES, "stone", "end");
+        registerOreVariants("lazurite", ORE_PROPERTIES, "stone", "end");
         registerOreVariants("tetrahedrite", ORE_PROPERTIES, "netherrack", "mars");
         registerOreVariants("stibnite", ORE_PROPERTIES, "netherrack", "venus");
         registerOreVariants("ilmenite", ORE_PROPERTIES, "venus", "stone", "moon");
@@ -139,5 +147,6 @@ public class PYOreDataGen {
         registerOreVariants("uraninite", ORE_PROPERTIES, "end");
         registerOreVariants("lead", ORE_PROPERTIES, "stone", "deepslate", "end");
         registerOreVariants("cassiterite", ORE_PROPERTIES, "stone", "deepslate");
+        registerOreVariants("olivine", ORE_PROPERTIES, "end","stone");
     }
 }

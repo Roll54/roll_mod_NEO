@@ -195,7 +195,7 @@
       "en_us_name": "Cinnabar",
       "ore_name": "cinnabar",
       "item_name": "raw_cinnabar",
-      "hex_color": "#8a604c",
+      "hex_color": "#8a3723",
       "bases": ["stone", "netherrack"],
       "overlay": "osmium",
       "item_base": "iron"
@@ -206,7 +206,7 @@
       "ore_name": "peridot",
       "item_name": "raw_peridot",
       "hex_color": "#8ab867",
-      "bases": ["stone", "deepslate"],
+      "bases": ["end"],
       "overlay": "gold",
       "item_base": "copper"
     },
@@ -216,9 +216,19 @@
       "ore_name": "sodalite",
       "item_name": "raw_sodalite",
       "hex_color": "#4a78d0",
-      "bases": ["stone", "moon"],
+      "bases": ["stone", "end"],
       "overlay": "lapis",
       "item_base": "amethyst"
+    },
+    {
+      "uk_ua_name": "Лазуріт",
+      "en_us_name": "Lazurite",
+      "ore_name": "lazurite",
+      "item_name": "raw_lazurite",
+      "hex_color": "#1e31d0",
+      "bases": ["stone", "end"],
+      "overlay": "lapis",
+      "item_base": "quartz"
     },
     {
       "uk_ua_name": "Тетраедрит",
@@ -609,6 +619,16 @@
       "bases": ["stone", "deepslate", "end"],
       "overlay": "osmium",
       "item_base": "copper"
+    },
+    {
+      "uk_ua_name": "Олівін",
+      "en_us_name": "Olivine",
+      "ore_name": "olivine",
+      "item_name": "raw_olivine",
+      "hex_color": "#6bcf66",
+      "bases": ["stone", "end"],
+      "overlay": "zinc",
+      "item_base": "diamond"
     }
   ]
 }

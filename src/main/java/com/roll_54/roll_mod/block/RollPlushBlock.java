@@ -16,7 +16,7 @@ public class RollPlushBlock extends FacingPlushBlock {
         super(settings);
     }
 
-    public InteractionResult use(
+    public InteractionResult useWithoutItem(
             BlockState state,
             Level level,
             BlockPos pos,
