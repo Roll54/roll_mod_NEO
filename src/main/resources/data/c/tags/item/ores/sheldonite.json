@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_sheldonite",
+    "roll_mod:deepslate_sheldonite",
+    "roll_mod:end_sheldonite",
+    "roll_mod:mars_sheldonite",
+    "roll_mod:raw_sheldonite"
+  ]
+}

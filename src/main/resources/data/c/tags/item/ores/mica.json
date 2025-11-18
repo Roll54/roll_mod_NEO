@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_mica",
+    "roll_mod:deepslate_mica",
+    "roll_mod:netherrack_mica",
+    "roll_mod:raw_mica"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:moon_bornite",
+    "roll_mod:netherrack_bornite",
+    "roll_mod:end_bornite",
+    "roll_mod:raw_bornite"
+  ]
+}

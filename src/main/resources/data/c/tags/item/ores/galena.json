@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_galena",
+    "roll_mod:mars_galena",
+    "roll_mod:raw_galena"
+  ]
+}

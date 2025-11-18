@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:moon_molybdenite",
+    "roll_mod:netherrack_molybdenite",
+    "roll_mod:raw_molybdenite"
+  ]
+}

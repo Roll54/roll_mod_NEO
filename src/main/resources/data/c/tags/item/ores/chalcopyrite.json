@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_chalcopyrite",
+    "roll_mod:netherrack_chalcopyrite",
+    "roll_mod:moon_chalcopyrite",
+    "roll_mod:raw_chalcopyrite"
+  ]
+}

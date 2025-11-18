@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_gold",
+    "roll_mod:netherrack_gold",
+    "roll_mod:deepslate_gold",
+    "roll_mod:end_gold",
+    "roll_mod:venus_gold",
+    "roll_mod:raw_gold"
+  ]
+}

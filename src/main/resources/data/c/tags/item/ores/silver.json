@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_silver",
+    "roll_mod:deepslate_silver",
+    "roll_mod:raw_silver"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:mars_redstone",
+    "roll_mod:netherrack_redstone",
+    "roll_mod:stone_redstone",
+    "roll_mod:deepslate_redstone",
+    "roll_mod:raw_redstone"
+  ]
+}

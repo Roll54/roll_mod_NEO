@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_lead",
+    "roll_mod:deepslate_lead",
+    "roll_mod:end_lead",
+    "roll_mod:raw_lead"
+  ]
+}

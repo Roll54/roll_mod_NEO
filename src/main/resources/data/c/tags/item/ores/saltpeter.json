@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_saltpeter",
+    "roll_mod:netherrack_saltpeter",
+    "roll_mod:raw_saltpeter"
+  ]
+}

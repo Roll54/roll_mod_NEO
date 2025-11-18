@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_magnetite",
+    "roll_mod:deepslate_magnetite",
+    "roll_mod:netherrack_magnetite",
+    "roll_mod:end_magnetite",
+    "roll_mod:mars_magnetite",
+    "roll_mod:moon_magnetite",
+    "roll_mod:venus_magnetite",
+    "roll_mod:mercury_magnetite",
+    "roll_mod:raw_magnetite"
+  ]
+}

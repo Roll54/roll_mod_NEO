@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_scheelite",
+    "roll_mod:deepslate_scheelite",
+    "roll_mod:end_scheelite",
+    "roll_mod:raw_scheelite"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:moon_vanadium_magnetite",
+    "roll_mod:mercury_vanadium_magnetite",
+    "roll_mod:raw_vanadium_magnetite"
+  ]
+}

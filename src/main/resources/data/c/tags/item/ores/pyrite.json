@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_pyrite",
+    "roll_mod:mars_pyrite",
+    "roll_mod:end_pyrite",
+    "roll_mod:netherrack_pyrite",
+    "roll_mod:raw_pyrite"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:deepslate_goethite",
+    "roll_mod:netherrack_goethite",
+    "roll_mod:stone_goethite",
+    "roll_mod:raw_goethite"
+  ]
+}

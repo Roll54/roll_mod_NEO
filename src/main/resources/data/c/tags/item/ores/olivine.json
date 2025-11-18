@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_olivine",
+    "roll_mod:end_olivine",
+    "roll_mod:raw_olivine"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_fluorite",
+    "roll_mod:moon_fluorite",
+    "roll_mod:netherrack_fluorite",
+    "roll_mod:raw_fluorite"
+  ]
+}

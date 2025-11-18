@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_salt",
+    "roll_mod:deepslate_salt",
+    "roll_mod:raw_salt"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:end_ruby",
+    "roll_mod:netherrack_ruby",
+    "roll_mod:stone_ruby",
+    "roll_mod:deepslate_ruby",
+    "roll_mod:raw_ruby"
+  ]
+}

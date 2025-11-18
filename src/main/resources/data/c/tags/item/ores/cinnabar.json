@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_cinnabar",
+    "roll_mod:netherrack_cinnabar",
+    "roll_mod:raw_cinnabar"
+  ]
+}

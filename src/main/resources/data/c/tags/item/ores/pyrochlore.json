@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_pyrochlore",
+    "roll_mod:deepslate_pyrochlore",
+    "roll_mod:moon_pyrochlore",
+    "roll_mod:raw_pyrochlore"
+  ]
+}

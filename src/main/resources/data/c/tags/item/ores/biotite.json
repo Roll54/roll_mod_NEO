@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:deepslate_biotite",
+    "roll_mod:moon_biotite",
+    "roll_mod:netherrack_biotite",
+    "roll_mod:raw_biotite"
+  ]
+}

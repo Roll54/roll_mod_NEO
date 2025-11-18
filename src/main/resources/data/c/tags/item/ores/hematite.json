@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_hematite",
+    "roll_mod:deepslate_hematite",
+    "roll_mod:netherrack_hematite",
+    "roll_mod:end_hematite",
+    "roll_mod:mars_hematite",
+    "roll_mod:moon_hematite",
+    "roll_mod:venus_hematite",
+    "roll_mod:mercury_hematite",
+    "roll_mod:raw_hematite"
+  ]
+}

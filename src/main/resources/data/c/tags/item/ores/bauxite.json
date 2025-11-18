@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_bauxite",
+    "roll_mod:deepslate_bauxite",
+    "roll_mod:netherrack_bauxite",
+    "roll_mod:end_bauxite",
+    "roll_mod:mars_bauxite",
+    "roll_mod:moon_bauxite",
+    "roll_mod:venus_bauxite",
+    "roll_mod:mercury_bauxite",
+    "roll_mod:raw_bauxite"
+  ]
+}

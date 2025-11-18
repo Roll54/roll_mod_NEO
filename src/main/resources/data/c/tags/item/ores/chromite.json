@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:end_chromite",
+    "roll_mod:moon_chromite",
+    "roll_mod:mars_chromite",
+    "roll_mod:raw_chromite"
+  ]
+}
