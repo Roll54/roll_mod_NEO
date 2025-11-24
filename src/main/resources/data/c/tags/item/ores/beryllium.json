@@ -1,7 +1,6 @@
 {
   "replace": false,
   "values": [
-    "roll_mod:deepslate_beryllium",
     "roll_mod:netherrack_beryllium",
     "roll_mod:raw_beryllium"
   ]

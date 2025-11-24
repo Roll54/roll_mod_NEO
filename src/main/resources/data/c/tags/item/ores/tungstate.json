@@ -1,8 +1,6 @@
 {
   "replace": false,
   "values": [
-    "roll_mod:stone_tungstate",
-    "roll_mod:deepslate_tungstate",
     "roll_mod:end_tungstate",
     "roll_mod:raw_tungstate"
   ]

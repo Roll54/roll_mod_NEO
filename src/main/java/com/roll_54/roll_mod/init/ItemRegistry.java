@@ -479,9 +479,21 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> SODIUM_BISULFATE = ITEMS.register("sodium_bisulfate", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RUTILE_IRON = ITEMS.register("rutile_iron", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> CALCIUM_DUST = ITEMS.register("calcium_dust", () -> new Item(new Item.Properties()));
-
+    //old vanadium chemistry
     public static final DeferredHolder<Item, Item> VANADIUM_DUST = ITEMS.register("vanadium_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> VANADIUM_DUST_CLEAN = ITEMS.register("vanadium_dust_clean", () -> new Item(new Item.Properties()));
+    //New Vanadium chemistry
+    public static final DeferredHolder<Item, Item> VANADIUM_SLAG_DUST = registerTooltip("vanadium_slag_dust", TooltipOptions.nameAndLore(0xe0761f, 1, 0xe0761f));
+
+    public static final DeferredHolder<Item, Item> IRON_III_VANADATE = ITEMS.register("iron_iii_vanadate", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> CALCIUM_METAVANADATE = ITEMS.register("calcium_metavanadate", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SODIUM_METAVANADATE = ITEMS.register("sodium_metavanadate", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> VANADIUM_PENTOXIDE = ITEMS.register("vanadium_pentoxide", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> VANADIUM_TRIOXIDE = ITEMS.register("vanadium_trioxide", () -> new Item(new Item.Properties()));
+
+    public static final DeferredHolder<Item, Item> SODIUM_CARBONATE = ITEMS.register("sodium_carbonate", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> CALCIUM_CARBONATE = ITEMS.register("calcium_carbonate", () -> new Item(new Item.Properties()));
+
     public static final DeferredHolder<Item, Item> PLATINUM_GROUP_SLUDGE = ITEMS.register("platinum_group_sludge", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_PLATINUM_DUST = ITEMS.register("raw_platinum_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_PALLADIUM_DUST = ITEMS.register("raw_palladium_dust", () -> new Item(new Item.Properties()));
@@ -549,7 +561,6 @@ public class ItemRegistry {
     );
 
     public static final DeferredHolder<Item, Item> SODIUM_SULFATE = ITEMS.register("sodium_sulfate", () -> new Item(new Item.Properties()));
-    // Англомовний нейм лишив як є (з KubeJS)
     public static final DeferredHolder<Item, Item> MINING_DRONE = ITEMS.register("mining_drone", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> OBSIDIAN_DUST = ITEMS.register("obsidian_dust", () -> new Item(new Item.Properties()));
@@ -606,8 +617,8 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, BlockItem> YAN_PLUSH_ITEM = ITEMS.register("yan_plush", () -> new BlockItem(YAN_PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, BlockItem> LEDOK_PLUSH_ITEM = ITEMS.register("ledok_plush", () -> new BlockItem(LEDOK_PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, BlockItem> LORP_OOO_PLUSH_ITEM = ITEMS.register("lorp_ooo_plush", () -> new BlockItem(LORP_OOO_PLUSH.get(), new Item.Properties()));
-    public static final DeferredHolder<Item, StormScannerItem> LV_STORM_SCANNER = ITEMS.register("lv_storm_scanner", () -> new StormScannerItem(new Item.Properties(), 1, 0xff1500, 1_000_000));
-    public static final DeferredHolder<Item, StormScannerItem> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties(), 2, 0xff1500, 10_000_000));
+    public static final DeferredHolder<Item, StormScannerItem> LV_STORM_SCANNER = ITEMS.register("lv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 1, 0xff1500, 1_000_000));
+    public static final DeferredHolder<Item, StormScannerItem> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 2, 0xff1500, 10_000_000));
     public static final DeferredHolder<Item, EnergyBatteryItem> TEST_BATTERY = ITEMS.register("nano_battery", () -> new EnergyBatteryItem(new Item.Properties(), 20_000_000L, 20_000L, 200_000L, 0x00FFFF));
     // 🔋 REDSTONE BATTERY
     public static final DeferredHolder<Item, EnergyBatteryItem> REDSTONE_BATTERY =
@@ -686,7 +697,7 @@ public class ItemRegistry {
                             new Item.Properties()
                                     .stacksTo(1)
                                     .rarity(Rarity.EPIC),
-                            1_000_000_000_000L, // 1T EU
+                            10_000_000_000_000L, // 10T EU
                             50_000_000L,        // input
                             50_000_000L,        // output
                             0xFFD700            // золотий
@@ -694,6 +705,14 @@ public class ItemRegistry {
             );
 
     public static final DeferredHolder<Item, LunarClockItem> LUNAR_PHASE_CLOCK = ITEMS.register("moon_phase_clock", () -> new LunarClockItem(new Item.Properties()));
+
+    public static final DeferredHolder<Item, Item> POTASSIUM_DUST = ITEMS.register("potassium_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> STONE_DUST = ITEMS.register("stone_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> CLAY_DUST = ITEMS.register("clay_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> CALCIUM_CHLORIDE_DUST = ITEMS.register("calcium_chloride_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SODIUM_TUNGSTATE_DUST = ITEMS.register("sodium_tungstate_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> TUNGSTIC_ACID_DUST = ITEMS.register("tungstic_acid_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> TUNGSTEN_TRIOXIDE = ITEMS.register("tungsten_trioxide", () -> new Item(new Item.Properties()));
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);

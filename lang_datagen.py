@@ -3,10 +3,18 @@ import json
 import argparse
 from pathlib import Path
 
-def make_item_names(ore_name: str, ua_name: str, en_name: str):
-    """Generate language keys for all 6 items of an ore."""
+# якщо треба підтримка "bases": ["all"]
+ALL_BASES = [
+    "stone", "deepslate", "netherrack", "end",
+    "moon", "mars", "venus", "mercury"
+]
 
-    # Базові назви
+# -----------------------------
+#   ITEM NAMES
+# -----------------------------
+def make_item_names(ore_name: str, ua_name: str, en_name: str):
+    """Generate language keys for all items of an ore."""
+
     item_raw      = f"raw_{ore_name}"
     item_dust     = f"{ore_name}_dust"
     item_crushed  = f"crushed_{ore_name}_ore"
@@ -15,7 +23,7 @@ def make_item_names(ore_name: str, ua_name: str, en_name: str):
     item_pure     = f"pure_{ore_name}_dust"
     item_impure   = f"impure_{ore_name}_dust"
 
-    # UA
+    # UA items
     ua = {
         f"item.roll_mod.{item_raw}":        f"Необроблений {ua_name.lower()}",
         f"item.roll_mod.{item_dust}":       f"Пил {ua_name.lower()}",
@@ -26,7 +34,7 @@ def make_item_names(ore_name: str, ua_name: str, en_name: str):
         f"item.roll_mod.{item_impure}":     f"Брудний пил {ua_name.lower()}",
     }
 
-    # EN
+    # EN items
     en = {
         f"item.roll_mod.{item_raw}":        f"Raw {en_name}",
         f"item.roll_mod.{item_dust}":       f"{en_name} Dust",
@@ -40,6 +48,54 @@ def make_item_names(ore_name: str, ua_name: str, en_name: str):
     return ua, en
 
 
+# -----------------------------
+#   BLOCK NAMES
+# -----------------------------
+def prettify_base_ua(base: str):
+    return {
+        "stone": "Кам'яний",
+        "deepslate": "Глибосланцевий",
+        "netherrack": "Незеритний",
+        "end": "Краєвий",
+        "moon": "Місячний",
+        "mars": "Марсіанський",
+        "venus": "Венеріанський",
+        "mercury": "Меркуріанський",
+    }.get(base, base.capitalize())
+
+
+def prettify_base_en(base: str):
+    return {
+        "stone": "Stone",
+        "deepslate": "Deepslate",
+        "netherrack": "Netherrack",
+        "end": "End",
+        "moon": "Moon",
+        "mars": "Mars",
+        "venus": "Venus",
+        "mercury": "Mercury",
+    }.get(base, base.capitalize())
+
+
+def make_block_names(ore_name: str, ua_name: str, en_name: str, bases: list):
+    ua = {}
+    en = {}
+
+    for base in bases:
+        key = f"block.roll_mod.{base}_{ore_name}"
+
+        ua_prefix = prettify_base_ua(base)
+        en_prefix = prettify_base_en(base)
+
+        ua[key] = f"{ua_prefix} {ua_name.lower()}"
+        en[key] = f"{en_prefix} {en_name} Ore"
+
+    return ua, en
+
+
+# -----------------------------
+#   MAIN
+# -----------------------------
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--batch", required=True, help="Path to ores_batch.json")
@@ -51,10 +107,13 @@ def main():
 
     out_dir.mkdir(exist_ok=True)
 
-    data = json.load(open(batch_file, "r", encoding="utf8"))
+    # Загальні колекції для 4 файлів:
+    ua_items_total = {}
+    en_items_total = {}
+    ua_blocks_total = {}
+    en_blocks_total = {}
 
-    ua_total = {}
-    en_total = {}
+    data = json.load(open(batch_file, "r", encoding="utf8"))
 
     for ore in data["ores"]:
         if "uk_ua_name" not in ore or "en_us_name" not in ore:
@@ -65,22 +124,44 @@ def main():
         ua_name = ore["uk_ua_name"]
         en_name = ore["en_us_name"]
 
-        ua, en = make_item_names(ore_name, ua_name, en_name)
+        # --------------------
+        # ITEMS
+        # --------------------
+        ua_items, en_items = make_item_names(ore_name, ua_name, en_name)
+        ua_items_total.update(ua_items)
+        en_items_total.update(en_items)
 
-        ua_total.update(ua)
-        en_total.update(en)
+        # --------------------
+        # BLOCKS
+        # --------------------
+        bases = ore.get("bases", [])
+        if bases == ["all"]:
+            bases = ALL_BASES
 
-    # Write UA
-    with open(out_dir / "uk_ua.json", "w", encoding="utf8") as f:
-        json.dump(ua_total, f, indent=2, ensure_ascii=False)
+        ua_blocks, en_blocks = make_block_names(ore_name, ua_name, en_name, bases)
+        ua_blocks_total.update(ua_blocks)
+        en_blocks_total.update(en_blocks)
 
-    # Write EN
-    with open(out_dir / "en_us.json", "w", encoding="utf8") as f:
-        json.dump(en_total, f, indent=2, ensure_ascii=False)
+    # ------------------------------
+    #   ЗАПИС ФАЙЛІВ
+    # ------------------------------
+    with open(out_dir / "item_uk_ua.json", "w", encoding="utf8") as f:
+        json.dump(ua_items_total, f, indent=2, ensure_ascii=False)
+
+    with open(out_dir / "item_en_us.json", "w", encoding="utf8") as f:
+        json.dump(en_items_total, f, indent=2, ensure_ascii=False)
+
+    with open(out_dir / "block_uk_ua.json", "w", encoding="utf8") as f:
+        json.dump(ua_blocks_total, f, indent=2, ensure_ascii=False)
+
+    with open(out_dir / "block_en_us.json", "w", encoding="utf8") as f:
+        json.dump(en_blocks_total, f, indent=2, ensure_ascii=False)
 
     print("DONE. Generated:")
-    print(" -", out_dir / "uk_ua.json")
-    print(" -", out_dir / "en_us.json")
+    print(" - item_uk_ua.json")
+    print(" - item_en_us.json")
+    print(" - block_uk_ua.json")
+    print(" - block_en_us.json")
 
 
 if __name__ == "__main__":

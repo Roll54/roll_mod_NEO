@@ -231,6 +231,16 @@
       "item_base": "quartz"
     },
     {
+      "uk_ua_name": "Лазуріт",
+      "en_us_name": "Lazurite",
+      "ore_name": "lapis_lazuli",
+      "item_name": "raw_lapis_lazuli",
+      "hex_color": "#3e00d0",
+      "bases": ["stone", "end"],
+      "overlay": "lapis",
+      "item_base": "copper"
+    },
+    {
       "uk_ua_name": "Тетраедрит",
       "en_us_name": "Tetrahedrite",
       "ore_name": "tetrahedrite",
@@ -376,7 +386,7 @@
       "ore_name": "beryllium",
       "item_name": "raw_beryllium",
       "hex_color": "#007c20",
-      "bases": ["deepslate", "netherrack"],
+      "bases": ["netherrack"],
       "overlay": "iron",
       "item_base": "tin"
     },
@@ -526,7 +536,7 @@
       "ore_name": "tungstate",
       "item_name": "raw_tungstate",
       "hex_color": "#4d154b",
-      "bases": ["stone", "deepslate", "end"],
+      "bases": ["end"],
       "overlay": "tin",
       "item_base": "copper"
     },
@@ -546,7 +556,7 @@
       "ore_name": "lithium",
       "item_name": "raw_lithium",
       "hex_color": "#a8aabd",
-      "bases": ["stone", "deepslate", "end"],
+      "bases": ["end"],
       "overlay": "zinc",
       "item_base": "coal"
     },
@@ -556,7 +566,7 @@
       "ore_name": "sheldonite",
       "item_name": "raw_sheldonite",
       "hex_color": "#ffd36a",
-      "bases": ["stone", "deepslate", "end", "mars"],
+      "bases": ["end", "mars"],
       "overlay": "diamond",
       "item_base": "uranium"
     },

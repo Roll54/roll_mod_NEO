@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "roll_mod:item/redstone_battery"
+    "layer0": "roll_mod:item/stone_dust"
   }
 }

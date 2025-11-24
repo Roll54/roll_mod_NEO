@@ -1,8 +1,6 @@
 {
   "replace": false,
   "values": [
-    "roll_mod:stone_lithium",
-    "roll_mod:deepslate_lithium",
     "roll_mod:end_lithium",
     "roll_mod:raw_lithium"
   ]

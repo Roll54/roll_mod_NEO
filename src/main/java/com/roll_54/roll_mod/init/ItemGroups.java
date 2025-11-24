@@ -109,7 +109,7 @@ public final class ItemGroups {
                         add(out, ItemRegistry.ULTRA_BATTERY);
                         {
                             ItemStack full = new ItemStack(ItemRegistry.ULTRA_BATTERY.get());
-                            full.set(MIComponents.ENERGY.get(), 1_000_000_000_000L);
+                            full.set(MIComponents.ENERGY.get(), 10_000_000_000_000L);
                             out.accept(full);
                         }
 

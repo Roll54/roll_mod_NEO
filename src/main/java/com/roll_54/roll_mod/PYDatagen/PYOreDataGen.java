@@ -109,6 +109,7 @@ public class PYOreDataGen {
         registerOreVariants("peridot", ORE_PROPERTIES, "end");
         registerOreVariants("sodalite", ORE_PROPERTIES, "stone", "end");
         registerOreVariants("lazurite", ORE_PROPERTIES, "stone", "end");
+        registerOreVariants("lapis_lazuli", ORE_PROPERTIES, "stone", "end");
         registerOreVariants("tetrahedrite", ORE_PROPERTIES, "netherrack", "mars");
         registerOreVariants("stibnite", ORE_PROPERTIES, "netherrack", "venus");
         registerOreVariants("ilmenite", ORE_PROPERTIES, "venus", "stone", "moon");
