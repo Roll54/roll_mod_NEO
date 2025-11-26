@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.mixin;
 
-import com.roll_54.roll_mod.сonfig.GeneralConfig;
+import com.roll_54.roll_mod.config.GeneralConfig;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;

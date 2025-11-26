@@ -52,6 +52,15 @@ repositories {
         url "https://cursemaven.com"
     }
 
+    maven {
+        name = "FzzyMaven"
+        url = "https://maven.fzzyhmstrs.me/"
+    }
+
+    maven {
+        url = "https://thedarkcolour.github.io/KotlinForForge/"
+    }
+
 }
 
 base {
@@ -153,6 +162,9 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+
+    implementation "me.fzzyhmstrs:fzzy_config:0.7.3+1.21+neoforge"
+
     implementation "aztech:Modern-Industrialization:${modern_industrialization_version}"
 
     implementation "dev.technici4n:GrandPower:${grandpower_version}"

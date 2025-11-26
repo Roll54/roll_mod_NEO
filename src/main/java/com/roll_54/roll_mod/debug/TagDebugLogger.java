@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.debug;
 
-import com.roll_54.roll_mod.сonfig.GeneralConfig;
+import com.roll_54.roll_mod.config.GeneralConfig;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.netherstorm.StormHandler;
 import net.minecraft.core.registries.Registries;

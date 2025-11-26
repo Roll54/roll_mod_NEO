@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.minestar;
 
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.init.ModConfigs;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -21,7 +22,6 @@ import static com.roll_54.roll_mod.init.ItemRegistry.ERROR_ITEM;
 @EventBusSubscriber(modid = RollMod.MODID)
 public class AutoGiveHandler {
 
-    public static final String ITEM_TO_GIVE = "minecraft:armadillo_scute";
     private static int tickCounter = 0;
 
     @SubscribeEvent
@@ -39,14 +39,16 @@ public class AutoGiveHandler {
 
             if (autogive) {
 
-                var id = ResourceLocation.parse(ITEM_TO_GIVE);
+                var itemId = ModConfigs.MAIN.autogiveItem;
+                var id = ResourceLocation.parse(itemId);
                 var item = BuiltInRegistries.ITEM.get(id);
 
                 if (item == Items.AIR) {
-                    RollMod.LOGGER.error("Item {} does not exist!", ITEM_TO_GIVE);
+                    RollMod.LOGGER.error("Item {} does not exist!", itemId);
                     player.getInventory().add(new ItemStack(ERROR_ITEM));
                     return;
                 }
+
 
                 // ----------------------------
                 // Додаємо 2 ЛОКАЛІЗОВАНІ РЯДКИ
@@ -64,9 +66,6 @@ public class AutoGiveHandler {
                 player.getInventory().add(stack);
 
                 RollMod.LOGGER.debug("[Autogive] {} -> gave item", player.getGameProfile().getName());
-            }else {
-                RollMod.LOGGER.debug("[Autogive] {} -> skipped",
-                        player.getGameProfile().getName());
             }
         }
     }

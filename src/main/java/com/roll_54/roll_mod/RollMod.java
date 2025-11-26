@@ -44,6 +44,8 @@ public final class RollMod {
         SoundRegistry.SOUND_EVENTS.register(eventBus);
         ModComponents.COMPONENTS.register(eventBus);
 
+        ModConfigs.init();
+
         LOGGER.info("[{}] init complete.", MODID);
     }
 

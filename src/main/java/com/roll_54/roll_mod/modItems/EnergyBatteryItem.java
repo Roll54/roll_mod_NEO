@@ -2,7 +2,6 @@ package com.roll_54.roll_mod.modItems;
 
 import aztech.modern_industrialization.MIComponents;
 import com.roll_54.roll_mod.util.EnergyFormatUtils;
-import com.roll_54.roll_mod.сonfig.GeneralConfig;
 import com.roll_54.roll_mod.data.ToggleableItem;
 import dev.technici4n.grandpower.api.ILongEnergyStorage;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;

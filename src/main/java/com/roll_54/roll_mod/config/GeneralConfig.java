@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.сonfig;
+package com.roll_54.roll_mod.config;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
