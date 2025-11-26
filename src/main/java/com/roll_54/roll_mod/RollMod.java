@@ -25,7 +25,6 @@ public final class RollMod {
     public static final Logger LOGGER = LoggerFactory.getLogger(MODID);
 
     public RollMod(ModContainer container) {
-        // Модова шина подій (lifecycle)
 
 
         IEventBus eventBus = container.getEventBus();

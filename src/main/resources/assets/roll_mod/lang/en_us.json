@@ -226,7 +226,7 @@
   "item.roll_mod.standard_wafer": "Wafer",
   "item.roll_mod.standard_wafer_not": "NOT Wafer",
   "item.roll_mod.standard_wafer_or": "OR Wafer",
-  "item.roll_mod.standard_wafer_xor": "XOR Wafer",
+  "item.roll_mod.standard_wafer_xor": "NAND Wafer",
   "item.roll_mod.standard_wafer_ram": "RAM Wafer",
   "block.roll_mod.latex_dandelion": "Latex Dandelion",
   "item.roll_mod.latex_dandelion_seed": "Latex Dandelion Seeds",
@@ -316,6 +316,15 @@
   "item.roll_mod.sodium_tungstate_dust": "Sodium Tungstate Dust",
   "item.roll_mod.tungstic_acid_dust": "Tungstic Acid Dust",
   "item.roll_mod.tungsten_trioxide": "Tungsten Trioxide",
+
+  "item.roll_mod.autogive_hint": "You can disable autogive of this book with the command",
+
+  "item.roll_mod.error_item": "Error Item",
+  "loreitem.roll_mod.error_item.tooltip_line1": "THIS ITEM SHOULD NOT EXIST!",
+  "loreitem.roll_mod.error_item.tooltip_line2": "CONTACT ADMIN IMMEDIATELY!",
+
+  "item.roll_mod.autogive_line_1": "This is Quest book with every knowlege of server",
+  "item.roll_mod.autogive_line_2": "Use command /rollmod autogive false to disable autogive",
 
   "itemGroup.roll_mod.py_datagen": "Datagen items",
 

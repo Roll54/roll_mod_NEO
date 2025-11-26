@@ -116,7 +116,6 @@ public class StormHandler {
             if (gm.isCreative() || gm == GameType.SPECTATOR) continue;
 
 
-            // Інакше — частковий захист: маска в шоломі
             boolean hasFullSet = true;
             List<ItemStack> armorPieces = new ArrayList<>();
 
@@ -160,7 +159,7 @@ public class StormHandler {
             }
 
         }
-        if (state != null && state.stormTicks % 3000 == 0) { // кожні ~10 секунд
+        if (state != null && state.stormTicks % 3000 == 0) {
             tryGrowSulfurBerries(nether);
         }
     }
@@ -224,7 +223,7 @@ public class StormHandler {
     /**
      * Примусовий запуск/завершення
      */
-    static void forceStart(MinecraftServer server, @Nullable Integer durationTicks) {
+    public static void forceStart(MinecraftServer server, @Nullable Integer durationTicks) {
         initIfNeeded(server);
         if (state != null && !state.stormActive) {
             state.stormActive = true;
@@ -241,7 +240,7 @@ public class StormHandler {
         }
     }
 
-    static void forceEnd(MinecraftServer server) {
+    public static void forceEnd(MinecraftServer server) {
         initIfNeeded(server);
         if (state != null && state.stormActive) endStorm(server);
     }
@@ -413,21 +412,16 @@ public class StormHandler {
             applyHealthBuff(mob);
 
             if (level.addFreshEntity(mob)) {
-                // Логуємо спавн
                 RollMod.LOGGER.info(
                         "[NetherStorm] Spawned {} at {} {} {} near {}",
                         type.toShortString(), pos.getX(), pos.getY(), pos.getZ(),
                         player.getGameProfile().getName()
                 );
 
-                // ✅ Додаємо зброю wither-скелету на наступному тіку,
-                // щоб не конфліктувало з внутрішньою ініціалізацією обладнання/цілей
                 level.getServer().execute(() -> {
                     tryEquipWitherSkeleton(level, mob);
-                    mob.setPersistenceRequired();                // опціонально: не зникає випадково
-                    mob.setDropChance(EquipmentSlot.MAINHAND, 0.0f); // не дропати меч
-                    // Якщо захочеш, можна примусити агресію:
-                    // if (mob instanceof net.minecraft.world.entity.monster.Monster mon) mon.setAggressive(true);
+                    mob.setPersistenceRequired();
+                    mob.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
                 });
 
                 break;
@@ -439,11 +433,9 @@ public class StormHandler {
     private static void tryEquipWitherSkeleton(ServerLevel level, Mob mob) {
         if (mob.getType() != EntityType.WITHER_SKELETON) return;
 
-        // Меч у руку
         mob.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_SWORD));
         mob.setDropChance(EquipmentSlot.MAINHAND, 0.0f);
 
-        // Повний сет броні
         mob.setItemSlot(EquipmentSlot.HEAD, new ItemStack(Items.NETHERITE_HELMET));
         mob.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.NETHERITE_CHESTPLATE));
         mob.setItemSlot(EquipmentSlot.LEGS, new ItemStack(Items.NETHERITE_LEGGINGS));
@@ -454,16 +446,13 @@ public class StormHandler {
         mob.setDropChance(EquipmentSlot.LEGS, 0.0f);
         mob.setDropChance(EquipmentSlot.FEET, 0.0f);
 
-        // Позначимо, що цей моб — «штормовий», щоб потім перевіряти в івентах/дропі
         mob.getPersistentData().putBoolean("roll_mod:storm_spawn", true);
     }
 
     private static void tryGrowSulfurBerries(ServerLevel nether) {
         RandomSource random = nether.random;
 
-        // Скільки спроб за тік
         for (int i = 0; i < 10; i++) {
-            // випадкові координати поблизу гравця
             ServerPlayer player = nether.getRandomPlayer();
             if (player == null) return;
 
@@ -474,14 +463,12 @@ public class StormHandler {
             BlockPos pos = new BlockPos(x, y, z);
             BlockPos above = pos.above();
 
-            // перевірка: пісок душ або ґрунт душ
             var state = nether.getBlockState(pos);
             if ((state.is(Blocks.SOUL_SAND) || state.is(Blocks.SOUL_SOIL))
                     && nether.isEmptyBlock(above)) {
 
                 var berryBlock = BlockRegistry.SULFUR_BERRY_BLOCK.get().defaultBlockState();
 
-                // якщо має властивість age — виставляємо 0
                 if (berryBlock.hasProperty(BlockStateProperties.AGE_7)) {
                     berryBlock = berryBlock.setValue(BlockStateProperties.AGE_7, 0);
                 }

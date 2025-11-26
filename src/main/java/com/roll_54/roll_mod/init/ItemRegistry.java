@@ -714,6 +714,15 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> TUNGSTIC_ACID_DUST = ITEMS.register("tungstic_acid_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> TUNGSTEN_TRIOXIDE = ITEMS.register("tungsten_trioxide", () -> new Item(new Item.Properties()));
 
+    public static final DeferredHolder<Item, Item> ERROR_ITEM =
+            registerTooltip("error_item",
+                    TooltipOptions.nameAndLore(
+                            0xff0032,
+                            2,
+                            0xDD3333
+                    )
+            );
+
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }

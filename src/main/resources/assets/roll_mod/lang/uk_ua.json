@@ -282,7 +282,7 @@
   "item.roll_mod.standard_wafer": "Пластина",
   "item.roll_mod.standard_wafer_not": "Пластина NOT",
   "item.roll_mod.standard_wafer_or": "Пластина OR",
-  "item.roll_mod.standard_wafer_xor": "Пластина XOR",
+  "item.roll_mod.standard_wafer_xor": "Пластина NAND",
   "item.roll_mod.standard_wafer_ram": "Пластина RAM",
   "block.roll_mod.latex_dandelion": "Латексна кульбаба",
   "item.roll_mod.latex_dandelion_seed": "Насіння латексної кульбаби",
@@ -380,6 +380,15 @@
   "item.roll_mod.sodium_tungstate_dust": "Вольфрамат натрію",
   "item.roll_mod.tungstic_acid_dust": "Вольфраматова кислота",
   "item.roll_mod.tungsten_trioxide": "Триоксид вольфраму",
+
+  "item.roll_mod.autogive_hint": "Ви можете вимкнути автодоваваня цієї книжки командою",
+
+  "item.roll_mod.error_item": "Помилковий предмет",
+  "loreitem.roll_mod.error_item.tooltip_line1": "Ролл щось напартачив...",
+  "loreitem.roll_mod.error_item.tooltip_line2": "ЯКЩО ВІН З’ЯВИВСЯ У ІНВЕНТАРІ — НЕГАЙНО ПОВІДОМТЕ МОДЕРАЦІЮ",
+
+  "item.roll_mod.autogive_line_1": "Це Книга завдань із усіма знаннями сервера",
+  "item.roll_mod.autogive_line_2": "Використай команду /rollmod autogive false, щоб вимкнути автодовидачу",
 
   "itemGroup.roll_mod.py_datagen": "Датаген предмети",
 
