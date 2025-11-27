@@ -24,6 +24,7 @@ public class MyConfig extends Config {
     @Comment("BUKVI for nothing")
     public boolean enabled = true;
 
+    @Comment("BUKVI for nothing")
     public ValidatedDouble multiplier =
             new ValidatedDouble(1.0, 5.0, 0.1);
 

@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:block/cube",
+  "gui_light": "front",
+  "textures": {
+    "down": "gtmogs:block/overworld/down",
+    "east": "gtmogs:block/overworld/east",
+    "north": "gtmogs:block/overworld/north",
+    "particle": "#north",
+    "south": "gtmogs:block/overworld/south",
+    "up": "gtmogs:block/overworld/up",
+    "west": "gtmogs:block/overworld/west"
+  }
+}

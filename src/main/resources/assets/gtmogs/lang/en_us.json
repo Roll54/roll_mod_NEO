@@ -1,0 +1,44 @@
+{
+  "gtmogs.jei.ore_vein_diagram.spawn_range": "Spawn Height Range",
+  "gtmogs.jei.ore_vein_diagram.weight": "Spawn Weight: %s",
+  "gtmogs.jei.ore_vein_diagram.dimensions": "Dimensions",
+  "gtmogs.jei.ore_vein_diagram": "Ore Generation",
+  "block.gtmogs.the_nether_marker": "The Nether",
+  "block.gtmogs.the_end_marker": "The End",
+  "block.gtmogs.overworld_marker": "Overworld",
+  "block.gtmogs.moon_marker": "Moon",
+  "block.gtmogs.mars_marker": "Mars",
+  "block.gtmogs.venus_marker": "venus",
+  "block.gtmogs.mercury_marker": "Mercury",
+
+  "ore_vein.gtmogs.stellaris/mars/tantalite": "Tantalite",
+
+  "ore_vein.gtmogs.stellaris/moon/ilmenite": "Ilmenite",
+  "ore_vein.gtmogs.stellaris/moon/pyrochlore": "Pyrochlore",
+  "ore_vein.gtmogs.stellaris/moon/rutile": "Rutile",
+  "ore_vein.gtmogs.stellaris/moon/vanadium_magnetite": "Vanadium Magnetite",
+
+  "ore_vein.gtmogs.vanilla/end/chromite": "Chromite",
+  "ore_vein.gtmogs.vanilla/end/pyrolusite": "Pyrolusite",
+  "ore_vein.gtmogs.vanilla/end/scheelite": "Scheelite",
+  "ore_vein.gtmogs.vanilla/end/uraninite": "Uraninite",
+
+  "ore_vein.gtmogs.vanilla/nether/antimony_copper": "Antimony Copper",
+  "ore_vein.gtmogs.vanilla/nether/emerald_berrylium": "Emerald Berrylium",
+  "ore_vein.gtmogs.vanilla/nether/fluorite_topaz": "Fluorite Topaz",
+  "ore_vein.gtmogs.vanilla/nether/iron": "Iron",
+  "ore_vein.gtmogs.vanilla/nether/monazite": "Monazite",
+  "ore_vein.gtmogs.vanilla/nether/nether_quartz": "Nether Quartz",
+  "ore_vein.gtmogs.vanilla/nether/nether_redstone": "Nether Redstone",
+  "ore_vein.gtmogs.vanilla/nether/sulfur": "Sulfur",
+
+  "ore_vein.gtmogs.vanilla/overworld/overworld_bauxite": "Overworld Bauxite",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_bauxite_up": "Overworld Bauxite Up",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_coal": "Overworld Coal",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_deepslate_redstone": "Overworld Deepslate Redstone",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_galena": "Overworld Galena",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_magnetite": "Overworld Magnetite",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_pentlandite": "Overworld Pentlandite",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_tin": "Overworld Tin",
+  "ore_vein.gtmogs.vanilla/overworld/salt": "Salt"
+}

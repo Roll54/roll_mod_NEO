@@ -1,0 +1,1 @@
+{"parent":"minecraft:block/cube","gui_light":"front","textures":{"down":"gtmogs:block/the_end/down","east":"gtmogs:block/the_end/east","north":"gtmogs:block/the_end/north","particle":"#north","south":"gtmogs:block/the_end/south","up":"gtmogs:block/the_end/up","west":"gtmogs:block/the_end/west"}}

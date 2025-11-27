@@ -30,8 +30,7 @@ public class AutoGiveHandler {
 
         tickCounter++;
 
-        // Кожні 20 тік
-        if (tickCounter % 20 != 0) return;
+        if (tickCounter % 12000 != 0) return; // every 10 minutes
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 
@@ -50,9 +49,6 @@ public class AutoGiveHandler {
                 }
 
 
-                // ----------------------------
-                // Додаємо 2 ЛОКАЛІЗОВАНІ РЯДКИ
-                // ----------------------------
                 ItemStack stack = new ItemStack(item);
 
                 ItemLore lore = new ItemLore(List.of(
@@ -62,7 +58,6 @@ public class AutoGiveHandler {
 
                 stack.set(DataComponents.LORE, lore);
 
-                // Видати предмет
                 player.getInventory().add(stack);
 
                 RollMod.LOGGER.debug("[Autogive] {} -> gave item", player.getGameProfile().getName());
