@@ -1,0 +1,45 @@
+{
+  "gtmogs.jei.ore_vein_diagram.spawn_range": "Діапазон висоти спавну",
+  "gtmogs.jei.ore_vein_diagram.weight": "Вага спавну: %s",
+  "gtmogs.jei.ore_vein_diagram.dimensions": "Виміри:",
+  "gtmogs.jei.ore_vein_diagram": "Генерація руди",
+
+  "block.gtmogs.the_nether_marker": "Незер",
+  "block.gtmogs.the_end_marker": "Енд",
+  "block.gtmogs.overworld_marker": "Верхній світ",
+  "block.gtmogs.moon_marker": "Місяць",
+  "block.gtmogs.mars_marker": "Марс",
+  "block.gtmogs.venus_marker": "Венера",
+  "block.gtmogs.mercury_marker": "Меркурій",
+
+  "ore_vein.gtmogs.stellaris/mars/tantalite": "Танталіт",
+
+  "ore_vein.gtmogs.stellaris/moon/ilmenite": "Ільменіт",
+  "ore_vein.gtmogs.stellaris/moon/pyrochlore": "Пірохлор",
+  "ore_vein.gtmogs.stellaris/moon/rutile": "Рутил",
+  "ore_vein.gtmogs.stellaris/moon/vanadium_magnetite": "Ванадієвий магнетит",
+
+  "ore_vein.gtmogs.vanilla/end/chromite": "Хроміт",
+  "ore_vein.gtmogs.vanilla/end/pyrolusite": "Піролюзит",
+  "ore_vein.gtmogs.vanilla/end/scheelite": "Шеєліт",
+  "ore_vein.gtmogs.vanilla/end/uraninite": "Ураніт",
+
+  "ore_vein.gtmogs.vanilla/nether/antimony_copper": "Стибій-мідь",
+  "ore_vein.gtmogs.vanilla/nether/emerald_berrylium": "Берилій",
+  "ore_vein.gtmogs.vanilla/nether/fluorite_topaz": "Топази",
+  "ore_vein.gtmogs.vanilla/nether/iron": "Незер-залізо",
+  "ore_vein.gtmogs.vanilla/nether/monazite": "Монацит",
+  "ore_vein.gtmogs.vanilla/nether/nether_quartz": "Незер-кварц",
+  "ore_vein.gtmogs.vanilla/nether/nether_redstone": "Незер-редстоун",
+  "ore_vein.gtmogs.vanilla/nether/sulfur": "Сірка",
+
+  "ore_vein.gtmogs.vanilla/overworld/overworld_bauxite": "Глибокосланцевий Боксит",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_bauxite_up": "Кам'яний Боксит",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_coal": "Вугілля",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_deepslate_redstone": "Редстоун",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_galena": "Галена",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_magnetite": "Магнетит",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_pentlandite": "Нікелеві руди",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_tin": "Олово",
+  "ore_vein.gtmogs.vanilla/overworld/salt": "Соляні руди"
+}
