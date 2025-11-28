@@ -974,6 +974,19 @@
   "block.roll_mod.deepslate_lead": "Глибосланцевий свинець",
   "block.roll_mod.end_lead": "Краєвий свинець",
   "block.roll_mod.stone_olivine": "Кам'яний олівін",
-  "block.roll_mod.end_olivine": "Краєвий олівін"
-
+  "block.roll_mod.end_olivine": "Краєвий олівін",
+  "item.roll_mod.raw_olivine": "Необроблений олівін",
+  "item.roll_mod.olivine_dust": "Пил олівін",
+  "item.roll_mod.crushed_olivine_ore": "Дроблений олівін",
+  "item.roll_mod.refined_olivine_ore": "Очищений олівін",
+  "item.roll_mod.purified_olivine_ore": "Промитий олівін",
+  "item.roll_mod.pure_olivine_dust": "Чистий пил олівін",
+  "item.roll_mod.impure_olivine_dust": "Брудний пил олівін",
+  "item.roll_mod.raw_lapis_lazuli": "Необроблений лазуріт",
+  "item.roll_mod.lapis_lazuli_dust": "Пил лазуріт",
+  "item.roll_mod.crushed_lapis_lazuli_ore": "Дроблений лазуріт",
+  "item.roll_mod.refined_lapis_lazuli_ore": "Очищений лазуріт",
+  "item.roll_mod.purified_lapis_lazuli_ore": "Промитий лазуріт",
+  "item.roll_mod.pure_lapis_lazuli_dust": "Чистий пил лазуріт",
+  "item.roll_mod.impure_lapis_lazuli_dust": "Брудний пил лазуріт"
 }
