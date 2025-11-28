@@ -14,11 +14,11 @@ public class NanoSuitGravichestplateAbilityMixin {
 
     /**
      * @author roll_54
-     * @reason Changes the default capacity from 16,777,216 to 54,000,000.
+     * @reason Changes the default capacity from 16,777,216 to 1.000,000,000.
      */
     @Overwrite
     public long overrideEnergyCapacity() {
-        return 54_000_000L;
+        return 1 << 30;
     }
 
     /**

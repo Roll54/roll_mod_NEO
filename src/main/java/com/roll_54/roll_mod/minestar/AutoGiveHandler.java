@@ -30,7 +30,7 @@ public class AutoGiveHandler {
 
         tickCounter++;
 
-        if (tickCounter % 12000 != 0) return; // every 10 minutes
+        if (tickCounter % ModConfigs.MAIN.TIME_TO_GIVE != 0) return; // every 10 minutes
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 

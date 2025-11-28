@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.block;
 
 import com.mojang.serialization.MapCodec;
+import com.roll_54.roll_mod.init.ModConfigs;
 import com.roll_54.roll_mod.netherstorm.StormHandler;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.init.ItemRegistry;
@@ -116,11 +117,17 @@ public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        int i = state.getValue(AGE);
-        boolean isMature = i == 3;
-        if (!level.isClientSide && level.dimension().equals(Level.NETHER) && StormHandler.isStormActive()) {
-            if (level instanceof ServerLevel server) {
-                level.explode(
+        int age = state.getValue(AGE);
+        boolean isMature = age == 3;
+
+        if (!level.isClientSide &&
+                level.dimension().equals(Level.NETHER) &&
+                StormHandler.isStormActive()) {
+
+            // Чи дозволений вибух у конфігу?
+            if (ModConfigs.MAIN.storm.BerriesExplodeDuringStorm) {
+
+                ((ServerLevel) level).explode(
                         null,
                         pos.getX() + 0.5,
                         pos.getY() + 0.5,
@@ -128,29 +135,40 @@ public class SulfurBerryBlock extends BushBlock implements BonemealableBlock {
                         3.5F,
                         Level.ExplosionInteraction.BLOCK
                 );
-                RollMod.LOGGER.info("[SulfurBerry] Player {} tried to harvest during NetherStorm at {} {} {} — 💥",
-                        player.getName().getString(), pos.getX(), pos.getY(), pos.getZ());
+
+                RollMod.LOGGER.info(
+                        "[SulfurBerry] Player {} tried to harvest during NetherStorm at {},{},{} — BOOM",
+                        player.getName().getString(), pos.getX(), pos.getY(), pos.getZ()
+                );
+            } else {
+                RollMod.LOGGER.info(
+                        "[SulfurBerry] Player {} harvested during NetherStorm at {},{},{} — explosion disabled in config",
+                        player.getName().getString(), pos.getX(), pos.getY(), pos.getZ()
+                );
             }
 
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
-        // normal logic, without storm
-        if (i > 1) {
-            int count = 1 + level.random.nextInt(2);
-            popResource(level, pos, new ItemStack(ItemRegistry.SULFUR_BERRY.get(), count + (isMature ? 1 : 0)));
+        if (age > 1) {
+            int berries = 1 + level.random.nextInt(2) + (isMature ? 1 : 0);
 
-            level.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES,
-                    SoundSource.BLOCKS, 1.0F, 0.8F + level.random.nextFloat() * 0.4F);
+            popResource(level, pos, new ItemStack(ItemRegistry.SULFUR_BERRY.get(), berries));
+
+            level.playSound(null, pos,
+                    SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES,
+                    SoundSource.BLOCKS, 1.0F,
+                    0.8F + level.random.nextFloat() * 0.4F
+            );
 
             BlockState newState = state.setValue(AGE, 1);
             level.setBlock(pos, newState, 2);
             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(player, newState));
 
             return InteractionResult.sidedSuccess(level.isClientSide);
-        } else {
-            return super.useWithoutItem(state, level, pos, player, hitResult);
         }
+
+        return super.useWithoutItem(state, level, pos, player, hitResult);
     }
     @Override
     public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {

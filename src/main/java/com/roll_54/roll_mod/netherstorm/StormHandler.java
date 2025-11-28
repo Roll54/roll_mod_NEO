@@ -2,15 +2,13 @@ package com.roll_54.roll_mod.netherstorm;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.init.BlockRegistry;
+import com.roll_54.roll_mod.init.ModConfigs;
 import com.roll_54.roll_mod.init.ModEffects;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -19,7 +17,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -35,20 +32,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static com.roll_54.roll_mod.data.ModTags.STORM_PROTECTIVE_TAG;
+
 @EventBusSubscriber(modid = RollMod.MODID)
 public class StormHandler {
 
+    public static int TIME_TO_SPAWN_WITHERS = 18000;
+    public static int TIME_TO_SPAWN_BERRIES = 3000;
+
     private static StormState state;
-
-    /**
-     * Тег для речей, що захищають від шторму (маски тощо)
-     */
-    public static final TagKey<Item> STORM_PROTECTIVE_TAG =
-            TagKey.create(
-                    Registries.ITEM,
-                    ResourceLocation.parse("roll_mod:storm_protective")
-            );
-
 
     /**
      * Лінива ініціалізація стану при першому тіку
@@ -90,7 +82,7 @@ public class StormHandler {
             state.dirty();
 
             // 🔥 Нове: спавн лічильником
-            if (++spawnTickCounter >= 18000) {
+            if (++spawnTickCounter >= TIME_TO_SPAWN_WITHERS) {
                 spawnStormMobs(server);
                 spawnTickCounter = 0;
             }
@@ -159,7 +151,7 @@ public class StormHandler {
             }
 
         }
-        if (state != null && state.stormTicks % 3000 == 0) {
+        if (state != null && state.stormTicks % TIME_TO_SPAWN_BERRIES == 0) {
             tryGrowSulfurBerries(nether);
         }
     }
@@ -189,14 +181,28 @@ public class StormHandler {
     }
 
     private static int getRandomStormDelay() {
-        // 1–12 годин; 72000 тік = 1 година (у Minecraft 20 тік/с)
-        return 72_000 * (1 + new Random().nextInt(12));
+        var cfg = ModConfigs.MAIN.storm;
+
+        int min = (int) Math.max(1, cfg.minStormDelayHours);
+        int max = (int) Math.max(min, cfg.maxStormDelayHours);
+
+        int chosenHours = min + new Random().nextInt(max - min + 1);
+
+        return chosenHours * 72_000;
     }
 
     private static int getRandomStormDuration() {
-        // 1–6 годин
-        return 72_000 * (1 + new Random().nextInt(6));
+        var cfg = ModConfigs.MAIN.storm;
+
+        int min = (int) Math.max(1, cfg.minStormDurationHours);
+        int max = (int) Math.max(min, cfg.maxStormDurationHours);
+
+        int chosenHours = min + new Random().nextInt(max - min + 1);
+
+        return chosenHours * 72_000;
     }
+
+    public double itn = 1.2;
 
     // Публічне API (можна викликати з команд)
 
@@ -264,7 +270,6 @@ public class StormHandler {
         BlockPos base = findGroundedPosNearPlayer(level, player, 12, 16);
         if (base == null) return;
 
-        // Розкладаємо скелетів навколо бази у маленькому радіусі
         int spawned = 0;
         for (int i = 0; i < count; i++) {
             // компактний розкид: -1..+1 по X/Z, щоб юніти стояли близько
@@ -356,7 +361,7 @@ public class StormHandler {
     private static void applyHealthBuff(Mob mob) {
         var max = mob.getAttribute(Attributes.MAX_HEALTH);
         if (max != null) {
-            max.setBaseValue(max.getBaseValue() * 2.5D); // +50%
+            max.setBaseValue((int) (max.getBaseValue() * ModConfigs.MAIN.storm.MOB_HP_BUFF.get())); // migrate to config
             mob.setHealth(mob.getMaxHealth());
         }
     }

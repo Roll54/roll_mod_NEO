@@ -1,6 +1,6 @@
 {
-  "gtmogs.jei.ore_vein_diagram.spawn_range": "Діапазон висоти спавну",
-  "gtmogs.jei.ore_vein_diagram.weight": "Вага спавну: %s",
+  "gtmogs.jei.ore_vein_diagram.spawn_range": "Діапазон висоти генерації",
+  "gtmogs.jei.ore_vein_diagram.weight": "Вага генерації: %s",
   "gtmogs.jei.ore_vein_diagram.dimensions": "Виміри:",
   "gtmogs.jei.ore_vein_diagram": "Генерація руди",
 
@@ -26,20 +26,20 @@
 
   "ore_vein.gtmogs.vanilla/nether/antimony_copper": "Стибій-мідь",
   "ore_vein.gtmogs.vanilla/nether/emerald_berrylium": "Берилій",
-  "ore_vein.gtmogs.vanilla/nether/fluorite_topaz": "Топази",
-  "ore_vein.gtmogs.vanilla/nether/iron": "Незер-залізо",
+  "ore_vein.gtmogs.vanilla/nether/fluorite_topaz": "Топаз",
+  "ore_vein.gtmogs.vanilla/nether/iron": "Незерське залізо",
   "ore_vein.gtmogs.vanilla/nether/monazite": "Монацит",
-  "ore_vein.gtmogs.vanilla/nether/nether_quartz": "Незер-кварц",
-  "ore_vein.gtmogs.vanilla/nether/nether_redstone": "Незер-редстоун",
+  "ore_vein.gtmogs.vanilla/nether/nether_quartz": "Незерський кварц",
+  "ore_vein.gtmogs.vanilla/nether/nether_redstone": "Незерський редстоун",
   "ore_vein.gtmogs.vanilla/nether/sulfur": "Сірка",
 
-  "ore_vein.gtmogs.vanilla/overworld/overworld_bauxite": "Глибокосланцевий Боксит",
-  "ore_vein.gtmogs.vanilla/overworld/overworld_bauxite_up": "Кам'яний Боксит",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_bauxite": "Глибосланцевий боксит",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_bauxite_up": "Кам'яний боксит",
   "ore_vein.gtmogs.vanilla/overworld/overworld_coal": "Вугілля",
   "ore_vein.gtmogs.vanilla/overworld/overworld_deepslate_redstone": "Редстоун",
   "ore_vein.gtmogs.vanilla/overworld/overworld_galena": "Галена",
   "ore_vein.gtmogs.vanilla/overworld/overworld_magnetite": "Магнетит",
-  "ore_vein.gtmogs.vanilla/overworld/overworld_pentlandite": "Нікелеві руди",
+  "ore_vein.gtmogs.vanilla/overworld/overworld_pentlandite": "Пентландит",
   "ore_vein.gtmogs.vanilla/overworld/overworld_tin": "Олово",
-  "ore_vein.gtmogs.vanilla/overworld/salt": "Соляні руди"
+  "ore_vein.gtmogs.vanilla/overworld/salt": "Сіль"
 }

@@ -5,7 +5,9 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "NanoSuitGravichestplateAbilityMixin",
-    "ArmorReductionMixin"
+    "ArmorReductionMixin",
+    "GraviChestPlateItemMixin",
+    "HudRendererMixin"
   ],
   "client": [
   ],

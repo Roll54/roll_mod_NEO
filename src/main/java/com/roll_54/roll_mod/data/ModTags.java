@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.data;
 
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ItemTags;
@@ -18,6 +19,13 @@ public class ModTags {
             return BlockTags.create(ResourceLocation.fromNamespaceAndPath(MODID, name));
         }
     }
+
+    public static final TagKey<Item> STORM_PROTECTIVE_TAG =
+            TagKey.create(
+                    Registries.ITEM,
+                    ResourceLocation.parse("roll_mod:storm_protective")
+            );
+
 
     public static class Items {
         public static final TagKey<Item> TRANSFORMABLE_ITEMS = createTag("transformable_items"); //example

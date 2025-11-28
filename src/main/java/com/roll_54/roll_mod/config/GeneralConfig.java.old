@@ -30,8 +30,6 @@ public final class GeneralConfig {
     static final ModConfigSpec SPEC = BUILDER.pop().build();
 
     /** КЕШ — лише його читаємо в ігрових івентах */
-    public static volatile boolean isDebug = false;
-    public static volatile boolean isCustomPvP = true;
     public static volatile Set<Item> items = Set.of(); // якщо будете використовувати
 
     private static boolean validateItemName(final Object obj) {
@@ -41,8 +39,6 @@ public final class GeneralConfig {
     /** Викликається коли конфіг завантажено вперше */
     public static void onLoad(final ModConfigEvent.Loading e) {
         if (e.getConfig().getSpec() == SPEC) {
-            isDebug = IS_DEBUG.get();
-            isCustomPvP = CUSTOM_PVP.get();
             // items = ITEM_STRINGS.get().stream()
             //        .map(s -> BuiltInRegistries.ITEM.get(ResourceLocation.parse(s)))
             //        .collect(Collectors.toSet());
@@ -52,8 +48,6 @@ public final class GeneralConfig {
     /** Викликається при перезавантаженні */
     public static void onReload(final ModConfigEvent.Reloading e) {
         if (e.getConfig().getSpec() == SPEC) {
-            isDebug = IS_DEBUG.get();
-            isCustomPvP = CUSTOM_PVP.get();
         }
     }
 }
