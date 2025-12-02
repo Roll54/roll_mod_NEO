@@ -88,7 +88,7 @@ public class PYOreDataGen {
         registerOreVariants("mica", ORE_PROPERTIES, "stone", "deepslate", "netherrack");
         registerOreVariants("kyanite", ORE_PROPERTIES, "stone", "venus");
         registerOreVariants("hematite", ORE_PROPERTIES, "mars", "moon", "stone", "netherrack", "deepslate", "venus", "mercury", "end");
-        registerOreVariants("yellow_limonite", ORE_PROPERTIES, "stone", "netherrack");
+        registerOreVariants("yellow_limonite", ORE_PROPERTIES, "stone", "netherrack", "deepslate");
         registerOreVariants("biotite", ORE_PROPERTIES, "deepslate", "moon", "netherrack");
         registerOreVariants("magnetite", ORE_PROPERTIES, "mars", "moon", "stone", "netherrack", "deepslate", "venus", "mercury", "end");
         registerOreVariants("garnierite", ORE_PROPERTIES, "stone", "venus");
@@ -102,7 +102,7 @@ public class PYOreDataGen {
         registerOreVariants("pyrolusite", ORE_PROPERTIES, "end", "mars");
         registerOreVariants("rhodochrosite", ORE_PROPERTIES, "end");
         registerOreVariants("chromite", ORE_PROPERTIES, "end", "moon", "mars");
-        registerOreVariants("malachite", ORE_PROPERTIES, "stone", "venus");
+        registerOreVariants("malachite", ORE_PROPERTIES, "stone", "venus", "deepslate", "end");
         registerOreVariants("fluorite", ORE_PROPERTIES, "stone", "moon", "netherrack");
         registerOreVariants("pyrite", ORE_PROPERTIES, "stone", "mars", "netherrack", "end");
         registerOreVariants("cinnabar", ORE_PROPERTIES, "stone", "netherrack");

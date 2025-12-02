@@ -3,6 +3,7 @@
   "gtmogs.jei.ore_vein_diagram.weight": "Spawn Weight: %s",
   "gtmogs.jei.ore_vein_diagram.dimensions": "Dimensions",
   "gtmogs.jei.ore_vein_diagram": "Ore Generation",
+  "message.gtmogs.new_veins.name": "New vein found; %s",
   "block.gtmogs.the_nether_marker": "The Nether",
   "block.gtmogs.the_end_marker": "The End",
   "block.gtmogs.overworld_marker": "Overworld",
@@ -22,6 +23,7 @@
   "ore_vein.gtmogs.vanilla/end/pyrolusite": "Pyrolusite",
   "ore_vein.gtmogs.vanilla/end/scheelite": "Scheelite",
   "ore_vein.gtmogs.vanilla/end/uraninite": "Uraninite",
+  "ore_vein.gtmogs.vanilla/end/blue_ores": "Lazurite",
 
   "ore_vein.gtmogs.vanilla/nether/antimony_copper": "Antimony Copper",
   "ore_vein.gtmogs.vanilla/nether/emerald_berrylium": "Emerald Berrylium",
@@ -40,5 +42,8 @@
   "ore_vein.gtmogs.vanilla/overworld/overworld_magnetite": "Overworld Magnetite",
   "ore_vein.gtmogs.vanilla/overworld/overworld_pentlandite": "Overworld Pentlandite",
   "ore_vein.gtmogs.vanilla/overworld/overworld_tin": "Overworld Tin",
-  "ore_vein.gtmogs.vanilla/overworld/salt": "Salt"
+  "ore_vein.gtmogs.vanilla/overworld/salt": "Salt",
+  "ore_vein.gtmogs.vanilla/overworld/copper_iron": "Hydroxide metals",
+  "ore_vein.gtmogs.vanilla/overworld/copper": "Sulfide metals",
+  "ore_vein.gtmogs.vanilla/overworld/diamond_coal": "Carbon ores"
 }

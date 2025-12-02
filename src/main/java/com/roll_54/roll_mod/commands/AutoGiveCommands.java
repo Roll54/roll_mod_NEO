@@ -5,15 +5,15 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.nbt.StringTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 
 public class AutoGiveCommands {
 
+    private static final String TAG = "roll_mod:autogive";   // зберігаємо як STRING
+
     public static void register(CommandDispatcher<CommandSourceStack> d) {
-
-
-        // /rollmod autogive <bool>   — for normal players
 
         d.register(
                 Commands.literal("rollmod")
@@ -23,10 +23,11 @@ public class AutoGiveCommands {
                                             boolean value = BoolArgumentType.getBool(ctx, "value");
                                             ServerPlayer player = ctx.getSource().getPlayerOrException();
 
-                                            player.getPersistentData().putBoolean("roll_mod:autogive", value);
+                                            // Записуємо як STRING
+                                            player.getPersistentData().putString(TAG, Boolean.toString(value));
 
                                             ctx.getSource().sendSuccess(
-                                                    () -> Component.literal("Autogive set to " + value),
+                                                    () -> Component.literal("Autogive set to " + TAG),
                                                     false
                                             );
 
@@ -36,17 +37,12 @@ public class AutoGiveCommands {
                         )
         );
 
-
-        // /rollmod admin autogive ...
-
         d.register(
                 Commands.literal("rollmod")
                         .then(Commands.literal("admin")
                                 .requires(src -> src.hasPermission(2))
 
                                 .then(Commands.literal("autogive")
-
-                                        // /rollmod admin autogive get <player>
 
                                         .then(Commands.literal("get")
                                                 .then(Commands.argument("player", StringArgumentType.word())
@@ -68,10 +64,12 @@ public class AutoGiveCommands {
                                                                 return 0;
                                                             }
 
-                                                            boolean val = target.getPersistentData().getBoolean("roll_mod:autogive");
+                                                            String stored = target.getPersistentData().getString(TAG);
+                                                            if (stored.isEmpty()) stored = "unset";
 
+                                                            String finalStored = stored;
                                                             ctx.getSource().sendSuccess(
-                                                                    () -> Component.literal("Player " + name + " autogive = " + val),
+                                                                    () -> Component.literal("Player " + name + " autogive = " + finalStored),
                                                                     false
                                                             );
 
@@ -81,7 +79,6 @@ public class AutoGiveCommands {
                                         )
 
 
-                                        // /rollmod admin autogive set <player> <value>
 
                                         .then(Commands.literal("set")
                                                 .then(Commands.argument("player", StringArgumentType.word())
@@ -106,7 +103,8 @@ public class AutoGiveCommands {
                                                                         return 0;
                                                                     }
 
-                                                                    target.getPersistentData().putBoolean("roll_mod:autogive", value);
+                                                                    // записуємо як STRING
+                                                                    target.getPersistentData().putString(TAG, Boolean.toString(value));
 
                                                                     ctx.getSource().sendSuccess(
                                                                             () -> Component.literal("Set autogive for " + name + " to " + value),

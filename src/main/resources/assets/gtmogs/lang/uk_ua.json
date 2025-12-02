@@ -3,6 +3,7 @@
   "gtmogs.jei.ore_vein_diagram.weight": "Вага генерації: %s",
   "gtmogs.jei.ore_vein_diagram.dimensions": "Виміри:",
   "gtmogs.jei.ore_vein_diagram": "Генерація руди",
+  "message.gtmogs.new_veins.name": "Знайдено жилу; %s",
 
   "block.gtmogs.the_nether_marker": "Незер",
   "block.gtmogs.the_end_marker": "Енд",
@@ -23,6 +24,7 @@
   "ore_vein.gtmogs.vanilla/end/pyrolusite": "Піролюзит",
   "ore_vein.gtmogs.vanilla/end/scheelite": "Шеєліт",
   "ore_vein.gtmogs.vanilla/end/uraninite": "Ураніт",
+  "ore_vein.gtmogs.vanilla/end/blue_ores": "Лазурит",
 
   "ore_vein.gtmogs.vanilla/nether/antimony_copper": "Стибій-мідь",
   "ore_vein.gtmogs.vanilla/nether/emerald_berrylium": "Берилій",
@@ -41,5 +43,8 @@
   "ore_vein.gtmogs.vanilla/overworld/overworld_magnetite": "Магнетит",
   "ore_vein.gtmogs.vanilla/overworld/overworld_pentlandite": "Пентландит",
   "ore_vein.gtmogs.vanilla/overworld/overworld_tin": "Олово",
-  "ore_vein.gtmogs.vanilla/overworld/salt": "Сіль"
+  "ore_vein.gtmogs.vanilla/overworld/salt": "Сіль",
+  "ore_vein.gtmogs.vanilla/overworld/copper_iron": "Гідроксидні метали",
+  "ore_vein.gtmogs.vanilla/overworld/copper": "Сульфідні метали",
+  "ore_vein.gtmogs.vanilla/overworld/diamond_coal": "Карбонові руди"
 }

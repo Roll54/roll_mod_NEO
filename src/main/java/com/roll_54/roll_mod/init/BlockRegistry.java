@@ -35,6 +35,12 @@ public class BlockRegistry {
             BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOD)
     );
 
+    public static final DeferredBlock<Block> LAPOTRONIC_LASER_BLOCK = BLOCKS.registerBlock(
+            "lapotronic_laser_block",
+            Block::new,
+            BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.AMETHYST)
+    );
+
     public static final DeferredHolder<Block, LatexDandelion> LATEX_DANDELION =
             BLOCKS.register("latex_dandelion",
                     () -> new LatexDandelion(
@@ -85,6 +91,7 @@ public class BlockRegistry {
     static {
         ITEMS.registerSimpleBlockItem(TREATED_PLANKS);
         ITEMS.registerSimpleBlockItem(TREATED_LOG);
+        ITEMS.registerSimpleBlockItem(LAPOTRONIC_LASER_BLOCK);
     }
 
     public static void register(IEventBus eventBus) {

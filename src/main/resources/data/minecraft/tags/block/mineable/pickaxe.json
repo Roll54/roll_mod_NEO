@@ -214,6 +214,14 @@
     "roll_mod:end_olivine",
 
     "roll_mod:end_lazurite",
-    "roll_mod:stone_lazurite"
+    "roll_mod:stone_lazurite",
+
+    "roll_mod:deepslate_yellow_limonite",
+    "roll_mod:stone_lapis_lazuli",
+    "roll_mod:end_lapis_lazuli",
+    "roll_mod:end_sodalite",
+    "roll_mod:deepslate_malachite",
+    "roll_mod:end_malachite"
+
   ]
 }

@@ -326,6 +326,8 @@
   "item.roll_mod.autogive_line_1": "This is Quest book with every knowlege of server",
   "item.roll_mod.autogive_line_2": "Use command /rollmod autogive false to disable autogive",
 
+  "block.roll_mod.lapotronic_laser_block": "Lapotronic Laser Block",
+
   "itemGroup.roll_mod.py_datagen": "Datagen items",
 
   "item.roll_mod.raw_mica": "Raw Mica",
@@ -909,5 +911,8 @@
   "block.roll_mod.deepslate_lead": "Deepslate Lead Ore",
   "block.roll_mod.end_lead": "End Lead Ore",
   "block.roll_mod.stone_olivine": "Stone Olivine Ore",
-  "block.roll_mod.end_olivine": "End Olivine Ore"
+  "block.roll_mod.end_olivine": "End Olivine Ore",
+  "block.roll_mod.deepslate_malachite": "Deepslate Malachite Ore",
+  "block.roll_mod.end_malachite": "End Malachite Ore",
+  "block.roll_mod.deepslate_yellow_limonite": "Deepslate Yellow Limonite Ore"
 }

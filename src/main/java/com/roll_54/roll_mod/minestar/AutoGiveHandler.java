@@ -24,6 +24,7 @@ public class AutoGiveHandler {
 
     private static int tickCounter = 0;
 
+
     @SubscribeEvent
     public static void onServerLevelTick(ServerTickEvent.Post e) {
         var server = e.getServer();
@@ -34,9 +35,9 @@ public class AutoGiveHandler {
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 
-            boolean autogive = player.getPersistentData().getBoolean("roll_mod:autogive");
+            String flag = player.getPersistentData().getString("roll_mod:autogive");
 
-            if (autogive) {
+            if ("true".equals(flag)) {
 
                 var itemId = ModConfigs.MAIN.autogiveItem;
                 var id = ResourceLocation.parse(itemId);
@@ -48,7 +49,6 @@ public class AutoGiveHandler {
                     return;
                 }
 
-
                 ItemStack stack = new ItemStack(item);
 
                 ItemLore lore = new ItemLore(List.of(
@@ -59,9 +59,8 @@ public class AutoGiveHandler {
                 stack.set(DataComponents.LORE, lore);
 
                 player.getInventory().add(stack);
-
-                RollMod.LOGGER.debug("[Autogive] {} -> gave item", player.getGameProfile().getName());
             }
         }
+
     }
 }

@@ -36,7 +36,7 @@
       "ore_name": "yellow_limonite",
       "item_name": "raw_yellow_limonite",
       "hex_color": "#a38933",
-      "bases": ["stone", "netherrack"],
+      "bases": ["stone", "netherrack", "deepslate"],
       "overlay": "gold",
       "item_base": "iron"
     },
@@ -166,7 +166,7 @@
       "ore_name": "malachite",
       "item_name": "raw_malachite",
       "hex_color": "#22e3b9",
-      "bases": ["stone", "venus"],
+      "bases": ["stone", "venus", "deepslate", "end"],
       "overlay": "copper",
       "item_base": "copper"
     },

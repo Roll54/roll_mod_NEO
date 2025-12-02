@@ -390,6 +390,9 @@
   "item.roll_mod.autogive_line_1": "Це Книга завдань із усіма знаннями сервера",
   "item.roll_mod.autogive_line_2": "Використай команду /rollmod autogive false, щоб вимкнути автодовидачу",
 
+  "block.roll_mod.lapotronic_laser_block": "Лапотронова фокусуюча лазерна лінза",
+
+
   "itemGroup.roll_mod.py_datagen": "Датаген предмети",
 
 
@@ -988,5 +991,10 @@
   "item.roll_mod.refined_lapis_lazuli_ore": "Очищений лазуріт",
   "item.roll_mod.purified_lapis_lazuli_ore": "Промитий лазуріт",
   "item.roll_mod.pure_lapis_lazuli_dust": "Чистий пил лазуріт",
-  "item.roll_mod.impure_lapis_lazuli_dust": "Брудний пил лазуріт"
+  "item.roll_mod.impure_lapis_lazuli_dust": "Брудний пил лазуріт",
+  "block.roll_mod.deepslate_malachite": "Глибосланцевий малахіт",
+  "block.roll_mod.end_malachite": "Краєвий малахіт",
+  "block.roll_mod.deepslate_yellow_limonite": "Глибосланцевий жовтий лімоніт"
+
+
 }
