@@ -8,19 +8,37 @@ import com.roll_54.roll_mod.util.TooltipOptions;
 import com.roll_54.roll_mod.util.TooltipManager;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.ItemLore;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.List;
+import java.util.function.Supplier;
+
 import static com.roll_54.roll_mod.init.BlockRegistry.*;
+import static net.minecraft.commands.arguments.StyleArgument.style;
 
 
 public class ItemRegistry {
+
+
+    public static final ResourceKey<MobEffect> NOURISHMENT =
+            ResourceKey.create(Registries.MOB_EFFECT,
+
+                    ResourceLocation.fromNamespaceAndPath("farmersdelight", "nourishment"));
+    public static final Supplier<Holder<MobEffect>> NOURISHMENT_HOLDER =
+            () -> BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(NOURISHMENT);
 
     private ItemRegistry() {
     }
@@ -361,6 +379,9 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> RESEARCH_ROCKET_4 = registerTooltip(
             "research_rocket_4", TooltipOptions.name(LIGHT_PURPLE)
     );
+    public static final DeferredHolder<Item, Item> RESEARCH_BETTER_PREDICTON = registerTooltip(
+            "research_better_predicton", TooltipOptions.name(LIGHT_PURPLE)
+    );
 
 
     // Броня (заготовки, стак по 1, з тултіпом)
@@ -435,6 +456,51 @@ public class ItemRegistry {
                             .build()
             ))
     );
+    public static final DeferredHolder<Item, Item> URANIUM_MUSH =
+            ITEMS.register("uranium_mush",
+                    () -> new Item(new Item.Properties().stacksTo(16).component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true).component(DataComponents.RARITY, Rarity.EPIC).component(DataComponents.LORE, new ItemLore(List.of(Component.translatable("tooltip.roll_mod.uranium_mush").withStyle(style -> style.withColor(0x33cc4f)))))
+                            .food(new FoodProperties.Builder()
+                                    .nutrition(12)
+                                    .saturationModifier(0.5f)
+                                    .effect(() -> new MobEffectInstance(NOURISHMENT_HOLDER.get(), 1200000, 0), 1)
+                                    .build())
+
+                    )
+            );
+
+    public static final DeferredHolder<Item, Item> HOT_TITANIUM_GUM =
+            ITEMS.register("hot_titanium_gum",
+                    () -> new Item(new Item.Properties()
+                            .food(new FoodProperties.Builder()
+                                    .nutrition(6)
+                                    .saturationModifier(0.2f)
+                                    .fast()
+                                    .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 36000, 0), 1f)
+                                    .build())
+                    )
+            );
+
+    public static final DeferredHolder<Item, Item> GOLDEN_POTATO =
+            ITEMS.register("golden_potato",
+                    () -> new Item(new Item.Properties()
+                            .food(new FoodProperties.Builder()
+                                    .nutrition(4)
+                                    .saturationModifier(0.8f)
+                                    .build())
+                    )
+            );
+
+    public static final DeferredHolder<Item, Item> GOLDEN_POTATO_MUSH =
+            ITEMS.register("golden_potato_mush",
+                    () -> new Item(new Item.Properties()
+                            .food(new FoodProperties.Builder()
+                                    .nutrition(12)
+                                    .saturationModifier(0.5f)
+                                    .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 2), 1)
+                                    .effect(() -> new MobEffectInstance(NOURISHMENT_HOLDER.get(), 12000, 0), 1)
+                                    .build())
+                    )
+            );
     // 🍯 Варення з сірчаних ягід
     public static final DeferredHolder<Item, Item> SULFUR_JAM = ITEMS.register(
             "sulfur_jam",

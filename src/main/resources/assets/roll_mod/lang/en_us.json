@@ -121,6 +121,7 @@
   "item.roll_mod.research_rocket_2": "Research: \"Rocket MK2\"",
   "item.roll_mod.research_rocket_3": "Research: \"Rocket MK3\"",
   "item.roll_mod.research_rocket_4": "Research: \"Rocket MK4\"",
+  "item.roll_mod.research_better_predicton": "Research: \"Improved Prediction Tech\"",
   "item.roll_mod.gravik_casing": "Gravity Vest Frame",
   "item.roll_mod.raw_quantum_helmet": "Quantum Helmet Frame",
   "loreitem.roll_mod.raw_quantum_helmet.tooltip_line1": "You cannot wear this",
@@ -327,6 +328,12 @@
   "item.roll_mod.autogive_line_2": "Use command /rollmod autogive false to disable autogive",
 
   "block.roll_mod.lapotronic_laser_block": "Lapotronic Laser Block",
+
+  "item.roll_mod.uranium_mush": "Uranium Mush",
+  "item.roll_mod.hot_titanium_gum": "Hot Titanium Gum",
+  "item.roll_mod.golden_potato": "Golden Potato",
+  "item.roll_mod.golden_potato_mush": "Golden Potato Mush",
+  "tooltip.roll_mod.uranium_mush": "Very high-calorie food",
 
   "itemGroup.roll_mod.py_datagen": "Datagen items",
 
