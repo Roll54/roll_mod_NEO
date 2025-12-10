@@ -33,12 +33,12 @@ import static net.minecraft.commands.arguments.StyleArgument.style;
 public class ItemRegistry {
 
 
-    public static final ResourceKey<MobEffect> NOURISHMENT =
-            ResourceKey.create(Registries.MOB_EFFECT,
-
-                    ResourceLocation.fromNamespaceAndPath("farmersdelight", "nourishment"));
-    public static final Supplier<Holder<MobEffect>> NOURISHMENT_HOLDER =
-            () -> BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(NOURISHMENT);
+//    public static final ResourceKey<MobEffect> NOURISHMENT =
+//            ResourceKey.create(Registries.MOB_EFFECT,
+//
+//                    ResourceLocation.fromNamespaceAndPath("farmersdelight", "nourishment"));
+//    public static final Supplier<Holder<MobEffect>> NOURISHMENT_HOLDER =
+//            () -> BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(NOURISHMENT);
 
     private ItemRegistry() {
     }
@@ -271,39 +271,25 @@ public class ItemRegistry {
             "mirror", TooltipOptions.name(LIGHT_GREN)
     );
 
-    // === T2 (фіолетові) ===
-    public static final DeferredHolder<Item, Item> PURPLE_BOULE = registerTooltip(
-            "purple_boule", TooltipOptions.name(LIGHT_PURPLE)
-    );
-    public static final DeferredHolder<Item, Item> PURPLE_WAFER = registerTooltip(
-            "purple_wafer", TooltipOptions.name(LIGHT_PURPLE)
-    );
-    public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOR = registerTooltip(
-            "purple_wafer_nor", TooltipOptions.name(LIGHT_PURPLE)
-    );
-    public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOR_CHIP = registerTooltip(
-            "purple_wafer_nor_chip", TooltipOptions.name(LIGHT_PURPLE)
-    );
-    public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOT = registerTooltip(
-            "purple_wafer_not", TooltipOptions.name(LIGHT_PURPLE)
-    );
-    public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOT_CHIP = registerTooltip(
-            "purple_wafer_not_chip", TooltipOptions.name(LIGHT_PURPLE)
-    );
-    public static final DeferredHolder<Item, Item> PURPLE_WAFER_OR = registerTooltip(
-            "purple_wafer_or", TooltipOptions.name(LIGHT_PURPLE)
-    );
-    public static final DeferredHolder<Item, Item> PURPLE_WAFER_OR_CHIP = registerTooltip(
-            "purple_wafer_or_chip", TooltipOptions.name(LIGHT_PURPLE)
-    );
-    public static final DeferredHolder<Item, Item> PURPLE_WAFER_XNOR = registerTooltip(
-            "purple_wafer_xnor", TooltipOptions.name(LIGHT_PURPLE)
-    );
-    public static final DeferredHolder<Item, Item> PURPLE_WAFER_XNOR_CHIP = registerTooltip(
-            "purple_wafer_xnor_chip", TooltipOptions.name(LIGHT_PURPLE)
-    );
+    // === T3 (фіолетові) ===
+    public static final DeferredHolder<Item, Item> PURPLE_BOULE = registerTooltip("purple_boule", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER = registerTooltip("purple_wafer", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOR = registerTooltip("purple_wafer_nor", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOR_CHIP = registerTooltip("purple_wafer_nor_chip", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOT = registerTooltip("purple_wafer_not", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_NOT_CHIP = registerTooltip("purple_wafer_not_chip", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_OR = registerTooltip("purple_wafer_or", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_OR_CHIP = registerTooltip("purple_wafer_or_chip", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_XNOR = registerTooltip("purple_wafer_xnor", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_XNOR_CHIP = registerTooltip("purple_wafer_xnor_chip", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_XOR = registerTooltip("purple_wafer_xor", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_XOR_CHIP = registerTooltip("purple_wafer_xor_chip", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_RAM = registerTooltip("purple_wafer_ram", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_RAM_CHIP = registerTooltip("purple_wafer_ram_chip", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_SOC = registerTooltip("purple_wafer_soc", TooltipOptions.name(LIGHT_PURPLE));
+    public static final DeferredHolder<Item, Item> PURPLE_WAFER_SOC_CHIP = registerTooltip("purple_wafer_soc_chip", TooltipOptions.name(LIGHT_PURPLE));
 
-    // === T1 (сині/звичайні) ===
+    // === T2 (сині) ===
     public static final DeferredHolder<Item, Item> BLUE_BOULE = registerTooltip("blue_boule", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER = registerTooltip("blue_wafer", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_RAM = registerTooltip("blue_wafer_ram", TooltipOptions.name(BLUE));
@@ -312,9 +298,19 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> BLUE_WAFER_NOR_CHIP = registerTooltip("blue_wafer_nor_chip", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_SOC = registerTooltip("blue_wafer_soc", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_SOC_CHIP = registerTooltip("blue_wafer_soc_chip", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_NOT = registerTooltip("blue_wafer_not", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_NOT_CHIP = registerTooltip("blue_wafer_not_chip", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_OR = registerTooltip("blue_wafer_or", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_OR_CHIP = registerTooltip("blue_wafer_or_chip", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_XOR = registerTooltip("blue_wafer_xor", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_XOR_CHIP = registerTooltip("blue_wafer_xor_chip", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_XNOR = registerTooltip("blue_wafer_xnor", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_XNOR_CHIP = registerTooltip("blue_wafer_xnor_chip", TooltipOptions.name(BLUE));
+
     // Нано
     public static final DeferredHolder<Item, Item> NANO_WAFER = registerTooltip("nano_wafer", TooltipOptions.nameAndLore(AQUA, 1, AQUA));
     public static final DeferredHolder<Item, Item> NANO_CHIP = registerTooltip("nano_chip", TooltipOptions.name(AQUA));
+    //T1
     public static final DeferredHolder<Item, Item> STANDARD_WAFER_SOC = ITEMS.register("standard_wafer_soc", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> STANDARD_WAFER = ITEMS.register("standard_wafer", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> STANDARD_WAFER_NOT = ITEMS.register("standard_wafer_not", () -> new Item(new Item.Properties()));
@@ -462,7 +458,7 @@ public class ItemRegistry {
                             .food(new FoodProperties.Builder()
                                     .nutrition(12)
                                     .saturationModifier(0.5f)
-                                    .effect(() -> new MobEffectInstance(NOURISHMENT_HOLDER.get(), 1200000, 0), 1)
+                             //       .effect(() -> new MobEffectInstance(NOURISHMENT_HOLDER.get(), 1200000, 0), 1)
                                     .build())
 
                     )
@@ -497,7 +493,7 @@ public class ItemRegistry {
                                     .nutrition(12)
                                     .saturationModifier(0.5f)
                                     .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 2), 1)
-                                    .effect(() -> new MobEffectInstance(NOURISHMENT_HOLDER.get(), 12000, 0), 1)
+                                    //.effect(() -> new MobEffectInstance(NOURISHMENT_HOLDER.get(), 12000, 0), 1)
                                     .build())
                     )
             );
