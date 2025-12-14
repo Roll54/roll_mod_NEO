@@ -1,0 +1,229 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_mica",
+    "roll_mod:deepslate_mica",
+    "roll_mod:netherrack_mica",
+
+    "roll_mod:stone_kyanite",
+    "roll_mod:venus_kyanite",
+
+    "roll_mod:mars_hematite",
+    "roll_mod:moon_hematite",
+    "roll_mod:stone_hematite",
+    "roll_mod:netherrack_hematite",
+    "roll_mod:deepslate_hematite",
+    "roll_mod:venus_hematite",
+    "roll_mod:mercury_hematite",
+    "roll_mod:end_hematite",
+
+    "roll_mod:stone_yellow_limonite",
+    "roll_mod:netherrack_yellow_limonite",
+    "roll_mod:deepslate_yellow_limonite",
+
+    "roll_mod:deepslate_biotite",
+    "roll_mod:moon_biotite",
+    "roll_mod:netherrack_biotite",
+
+    "roll_mod:mars_magnetite",
+    "roll_mod:moon_magnetite",
+    "roll_mod:stone_magnetite",
+    "roll_mod:netherrack_magnetite",
+    "roll_mod:deepslate_magnetite",
+    "roll_mod:venus_magnetite",
+    "roll_mod:mercury_magnetite",
+    "roll_mod:end_magnetite",
+
+    "roll_mod:stone_garnierite",
+    "roll_mod:venus_garnierite",
+
+    "roll_mod:mars_pentlandite",
+    "roll_mod:stone_pentlandite",
+
+    "roll_mod:stone_chalcopyrite",
+    "roll_mod:netherrack_chalcopyrite",
+    "roll_mod:moon_chalcopyrite",
+
+    "roll_mod:netherrack_certus_quartz",
+    "roll_mod:moon_certus_quartz",
+
+    "roll_mod:stone_pyrochlore",
+    "roll_mod:deepslate_pyrochlore",
+    "roll_mod:moon_pyrochlore",
+
+    "roll_mod:stone_pyrope",
+    "roll_mod:end_pyrope",
+
+    "roll_mod:venus_apatite",
+    "roll_mod:moon_apatite",
+
+    "roll_mod:stone_galena",
+    "roll_mod:mars_galena",
+
+    "roll_mod:end_pyrolusite",
+    "roll_mod:mars_pyrolusite",
+
+    "roll_mod:end_rhodochrosite",
+
+    "roll_mod:end_chromite",
+    "roll_mod:moon_chromite",
+    "roll_mod:mars_chromite",
+
+    "roll_mod:stone_malachite",
+    "roll_mod:venus_malachite",
+    "roll_mod:deepslate_malachite",
+    "roll_mod:end_malachite",
+
+    "roll_mod:stone_fluorite",
+    "roll_mod:moon_fluorite",
+    "roll_mod:netherrack_fluorite",
+
+    "roll_mod:stone_pyrite",
+    "roll_mod:mars_pyrite",
+    "roll_mod:netherrack_pyrite",
+    "roll_mod:end_pyrite",
+
+    "roll_mod:stone_cinnabar",
+    "roll_mod:netherrack_cinnabar",
+
+    "roll_mod:end_peridot",
+
+    "roll_mod:stone_sodalite",
+    "roll_mod:end_sodalite",
+
+    "roll_mod:stone_lazurite",
+    "roll_mod:end_lazurite",
+
+    "roll_mod:stone_lapis_lazuli",
+    "roll_mod:end_lapis_lazuli",
+
+    "roll_mod:netherrack_tetrahedrite",
+    "roll_mod:mars_tetrahedrite",
+
+    "roll_mod:netherrack_stibnite",
+    "roll_mod:venus_stibnite",
+
+    "roll_mod:venus_ilmenite",
+    "roll_mod:stone_ilmenite",
+    "roll_mod:moon_ilmenite",
+
+    "roll_mod:venus_blue_topaz",
+    "roll_mod:netherrack_blue_topaz",
+
+    "roll_mod:mars_topaz",
+    "roll_mod:netherrack_topaz",
+
+    "roll_mod:deepslate_chalcocite",
+    "roll_mod:netherrack_chalcocite",
+
+    "roll_mod:moon_bornite",
+    "roll_mod:netherrack_bornite",
+    "roll_mod:end_bornite",
+
+    "roll_mod:netherrack_sulfur",
+
+    "roll_mod:stone_sphalerite",
+    "roll_mod:netherrack_sphalerite",
+
+    "roll_mod:mercury_monazite",
+    "roll_mod:netherrack_monazite",
+
+    "roll_mod:end_ruby",
+    "roll_mod:netherrack_ruby",
+    "roll_mod:stone_ruby",
+    "roll_mod:deepslate_ruby",
+
+    "roll_mod:mars_redstone",
+    "roll_mod:netherrack_redstone",
+    "roll_mod:stone_redstone",
+    "roll_mod:deepslate_redstone",
+
+    "roll_mod:stone_saltpeter",
+    "roll_mod:netherrack_saltpeter",
+
+    "roll_mod:venus_emerald",
+    "roll_mod:netherrack_emerald",
+
+    "roll_mod:netherrack_beryllium",
+
+    "roll_mod:mars_tantalite",
+
+    "roll_mod:moon_molybdenite",
+    "roll_mod:netherrack_molybdenite",
+
+    "roll_mod:netherrack_wulfenite",
+
+    "roll_mod:mercury_powellite",
+    "roll_mod:netherrack_powellite",
+
+    "roll_mod:mars_molybdenum",
+    "roll_mod:netherrack_molybdenum",
+
+    "roll_mod:stone_gold",
+    "roll_mod:netherrack_gold",
+    "roll_mod:deepslate_gold",
+    "roll_mod:end_gold",
+    "roll_mod:venus_gold",
+
+    "roll_mod:deepslate_goethite",
+    "roll_mod:netherrack_goethite",
+    "roll_mod:stone_goethite",
+
+    "roll_mod:moon_vanadium_magnetite",
+    "roll_mod:mercury_vanadium_magnetite",
+
+    "roll_mod:moon_rutile",
+    "roll_mod:venus_rutile",
+
+    "roll_mod:stone_silver",
+    "roll_mod:deepslate_silver",
+
+    "roll_mod:mars_bauxite",
+    "roll_mod:moon_bauxite",
+    "roll_mod:stone_bauxite",
+    "roll_mod:netherrack_bauxite",
+    "roll_mod:deepslate_bauxite",
+    "roll_mod:venus_bauxite",
+    "roll_mod:mercury_bauxite",
+    "roll_mod:end_bauxite",
+
+    "roll_mod:stone_salt",
+    "roll_mod:deepslate_salt",
+
+    "roll_mod:stone_rock_salt",
+    "roll_mod:deepslate_rock_salt",
+
+    "roll_mod:stone_lepidolite",
+    "roll_mod:deepslate_lepidolite",
+
+    "roll_mod:end_tungstate",
+
+    "roll_mod:stone_scheelite",
+    "roll_mod:deepslate_scheelite",
+    "roll_mod:end_scheelite",
+
+    "roll_mod:end_lithium",
+
+    "roll_mod:end_sheldonite",
+    "roll_mod:mars_sheldonite",
+
+    "roll_mod:end_pitchblende",
+
+    "roll_mod:end_thorium",
+
+    "roll_mod:end_uraninite",
+
+    "roll_mod:stone_lead",
+    "roll_mod:deepslate_lead",
+    "roll_mod:end_lead",
+
+    "roll_mod:stone_cassiterite",
+    "roll_mod:deepslate_cassiterite",
+
+    "roll_mod:end_olivine",
+    "roll_mod:stone_olivine",
+
+    "roll_mod:netherrack_trona",
+    "roll_mod:netherrack_bismuth"
+  ]
+}
