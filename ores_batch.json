@@ -639,6 +639,28 @@
       "bases": ["stone", "end"],
       "overlay": "zinc",
       "item_base": "diamond"
+    },
+    {
+      "uk_ua_name": "Трона",
+      "en_us_name": "Trona",
+      "ore_name": "trona",
+      "item_name": "raw_trona",
+      "hex_color": "#c80009",
+      "bases": ["netherrack"],
+      "overlay": "iron",
+      "item_base": "diamond"
+    },
+    {
+      "uk_ua_name": "Бісмут",
+      "en_us_name": "Bismuth",
+      "ore_name": "bismuth",
+      "item_name": "raw_bismuth",
+      "hex_color": "#b37fc7",
+      "bases": ["netherrack"],
+      "overlay": "uranium",
+      "item_base": "iron"
     }
+
+
   ]
 }

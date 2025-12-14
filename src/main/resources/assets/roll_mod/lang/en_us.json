@@ -337,6 +337,17 @@
 
   "itemGroup.roll_mod.py_datagen": "Datagen items",
 
+  "item.roll_mod.raw_lazurite": "Raw Lazurite",
+  "item.roll_mod.lazurite_dust": "Lazurite Dust",
+  "item.roll_mod.crushed_lazurite_ore": "Crushed Lazurite Ore",
+  "item.roll_mod.refined_lazurite_ore": "Refined Lazurite Ore",
+  "item.roll_mod.purified_lazurite_ore": "Purified Lazurite Ore",
+  "item.roll_mod.pure_lazurite_dust": "Pure Lazurite Dust",
+  "item.roll_mod.impure_lazurite_dust": "Impure Lazurite Dust",
+  "item.roll_mod.raw_lapis_lazuli": "Raw Lazurite",
+  "item.roll_mod.lapis_lazuli_dust": "Lazurite Dust",
+
+
   "item.roll_mod.raw_mica": "Raw Mica",
   "item.roll_mod.mica_dust": "Mica Dust",
   "item.roll_mod.crushed_mica_ore": "Crushed Mica Ore",
@@ -764,6 +775,20 @@
   "item.roll_mod.purified_lead_ore": "Purified Lead Ore",
   "item.roll_mod.pure_lead_dust": "Pure Lead Dust",
   "item.roll_mod.impure_lead_dust": "Impure Lead Dust",
+  "item.roll_mod.raw_trona": "Raw Trona",
+  "item.roll_mod.trona_dust": "Trona Dust",
+  "item.roll_mod.crushed_trona_ore": "Crushed Trona Ore",
+  "item.roll_mod.refined_trona_ore": "Refined Trona Ore",
+  "item.roll_mod.purified_trona_ore": "Purified Trona Ore",
+  "item.roll_mod.pure_trona_dust": "Pure Trona Dust",
+  "item.roll_mod.impure_trona_dust": "Impure Trona Dust",
+  "item.roll_mod.raw_bismuth": "Raw Bismuth",
+  "item.roll_mod.bismuth_dust": "Bismuth Dust",
+  "item.roll_mod.crushed_bismuth_ore": "Crushed Bismuth Ore",
+  "item.roll_mod.refined_bismuth_ore": "Refined Bismuth Ore",
+  "item.roll_mod.purified_bismuth_ore": "Purified Bismuth Ore",
+  "item.roll_mod.pure_bismuth_dust": "Pure Bismuth Dust",
+  "item.roll_mod.impure_bismuth_dust": "Impure Bismuth Dust",
   "block.roll_mod.stone_mica": "Stone Mica Ore",
   "block.roll_mod.deepslate_mica": "Deepslate Mica Ore",
   "block.roll_mod.netherrack_mica": "Netherrack Mica Ore",
@@ -921,5 +946,7 @@
   "block.roll_mod.end_olivine": "End Olivine Ore",
   "block.roll_mod.deepslate_malachite": "Deepslate Malachite Ore",
   "block.roll_mod.end_malachite": "End Malachite Ore",
-  "block.roll_mod.deepslate_yellow_limonite": "Deepslate Yellow Limonite Ore"
+  "block.roll_mod.deepslate_yellow_limonite": "Deepslate Yellow Limonite Ore",
+  "block.roll_mod.netherrack_trona": "Netherrack Trona Ore",
+  "block.roll_mod.netherrack_bismuth": "Netherrack Bismuth Ore"
 }

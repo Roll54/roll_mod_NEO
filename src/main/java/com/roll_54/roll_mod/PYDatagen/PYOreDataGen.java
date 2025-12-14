@@ -149,5 +149,8 @@ public class PYOreDataGen {
         registerOreVariants("lead", ORE_PROPERTIES, "stone", "deepslate", "end");
         registerOreVariants("cassiterite", ORE_PROPERTIES, "stone", "deepslate");
         registerOreVariants("olivine", ORE_PROPERTIES, "end","stone");
+        registerOreVariants("trona", ORE_PROPERTIES, "netherrack");
+        registerOreVariants("bismuth", ORE_PROPERTIES, "netherrack");
+
     }
 }

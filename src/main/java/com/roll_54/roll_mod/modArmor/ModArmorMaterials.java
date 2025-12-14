@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.modArmor;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.init.ItemRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -45,8 +46,7 @@ public final class ModArmorMaterials {
                     mapDefense(3, 8, 6, 3),
                     18,
                     SoundEvents.ARMOR_EQUIP_IRON,
-                    // TODO: replace with your actual ingot holder: () -> Ingredient.of(ModItems.METEORITE_METAL_INGOT.get())
-                    () -> Ingredient.of(Items.IRON_INGOT),
+                    () -> Ingredient.of(ItemRegistry.METEORITE_METAL_INGOT.get()),
                     2.0f,
                     0.1f
 

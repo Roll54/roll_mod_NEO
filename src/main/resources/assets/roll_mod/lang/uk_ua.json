@@ -584,6 +584,15 @@
   "item.roll_mod.purified_vanadium_magnetite_ore": "Очищена ванадій-магнетитова руда",
   "item.roll_mod.purified_wulfenite_ore": "Очищена вульфенітова руда",
   "item.roll_mod.purified_yellow_limonite_ore": "Очищена жовто-лімонітова руда",
+
+  "item.roll_mod.raw_lazurite": "Необроблений лазуріт",
+  "item.roll_mod.lazurite_dust": "Пил лазуріт",
+  "item.roll_mod.crushed_lazurite_ore": "Дроблений лазуріт",
+  "item.roll_mod.refined_lazurite_ore": "Очищений лазуріт",
+  "item.roll_mod.purified_lazurite_ore": "Промитий лазуріт",
+  "item.roll_mod.pure_lazurite_dust": "Чистий пил лазуріт",
+  "item.roll_mod.impure_lazurite_dust": "Брудний пил лазуріт",
+
   "item.roll_mod.purple_boule": "Мінливо-легований монокристалічний кремній",
   "item.roll_mod.purple_wafer": "Мінлива підкладка",
   "item.roll_mod.purple_wafer_nor": "Мінлива NOR підкладка",
@@ -934,5 +943,22 @@
   "tooltip.roll_mod.storm_hint.1": "Клацніть ПКМ, Щоб просканувати стан шторму",
   "tooltip.roll_mod.storm_hint.2": "Right-click to scan storm status",
   "tooltip.roll_mod.toggle_hint": "Клацніть ПКМ, щоб перемкнути",
-  "tooltip.roll_mod.uranium_mush": "ДУЖЕ калорійна їжа"
+  "tooltip.roll_mod.uranium_mush": "ДУЖЕ калорійна їжа",
+
+  "block.roll_mod.netherrack_trona": "Незеритний трона",
+  "block.roll_mod.netherrack_bismuth": "Незеритний бісмут",
+  "item.roll_mod.raw_trona": "Необроблений трона",
+  "item.roll_mod.trona_dust": "Пил трона",
+  "item.roll_mod.crushed_trona_ore": "Дроблений трона",
+  "item.roll_mod.refined_trona_ore": "Очищений трона",
+  "item.roll_mod.purified_trona_ore": "Промитий трона",
+  "item.roll_mod.pure_trona_dust": "Чистий пил трона",
+  "item.roll_mod.impure_trona_dust": "Брудний пил трона",
+  "item.roll_mod.raw_bismuth": "Необроблений бісмут",
+  "item.roll_mod.bismuth_dust": "Пил бісмут",
+  "item.roll_mod.crushed_bismuth_ore": "Дроблений бісмут",
+  "item.roll_mod.refined_bismuth_ore": "Очищений бісмут",
+  "item.roll_mod.purified_bismuth_ore": "Промитий бісмут",
+  "item.roll_mod.pure_bismuth_dust": "Чистий пил бісмут",
+  "item.roll_mod.impure_bismuth_dust": "Брудний пил бісмут"
 }
