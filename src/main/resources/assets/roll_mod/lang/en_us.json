@@ -136,7 +136,7 @@
   "loreitem.roll_mod.injection_regen.tooltip_line1": "Restores 7.5 hearts and grants regeneration",
   "item.roll_mod.injection_resistance": "Injection \"Bandera Strength\"",
   "item.roll_mod.injection_speed": "Injection \"Sonic Speed\"",
-  "item.roll_mod.injection_fire_res": "Injection \"Obsidian Skin\"",
+  "item.roll_mod.injection_fire_resistance": "Injection \"Obsidian Skin\"",
   "item.roll_mod.calcium_oxide": "Calcium Oxide",
   "item.roll_mod.calcium_hydroxide": "Calcium Hydroxide",
   "item.roll_mod.energium_dust": "Energium Dust",
@@ -334,6 +334,11 @@
   "item.roll_mod.golden_potato": "Golden Potato",
   "item.roll_mod.golden_potato_mush": "Golden Potato Mush",
   "tooltip.roll_mod.uranium_mush": "Very high-calorie food",
+
+  "item.roll_mod.very_nutritious_candy": "Nutritious Candy",
+  "tooltip.roll_mod.very_nutritious_candy": "Somehow very nutritious... Oh... Well this explains ALOT",
+
+  "effect.roll_mod.sulfur_resistance": "Sulfur Resistance",
 
   "itemGroup.roll_mod.py_datagen": "Datagen items",
 

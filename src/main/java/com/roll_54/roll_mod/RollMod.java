@@ -37,7 +37,7 @@ public final class RollMod {
         ItemGroups.register(eventBus);
         PYOreDataGen.register(eventBus);
 //        PYItems.register(eventBus);
-        ModEffects.EFFECTS.register(eventBus);
+        ModEffects.register(eventBus);
         ModArmorMaterials.register(eventBus);
         eventBus.addListener(this::onCommonSetup);
         eventBus.addListener(this::onClientSetup);

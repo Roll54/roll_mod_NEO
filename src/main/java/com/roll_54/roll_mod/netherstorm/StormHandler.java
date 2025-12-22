@@ -123,7 +123,7 @@ public class StormHandler {
                 }
             }
 
-            if (hasFullSet) {
+            if (hasFullSet  || player.hasEffect(ModEffects.SULFUR_RESISTANCE)) {
                 // 🔧 Зношення кожні 20 тік
                 if (player.tickCount % 20 == 1) {
                     for (int i = 0; i < armorPieces.size(); i++) {

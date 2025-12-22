@@ -1,11 +1,11 @@
 package com.roll_54.roll_mod.mobEffect;
 
-
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 
 public class SulfurPoisoningEffect extends MobEffect {
+
     public SulfurPoisoningEffect() {
         super(MobEffectCategory.HARMFUL, 0xE0C341); // жовтий колір ефекту
     }

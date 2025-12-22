@@ -34,6 +34,7 @@ public class FacingPlushBlock extends Block {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         return this.defaultBlockState().setValue(FACING, context.getNearestLookingDirection().getOpposite());
     }
+//todo sound effect when on click
 
 //    @Override
 //    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,

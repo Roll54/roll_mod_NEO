@@ -6,9 +6,12 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.valueproviders.IntProvider;
+import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.neoforged.bus.api.IEventBus;
@@ -32,19 +35,42 @@ public class PYOreDataGen {
     // ======== базові методи ======== //
     // =============================== //
 
-    private static <T extends Block> DeferredHolder<Block, T> registerBlockAndItem(String name, Supplier<T> blockSupplier) {
+    private static <T extends Block> DeferredHolder<Block, T> registerBlockAndItem(
+            String name,
+            Supplier<T> blockSupplier
+    ) {
         DeferredHolder<Block, T> blockHolder = ORE_BLOCKS.register(name, blockSupplier);
-        // Одночасна реєстрація BlockItem
-        ItemRegistry.ITEMS.register(name, () -> new BlockItem(blockHolder.get(), new Item.Properties()));
+        ItemRegistry.ITEMS.register(
+                name,
+                () -> new BlockItem(blockHolder.get(), new Item.Properties())
+        );
         return blockHolder;
     }
 
-    private static DeferredHolder<Block, Block> registerSimpleBlock(String name, BlockBehaviour.Properties props) {
+    private static DeferredHolder<Block, Block> registerSimpleBlock(
+            String name,
+            BlockBehaviour.Properties props
+    ) {
         return registerBlockAndItem(name, () -> new Block(props));
     }
 
     private static DeferredHolder<Item, Item> registerSimpleItem(String name) {
         return ORE_ITEMS.register(name, () -> new Item(new Item.Properties()));
+    }
+
+    private static DeferredHolder<Block, Block> registerXpOreBlock(
+            String name,
+            BlockBehaviour.Properties props,
+            int minXp,
+            int maxXp
+    ) {
+        return registerBlockAndItem(
+                name,
+                () -> new DropExperienceBlock(
+                        UniformInt.of(minXp, maxXp),
+                        props
+                )
+        );
     }
 
     /**
@@ -57,27 +83,30 @@ public class PYOreDataGen {
      *  - mars_topaz, netherrack_topaz як блоки
      *  - raw_topaz, topaz_dust як предмети
      */
-    private static void registerOreVariants(String oreName, BlockBehaviour.Properties props, String... dimensions) {
-        for (String prefix : dimensions) {
 
+    private static void registerOreVariants(
+            String oreName,
+            BlockBehaviour.Properties props,
+            String... dimensions
+    ) {
+        for (String prefix : dimensions) {
             String id = prefix + "_" + oreName;
 
-            registerSimpleBlock(id, props);
-
+            // XP-руда
+            registerXpOreBlock(id, props, 2, 5);
         }
-        // Базові предмети
+
         registerSimpleItem("raw_" + oreName);
         registerSimpleItem("crushed_" + oreName + "_ore");
         registerSimpleItem("impure_" + oreName + "_dust");
 
         registerSimpleItem("refined_" + oreName + "_ore");
         registerSimpleItem("pure_" + oreName + "_dust");
-        
+
         registerSimpleItem("purified_" + oreName + "_ore");
         registerSimpleItem(oreName + "_dust");
     }
 
-    // Викликати цей метод у FMLCommonSetup або під час реєстрації
     public static void register(IEventBus eventBus) {
         ORE_BLOCKS.register(eventBus);
         ORE_ITEMS.register(eventBus);
@@ -151,6 +180,14 @@ public class PYOreDataGen {
         registerOreVariants("olivine", ORE_PROPERTIES, "end","stone");
         registerOreVariants("trona", ORE_PROPERTIES, "netherrack");
         registerOreVariants("bismuth", ORE_PROPERTIES, "netherrack");
+        registerOreVariants("iridium", ORE_PROPERTIES, "mars");
+        registerOreVariants("gold_amalgam", ORE_PROPERTIES, "mars", "end");
+        registerOreVariants("silver_amalgam", ORE_PROPERTIES, "mars", "end");
+        registerOreVariants("quartz", ORE_PROPERTIES, "mars", "moon", "stone", "netherrack", "deepslate", "venus", "mercury", "end");
+        registerOreVariants("diamond", ORE_PROPERTIES, "deepslate");
+        registerOreVariants("bort", ORE_PROPERTIES, "deepslate");
+        registerOreVariants("cassiterite_sand", ORE_PROPERTIES, "stone", "deepslate");
+
 
     }
 }

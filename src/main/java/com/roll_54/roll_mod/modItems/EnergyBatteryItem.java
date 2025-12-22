@@ -104,6 +104,7 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
     }
 
     // === Основна логіка живлення предметів ===
+    //todo fix energy flow between items
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         if (level.isClientSide) return;

@@ -22,23 +22,23 @@ import net.minecraft.world.item.component.ItemLore;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Supplier;
 
 import static com.roll_54.roll_mod.init.BlockRegistry.*;
-import static net.minecraft.commands.arguments.StyleArgument.style;
 
 
 public class ItemRegistry {
 
 
-//    public static final ResourceKey<MobEffect> NOURISHMENT =
-//            ResourceKey.create(Registries.MOB_EFFECT,
-//
-//                    ResourceLocation.fromNamespaceAndPath("farmersdelight", "nourishment"));
-//    public static final Supplier<Holder<MobEffect>> NOURISHMENT_HOLDER =
-//            () -> BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(NOURISHMENT);
+    public static final ResourceKey<MobEffect> NOURISHMENT =
+            ResourceKey.create(Registries.MOB_EFFECT,
+
+                    ResourceLocation.fromNamespaceAndPath("farmersdelight", "nourishment"));
+    public static final Supplier<Holder<MobEffect>> NOURISHMENT_HOLDER =
+            () -> BuiltInRegistries.MOB_EFFECT.getHolderOrThrow(NOURISHMENT);
 
     private ItemRegistry() {
     }
@@ -397,18 +397,68 @@ public class ItemRegistry {
 
     // Ін’єкції
     public static final DeferredHolder<Item, Item> SYRINGE = ITEMS.register("syringe", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> INJECTION_REGEN = registerTooltip(
-            "injection_regen", TooltipOptions.nameAndLore(GREEN, 1, GREEN)
-    );
-    public static final DeferredHolder<Item, Item> INJECTION_RESISTANCE = registerTooltip(
-            "injection_resistance", TooltipOptions.name(GREEN)
-    );
-    public static final DeferredHolder<Item, Item> INJECTION_SPEED = registerTooltip(
-            "injection_speed", TooltipOptions.name(GREEN)
-    );
-    public static final DeferredHolder<Item, Item> INJECTION_FIRE_RES = registerTooltip(
-            "injection_fire_res", TooltipOptions.name(GREEN)
-    );
+    public static final DeferredHolder<Item, Item> INJECTION_REGEN =
+            ITEMS.register("injection_regen", () ->
+                    new InjectionItem(
+                            new Item.Properties(),
+                            MobEffects.REGENERATION,
+                            null,
+                            null,
+                            18000,
+                            1
+                    )
+            );
+
+    public static final DeferredHolder<Item, Item> INJECTION_RESISTANCE =
+            ITEMS.register("injection_resistance", () ->
+                    new InjectionItem(
+                            new Item.Properties(),
+                            MobEffects.DAMAGE_RESISTANCE,
+                            null,
+                            null,
+                            10000,
+                            0
+                    )
+            );
+
+    public static final DeferredHolder<Item, Item> INJECTION_SPEED =
+            ITEMS.register("injection_speed", () ->
+                    new InjectionItem(
+                            new Item.Properties(),
+                            MobEffects.MOVEMENT_SPEED,
+                            MobEffects.JUMP,
+                            null,
+                            18000,
+                            1
+                    )
+            );
+
+    public static final DeferredHolder<Item, Item> INJECTION_FIRE_RESISTANCE =
+            ITEMS.register("injection_fire_resistance", () ->
+                    new InjectionItem(
+                            new Item.Properties(),
+                            MobEffects.FIRE_RESISTANCE,
+                            ModEffects.SULFUR_RESISTANCE,
+                            null,
+                            12000,
+                            0
+                    )
+            );
+
+    public static final DeferredHolder<Item, Item> INJECTION_HASTE =
+            ITEMS.register("injection_haste", () ->
+                    new InjectionItem(
+                            new Item.Properties(),
+                            MobEffects.DIG_SPEED,
+                            null,
+                            null,
+                            12000,
+                            2
+                    )
+            );
+
+
+    public static final DeferredHolder<Item, Item> TEST_INST = ITEMS.register( "test_111", () -> new InjectionItem(new Item.Properties(), MobEffects.WITHER, MobEffects.BAD_OMEN, ModEffects.SULFUR_POISONING, 222, 1));
 
     // Інше / хімія
     public static final DeferredHolder<Item, Item> CALCIUM_OXIDE = ITEMS.register("calcium_oxide", () -> new Item(new Item.Properties()));
@@ -431,15 +481,11 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> SUPERCONDUCTING_MAGNET = ITEMS.register("superconducting_magnet", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SUPERCONDUCTING_MODULE = ITEMS.register("superconducting_module", () -> new Item(new Item.Properties()));
 
-    // Глоу (foil завжди)
     public static final DeferredHolder<Item, Item> CHUNKLOADER_CORE = ITEMS.register(
             "chunkloader_core",
-            () -> new Item(new Item.Properties()) {
-                @Override public boolean isFoil(ItemStack stack) { return true; }
-            }
+            () -> new Item(new Item.Properties().component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true))
     );
 
-    // Їжа — “Золотий батон”
     public static final DeferredHolder<Item, Item> GOLDEN_BATON = ITEMS.register(
             "golden_baton",
             () -> new Item(new Item.Properties().food(
@@ -448,7 +494,7 @@ public class ItemRegistry {
                             .saturationModifier(3f)
                             .fast()
                             .effect(() -> new MobEffectInstance(MobEffects.DIG_SPEED, 18000, 1), 1.0f)
-                            .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 30000, 0), 1.0f)
+                            .effect(() -> new MobEffectInstance(MobEffects. FIRE_RESISTANCE, 30000, 0), 1.0f)
                             .build()
             ))
     );
@@ -458,7 +504,7 @@ public class ItemRegistry {
                             .food(new FoodProperties.Builder()
                                     .nutrition(12)
                                     .saturationModifier(0.5f)
-                             //       .effect(() -> new MobEffectInstance(NOURISHMENT_HOLDER.get(), 1200000, 0), 1)
+                                    .effect(() -> new MobEffectInstance(NOURISHMENT_HOLDER.get(), 1200000, 0), 1)
                                     .build())
 
                     )
@@ -493,10 +539,52 @@ public class ItemRegistry {
                                     .nutrition(12)
                                     .saturationModifier(0.5f)
                                     .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 2), 1)
-                                    //.effect(() -> new MobEffectInstance(NOURISHMENT_HOLDER.get(), 12000, 0), 1)
+                                    .effect(() -> new MobEffectInstance(NOURISHMENT_HOLDER.get(), 12000, 0), 1)
                                     .build())
                     )
             );
+
+    public static final DeferredHolder<Item, Item> VERY_NUTRITIOUS_CANDY =
+            ITEMS.register("very_nutritious_candy",
+                    () -> new Item(new Item.Properties()
+                            .stacksTo(64)
+                            .component(DataComponents.RARITY, Rarity.RARE)
+                            .component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
+                            .component(
+                                    DataComponents.LORE,
+                                    new ItemLore(List.of(
+                                            Component.translatable(
+                                                    "tooltip.roll_mod.very_nutritious_candy"
+                                            ).withStyle(style -> style.withColor(0xFF66FF))
+                                    ))
+                            )
+                            .food(new FoodProperties.Builder()
+                                    .nutrition(12)
+                                    .saturationModifier(1.2f)
+
+                                    // Custom nourishment effect
+                                    .effect(
+                                            () -> new MobEffectInstance(
+                                                    NOURISHMENT_HOLDER.get(),
+                                                    24000,
+                                                    0
+                                            ),
+                                            1.0f
+                                    )
+
+                                    // Vanilla saturation effect
+                                    .effect(
+                                            () -> new MobEffectInstance(
+                                                    MobEffects.SATURATION,
+                                                    24000,
+                                                    0
+                                            ),
+                                            1.0f
+                                    )
+                                    .build())
+                    )
+            );
+
     // 🍯 Варення з сірчаних ягід
     public static final DeferredHolder<Item, Item> SULFUR_JAM = ITEMS.register(
             "sulfur_jam",
@@ -520,6 +608,7 @@ public class ItemRegistry {
                             .saturationModifier(1.2f)
                             .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 2400, 2), 1.0f) // дає золоті серця
                             .effect(() -> new MobEffectInstance(ModEffects.SULFUR_POISONING, 600, 0), 0.2f) // 20% шанс отримати твою власну хворобу
+                            .effect(() -> new MobEffectInstance(ModEffects.SULFUR_RESISTANCE, 2000, 0), 0.2f)
                             .build()
             ))
     );

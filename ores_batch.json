@@ -645,7 +645,7 @@
       "en_us_name": "Trona",
       "ore_name": "trona",
       "item_name": "raw_trona",
-      "hex_color": "#c80009",
+      "hex_color": "#B08745",
       "bases": ["netherrack"],
       "overlay": "iron",
       "item_base": "diamond"
@@ -657,10 +657,98 @@
       "item_name": "raw_bismuth",
       "hex_color": "#b37fc7",
       "bases": ["netherrack"],
-      "overlay": "uranium",
+      "overlay": "bismuth",
       "item_base": "iron"
+    },
+    {
+      "uk_ua_name": "Кварц",
+      "en_us_name": "Quartz",
+      "ore_name": "quartz",
+      "item_name": "raw_quartz",
+      "hex_color": "#e6e2dc",
+      "bases": ["mars", "moon", "stone", "netherrack", "deepslate", "venus", "mercury", "end"],
+      "overlay": "quartz",
+      "item_base": "quartz"
+    },
+    {
+      "uk_ua_name": "Алмаз",
+      "en_us_name": "Diamond",
+      "ore_name": "diamond",
+      "item_name": "raw_diamond",
+      "hex_color": "#5de3e8",
+      "bases": ["deepslate"],
+      "overlay": "diamond",
+      "item_base": "diamond"
+    },
+    {
+      "uk_ua_name": "Борт",
+      "en_us_name": "Bort",
+      "ore_name": "bort",
+      "item_name": "raw_bort",
+      "hex_color": "#3aa6a6",
+      "bases": ["deepslate"],
+      "overlay": "diamond",
+      "item_base": "coal"
+    },
+    {
+      "uk_ua_name": "Каситеритовий пісок",
+      "en_us_name": "Cassiterite Sand",
+      "ore_name": "cassiterite_sand",
+      "item_name": "raw_cassiterite_sand",
+      "hex_color": "#8588a0",
+      "bases": ["stone", "deepslate"],
+      "overlay": "diamond",
+      "item_base": "copper"
+    },
+    {
+      "uk_ua_name": "Іридій",
+      "en_us_name": "Iridium",
+      "ore_name": "iridium",
+      "item_name": "raw_iridium",
+      "hex_color": "#ffffff",
+      "bases": ["mars"],
+      "overlay": "osmium",
+      "item_base": "uranium"
+    },
+    {
+      "uk_ua_name": "Золота амальгама",
+      "en_us_name": "Gold Amalgam",
+      "ore_name": "gold_amalgam",
+      "item_name": "raw_gold_amalgam",
+      "hex_color": "#d4b14a",
+      "bases": ["mars", "end"],
+      "overlay": "gold",
+      "item_base": "copper"
+    },
+    {
+      "uk_ua_name": "Срібна амальгама",
+      "en_us_name": "Silver Amalgam",
+      "ore_name": "silver_amalgam",
+      "item_name": "raw_silver_amalgam",
+      "hex_color": "#bfc5c9",
+      "bases": ["mars", "end"],
+      "overlay": "tin",
+      "item_base": "copper"
+    },
+    {
+      "uk_ua_name": "Вугілля",
+      "en_us_name": "Coal",
+      "ore_name": "coal",
+      "item_name": "raw_coal",
+      "hex_color": "#2b2b2b",
+      "bases": ["stone", "deepslate"],
+      "overlay": "coal",
+      "item_base": "coal"
+    },
+    {
+      "uk_ua_name": "Буре вугілля",
+      "en_us_name": "Lignite Coal",
+      "ore_name": "lignite_coal",
+      "item_name": "raw_lignite_coal",
+      "hex_color": "#5a3118",
+      "bases": ["stone", "deepslate"],
+      "overlay": "iron",
+      "item_base": "coal"
     }
-
-
   ]
 }

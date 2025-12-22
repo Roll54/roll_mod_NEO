@@ -386,7 +386,7 @@
   "item.roll_mod.impure_wulfenite_dust": "Неочищений вульфенітовий пил",
   "item.roll_mod.impure_yellow_limonite_dust": "Неочищений пил жовтого лімоніту",
   "item.roll_mod.inert_metal_mixture": "Суміш інертних металів",
-  "item.roll_mod.injection_fire_res": "Ін'єкція \"Обсидіанова шкіра\"",
+  "item.roll_mod.injection_fire_resistance": "Ін'єкція \"Обсидіанова шкіра\"",
   "item.roll_mod.injection_regen": "Ін'єкція \"Як новенький\"",
   "item.roll_mod.injection_resistance": "Ін'єкція \"Бандерівська сила\"",
   "item.roll_mod.injection_speed": "Ін'єкція \"Швидкість Соніка\"",
@@ -960,5 +960,10 @@
   "item.roll_mod.refined_bismuth_ore": "Очищений бісмут",
   "item.roll_mod.purified_bismuth_ore": "Промитий бісмут",
   "item.roll_mod.pure_bismuth_dust": "Чистий пил бісмут",
-  "item.roll_mod.impure_bismuth_dust": "Брудний пил бісмут"
+  "item.roll_mod.impure_bismuth_dust": "Брудний пил бісмут",
+
+  "item.roll_mod.very_nutritious_candy": "Поживна цукерка",
+  "tooltip.roll_mod.very_nutritious_candy": "Якимось чином надзвичайно поживна... А, ой. Це багато чого пояснює.",
+
+  "effect.roll_mod.sulfur_resistance": "Стійкість до сірки"
 }
