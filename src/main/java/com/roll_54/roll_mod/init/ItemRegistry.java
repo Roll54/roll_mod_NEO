@@ -835,8 +835,8 @@ public class ItemRegistry {
                                     .stacksTo(1)
                                     .rarity(Rarity.EPIC),
                             500_000_000_000L, // 500G EU
-                            20_000_000L,      // input
-                            20_000_000L,      // output
+                            200_000_000L,      // input
+                            200_000_000L,      // output
                             0x00FFFF          // бірюзовий
                     )
             );
@@ -849,8 +849,8 @@ public class ItemRegistry {
                                     .stacksTo(1)
                                     .rarity(Rarity.EPIC),
                             10_000_000_000_000L, // 10T EU
-                            50_000_000L,        // input
-                            50_000_000L,        // output
+                            500_000_000L,        // input
+                            500_000_000L,        // output
                             0xFFD700            // золотий
                     )
             );
@@ -873,6 +873,107 @@ public class ItemRegistry {
                             0xDD3333
                     )
             );
+    //lv
+    public static final DeferredHolder<Item, EnergyDrillItem> LV_MINING_DRILL =
+            ITEMS.register("lv_mining_drill",
+                    () -> new EnergyDrillItem(
+                            ModToolTiers.METEORITE_METAL,
+                            new Item.Properties(),
+                            1_000_000L,
+                            1,
+                            1,
+                            500
+                    )
+            );
+
+    public static final DeferredHolder<Item, EnergyDrillItem> ADVANCED_LV_MINING_DRILL =
+            ITEMS.register("advanced_lv_mining_drill",
+                    () -> new EnergyDrillItem(
+                            ModToolTiers.METEORITE_METAL,
+                            new Item.Properties(),
+                            2_000_000L,
+                            3,
+                            1,
+                            1500
+                    )
+            );
+
+    // MV
+    public static final DeferredHolder<Item, EnergyDrillItem> MV_MINING_DRILL =
+            ITEMS.register("mv_mining_drill",
+                    () -> new EnergyDrillItem(
+                            ModToolTiers.METEORITE_METAL,
+                            new Item.Properties(),
+                            10_000_000L,
+                            1,
+                            2,
+                            1000
+                    )
+            );
+
+    public static final DeferredHolder<Item, EnergyDrillItem> ADVANCED_MV_MINING_DRILL =
+            ITEMS.register("advanced_mv_mining_drill",
+                    () -> new EnergyDrillItem(
+                            ModToolTiers.METEORITE_METAL,
+                            new Item.Properties(),
+                            20_000_000L,
+                            5,
+                            2,
+                            3000
+                    )
+            );
+
+    // HV
+    public static final DeferredHolder<Item, EnergyDrillItem> HV_MINING_DRILL =
+            ITEMS.register("hv_mining_drill",
+                    () -> new EnergyDrillItem(
+                            ModToolTiers.METEORITE_METAL,
+                            new Item.Properties(),
+                            1_000_000_000L,
+                            1,
+                            3,
+                            2000
+                    )
+            );
+
+    public static final DeferredHolder<Item, EnergyDrillItem> ADVANCED_HV_MINING_DRILL =
+            ITEMS.register("advanced_hv_mining_drill",
+                    () -> new EnergyDrillItem(
+                            ModToolTiers.METEORITE_METAL,
+                            new Item.Properties(),
+                            2_000_000_000L,
+                            7,
+                            3,
+                            6000
+                    )
+            );
+
+    // EV
+    public static final DeferredHolder<Item, EnergyDrillItem> EV_MINING_DRILL =
+            ITEMS.register("ev_mining_drill",
+                    () -> new EnergyDrillItem(
+                            ModToolTiers.METEORITE_METAL,
+                            new Item.Properties(),
+                            50_000_000_000L,
+                            1,
+                            4,
+                            4000
+
+                    )
+            );
+
+    public static final DeferredHolder<Item, EnergyDrillItem> ADVANCED_EV_MINING_DRILL =
+            ITEMS.register("advanced_ev_mining_drill",
+                    () -> new EnergyDrillItem(
+                            ModToolTiers.METEORITE_METAL,
+                            new Item.Properties(),
+                            100_000_000_000L,
+                            9,
+                            4,
+                            12000
+                    )
+            );
+
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);

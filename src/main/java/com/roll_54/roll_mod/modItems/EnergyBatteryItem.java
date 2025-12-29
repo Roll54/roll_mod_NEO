@@ -27,11 +27,7 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
     private final long maxOutput;
     private final int barColor;
 
-    public EnergyBatteryItem(Properties properties,
-                             long energyCapacity,
-                             long maxInput,
-                             long maxOutput,
-                             int barColor) {
+    public EnergyBatteryItem(Properties properties, long energyCapacity, long maxInput, long maxOutput, int barColor) {
         super(properties);
         this.energyCapacity = energyCapacity;
         this.maxInput = maxInput;

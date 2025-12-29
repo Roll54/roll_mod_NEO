@@ -1,0 +1,88 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:blue_shulker_box",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": "{\"text\":\"AE2 Starter Pack\",\"color\":\"blue\",\"italic\":false}",
+                "minecraft:container": [
+                  {
+                    "slot": 0,
+                    "item": {
+                      "id": "ae2:purple_smart_cable",
+                      "count": 64
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "item": {
+                      "id": "ae2:controller",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "item": {
+                      "id": "ae2:crystal_resonance_generator",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "item": {
+                      "id": "ae2:drive",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 4,
+                    "item": {
+                      "id": "ae2:crafting_terminal",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 5,
+                    "item": {
+                      "id": "ae2:item_storage_cell_4k",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 6,
+                    "item": {
+                      "id": "ae2:item_storage_cell_4k",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 7,
+                    "item": {
+                      "id": "ae2:fluid_storage_cell_1k",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 8,
+                    "item": {
+                      "id": "ae2:fluid_storage_cell_1k",
+                      "count": 1
+                    }
+                  }
+                ]
+
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

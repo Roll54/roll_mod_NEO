@@ -1,0 +1,14 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:mars_quartz",
+    "roll_mod:moon_quartz",
+    "roll_mod:stone_quartz",
+    "roll_mod:netherrack_quartz",
+    "roll_mod:deepslate_quartz",
+    "roll_mod:venus_quartz",
+    "roll_mod:mercury_quartz",
+    "roll_mod:end_quartz",
+    "roll_mod:raw_quartz"
+  ]
+}

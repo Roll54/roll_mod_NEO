@@ -26,7 +26,7 @@
                   }
                 }
               ],
-              "name": "roll_mod:end_ "
+              "name": "roll_mod:stone_lignite_coal"
             },
             {
               "type": "minecraft:item",
@@ -40,12 +40,12 @@
                   "function": "minecraft:explosion_decay"
                 }
               ],
-              "name": "roll_mod:raw_scheelite"
+              "name": "roll_mod:raw_lignite_coal"
             }
           ]
         }
       ]
     }
   ],
-  "random_sequence": "minecraft:blocks/end_ "
+  "random_sequence": "minecraft:blocks/stone_lignite_coal"
 }

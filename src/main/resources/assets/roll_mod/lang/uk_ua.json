@@ -965,5 +965,28 @@
   "item.roll_mod.very_nutritious_candy": "Поживна цукерка",
   "tooltip.roll_mod.very_nutritious_candy": "Якимось чином надзвичайно поживна... А, ой. Це багато чого пояснює.",
 
-  "effect.roll_mod.sulfur_resistance": "Стійкість до сірки"
+  "effect.roll_mod.sulfur_resistance": "Стійкість до сірки",
+
+  "item.roll_mod.lv_mining_drill": "LV бур",
+  "item.roll_mod.advanced_lv_mining_drill": "LV покращений бур",
+
+  "item.roll_mod.mv_mining_drill": "MV бур",
+  "item.roll_mod.advanced_mv_mining_drill": "MV покращений бур",
+
+  "item.roll_mod.hv_mining_drill": "HV бур",
+  "item.roll_mod.advanced_hv_mining_drill": "HV покращений бур",
+
+  "item.roll_mod.ev_mining_drill": "EV бур",
+  "item.roll_mod.advanced_ev_mining_drill": "EV покращений бур",
+
+  "tooltip.roll_mod.general_press_shift": "Затисніть Shift, щоб переглянути деталі",
+
+
+  "tooltip.roll_mod.mining_drill.arc": "Створює плазмову дугу, яка легко розтинає породу",
+
+  "tooltip.roll_mod.mining_drill.area": "Копає в об'ємі %sx%sx%s",
+
+  "tooltip.roll_mod.mining_drill.trademark": "Особливий електричний бур, створений виключно для %s",
+
+  "tooltip.roll_mod.mining_drill.cost": "Витрати енергії: %s за блок"
 }

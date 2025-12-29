@@ -298,6 +298,33 @@
   "tooltip.roll_mod.lunar_clock.phase.7": "Waxing Gibbous",
   "tooltip.roll_mod.lunar_clock.desc": "Shows the current lunar phase when right-clicked.",
 
+  "tooltip.roll_mod.general_press_shift": "Press SHIFT for detail.",
+
+  "item.roll_mod.lv_mining_drill": "LV Mining Drill",
+  "item.roll_mod.advanced_lv_mining_drill": "Advanced LV Mining Drill",
+
+  "item.roll_mod.mv_mining_drill": "MV Mining Drill",
+  "item.roll_mod.advanced_mv_mining_drill": "Advanced MV Mining Drill",
+
+  "item.roll_mod.hv_mining_drill": "HV Mining Drill",
+  "item.roll_mod.advanced_hv_mining_drill": "Advanced HV Mining Drill",
+
+  "item.roll_mod.ev_mining_drill": "EV Mining Drill",
+  "item.roll_mod.advanced_ev_mining_drill": "Advanced EV Mining Drill",
+
+  "tooltip.roll_mod.general_press_shift": "Hold Shift for details",
+
+  "tooltip.roll_mod.mining_drill.arc": "Creates an electric arc that effortlessly cuts through rock",
+
+  "tooltip.roll_mod.mining_drill.area": "Mines in a %sx%sx%s area",
+
+  "tooltip.roll_mod.mining_drill.trademark": "A special electric drill created exclusively for %s",
+
+  "tooltip.roll_mod.mining_drill.cost": "Per block break cost: %s",
+
+
+
+
   "item.roll_mod.vanadium_slag_dust": "Ванадієво-магнетитовий жужіль",
   "loreitem.roll_mod.vanadium_slag_dust.tooltip_line1": "Де мій ванадій?! Що це чорт забирай таке!",
 

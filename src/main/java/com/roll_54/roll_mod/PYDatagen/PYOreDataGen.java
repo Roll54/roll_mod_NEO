@@ -183,10 +183,13 @@ public class PYOreDataGen {
         registerOreVariants("iridium", ORE_PROPERTIES, "mars");
         registerOreVariants("gold_amalgam", ORE_PROPERTIES, "mars", "end");
         registerOreVariants("silver_amalgam", ORE_PROPERTIES, "mars", "end");
+        registerOreVariants("coal", ORE_PROPERTIES, "stone", "deepslate");
+        registerOreVariants("lignite_coal", ORE_PROPERTIES, "stone", "deepslate");
         registerOreVariants("quartz", ORE_PROPERTIES, "mars", "moon", "stone", "netherrack", "deepslate", "venus", "mercury", "end");
         registerOreVariants("diamond", ORE_PROPERTIES, "deepslate");
         registerOreVariants("bort", ORE_PROPERTIES, "deepslate");
         registerOreVariants("cassiterite_sand", ORE_PROPERTIES, "stone", "deepslate");
+        registerOreVariants("azure_silver", ORE_PROPERTIES, "end");
 
 
     }

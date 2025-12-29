@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_lignite_coal",
+    "roll_mod:deepslate_lignite_coal",
+    "roll_mod:raw_lignite_coal"
+  ]
+}

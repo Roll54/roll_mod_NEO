@@ -61,6 +61,24 @@ def generate_tags(batch_file):
 
         print(f"✔ Створено тег: {out_path}")
 
+        DUSTS_OUTPUT_DIR = "src/main/resources/data/c/tags/item/dusts"
+        ensure_dir(DUSTS_OUTPUT_DIR)
+
+        dust_tag = generate_dust_tag_json(f"{ore_name}_dust")
+        dust_path = os.path.join(DUSTS_OUTPUT_DIR, f"{ore_name}.json")
+
+        with open(dust_path, "w", encoding="utf-8") as f:
+            json.dump(dust_tag, f, ensure_ascii=False, indent=2)
+
+        print(f"✔ Створено тег пилу: {dust_path}")
+def generate_dust_tag_json(item_name):
+    return {
+        "replace": False,
+        "values": [
+            f"roll_mod:{item_name}"
+        ]
+    }
+
 
 # --- запуск ---
 if __name__ == "__main__":

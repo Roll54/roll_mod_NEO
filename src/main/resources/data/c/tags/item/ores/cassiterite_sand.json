@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:stone_cassiterite_sand",
+    "roll_mod:deepslate_cassiterite_sand",
+    "roll_mod:raw_cassiterite_sand"
+  ]
+}

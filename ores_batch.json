@@ -749,6 +749,16 @@
       "bases": ["stone", "deepslate"],
       "overlay": "iron",
       "item_base": "coal"
+    },
+    {
+      "uk_ua_name": "Лазурне срібло",
+      "en_us_name": "Azure Silver",
+      "ore_name": "azure_silver",
+      "item_name": "raw_azure_silver",
+      "hex_color": "#b572a3",
+      "bases": ["end"],
+      "overlay": "gold",
+      "item_base": "gold"
     }
   ]
 }

@@ -19,6 +19,16 @@ public class CapabilityRegistry {
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.HV_STORM_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.LV_STORM_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.LUNAR_PHASE_CLOCK.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.LV_MINING_DRILL.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.ADVANCED_LV_MINING_DRILL.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.MV_MINING_DRILL.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.ADVANCED_MV_MINING_DRILL.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.HV_MINING_DRILL.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.ADVANCED_HV_MINING_DRILL.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.EV_MINING_DRILL.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.ADVANCED_EV_MINING_DRILL.get());
+
+
 
     }
 }

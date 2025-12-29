@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:hazmat_helmet",
+    "roll_mod:hazmat_chestplate",
+    "roll_mod:hazmat_leggings",
+    "roll_mod:hazmat_boots"
+  ]
+}
