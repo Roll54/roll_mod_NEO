@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.modItems;
 
 import aztech.modern_industrialization.MIComponents;
+import com.roll_54.roll_mod.data.ModComponents;
 import com.roll_54.roll_mod.util.EnergyFormatUtils;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
 import net.minecraft.ChatFormatting;
@@ -10,19 +11,22 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 
-import javax.xml.stream.events.Comment;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,36 +47,22 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
         this.PER_BLOCK_BREAK_COST = block_cost;
     }
 
-    /**
-     * @return
-     */
+    @SuppressWarnings("@ParametersAreNonnullByDefaul parametr")
     @Override
     public DataComponentType<Long> getEnergyComponent() {
         return MIComponents.ENERGY.get();
     }
 
-    /**
-     * @param stack Current stack.
-     * @return
-     */
     @Override
     public long getEnergyCapacity(ItemStack stack) {
         return ITEM_CAPACITY;
     }
 
-    /**
-     * @param stack Current stack.
-     * @return
-     */
     @Override
     public long getEnergyMaxInput(ItemStack stack) {
         return ITEM_CAPACITY;
     }
 
-    /**
-     * @param stack Current stack.
-     * @return
-     */
     @Override
     public long getEnergyMaxOutput(ItemStack stack) {
         return 0;
@@ -103,7 +93,6 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
         long stored = getStoredEnergy(stack);
         long cap = getEnergyCapacity(stack);
         int diameter = MINING_RADIUS * 2 + 1;
-        int cost = Math.toIntExact(PER_BLOCK_BREAK_COST);
 
         String formattedStored = EnergyFormatUtils.formatEnergy(stored);
         String formattedCap = EnergyFormatUtils.formatEnergy(cap);
@@ -116,6 +105,21 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
         );
 
         if (Screen.hasShiftDown()) {
+
+            if (stack.getOrDefault(ModComponents.TRANS.get(), 0.0F) >= 1.0F) {
+                tooltip.add(
+                        Component.translatable("tooltip.roll_mod.mining_drill.trans")
+                                .withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.ITALIC)
+                );
+            }
+
+            if (stack.getOrDefault(ModComponents.CAT.get(), 0.0F) >= 1.0F) {
+                tooltip.add(
+                        Component.translatable("tooltip.roll_mod.mining_drill.cat")
+                                .withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.ITALIC)
+                );
+            }
+
             // 1
             tooltip.add(
                     Component.translatable("tooltip.roll_mod.mining_drill.arc")
@@ -232,7 +236,7 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
         Direction face = hit.getDirection();
         BlockPos center = originalCenter;
 
-        // 🔑 КЛЮЧОВИЙ МОМЕНТ — зсув центру
+        // Move center
         if (face.getAxis() != Direction.Axis.Y) {
             int diameter = radius * 2 + 1;
             int yOffset = (diameter - 3) / 2;
@@ -266,5 +270,76 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
         return result;
     }
 
+    @Override
+    public InteractionResult useOn(UseOnContext context) {
+        Level level = context.getLevel();
+        if (level.isClientSide) return InteractionResult.SUCCESS;
 
+        BlockPos pos = context.getClickedPos();
+        BlockState state = level.getBlockState(pos);
+        Player player = context.getPlayer();
+        ItemStack stack = context.getItemInHand();
+
+        if (player == null) return InteractionResult.PASS;
+
+        // CAKE → CAT
+        if (handleCake(level, pos, state, stack)) {
+            return InteractionResult.CONSUME;
+        }
+
+        // Shift + BEACON → TRANS
+        if (handleBeacon(level, pos, state, player, stack)) {
+            return InteractionResult.CONSUME;
+        }
+
+        return super.useOn(context);
+    }
+
+    private boolean handleCake(Level level,
+                               BlockPos pos,
+                               BlockState state,
+                               ItemStack stack) {
+
+        if (!state.is(Blocks.CAKE)) return false;
+
+        level.destroyBlock(pos, false);
+        stack.set(ModComponents.CAT.get(), 1.0F);
+        stack.set(ModComponents.TRANS.get(), 0.0F);
+
+        level.playSound(
+                null,
+                pos,
+                SoundEvents.CAT_AMBIENT,
+                SoundSource.BLOCKS,
+                1.0F,
+                1.0F
+        );
+
+        return true;
+    }
+
+    private boolean handleBeacon(Level level,
+                                 BlockPos pos,
+                                 BlockState state,
+                                 Player player,
+                                 ItemStack stack) {
+
+        if (!player.isShiftKeyDown()) return false;
+        if (!state.is(Blocks.BEACON)) return false;
+
+        level.destroyBlock(pos, false);
+        stack.set(ModComponents.TRANS.get(), 1.0F);
+        stack.set(ModComponents.CAT.get(), 0.0F);
+
+        level.playSound(
+                null,
+                pos,
+                SoundEvents.BEACON_ACTIVATE,
+                SoundSource.BLOCKS,
+                1.0F,
+                1.0F
+        );
+
+        return true;
+    }
 }

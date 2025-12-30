@@ -312,18 +312,13 @@
   "item.roll_mod.ev_mining_drill": "EV Mining Drill",
   "item.roll_mod.advanced_ev_mining_drill": "Advanced EV Mining Drill",
 
-  "tooltip.roll_mod.general_press_shift": "Hold Shift for details",
 
   "tooltip.roll_mod.mining_drill.arc": "Creates an electric arc that effortlessly cuts through rock",
-
   "tooltip.roll_mod.mining_drill.area": "Mines in a %sx%sx%s area",
-
   "tooltip.roll_mod.mining_drill.trademark": "A special electric drill created exclusively for %s",
-
   "tooltip.roll_mod.mining_drill.cost": "Per block break cost: %s",
-
-
-
+  "tooltip.roll_mod.mining_drill.trans": "Trans rights is human rights",
+  "tooltip.roll_mod.mining_drill.cat": "Meow, this cake was delicious UwU",
 
   "item.roll_mod.vanadium_slag_dust": "Ванадієво-магнетитовий жужіль",
   "loreitem.roll_mod.vanadium_slag_dust.tooltip_line1": "Де мій ванадій?! Що це чорт забирай таке!",

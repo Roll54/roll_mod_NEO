@@ -983,10 +983,9 @@
 
 
   "tooltip.roll_mod.mining_drill.arc": "Створює плазмову дугу, яка легко розтинає породу",
-
   "tooltip.roll_mod.mining_drill.area": "Копає в об'ємі %sx%sx%s",
-
   "tooltip.roll_mod.mining_drill.trademark": "Особливий електричний бур, створений виключно для %s",
-
-  "tooltip.roll_mod.mining_drill.cost": "Витрати енергії: %s за блок"
+  "tooltip.roll_mod.mining_drill.cost": "Витрати енергії: %s за блок",
+  "tooltip.roll_mod.mining_drill.trans": "Права транс людей — це права людини",
+  "tooltip.roll_mod.mining_drill.cat": "Мяу, цей торт був дуже смачний UwU"
 }

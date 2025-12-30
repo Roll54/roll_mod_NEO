@@ -2,5 +2,19 @@
   "parent": "item/handheld",
   "textures": {
     "layer0": "roll_mod:item/tool/advanced_lv_mining_drill"
-  }
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "roll_mod:trans": 1
+      },
+      "model": "roll_mod:item/advanced_mining_drill_trans"
+    },
+    {
+      "predicate": {
+        "roll_mod:cat": 1
+      },
+      "model": "roll_mod:item/advanced_mining_drill_cat"
+    }
+  ]
 }
