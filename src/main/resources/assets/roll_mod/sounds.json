@@ -1,7 +1,10 @@
 {
-  "chipunk": {
+  "shchedryk": {
     "sounds": [
-      { "name": "roll_mod:chipunk" }
+      {
+        "name": "roll_mod:shchedryk",
+        "stream": true
+      }
     ]
   }
 }

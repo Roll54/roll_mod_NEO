@@ -16,22 +16,23 @@ public class RollPlushBlock extends FacingPlushBlock {
         super(settings);
     }
 
-    public InteractionResult useWithoutItem(
-            BlockState state,
-            Level level,
-            BlockPos pos,
-            Player player,
-            InteractionHand hand,
-            BlockHitResult hit
-    ) {
-        if (!level.isClientSide) {
-            level.playSound(null, pos,
-                    SoundRegistry.ROLL_CHIPUNK.get(),
-                    SoundSource.BLOCKS,
-                    1.0F, 1.0F
-            );
-        }
-
-        return InteractionResult.sidedSuccess(level.isClientSide);
-    }
+    //todo fix sonund effect on rightclick
+//    public InteractionResult useWithoutItem(
+//            BlockState state,
+//            Level level,
+//            BlockPos pos,
+//            Player player,
+//            InteractionHand hand,
+//            BlockHitResult hit
+//    ) {
+//        if (!level.isClientSide) {
+//            level.playSound(null, pos,
+//                    SoundRegistry.ROLL_CHIPUNK.get(),
+//                    SoundSource.BLOCKS,
+//                    1.0F, 1.0F
+//            );
+//        }
+//
+//        return InteractionResult.sidedSuccess(level.isClientSide);
+//    }
 }

@@ -986,6 +986,9 @@
   "tooltip.roll_mod.mining_drill.area": "Копає в об'ємі %sx%sx%s",
   "tooltip.roll_mod.mining_drill.trademark": "Особливий електричний бур, створений виключно для %s",
   "tooltip.roll_mod.mining_drill.cost": "Витрати енергії: %s за блок",
-  "tooltip.roll_mod.mining_drill.trans": "Права транс людей — це права людини",
-  "tooltip.roll_mod.mining_drill.cat": "Мяу, цей торт був дуже смачний UwU"
+  "tooltip.roll_mod.mining_drill.trans": "Права транс людей - це права людини",
+  "tooltip.roll_mod.mining_drill.cat": "Мяу, цей торт був дуже смачний UwU",
+
+  "item.roll_mod.shchedryk.desc": "Микола Леонтович - \"Щедрик\" 1922 року",
+  "item.roll_mod.shchedryk_music_disc": "Платівка"
 }

@@ -21,8 +21,8 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemLore;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 import java.util.function.Supplier;
@@ -974,6 +974,17 @@ public class ItemRegistry {
                     )
             );
 
+    public static final DeferredHolder<Item, ProspectorPickItem> PROSPECTOR_PICK_ITEM =
+            ITEMS.register("prospector_pickaxe",
+                    () -> new ProspectorPickItem(
+                            new Item.Properties()
+                                    .stacksTo(1)
+                                    .rarity(Rarity.UNCOMMON)
+                    )
+            );
+
+    public static final DeferredHolder<Item, Item> SHCHEDRYK_MUSIC_DISC = ITEMS.register("shchedryk_music_disc",
+            () -> new Item(new Item.Properties().jukeboxPlayable(SoundRegistry.SHCHEDRYK_KEY).stacksTo(1).rarity(Rarity.RARE)) );
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);

@@ -362,6 +362,9 @@
 
   "effect.roll_mod.sulfur_resistance": "Sulfur Resistance",
 
+  "item.roll_mod.shchedryk.desc": "Ukrainian carol \"Shchedryk\"",
+  "item.roll_mod.shchedryk_music_disc": "Music Disc — Shchedryk",
+
   "itemGroup.roll_mod.py_datagen": "Datagen items",
 
   "item.roll_mod.raw_lazurite": "Raw Lazurite",
