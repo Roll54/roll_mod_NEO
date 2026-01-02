@@ -6,6 +6,7 @@ import com.roll_54.roll_mod.modItems.*;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.util.TooltipOptions;
 import com.roll_54.roll_mod.util.TooltipManager;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,7 +22,6 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemLore;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
@@ -977,14 +977,94 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, ProspectorPickItem> PROSPECTOR_PICK_ITEM =
             ITEMS.register("prospector_pickaxe",
                     () -> new ProspectorPickItem(
+                            Tiers.IRON,
+                            new Item.Properties().durability(512).rarity(Rarity.UNCOMMON)
+                    )
+
+            );
+
+    public static final DeferredHolder<Item, ProspectorPickItem> METEORITE_METAL_PROSPECTOR_PICKAXE =
+            ITEMS.register(
+                    "meteorite_metal_prospector_pickaxe",
+                    () -> new ProspectorPickItem(
+                            ModToolTiers.METEORITE_METAL,
                             new Item.Properties()
-                                    .stacksTo(1)
+                                    .durability(4096)
                                     .rarity(Rarity.UNCOMMON)
+                                    .component(
+                                            DataComponents.CUSTOM_NAME,
+                                            Component.translatable(
+                                                            "item.roll_mod.meteorite_metal_prospector_pickaxe"
+                                                    )
+                                                    .withStyle(style ->
+                                                            style.withColor(0x3B2AB8)
+                                                                    .withItalic(false)
+                                                    )
+                                    )
                     )
             );
 
-    public static final DeferredHolder<Item, Item> SHCHEDRYK_MUSIC_DISC = ITEMS.register("shchedryk_music_disc",
-            () -> new Item(new Item.Properties().jukeboxPlayable(SoundRegistry.SHCHEDRYK_KEY).stacksTo(1).rarity(Rarity.RARE)) );
+    public static final DeferredHolder<Item, Item> SHCHEDRYK_MUSIC_DISC =
+            ITEMS.register(
+                    "shchedryk_music_disc",
+                    () -> new Item(
+                            new Item.Properties()
+                                    .jukeboxPlayable(SoundRegistry.SHCHEDRYK_KEY)
+                                    .stacksTo(1)
+                                    .rarity(Rarity.RARE)
+                    )
+            );
+
+    public static final DeferredHolder<Item, EnergySwordItem> ENERGY_SWORD =
+            ITEMS.register(
+                    "energy_sword",
+                    () -> new EnergySwordItem(
+                            new Item.Properties(),
+                            1_000_000L,
+                            40_000L,
+                            0.5,
+                            10.0
+                    )
+            );
+
+    public static final DeferredHolder<Item, EnergySwordItem> METEORITE_METAL_NANO_SABER =
+            ITEMS.register(
+                    "meteorite_metal_nano_saber",
+                    () -> new EnergySwordItem(
+                            new Item.Properties()
+                                    .component(
+                                            DataComponents.LORE,
+                                            new ItemLore(
+                                                    List.of(
+                                                            Component.translatable(
+                                                                            "tooltip.roll_mod.meteorite_metal_nano_saber"
+                                                                    )
+                                                                    .withStyle(style ->
+                                                                            style.withColor(0x005ACF)
+                                                                                    .withItalic(false)
+                                                                    )
+
+                                                    )
+                                            )
+                                    )
+                                    .component(
+                                            DataComponents.CUSTOM_NAME,
+                                            Component.translatable(
+                                                            "item.roll_mod.meteorite_metal_nano_saber"
+                                                    )
+                                                    .withStyle(style ->
+                                                            style.withColor(0x3B2AB8)
+                                                                    .withItalic(false)
+                                                    )
+                                    ),
+                            54_000_000L,
+                            100_000L,
+                            0.5,
+                            25.0
+                    )
+            );
+
+
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);

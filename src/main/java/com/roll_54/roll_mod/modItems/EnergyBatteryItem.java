@@ -35,7 +35,6 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
         this.barColor = barColor;
     }
 
-    // === ISimpleEnergyItem ===
     @Override
     public net.minecraft.core.component.DataComponentType<Long> getEnergyComponent() {
         return MIComponents.ENERGY.get();

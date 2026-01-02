@@ -1,0 +1,25 @@
+{
+  "parent": "roll_mod:tool/meteorite_metal_nano_saber_off",
+  "overrides": [
+    {
+      "predicate": {
+        "roll_mod:activated": 1.0
+      },
+      "model": "roll_mod:tool/meteorite_metal_nano_saber_on"
+    },
+    {
+      "predicate": {
+        "roll_mod:activated": 0.0,
+        "roll_mod:murasama": 1
+      },
+      "model": "roll_mod:tool/murasama_off"
+    },
+    {
+      "predicate": {
+        "roll_mod:activated": 1.0,
+        "roll_mod:murasama": 1
+      },
+      "model": "roll_mod:tool/murasama_on"
+    }
+  ]
+}

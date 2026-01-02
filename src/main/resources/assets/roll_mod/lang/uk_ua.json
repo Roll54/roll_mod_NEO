@@ -990,5 +990,9 @@
   "tooltip.roll_mod.mining_drill.cat": "Мяу, цей торт був дуже смачний UwU",
 
   "item.roll_mod.shchedryk.desc": "Микола Леонтович - \"Щедрик\" 1922 року",
-  "item.roll_mod.shchedryk_music_disc": "Платівка"
+  "item.roll_mod.shchedryk_music_disc": "Платівка",
+
+  "item.roll_mod.prospector_pickaxe": "Кайло геолога",
+  "message.roll_mod.prospector.found": "⛏ Знайдено руду: %s",
+  "message.roll_mod.prospector.none": "❌ Руд не знайдено"
 }

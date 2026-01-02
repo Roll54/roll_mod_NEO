@@ -365,6 +365,14 @@
   "item.roll_mod.shchedryk.desc": "Ukrainian carol \"Shchedryk\"",
   "item.roll_mod.shchedryk_music_disc": "Music Disc — Shchedryk",
 
+  "item.roll_mod.prospector_pickaxe": "Prospector Pickaxe",
+  "item.roll_mod.meteorite_metal_prospector_pickaxe": "Meteorite Metal Prospector Pickaxe",
+  "message.roll_mod.prospector.found": "⛏ Found ore: %s",
+  "message.roll_mod.prospector.none": "❌ No ores found",
+
+  "item.roll_mod.meteorite_metal_nano_saber": "Meteorite Metal Saber",
+  "tooltip.roll_mod.meteorite_metal_nano_saber": "Unique sword out of meteorite metal",
+
   "itemGroup.roll_mod.py_datagen": "Datagen items",
 
   "item.roll_mod.raw_lazurite": "Raw Lazurite",
