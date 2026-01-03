@@ -15,6 +15,12 @@
         "roll_mod:cat": 1
       },
       "model": "roll_mod:item/advanced_mining_drill_cat"
+    },
+    {
+      "predicate": {
+        "roll_mod:lime": 1
+      },
+      "model": "roll_mod:tool/custom_drill_models/meteorpickaxe"
     }
   ]
 }

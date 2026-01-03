@@ -26,6 +26,7 @@ public class ModComponents {
     public static final Supplier<DataComponentType<Float>> LIME;
 
     public static final Supplier<DataComponentType<Integer>> APPLICATOR_COLOR;
+    public static final Supplier<DataComponentType<Boolean>> SKIN_APPLICATOR_USED;
 
     private static <D> DeferredHolder<DataComponentType<?>, DataComponentType<D>> create(String name, Codec<D> codec, StreamCodec<? super RegistryFriendlyByteBuf, D> streamCodec) {
         return COMPONENTS.registerComponentType(name, (b) -> b.persistent(codec).networkSynchronized(streamCodec));
@@ -45,6 +46,8 @@ public class ModComponents {
         FLAME = create("flame", Codec.FLOAT, ByteBufCodecs.FLOAT);
         SKIN_RGB = create("skin_rgb", Codec.FLOAT, ByteBufCodecs.FLOAT);
         LIME = create("lime", Codec.FLOAT, ByteBufCodecs.FLOAT);
+
+        SKIN_APPLICATOR_USED = create("skin_applicator_used", Codec.BOOL, ByteBufCodecs.BOOL);
     }
 
     public static void init(IEventBus bus) {

@@ -51,7 +51,6 @@ public class StormHandler {
         if (overworld != null) {
             state = StormState.get(overworld);
             if (state.ticksUntilNextStorm <= 0 && !state.stormActive) {
-                // Початкову затримку, якщо її ще не згенеровано
                 state.ticksUntilNextStorm = getRandomStormDelay();
                 state.dirty();
             }
@@ -81,7 +80,6 @@ public class StormHandler {
             applyStormInNether(server);
             state.dirty();
 
-            // 🔥 Нове: спавн лічильником
             if (++spawnTickCounter >= TIME_TO_SPAWN_WITHERS) {
                 spawnStormMobs(server);
                 spawnTickCounter = 0;
@@ -284,7 +282,6 @@ public class StormHandler {
 
             if (!level.noCollision(mob)) continue;
 
-            // 1) finalizeSpawn
             mob.finalizeSpawn(
                     level,
                     level.getCurrentDifficultyAt(pos),
@@ -292,10 +289,8 @@ public class StormHandler {
                     null
             );
 
-            // 2) Баф HP ×2.5
             applyHealthBuff(mob);
 
-            // 3) Додаємо в світ, а потім на наступному тіку видаємо зброю
             if (level.addFreshEntity(mob)) {
                 var pName = player.getGameProfile().getName();
                 RollMod.LOGGER.info("[NetherStorm] Spawned PACK wither_skeleton #{}/{} at {} {} {} near {}",

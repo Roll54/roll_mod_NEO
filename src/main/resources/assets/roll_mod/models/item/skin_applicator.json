@@ -1,0 +1,97 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "roll_mod:item/tool/component_applier/part_paint_empty"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 1
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_black"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 2
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_blue"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 3
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_brown"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 4
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_cyan"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 5
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_gray"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 6
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_green"
+    },    {
+      "predicate": {
+        "roll_mod:applicator_color": 7
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_lightblue"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 8
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_lime"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 9
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_magenta"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 10
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_orange"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 11
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_pink"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 12
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_purple"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 13
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_red"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 14
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_white"
+    },
+    {
+      "predicate": {
+        "roll_mod:applicator_color": 14
+      },
+      "model": "roll_mod:item/skin_applicator_others/part_paint_yellow"
+    }
+  ]
+}

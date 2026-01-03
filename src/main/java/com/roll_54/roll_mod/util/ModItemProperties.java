@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.util;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.data.ModComponents;
+import com.roll_54.roll_mod.init.ItemRegistry;
 import com.roll_54.roll_mod.modItems.EnergyDrillItem;
 import com.roll_54.roll_mod.modItems.EnergySwordItem;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -74,6 +75,14 @@ public class ModItemProperties {
                             stack.getOrDefault(ModComponents.LIME.get(), 0.0F)
             );
         }
+
+        ItemProperties.register(
+                ItemRegistry.SKIN_APPLICATOR.get(),
+                ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "applicator_color"),
+                (stack, level, entity, seed) ->
+                        stack.getOrDefault(ModComponents.APPLICATOR_COLOR.get(), 0)
+        );
+
 
     }
 }
