@@ -202,8 +202,6 @@ public class StormHandler {
         return chosenHours * 72_000;
     }
 
-    public double itn = 1.2;
-
     // Публічне API (можна викликати з команд)
 
     private static StormState getState(ServerLevel level) {
