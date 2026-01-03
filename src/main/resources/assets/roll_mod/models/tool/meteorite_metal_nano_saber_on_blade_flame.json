@@ -4,9 +4,9 @@
 	"parent": "nanosaber",
 	"texture_size": [32, 32],
 	"textures": {
-		"0": "roll_mod:item/tool/meteorite_metal_nano_saber_off_grip",
-		"1": "roll_mod:item/tool/meteorite_metal_nano_saber_off_blade",
-		"particle": "roll_mod:item/tool/meteorite_metal_nano_saber_off_grip"
+		"0": "roll_mod:item/tool/meteorite_metal_nano_saber_on_grip_flame",
+		"1": "roll_mod:item/tool/meteorite_metal_nano_saber_on_blade_flame",
+		"particle": "roll_mod:item/tool/meteorite_metal_nano_saber_on_grip_flame"
 	},
 	"elements": [
 		{

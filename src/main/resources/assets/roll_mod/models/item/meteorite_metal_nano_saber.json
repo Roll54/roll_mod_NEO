@@ -20,6 +20,34 @@
         "roll_mod:murasama": 1
       },
       "model": "roll_mod:tool/murasama_on"
+    },
+    {
+      "predicate": {
+        "roll_mod:activated": 1.0,
+        "roll_mod:flame": 1
+      },
+      "model": "roll_mod:tool/meteorite_metal_nano_saber_on_blade_flame"
+    },
+    {
+      "predicate": {
+        "roll_mod:activated": 1.0,
+        "roll_mod:skin_rgb": 1
+      },
+      "model": "roll_mod:tool/meteorite_metal_nano_saber_on_blade_skin_rgb"
+    },
+    {
+      "predicate": {
+        "roll_mod:activated": 1.0,
+        "roll_mod:lavender": 1
+      },
+      "model": "roll_mod:tool/meteorite_metal_nano_saber_on_blade_lavender"
+    },
+    {
+      "predicate": {
+        "roll_mod:activated": 1.0,
+        "roll_mod:lime": 1
+      },
+      "model": "roll_mod:tool/meteorite_metal_nano_saber_on_blade_lime"
     }
   ]
 }

@@ -46,6 +46,33 @@ public class ModItemProperties {
                                 stack.getOrDefault(ModComponents.MURASAMA.get(), 0f)
                 );
             }
+            ItemProperties.register(
+                    item,
+                    ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "lavender"),
+                    (stack, level, entity, seed) ->
+                            stack.getOrDefault(ModComponents.LAVENDER.get(), 0.0F)
+            );
+
+            ItemProperties.register(
+                    item,
+                    ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "flame"),
+                    (stack, level, entity, seed) ->
+                            stack.getOrDefault(ModComponents.FLAME.get(), 0.0F)
+            );
+
+            ItemProperties.register(
+                    item,
+                    ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "skin_rgb"),
+                    (stack, level, entity, seed) ->
+                            stack.getOrDefault(ModComponents.SKIN_RGB.get(), 0.0F)
+            );
+
+            ItemProperties.register(
+                    item,
+                    ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "lime"),
+                    (stack, level, entity, seed) ->
+                            stack.getOrDefault(ModComponents.LIME.get(), 0.0F)
+            );
         }
 
     }

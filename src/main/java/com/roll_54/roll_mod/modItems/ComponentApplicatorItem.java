@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.modItems;
 
+import aztech.modern_industrialization.MIComponents;
 import com.roll_54.roll_mod.data.ModComponents;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
@@ -15,57 +16,69 @@ import java.util.Set;
 
 public class ComponentApplicatorItem extends Item {
 
-    /* ============================= */
-    /* ========= CONFIG ============ */
-    /* ============================= */
 
-    /** Компоненти, які НІКОЛИ не переносяться */
     private static final Set<DataComponentType<?>> BLACKLIST = Set.of(
             ModComponents.APPLICATOR_COLOR.get(), // RGB-ідентичність
             DataComponents.CUSTOM_NAME,
-            DataComponents.LORE
+            DataComponents.LORE,
+            ModComponents.ACTIVATED.get(),
+            MIComponents.ENERGY.get()
     );
 
-    /** Дефолтний колір (білий) */
     private static final int DEFAULT_COLOR = 0xFFFFFF;
 
     public ComponentApplicatorItem(Properties properties) {
         super(properties);
     }
 
-    /* ============================= */
-    /* ========= USE LOGIC ========= */
-    /* ============================= */
-
-    @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        ItemStack applicator = player.getItemInHand(hand);
+
         if (level.isClientSide) {
-            return InteractionResultHolder.pass(player.getItemInHand(hand));
+            return InteractionResultHolder.pass(applicator);
         }
 
-        ItemStack main = player.getMainHandItem();
-        ItemStack off  = player.getOffhandItem();
+        ItemStack other =
+                hand == InteractionHand.MAIN_HAND
+                        ? player.getOffhandItem()
+                        : player.getMainHandItem();
 
-        if (off.isEmpty()) {
-            return InteractionResultHolder.fail(main);
+        if (other.isEmpty()) {
+            return InteractionResultHolder.fail(applicator);
         }
 
-        // SHIFT → напрям навпаки
         boolean reverse = player.isShiftKeyDown();
 
-        ItemStack source = reverse ? off  : main;
-        ItemStack target = reverse ? main : off;
+        ItemStack source = reverse ? other : applicator;
+        ItemStack target = reverse ? applicator : other;
 
-        transferComponents(source, target);
+        // ❌ аплікатор ніколи не може бути target
+        if (target.getItem() instanceof ComponentApplicatorItem) {
+            return InteractionResultHolder.fail(applicator);
+        }
 
-        return InteractionResultHolder.success(main);
+        // 1️⃣ копіюємо стан
+        copyNonBlacklisted(source, target);
+
+        // 2️⃣ якщо аплікатор був source — чистимо його
+        if (source == applicator) {
+            clearNonBlacklisted(applicator);
+        }
+
+        return InteractionResultHolder.success(applicator);
     }
 
-    /* ============================= */
-    /* ===== COMPONENT TRANSFER ==== */
-    /* ============================= */
+
 
     private static void transferComponents(ItemStack from, ItemStack to) {
+
+        to.getComponents().forEach(component -> {
+            DataComponentType<?> type = component.type();
+            if (!BLACKLIST.contains(type)) {
+                to.remove(type);
+            }
+        });
+
         from.getComponents().forEach(component -> {
             DataComponentType<?> type = component.type();
             if (!BLACKLIST.contains(type)) {
@@ -74,15 +87,7 @@ public class ComponentApplicatorItem extends Item {
         });
     }
 
-    private static <T> void copyComponent(TypedDataComponent<T> component, ItemStack target) {
-        target.set(component.type(), component.value());
-    }
 
-    /* ============================= */
-    /* ===== COLOR HANDLING ======== */
-    /* ============================= */
-
-    /** Повертає RGB-колір аплікатора */
     public static int getColor(ItemStack stack) {
         return stack.getOrDefault(
                 ModComponents.APPLICATOR_COLOR.get(),
@@ -90,14 +95,61 @@ public class ComponentApplicatorItem extends Item {
         );
     }
 
-    /** Змішує старий колір з новим */
     public static void applyColor(ItemStack stack, int newColor) {
         int oldColor = getColor(stack);
         int mixed = blend(oldColor, newColor);
         stack.set(ModComponents.APPLICATOR_COLOR.get(), mixed);
     }
 
-    /** Просте RGB-змішування (середнє значення) */
+    private static void clearNonBlacklistedComponents(ItemStack stack) {
+        var toRemove = new java.util.ArrayList<DataComponentType<?>>();
+
+        stack.getComponents().forEach(component -> {
+            DataComponentType<?> type = component.type();
+            if (!BLACKLIST.contains(type)) {
+                toRemove.add(type);
+            }
+        });
+
+        for (DataComponentType<?> type : toRemove) {
+            stack.remove(type);
+        }
+    }
+
+    private static void clearNonBlacklisted(ItemStack stack) {
+        for (DataComponentType<?> type : collectRemovable(stack)) {
+            stack.remove(type);
+        }
+    }
+
+    private static void copyNonBlacklisted(ItemStack from, ItemStack to) {
+        from.getComponents().forEach(component -> {
+            DataComponentType<?> type = component.type();
+            if (!BLACKLIST.contains(type)) {
+                copyComponent(component, to);
+            }
+        });
+    }
+
+
+    private static java.util.List<DataComponentType<?>> collectRemovable(ItemStack stack) {
+        var list = new java.util.ArrayList<DataComponentType<?>>();
+
+        stack.getComponents().forEach(component -> {
+            DataComponentType<?> type = component.type();
+            if (!BLACKLIST.contains(type)) {
+                list.add(type);
+            }
+        });
+
+        return list;
+    }
+
+    private static <T> void copyComponent(TypedDataComponent<T> component, ItemStack target) {
+        target.set(component.type(), component.value());
+    }
+
+
     private static int blend(int a, int b) {
         int ar = (a >> 16) & 0xFF;
         int ag = (a >> 8)  & 0xFF;
