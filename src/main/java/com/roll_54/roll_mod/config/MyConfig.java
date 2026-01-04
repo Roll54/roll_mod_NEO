@@ -6,18 +6,14 @@ import me.fzzyhmstrs.fzzy_config.api.SaveType;
 import me.fzzyhmstrs.fzzy_config.config.Config;
 import me.fzzyhmstrs.fzzy_config.config.ConfigSection;
 import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedIdentifierMap;
-import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedMap;
 import me.fzzyhmstrs.fzzy_config.validation.minecraft.ValidatedIdentifier;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
-import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedString;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedDouble;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
-import org.intellij.lang.annotations.Identifier;
 
 import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class MyConfig extends Config {
 

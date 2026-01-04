@@ -1,0 +1,11 @@
+{
+  "parent": "roll_mod:tool/voltage_sabers/mv_electric_saber_off",
+  "overrides": [
+    {
+      "predicate": {
+        "roll_mod:activated": 1.0
+      },
+      "model": "roll_mod:tool/voltage_sabers/mv_electric_saber_on"
+    }
+  ]
+}

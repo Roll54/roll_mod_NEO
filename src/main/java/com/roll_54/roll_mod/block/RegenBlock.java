@@ -16,6 +16,8 @@ public class RegenBlock extends Block {
         this.depletedState = depletedBlock.defaultBlockState();
     }
 
+    //todo make this even work
+
     @Override
     public boolean onDestroyedByPlayer(
             BlockState state,

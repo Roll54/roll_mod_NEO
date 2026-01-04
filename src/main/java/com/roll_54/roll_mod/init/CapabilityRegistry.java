@@ -29,6 +29,10 @@ public class CapabilityRegistry {
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.ADVANCED_EV_MINING_DRILL.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.ENERGY_SWORD.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.METEORITE_METAL_NANO_SABER.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.MV_ELECTRIC_SABER.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.HV_ELECTRIC_SABER.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.EV_ELECTRIC_SABER.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.IV_ELECTRIC_SABER.get());
 
 
 
