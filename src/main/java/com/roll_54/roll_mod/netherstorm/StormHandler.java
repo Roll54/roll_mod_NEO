@@ -202,7 +202,7 @@ public class StormHandler {
 
     // Публічне API (можна викликати з команд)
 
-    private static StormState getState(ServerLevel level) {
+    private static StormState getStormState(ServerLevel level) {
         return StormState.get(level.getServer().overworld());
     }
 
@@ -359,11 +359,7 @@ public class StormHandler {
         }
     }
 
-    /**
-     * Пробує кілька разів знайти валідну позицію біля гравця і заспавнити моба з бафом HP.
-     */
-    //TODO перенести в більш розумний міксін, ідіот ти на роллі..
-    //todo заміняти спавн звичайних мобів на візер скелетів під час шторму через міксін
+
     private static void spawnAroundPlayer(ServerLevel level, ServerPlayer player, EntityType<? extends Mob> type) {
         RandomSource rnd = level.random;
         final int RADIUS = 12;
