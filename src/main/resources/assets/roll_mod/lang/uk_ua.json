@@ -1086,5 +1086,13 @@
 
   "item.roll_mod.prospector_pickaxe": "Кайло геолога",
   "message.roll_mod.prospector.found": "⛏ Знайдено руду: %s",
-  "message.roll_mod.prospector.none": "❌ Руд не знайдено"
+  "message.roll_mod.prospector.none": "❌ Руд не знайдено",
+
+  "item.roll_mod.injection.description": "Ін'єкція моментального використання, яка надає ефекти",
+
+  "item.roll_mod.injection.effect_single": "Надає ефект:",
+  "item.roll_mod.injection.effect_plural": "Надає ефекти:",
+
+  "item.roll_mod.injection.effect_line": "+ %s %s (%s с)",
+  "item.roll_mod.injection.effect_level": "рівень %s"
 }

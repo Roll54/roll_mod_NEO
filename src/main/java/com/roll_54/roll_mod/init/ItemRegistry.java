@@ -401,23 +401,26 @@ public class ItemRegistry {
             ITEMS.register("injection_regen", () ->
                     new InjectionItem(
                             new Item.Properties(),
-                            MobEffects.REGENERATION,
-                            null,
-                            null,
-                            18000,
-                            1
+                            List.of(
+                                    new InjectionEffect(
+                                            MobEffects.REGENERATION,
+                                            12000,
+                                            2
+                                    )
+                            )
                     )
             );
-
     public static final DeferredHolder<Item, Item> INJECTION_RESISTANCE =
             ITEMS.register("injection_resistance", () ->
                     new InjectionItem(
                             new Item.Properties(),
-                            MobEffects.DAMAGE_RESISTANCE,
-                            null,
-                            null,
-                            10000,
-                            0
+                            List.of(
+                                    new InjectionEffect(
+                                            MobEffects.DAMAGE_RESISTANCE,
+                                            10000,
+                                            0
+                                    )
+                            )
                     )
             );
 
@@ -425,11 +428,18 @@ public class ItemRegistry {
             ITEMS.register("injection_speed", () ->
                     new InjectionItem(
                             new Item.Properties(),
-                            MobEffects.MOVEMENT_SPEED,
-                            MobEffects.JUMP,
-                            null,
-                            18000,
-                            1
+                            List.of(
+                                    new InjectionEffect(
+                                            MobEffects.MOVEMENT_SPEED,
+                                            18000,
+                                            1
+                                    ),
+                                    new InjectionEffect(
+                                            MobEffects.JUMP,
+                                            18000,
+                                            1
+                                    )
+                            )
                     )
             );
 
@@ -437,11 +447,17 @@ public class ItemRegistry {
             ITEMS.register("injection_fire_resistance", () ->
                     new InjectionItem(
                             new Item.Properties(),
-                            MobEffects.FIRE_RESISTANCE,
-                            ModEffects.SULFUR_RESISTANCE,
-                            null,
-                            12000,
-                            0
+                            List.of(
+                                    new InjectionEffect(
+                                            MobEffects.FIRE_RESISTANCE,
+                                            12000,
+                                            0
+                                    ),
+                                    new InjectionEffect(ModEffects.SULFUR_RESISTANCE,
+                                            12000,
+                                            0
+                                    )
+                            )
                     )
             );
 
@@ -449,16 +465,19 @@ public class ItemRegistry {
             ITEMS.register("injection_haste", () ->
                     new InjectionItem(
                             new Item.Properties(),
-                            MobEffects.DIG_SPEED,
-                            null,
-                            null,
-                            12000,
-                            2
+                            List.of(
+                                    new InjectionEffect(MobEffects.DIG_SPEED,
+                                            12000,
+                                            1
+                                    ),
+                                    new InjectionEffect(MobEffects.MOVEMENT_SPEED,
+                                            6000,
+                                            0
+                                    )
+                            )
                     )
             );
 
-
-    public static final DeferredHolder<Item, Item> TEST_INST = ITEMS.register( "test_111", () -> new InjectionItem(new Item.Properties(), MobEffects.WITHER, MobEffects.BAD_OMEN, ModEffects.SULFUR_POISONING, 222, 1));
 
     // Інше / хімія
     public static final DeferredHolder<Item, Item> CALCIUM_OXIDE = ITEMS.register("calcium_oxide", () -> new Item(new Item.Properties()));
@@ -1061,6 +1080,54 @@ public class ItemRegistry {
                             100_000L,
                             0.5,
                             25.0
+                    )
+            );
+
+    public static final DeferredHolder<Item, EnergySwordItem> MV_ELECTRIC_SABER =
+            ITEMS.register(
+                    "mv_electric_saber",
+                    () -> new EnergySwordItem(
+                            new Item.Properties(),
+                            1_000_000L,
+                            50_000L,
+                            0.5,
+                            15.0
+                    )
+            );
+
+    public static final DeferredHolder<Item, EnergySwordItem> HV_ELECTRIC_SABER =
+            ITEMS.register(
+                    "hv_electric_saber",
+                    () -> new EnergySwordItem(
+                            new Item.Properties(),
+                            1_000_000_000L,
+                            1_000_000L,
+                            0.5,
+                            35.0
+                    )
+            );
+
+    public static final DeferredHolder<Item, EnergySwordItem> EV_ELECTRIC_SABER =
+            ITEMS.register(
+                    "ev_electric_saber",
+                    () -> new EnergySwordItem(
+                            new Item.Properties(),
+                            10_000_000_000L,
+                            10_000_000L,
+                            0.5,
+                            55.0
+                    )
+            );
+
+    public static final DeferredHolder<Item, EnergySwordItem> IV_ELECTRIC_SABER =
+            ITEMS.register(
+                    "iv_electric_saber",
+                    () -> new EnergySwordItem(
+                            new Item.Properties(),
+                            1_000_000_000_000L,
+                            100_000_000L,
+                            0.5,
+                            154.0
                     )
             );
 
