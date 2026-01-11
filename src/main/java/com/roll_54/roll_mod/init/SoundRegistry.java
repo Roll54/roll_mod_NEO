@@ -21,6 +21,14 @@ public class SoundRegistry {
     public static final Supplier<SoundEvent> SHCHEDRYK = registerSoundEvent("shchedryk");
     public static final ResourceKey<JukeboxSong> SHCHEDRYK_KEY = createSong("shchedryk");
 
+    public static final Supplier<SoundEvent> ROLL_CHIPUNK  = registerSoundEvent("roll_chipunk");
+
+
+
+
+
+
+
     private static ResourceKey<JukeboxSong> createSong(String name) {
         return ResourceKey.create(Registries.JUKEBOX_SONG, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, name));
     }

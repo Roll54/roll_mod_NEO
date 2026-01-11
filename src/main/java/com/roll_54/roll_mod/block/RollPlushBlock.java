@@ -3,7 +3,6 @@ package com.roll_54.roll_mod.block;
 import com.roll_54.roll_mod.init.SoundRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -16,23 +15,24 @@ public class RollPlushBlock extends FacingPlushBlock {
         super(settings);
     }
 
-    //todo fix sonund effect on rightclick
-//    public InteractionResult useWithoutItem(
-//            BlockState state,
-//            Level level,
-//            BlockPos pos,
-//            Player player,
-//            InteractionHand hand,
-//            BlockHitResult hit
-//    ) {
-//        if (!level.isClientSide) {
-//            level.playSound(null, pos,
-//                    SoundRegistry.ROLL_CHIPUNK.get(),
-//                    SoundSource.BLOCKS,
-//                    1.0F, 1.0F
-//            );
-//        }
-//
-//        return InteractionResult.sidedSuccess(level.isClientSide);
-//    }
+    @Override
+    protected InteractionResult useWithoutItem(
+            BlockState state,
+            Level level,
+            BlockPos pos,
+            Player player,
+            BlockHitResult hit
+    ) {
+        if (!level.isClientSide) {
+            level.playSound(
+                    null,
+                    pos,
+                    SoundRegistry.ROLL_CHIPUNK.get(),
+                    SoundSource.BLOCKS,
+                    2.0F,
+                    1.0F
+            );
+        }
+        return InteractionResult.sidedSuccess(level.isClientSide);
+    }
 }
