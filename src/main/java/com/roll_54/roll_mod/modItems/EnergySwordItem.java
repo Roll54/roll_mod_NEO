@@ -63,7 +63,7 @@ public class EnergySwordItem extends Item
 
     @Override
     public long getEnergyMaxInput(ItemStack stack) {
-        return 1_000_000;
+        return energyCapacity;
     }
 
     @Override
