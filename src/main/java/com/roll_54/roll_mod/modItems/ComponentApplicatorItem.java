@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.modItems;
 
 import aztech.modern_industrialization.MIComponents;
-import com.roll_54.roll_mod.data.ModComponents;
+import com.roll_54.roll_mod.data.RMMComponents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.TypedDataComponent;
@@ -15,15 +15,19 @@ import net.minecraft.world.level.Level;
 
 import java.util.Set;
 
+import static net.minecraft.core.component.DataComponents.CUSTOM_NAME;
+import static net.minecraft.core.component.DataComponents.LORE;
+
 public class ComponentApplicatorItem extends Item {
 
     private static final Set<DataComponentType<?>> BLACKLIST = Set.of(
-            ModComponents.APPLICATOR_COLOR.get(),
-            net.minecraft.core.component.DataComponents.CUSTOM_NAME,
-            net.minecraft.core.component.DataComponents.LORE,
-            ModComponents.ACTIVATED.get(),
+            RMMComponents.APPLICATOR_COLOR.get(),
+            CUSTOM_NAME,
+            LORE,
+            RMMComponents.ACTIVATED.get(),
             MIComponents.ENERGY.get(),
-            ModComponents.SKIN_APPLICATOR_USED.get()
+            RMMComponents.SKIN_APPLICATOR_USED.get()
+
     );
 
     public ComponentApplicatorItem(Properties properties) {
@@ -52,7 +56,7 @@ public class ComponentApplicatorItem extends Item {
         }
 
         // ❌ якщо вже використано — блокуємо
-        if (target.has(ModComponents.SKIN_APPLICATOR_USED.get())) {
+        if (target.has(RMMComponents.SKIN_APPLICATOR_USED.get())) {
             player.displayClientMessage(
                     Component.translatable("message.roll_mod.skin_applicator_already_used").withStyle(ChatFormatting.RED),
                     true // над хотбаром
@@ -60,13 +64,10 @@ public class ComponentApplicatorItem extends Item {
             return InteractionResultHolder.fail(applicator);
         }
 
-        // 1️⃣ копіюємо компоненти
         copyNonBlacklisted(applicator, target);
 
-        // 2️⃣ ставимо маркер використання
-        target.set(ModComponents.SKIN_APPLICATOR_USED.get(), true);
+        target.set(RMMComponents.SKIN_APPLICATOR_USED.get(), true);
 
-        // 3️⃣ витрачаємо аплікатор
         applicator.shrink(1);
 
         return InteractionResultHolder.success(applicator);

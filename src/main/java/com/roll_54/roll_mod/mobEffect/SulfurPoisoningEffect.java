@@ -12,7 +12,6 @@ public class SulfurPoisoningEffect extends MobEffect {
 
     @Override
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
-        // Подібно до отрути, але трохи сильніше і не може вбити одразу
         if (entity.getHealth() > 1.0F) {
             entity.hurt(entity.damageSources().magic(), 0.5F + amplifier);
         }
@@ -21,7 +20,6 @@ public class SulfurPoisoningEffect extends MobEffect {
 
     @Override
     public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
-        // частота шкоди (як у зілля отрути)
         int i = 40 >> amplifier;
         return i > 0 ? duration % i == 0 : true;
     }

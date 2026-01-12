@@ -21,26 +21,26 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.UUID;
 
 public final class ItemGroups {
-    // 🔼 спочатку реєстр
+
     public static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, RollMod.MODID);
 
-    // 🔽 а потім уже MAIN і DEV_TAB
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = TABS.register(
             "main",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.main"))
                     .icon(ItemGroups::createCustomHeadIcon)
                     .displayItems((params, out) -> {
-                        add(out, ItemRegistry.METEORITE_METAL_INGOT);
 
-                        // Hazmat-броня
+
+                        // Hazmat_armor
                         add(out, ItemRegistry.HAZMAT_HELMET);
                         add(out, ItemRegistry.HAZMAT_CHESTPLATE);
                         add(out, ItemRegistry.HAZMAT_LEGGINGS);
                         add(out, ItemRegistry.HAZMAT_BOOTS);
 
-                        // Meteorite-armor
+                        // Meteorite-GEAR
+                        add(out, ItemRegistry.METEORITE_METAL_INGOT);
                         add(out, ItemRegistry.METEORITE_HELMET);
                         add(out, ItemRegistry.METEORITE_CHESTPLATE);
                         add(out, ItemRegistry.METEORITE_LEGGINGS);
@@ -50,6 +50,7 @@ public final class ItemGroups {
                         add(out, ItemRegistry.METEORITE_AXE);
                         add(out, ItemRegistry.METEORITE_SHOVEL);
                         add(out, ItemRegistry.METEORITE_HOE);
+                        add(out, ItemRegistry.METEORITE_METAL_PROSPECTOR_PICKAXE);
                         // Scanners
                         add(out, ItemRegistry.LV_STORM_SCANNER);
 
@@ -112,6 +113,100 @@ public final class ItemGroups {
                             full.set(MIComponents.ENERGY.get(), 10_000_000_000_000L);
                             out.accept(full);
                         }
+
+                        add(out, ItemRegistry.PROSPECTOR_PICK_ITEM);
+
+                        add(out, ItemRegistry.METEORITE_METAL_NANO_SABER);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.METEORITE_METAL_NANO_SABER.get());
+                            full.set(MIComponents.ENERGY.get(), 54_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.MV_ELECTRIC_SABER);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.MV_ELECTRIC_SABER.get());
+                            full.set(MIComponents.ENERGY.get(), 1_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.HV_ELECTRIC_SABER);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.HV_ELECTRIC_SABER.get());
+                            full.set(MIComponents.ENERGY.get(), 1_000_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.EV_ELECTRIC_SABER);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.EV_ELECTRIC_SABER.get());
+                            full.set(MIComponents.ENERGY.get(), 10_000_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.IV_ELECTRIC_SABER);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.IV_ELECTRIC_SABER.get());
+                            full.set(MIComponents.ENERGY.get(), 1_000_000_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.LV_MINING_DRILL);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.LV_MINING_DRILL.get());
+                            full.set(MIComponents.ENERGY.get(), 1_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.ADVANCED_LV_MINING_DRILL);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.ADVANCED_LV_MINING_DRILL.get());
+                            full.set(MIComponents.ENERGY.get(), 2_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.MV_MINING_DRILL);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.MV_MINING_DRILL.get());
+                            full.set(MIComponents.ENERGY.get(), 10_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.ADVANCED_MV_MINING_DRILL);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.ADVANCED_MV_MINING_DRILL.get());
+                            full.set(MIComponents.ENERGY.get(), 20_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.HV_MINING_DRILL);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.HV_MINING_DRILL.get());
+                            full.set(MIComponents.ENERGY.get(), 1_000_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.ADVANCED_HV_MINING_DRILL);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.ADVANCED_HV_MINING_DRILL.get());
+                            full.set(MIComponents.ENERGY.get(), 2_000_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.EV_MINING_DRILL);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.EV_MINING_DRILL.get());
+                            full.set(MIComponents.ENERGY.get(), 50_000_000_000L);
+                            out.accept(full);
+                        }
+
+                        add(out, ItemRegistry.ADVANCED_EV_MINING_DRILL);
+                        {
+                            ItemStack full = new ItemStack(ItemRegistry.ADVANCED_EV_MINING_DRILL.get());
+                            full.set(MIComponents.ENERGY.get(), 100_000_000_000L);
+                            out.accept(full);
+                        }
+                        add(out, ItemRegistry.SKIN_APPLICATOR);
 
                     })
                     .build()

@@ -4,7 +4,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
-import static com.roll_54.roll_mod.data.ModComponents.ACTIVATED;
+import static com.roll_54.roll_mod.data.RMMComponents.ACTIVATED;
 
 public interface ToggleableItem {
     default boolean getDefaultActivatedState() {

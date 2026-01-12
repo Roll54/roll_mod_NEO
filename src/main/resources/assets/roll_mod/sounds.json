@@ -6,5 +6,11 @@
         "stream": true
       }
     ]
+  },
+  "roll_chipunk": {
+    "subtitle": "sounds.roll_mod.roll_chipunk",
+    "sounds": [
+      "roll_mod:roll_chipunk"
+    ]
   }
 }

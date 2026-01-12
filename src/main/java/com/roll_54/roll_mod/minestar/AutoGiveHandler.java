@@ -17,6 +17,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.List;
 
+import static com.roll_54.roll_mod.data.RMMAttachment.AUTO_GIVE;
 import static com.roll_54.roll_mod.init.ItemRegistry.ERROR_ITEM;
 
 @EventBusSubscriber(modid = RollMod.MODID)
@@ -34,10 +35,9 @@ public class AutoGiveHandler {
         if (tickCounter % ModConfigs.MAIN.TIME_TO_GIVE != 0) return; // every 10 minutes
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            boolean autoGive = player.getData(AUTO_GIVE.get());
 
-            String flag = player.getPersistentData().getString("roll_mod:autogive");
-
-            if ("true".equals(flag)) {
+            if (autoGive) {
 
                 var itemId = ModConfigs.MAIN.autogiveItem;
                 var id = ResourceLocation.parse(itemId);

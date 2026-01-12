@@ -15,6 +15,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 
 import static com.roll_54.roll_mod.data.ModTags.STORM_PROTECTIVE_TAG;
+import static com.roll_54.roll_mod.data.RMMAttachment.STORM_PROTECTED;
 import static com.roll_54.roll_mod.netherstorm.StormHandler.isStormActive;
 
 @EventBusSubscriber(modid = RollMod.MODID)
@@ -25,12 +26,10 @@ public final class NetherStormProtectionListener {
     @SubscribeEvent
     public static void onTravel(EntityTravelToDimensionEvent e) {
 
-        // Нас цікавлять тільки гравці
         if (!(e.getEntity() instanceof ServerPlayer player)) return;
 
         ResourceKey<Level> to = e.getDimension();
 
-        // Тільки спроба зайти в Nether
         if (to != Level.NETHER) return;
 
         boolean hasFullSet = true;
@@ -46,11 +45,10 @@ public final class NetherStormProtectionListener {
         }
 
         boolean hasEffect = player.hasEffect(ModEffects.SULFUR_RESISTANCE);
+        boolean hasPrimeProtection = player.hasData(STORM_PROTECTED);
 
-        // Якщо захист Є — пропускаємо
-        if (hasFullSet || hasEffect || !isStormActive()) return;
+        if (hasFullSet || hasEffect || !isStormActive() || hasPrimeProtection) return;
 
-        // ❌ Блокуємо телепорт
         e.setCanceled(true);
 
         // 💬 Повідомлення ГРАВЦЮ, ВІД ЙОГО ІМЕНІ

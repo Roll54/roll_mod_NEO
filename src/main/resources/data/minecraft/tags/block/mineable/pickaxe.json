@@ -221,7 +221,31 @@
     "roll_mod:end_lapis_lazuli",
     "roll_mod:end_sodalite",
     "roll_mod:deepslate_malachite",
-    "roll_mod:end_malachite"
+    "roll_mod:end_malachite",
 
+    "roll_mod:netherrack_trona",
+    "roll_mod:netherrack_bismuth",
+    "roll_mod:mars_iridium",
+    "roll_mod:mars_gold_amalgam",
+    "roll_mod:end_gold_amalgam",
+    "roll_mod:mars_silver_amalgam",
+    "roll_mod:end_silver_amalgam",
+    "roll_mod:stone_coal",
+    "roll_mod:deepslate_coal",
+    "roll_mod:stone_lignite_coal",
+    "roll_mod:deepslate_lignite_coal",
+    "roll_mod:mars_quartz",
+    "roll_mod:moon_quartz",
+    "roll_mod:stone_quartz",
+    "roll_mod:netherrack_quartz",
+    "roll_mod:deepslate_quartz",
+    "roll_mod:venus_quartz",
+    "roll_mod:mercury_quartz",
+    "roll_mod:end_quartz",
+    "roll_mod:deepslate_diamond",
+    "roll_mod:deepslate_bort",
+    "roll_mod:stone_cassiterite_sand",
+    "roll_mod:deepslate_cassiterite_sand",
+    "roll_mod:end_azure_silver"
   ]
 }

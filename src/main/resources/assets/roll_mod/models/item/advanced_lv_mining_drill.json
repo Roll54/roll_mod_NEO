@@ -18,7 +18,7 @@
     },
     {
       "predicate": {
-        "roll_mod:lime": 1
+        "roll_mod:meteorite_skin": 1
       },
       "model": "roll_mod:tool/custom_drill_models/meteorpickaxe"
     }

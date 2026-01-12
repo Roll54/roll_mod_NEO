@@ -241,3 +241,7 @@ idea {
         downloadJavadoc = true
     }
 }
+
+tasks.processResources {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}

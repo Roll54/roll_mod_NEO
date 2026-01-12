@@ -1,12 +1,10 @@
 package com.roll_54.roll_mod.mobEffect;
 
-import com.roll_54.roll_mod.init.ModEffects;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 
-import static com.roll_54.roll_mod.init.ModEffects.SULFUR_POISONING;
-import static com.roll_54.roll_mod.init.ModEffects.SULFUR_RESISTANCE;
+import static com.roll_54.roll_mod.init.ModEffects.*;
 
 public class SulfurResistanceEffect extends MobEffect {
 

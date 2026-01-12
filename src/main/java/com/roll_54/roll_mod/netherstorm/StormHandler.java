@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Random;
 
 import static com.roll_54.roll_mod.data.ModTags.STORM_PROTECTIVE_TAG;
+import static com.roll_54.roll_mod.data.RMMAttachment.STORM_PROTECTED;
 
 @EventBusSubscriber(modid = RollMod.MODID)
 public class StormHandler {
@@ -97,6 +98,7 @@ public class StormHandler {
 
 
     private static void applyStormInNether(MinecraftServer server) {
+
         ServerLevel nether = server.getLevel(Level.NETHER);
         if (nether == null) return;
 
@@ -120,8 +122,8 @@ public class StormHandler {
                     }
                 }
             }
-
-            if (hasFullSet  || player.hasEffect(ModEffects.SULFUR_RESISTANCE)) {
+            boolean hasPrimeProtection = player.hasData(STORM_PROTECTED);
+            if (hasFullSet  || player.hasEffect(ModEffects.SULFUR_RESISTANCE)|| hasPrimeProtection) {
                 // 🔧 Зношення кожні 20 тік
                 if (player.tickCount % 20 == 1) {
                     for (int i = 0; i < armorPieces.size(); i++) {

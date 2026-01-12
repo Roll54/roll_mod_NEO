@@ -24,8 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class EnergySwordItem extends Item
-        implements ToggleableItem, ISimpleEnergyItem {
+public class EnergySwordItem extends Item implements ToggleableItem, ISimpleEnergyItem {
 
     private final long energyCapacity;
     private final long energyPerHit;
@@ -103,7 +102,6 @@ public class EnergySwordItem extends Item
             );
         }
 
-        // звук можна і на клієнті
         level.playSound(
                 null,
                 player.blockPosition(),

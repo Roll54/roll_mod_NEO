@@ -76,20 +76,24 @@ public class InjectionItem extends Item {
 
     private void addEffectLine(List<Component> tooltip, InjectionEffect e) {
 
-        int seconds = e.durationTicks() / 20;
+        int totalSeconds = e.durationTicks() / 20;
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
 
-        // Рівень ефекту (I, II, III…)
+
+        Component time = Component.literal(minutes + "хв " + seconds);
+
+
         Component level = Component.translatable(
                 "item.roll_mod.injection.effect_level",
                 toRoman(e.amplifier() + 1)
         );
 
-        // 🔹 СТВОРЮЄМО MutableComponent
         MutableComponent line = Component.translatable(
                 "item.roll_mod.injection.effect_line",
                 Component.translatable(e.effect().value().getDescriptionId()),
                 level,
-                seconds
+                time
         );
 
         // 🔹 Колір з самого ефекту

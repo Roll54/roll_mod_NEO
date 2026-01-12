@@ -1,11 +1,12 @@
 package com.roll_54.roll_mod;
 
-import com.roll_54.roll_mod.data.ModComponents;
+import com.roll_54.roll_mod.data.RMMAttachment;
+import com.roll_54.roll_mod.data.RMMComponents;
 import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
 import com.roll_54.roll_mod.PYDatagen.PYOreDataGen;
 import com.roll_54.roll_mod.init.*;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
-import com.roll_54.roll_mod.util.ModItemProperties;
+import com.roll_54.roll_mod.util.RMMItemProperties;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.bus.api.IEventBus;
@@ -43,8 +44,8 @@ public final class RollMod {
         eventBus.addListener(this::onCommonSetup);
         eventBus.addListener(this::onClientSetup);
         SoundRegistry.SOUND_EVENTS.register(eventBus);
-        ModComponents.COMPONENTS.register(eventBus);
-
+        RMMComponents.COMPONENTS.register(eventBus);
+        RMMAttachment.ATTACHMENT_TYPES.register(eventBus);
         ModConfigs.init();
 
         LOGGER.info("[{}] init complete.", MODID);
@@ -67,7 +68,7 @@ public final class RollMod {
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LORP_OOO_PLUSH.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.YAN_PLUSH.get(), RenderType.cutout());
 
-        ModItemProperties.addCustomProperties();
+        RMMItemProperties.addCustomProperties();
     }
 
     }
