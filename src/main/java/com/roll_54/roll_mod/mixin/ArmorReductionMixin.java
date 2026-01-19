@@ -1,6 +1,5 @@
 package com.roll_54.roll_mod.mixin;
 
-import com.roll_54.roll_mod.config.MyConfig;
 import com.roll_54.roll_mod.init.ModConfigs;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
@@ -24,36 +23,25 @@ public abstract class ArmorReductionMixin {
     @Inject(method = "getDamageAfterArmorAbsorb", at = @At("RETURN"), cancellable = true)
     private void roll_mod$customArmorCurve(DamageSource source, float amount, CallbackInfoReturnable<Float> cir) {
 
-        // 🔥 Увімкнено в конфігу?
         if (!ModConfigs.MAIN.pvp.enabled.get()) return;
 
         LivingEntity self = (LivingEntity) (Object) this;
 
-        // 🔥 Працює тільки для гравців
         if (!(self instanceof Player)) return;
 
-        // 🔥 Ігноримо урон який обходить броню
         if (source.is(DamageTypeTags.BYPASSES_ARMOR)) return;
 
-        // -------------------------------
-        //         Вхідні дані з конfig
-        // -------------------------------
-        int softCap = ModConfigs.MAIN.pvp.softCap.get();               // наприклад 10
-        double maxReduction = ModConfigs.MAIN.pvp.maxReduction.get();   // наприклад 0.75
-        double k = ModConfigs.MAIN.pvp.reductionCurve.get();            // наприклад 0.05
+        int softCap = ModConfigs.MAIN.pvp.softCap.get();
+        double maxReduction = ModConfigs.MAIN.pvp.maxReduction.get();
+        double k = ModConfigs.MAIN.pvp.reductionCurve.get();
 
-        // -------------------------------
-        //           Обчислення
-        // -------------------------------
         double armor = Math.max(0.0, Math.min(100.0, self.getArmorValue()));
 
         double reduction;
         if (armor <= softCap) {
-            // Лінійна частина до софт-капу
             reduction = 0.03 * armor;
         } else {
-            // Далі експонента
-            double base = 0.30; // 30% як нижня точка переходу
+            double base = 0.30;
             reduction = base + (maxReduction - base) * (1.0 - Math.exp(-k * (armor - softCap)));
 
             if (reduction > maxReduction)

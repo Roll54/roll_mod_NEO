@@ -35,14 +35,14 @@ public class EnergySwordItem extends Item implements ToggleableItem, ISimpleEner
     public EnergySwordItem(
             Properties properties,
             long energyCapacity,
-            long energyPerTick,
+            long energyPerHit,
             double damageOff,
             double damageOn
     ) {
         super(properties.stacksTo(1));
 
         this.energyCapacity = energyCapacity;
-        this.energyPerHit = energyPerTick;
+        this.energyPerHit = energyPerHit;
 
         this.offAttributes = createDamageModifiers(damageOff, -2.4);
         this.onAttributes  = createDamageModifiers(damageOn,  -2.4);

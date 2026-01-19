@@ -26,5 +26,9 @@ public class RMMDataGenerators {
         generator.addProvider(event.includeServer(), new RMMDataMapProvider(packOutput, lookupProvider));
 
         generator.addProvider(event.includeServer(), new RMMItemModelProvider(packOutput, existingFileHelper));
+
+        generator.addProvider(event.includeServer(), new RMMDatapackProvider(packOutput, lookupProvider));
+
+
     }
 }

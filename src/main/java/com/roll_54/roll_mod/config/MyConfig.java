@@ -14,6 +14,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 
 import java.util.LinkedHashMap;
+import static com.roll_54.roll_mod.RollMod.MODID;
 
 public class MyConfig extends Config {
 
