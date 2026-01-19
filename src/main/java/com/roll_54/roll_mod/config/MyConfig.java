@@ -18,7 +18,8 @@ import java.util.LinkedHashMap;
 public class MyConfig extends Config {
 
     public MyConfig() {
-        super(ResourceLocation.parse("roll_mod"), "general");
+        super(ResourceLocation.fromNamespaceAndPath(MODID, "roll_mod"), "", "");
+
     }
 
     @Comment("BUKVI for nothing")
