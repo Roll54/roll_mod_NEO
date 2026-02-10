@@ -342,4 +342,15 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
 
         return true;
     }
+
+    @Override
+    public boolean shouldCauseReequipAnimation(ItemStack oldStack, ItemStack newStack, boolean slotChanged) {
+        if (oldStack.getItem() != newStack.getItem()) {
+            return true;
+        }
+        if (slotChanged) {
+            return true;
+        }
+        return false;
+    }
 }
