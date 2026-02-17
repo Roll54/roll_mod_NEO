@@ -23,7 +23,7 @@ public class SoundRegistry {
 
     public static final Supplier<SoundEvent> ROLL_CHIPUNK  = registerSoundEvent("roll_chipunk");
 
-
+    public static final Supplier<SoundEvent> LORP_SUSPICIOUS_VIOLIN  = registerSoundEvent("lorp_suspicious_violin");
 
 
 

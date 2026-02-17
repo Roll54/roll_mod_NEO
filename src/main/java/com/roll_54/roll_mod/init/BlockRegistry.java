@@ -77,7 +77,7 @@ public class BlockRegistry {
     );
     public static final DeferredBlock<Block> LORP_OOO_PLUSH = BLOCKS.register(
             "lorp_ooo_plush",
-            () -> new FacingPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion())
+            () -> new SoundPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion(), SoundRegistry.LORP_SUSPICIOUS_VIOLIN)
     );
 
     public static final DeferredBlock<Block> BUKVI_ORE_BLOCK = BLOCKS.register(

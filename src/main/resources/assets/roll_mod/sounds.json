@@ -12,5 +12,11 @@
     "sounds": [
       "roll_mod:roll_chipunk"
     ]
+  },
+  "lorp_suspicious_violin": {
+    "subtitle": "sounds.roll_mod.lorp_suspicious_violin",
+    "sounds": [
+      "roll_mod:lorp_suspicious_violin"
+    ]
   }
 }
