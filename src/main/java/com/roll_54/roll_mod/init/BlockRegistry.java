@@ -2,7 +2,10 @@ package com.roll_54.roll_mod.init;
 
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.block.*;
+import com.roll_54.roll_mod.blocks.*;
+import com.roll_54.roll_mod.blocks.regenblock.RegenBlock;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -10,7 +13,6 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class BlockRegistry {
@@ -25,19 +27,17 @@ public class BlockRegistry {
             BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.BAMBOO_WOOD)
     );
 
-    public static final DeferredBlock<Block> TREATED_LOG = BLOCKS.registerBlock(
+    public static final DeferredBlock<Block> TREATED_LOG = BLOCKS.register(
             "treated_log",
-            RotatedPillarBlock::new, // колона
-            BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOD)
+            () -> new RotatedPillarBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOD))
     );
 
-    public static final DeferredBlock<Block> LAPOTRONIC_LASER_BLOCK = BLOCKS.registerBlock(
+    public static final DeferredBlock<Block> LAPOTRONIC_LASER_BLOCK = BLOCKS.register(
             "lapotronic_laser_block",
-            Block::new,
-            BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.AMETHYST)
+            () -> new Block(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.AMETHYST))
     );
 
-    public static final DeferredHolder<Block, LatexDandelion> LATEX_DANDELION =
+    public static final DeferredBlock<Block> LATEX_DANDELION =
             BLOCKS.register("latex_dandelion",
                     () -> new LatexDandelion(
                             BlockBehaviour.Properties.of()
@@ -50,7 +50,7 @@ public class BlockRegistry {
                     )
             );
 
-    public static final DeferredHolder<Block, SulfurBerryBlock> SULFUR_BERRY_BLOCK =
+    public static final DeferredBlock<Block> SULFUR_BERRY_BLOCK =
             BLOCKS.register("sulfur_berry_block",
                     () -> new SulfurBerryBlock(
                             BlockBehaviour.Properties.of()
@@ -63,31 +63,32 @@ public class BlockRegistry {
                     )
             );
 
-    public static final DeferredBlock<Block> ROLL_PLUSH = BLOCKS.registerBlock(
+    public static final DeferredBlock<Block> ROLL_PLUSH = BLOCKS.register(
             "roll_plush",
-            RollPlushBlock::new, // колона
-            BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion()
+            () -> new RollPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion())
     );
-    public static final DeferredBlock<Block> YAN_PLUSH = BLOCKS.registerBlock(
+    public static final DeferredBlock<Block> YAN_PLUSH = BLOCKS.register(
             "yan_plush",
-            FacingPlushBlock::new, // колона
-            BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion()
+            () -> new FacingPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion())
     );
-    public static final DeferredBlock<Block> LEDOK_PLUSH = BLOCKS.registerBlock(
+    public static final DeferredBlock<Block> LEDOK_PLUSH = BLOCKS.register(
             "ledok_plush",
-            FacingPlushBlock::new, // колона
-            BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion()
+            () -> new FacingPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion())
     );
-    public static final DeferredBlock<Block> LORP_OOO_PLUSH = BLOCKS.registerBlock(
+    public static final DeferredBlock<Block> LORP_OOO_PLUSH = BLOCKS.register(
             "lorp_ooo_plush",
-            FacingPlushBlock::new, // колона
-            BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion()
+            () -> new FacingPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion())
+    );
+
+    public static final DeferredBlock<Block> BUKVI_ORE_BLOCK = BLOCKS.register(
+            "bukvi_ore_block",
+            () -> new RegenBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.AMETHYST))
     );
 
     static {
-        ITEMS.registerSimpleBlockItem(TREATED_PLANKS);
-        ITEMS.registerSimpleBlockItem(TREATED_LOG);
-        ITEMS.registerSimpleBlockItem(LAPOTRONIC_LASER_BLOCK);
+        ITEMS.register("treated_planks", () -> new BlockItem(TREATED_PLANKS.get(), new Item.Properties()));
+        ITEMS.register("treated_log", () -> new BlockItem(TREATED_LOG.get(), new Item.Properties()));
+        ITEMS.register("lapotronic_laser_block", () -> new BlockItem(LAPOTRONIC_LASER_BLOCK.get(), new Item.Properties()));
     }
 
     public static void register(IEventBus eventBus) {

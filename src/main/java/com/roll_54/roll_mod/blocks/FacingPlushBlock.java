@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.block;
+package com.roll_54.roll_mod.blocks;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;

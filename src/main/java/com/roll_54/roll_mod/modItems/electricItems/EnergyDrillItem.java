@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.modItems;
+package com.roll_54.roll_mod.modItems.electricItems;
 
 import aztech.modern_industrialization.MIComponents;
 import com.roll_54.roll_mod.data.RMMComponents;

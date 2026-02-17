@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.block;
+package com.roll_54.roll_mod.blocks;
 
 import com.mojang.serialization.MapCodec;
 import com.roll_54.roll_mod.init.ItemRegistry;

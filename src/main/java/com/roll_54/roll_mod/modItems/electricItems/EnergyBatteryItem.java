@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.modItems;
+package com.roll_54.roll_mod.modItems.electricItems;
 
 import aztech.modern_industrialization.MIComponents;
 import com.roll_54.roll_mod.util.EnergyFormatUtils;
@@ -98,8 +98,6 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
 
-    // === Основна логіка живлення предметів ===
-    //todo fix energy flow between items
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slot, boolean selected) {
         if (level.isClientSide) return;
@@ -144,12 +142,14 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
         long received = 0;
 
         if (target != null) {
-            long toSend = Math.min(getEnergyMaxOutput(battery), stored);
-            received = target.receive(toSend, false);
+            if(!(targetStack.getItem() instanceof EnergyBatteryItem)) {
+                long toSend = Math.min(getEnergyMaxOutput(battery), stored);
+                received = target.receive(toSend, false);
 
-            if (received > 0) {
-                setStoredEnergy(battery, stored - received);
-                return;
+                if (received > 0) {
+                    setStoredEnergy(battery, stored - received);
+                    return;
+                }
             }
         }
 

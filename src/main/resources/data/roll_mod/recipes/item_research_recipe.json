@@ -1,0 +1,19 @@
+{
+  "type": "roll_mod:item_research",
+  "duration": 100,
+  "output": "roll_mod:blueprint_fire_resistance",
+  "main_input": {
+    "item": "minecraft:blaze_rod",
+    "consume_on_success": true
+  },
+  "catalysts": [
+    {
+      "item": "minecraft:magma_cream",
+      "success_chance": 0.07
+    },
+    {
+      "item": "minecraft:blaze_powder",
+      "success_chance": 0.25
+    }
+  ]
+}

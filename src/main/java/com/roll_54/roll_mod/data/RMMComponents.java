@@ -31,6 +31,10 @@ public class RMMComponents {
 
     public static final Supplier<DataComponentType<Boolean>> STORM_PROTECTED;
 
+    // RegenBlock components
+    public static final Supplier<DataComponentType<Integer>> REGEN_TIMER;
+    public static final Supplier<DataComponentType<String>> REGEN_TEXTURE_PATH;
+
     private static <D> DeferredHolder<DataComponentType<?>, DataComponentType<D>> create(String name, Codec<D> codec, StreamCodec<? super RegistryFriendlyByteBuf, D> streamCodec) {
         return COMPONENTS.registerComponentType(name, (b) -> b.persistent(codec).networkSynchronized(streamCodec));
     }
@@ -54,6 +58,10 @@ public class RMMComponents {
         SKIN_APPLICATOR_USED = create("skin_applicator_used", Codec.BOOL, ByteBufCodecs.BOOL);
 
         STORM_PROTECTED = create("storm_protected", Codec.BOOL, ByteBufCodecs.BOOL);
+
+        // RegenBlock components
+        REGEN_TIMER = create("regen_timer", Codec.INT, ByteBufCodecs.INT);
+        REGEN_TEXTURE_PATH = create("regen_texture_path", Codec.STRING, ByteBufCodecs.stringUtf8(32767));
     }
 
     public static void init(IEventBus bus) {

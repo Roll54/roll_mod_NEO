@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.worldgen;
 
-import com.roll_54.roll_mod.block.SulfurBerryBlock;
+import com.roll_54.roll_mod.blocks.SulfurBerryBlock;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.worldgen.BootstrapContext;
 import net.minecraft.data.worldgen.features.FeatureUtils;
