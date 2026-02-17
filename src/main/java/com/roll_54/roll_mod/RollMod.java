@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod;
 
+import com.roll_54.roll_mod.blocks.entity.render.PedestalBlockEntityRenderer;
 import com.roll_54.roll_mod.data.RMMAttachment;
 import com.roll_54.roll_mod.data.RMMComponents;
 import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
@@ -9,12 +10,17 @@ import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
 import com.roll_54.roll_mod.util.RMMItemProperties;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.swedz.tesseract.neoforge.capabilities.CapabilitiesListeners;
 import net.swedz.tesseract.neoforge.compat.mi.TesseractMI;
 import org.slf4j.Logger;
@@ -39,6 +45,7 @@ public final class RollMod {
         ItemGroups.register(eventBus);
         PYOreDataGen.register(eventBus);
 //        PYItems.register(eventBus);
+        BlockEntites.register(eventBus);
         ModEffects.register(eventBus);
         ModArmorMaterials.register(eventBus);
         eventBus.addListener(this::onCommonSetup);
@@ -69,6 +76,16 @@ public final class RollMod {
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.YAN_PLUSH.get(), RenderType.cutout());
 
         RMMItemProperties.addCustomProperties();
-    }
+
 
     }
+    @EventBusSubscriber(modid = RollMod.MODID, value = Dist.CLIENT)
+    public static class ClientModEvents{
+        @SubscribeEvent
+        public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
+            event.registerBlockEntityRenderer(BlockEntites.PEDESTAL_BE.get(), PedestalBlockEntityRenderer::new);
+        }
+
+    }
+
+}

@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.blocks;
 
-import com.roll_54.roll_mod.init.SoundRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -9,10 +9,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 
-public class RollPlushBlock extends FacingPlushBlock {
+import java.util.function.Supplier;
 
-    public RollPlushBlock(Properties settings) {
-        super(settings);
+public class SoundPlushBlock extends FacingPlushBlock {
+
+    private final Supplier<SoundEvent> sound;
+
+    public SoundPlushBlock(Properties properties, Supplier<SoundEvent> sound) {
+        super(properties);
+        this.sound = sound;
     }
 
     @Override
@@ -27,7 +32,7 @@ public class RollPlushBlock extends FacingPlushBlock {
             level.playSound(
                     null,
                     pos,
-                    SoundRegistry.ROLL_CHIPUNK.get(),
+                    sound.get(),
                     SoundSource.BLOCKS,
                     2.0F,
                     1.0F

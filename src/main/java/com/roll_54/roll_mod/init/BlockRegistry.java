@@ -65,7 +65,7 @@ public class BlockRegistry {
 
     public static final DeferredBlock<Block> ROLL_PLUSH = BLOCKS.register(
             "roll_plush",
-            () -> new RollPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion())
+            () -> new SoundPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion(), SoundRegistry.ROLL_CHIPUNK)
     );
     public static final DeferredBlock<Block> YAN_PLUSH = BLOCKS.register(
             "yan_plush",
@@ -83,6 +83,11 @@ public class BlockRegistry {
     public static final DeferredBlock<Block> BUKVI_ORE_BLOCK = BLOCKS.register(
             "bukvi_ore_block",
             () -> new RegenBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.AMETHYST))
+    );
+
+    public static final DeferredBlock<Block> PEDESTAL_BLOCK = BLOCKS.register(
+            "pedestal_block",
+            () -> new PedestalBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.STONE))
     );
 
     static {
