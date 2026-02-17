@@ -7,11 +7,13 @@ import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
 import com.roll_54.roll_mod.PYDatagen.PYOreDataGen;
 import com.roll_54.roll_mod.init.*;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
+import com.roll_54.roll_mod.screen.PedestalScreen;
 import com.roll_54.roll_mod.util.RMMItemProperties;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.bus.EventBus;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -21,6 +23,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.swedz.tesseract.neoforge.capabilities.CapabilitiesListeners;
 import net.swedz.tesseract.neoforge.compat.mi.TesseractMI;
 import org.slf4j.Logger;
@@ -54,6 +57,7 @@ public final class RollMod {
         RMMComponents.COMPONENTS.register(eventBus);
         RMMAttachment.ATTACHMENT_TYPES.register(eventBus);
         ModConfigs.init();
+        MenuTypes.register(eventBus);
 
         LOGGER.info("[{}] init complete.", MODID);
     }
@@ -81,9 +85,15 @@ public final class RollMod {
     }
     @EventBusSubscriber(modid = RollMod.MODID, value = Dist.CLIENT)
     public static class ClientModEvents{
+        /// тута регаєм ВСІ клієнт штукі, типу GUI, або ґеколіба
         @SubscribeEvent
         public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(BlockEntites.PEDESTAL_BE.get(), PedestalBlockEntityRenderer::new);
+        }
+
+        @SubscribeEvent
+        public static void registerScreens(RegisterMenuScreensEvent event){
+            event.register(MenuTypes.PEDESTAL_MENU.get(), PedestalScreen::new);
         }
 
     }
