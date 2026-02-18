@@ -122,7 +122,7 @@ public class StormHandler {
                     }
                 }
             }
-            boolean hasPrimeProtection = player.hasData(STORM_PROTECTED);
+            boolean hasPrimeProtection = player.getData(STORM_PROTECTED);
             if (hasFullSet  || player.hasEffect(ModEffects.SULFUR_RESISTANCE)|| hasPrimeProtection) {
                 // 🔧 Зношення кожні 20 тік
                 if (player.tickCount % 20 == 1) {

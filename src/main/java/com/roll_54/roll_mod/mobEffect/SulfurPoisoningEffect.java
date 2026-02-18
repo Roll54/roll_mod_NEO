@@ -4,6 +4,8 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 
+import static com.roll_54.roll_mod.init.DamageTypes.sulfurDamageType;
+
 public class SulfurPoisoningEffect extends MobEffect {
 
     public SulfurPoisoningEffect() {
@@ -13,7 +15,7 @@ public class SulfurPoisoningEffect extends MobEffect {
     @Override
     public boolean applyEffectTick(LivingEntity entity, int amplifier) {
         if (entity.getHealth() > 1.0F) {
-            entity.hurt(entity.damageSources().magic(), 0.5F + amplifier);
+            entity.hurt(sulfurDamageType(entity), 0.5F + amplifier);
         }
         return true;
     }
