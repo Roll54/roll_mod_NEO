@@ -1114,5 +1114,7 @@
 
   "item.roll_mod.meteorite_metal_prospector_pickaxe": "Метеоритне кайло геолога",
   "item.roll_mod.meteorite_metal_nano_saber": "Метеоритна електро-шабля",
-  "tooltip.roll_mod.meteorite_metal_nano_saber": "Метеоритний метал придає неймовірної сили лезу"
+  "tooltip.roll_mod.meteorite_metal_nano_saber": "Метеоритний метал придає неймовірної сили лезу",
+
+  "death.attack.sulfur_damage": "%s задихнувся від сірчаних випарів"
 }

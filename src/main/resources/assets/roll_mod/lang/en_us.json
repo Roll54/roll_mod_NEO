@@ -1103,5 +1103,6 @@
   "block.roll_mod.mercury_quartz": "Mercury Quartz Ore",
   "block.roll_mod.end_quartz": "End Quartz Ore",
   "block.roll_mod.deepslate_diamond": "Deepslate Diamond Ore",
-  "block.roll_mod.deepslate_bort": "Deepslate Bort Ore"
+  "block.roll_mod.deepslate_bort": "Deepslate Bort Ore",
+  "death.attack.sulfur_damage": " was dissolved by sulfur"
 }
