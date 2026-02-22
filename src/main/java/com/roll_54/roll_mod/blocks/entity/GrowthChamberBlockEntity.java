@@ -1,12 +1,12 @@
 package com.roll_54.roll_mod.blocks.entity;
 
 import com.roll_54.roll_mod.init.BlockEntites;
-import com.roll_54.roll_mod.init.ItemRegistry;
 import com.roll_54.roll_mod.init.RecipeRegister;
 import com.roll_54.roll_mod.recipe.GrowthChamberRecipe;
 import com.roll_54.roll_mod.recipe.GrowthChamberRecipeInput;
 import com.roll_54.roll_mod.screen.menu.GrowthChamberMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -16,6 +16,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -30,7 +31,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class GrowthChamberBlockEntity extends BlockEntity implements MenuProvider {
+public class GrowthChamberBlockEntity extends BlockEntity implements MenuProvider, WorldlyContainer {
     public final ItemStackHandler itemHandler = new ItemStackHandler(2) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -43,7 +44,6 @@ public class GrowthChamberBlockEntity extends BlockEntity implements MenuProvide
 
     private static final int INPUT_SLOT = 0;
     private static final int OUTPUT_SLOT = 1;
-
 
     protected final ContainerData data;
     private int progress = 0;
@@ -191,4 +191,75 @@ public class GrowthChamberBlockEntity extends BlockEntity implements MenuProvide
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
+
+
+    /// методи для вставки хоппером предметів в цю... штуку.
+    @Override
+    public int[] getSlotsForFace(Direction direction) {
+        // Hoppers above can push into INPUT_SLOT; hoppers on sides/below can pull from OUTPUT_SLOT
+        return switch (direction) {
+            case UP -> new int[]{INPUT_SLOT};
+            default -> new int[]{OUTPUT_SLOT};
+        };
+    }
+
+    @Override
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction direction) {
+        // Only allow insertion into the INPUT_SLOT
+        return slot == INPUT_SLOT;
+    }
+
+    @Override
+    public boolean canTakeItemThroughFace(int slot, ItemStack stack, Direction direction) {
+        // Only allow extraction from the OUTPUT_SLOT
+        return slot == OUTPUT_SLOT;
+    }
+
+    @Override
+    public int getContainerSize() {
+        return itemHandler.getSlots();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            if (!itemHandler.getStackInSlot(i).isEmpty()) return false;
+        }
+        return true;
+    }
+
+    @Override
+    public ItemStack getItem(int slot) {
+        return itemHandler.getStackInSlot(slot);
+    }
+
+    @Override
+    public ItemStack removeItem(int slot, int amount) {
+        return itemHandler.extractItem(slot, amount, false);
+    }
+
+    @Override
+    public ItemStack removeItemNoUpdate(int slot) {
+        ItemStack stack = itemHandler.getStackInSlot(slot).copy();
+        itemHandler.setStackInSlot(slot, ItemStack.EMPTY);
+        return stack;
+    }
+
+    @Override
+    public void setItem(int slot, ItemStack stack) {
+        itemHandler.setStackInSlot(slot, stack);
+    }
+
+    @Override
+    public boolean stillValid(Player player) {
+        return true;
+    }
+
+    @Override
+    public void clearContent() {
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            itemHandler.setStackInSlot(i, ItemStack.EMPTY);
+        }
+    }
+
 }
