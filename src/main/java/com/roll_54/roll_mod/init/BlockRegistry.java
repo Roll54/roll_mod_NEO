@@ -90,6 +90,10 @@ public class BlockRegistry {
             () -> new PedestalBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.STONE))
     );
 
+    public static final DeferredBlock<Block> GROWTH_CHAMBER = BLOCKS.register(
+            "growth_chamber",
+            () -> new GrowthChamberBlock(BlockBehaviour.Properties.of()));
+
     static {
         ITEMS.register("treated_planks", () -> new BlockItem(TREATED_PLANKS.get(), new Item.Properties()));
         ITEMS.register("treated_log", () -> new BlockItem(TREATED_LOG.get(), new Item.Properties()));

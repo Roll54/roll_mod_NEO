@@ -7,13 +7,12 @@ import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
 import com.roll_54.roll_mod.PYDatagen.PYOreDataGen;
 import com.roll_54.roll_mod.init.*;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
-import com.roll_54.roll_mod.screen.PedestalScreen;
+import com.roll_54.roll_mod.screen.screen.GrowthChamberScreen;
+import com.roll_54.roll_mod.screen.screen.PedestalScreen;
 import com.roll_54.roll_mod.util.RMMItemProperties;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.EventBus;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -58,6 +57,7 @@ public final class RollMod {
         RMMAttachment.ATTACHMENT_TYPES.register(eventBus);
         ModConfigs.init();
         MenuTypes.register(eventBus);
+        RecipeRegister.register(eventBus);
 
         LOGGER.info("[{}] init complete.", MODID);
     }
@@ -94,6 +94,7 @@ public final class RollMod {
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event){
             event.register(MenuTypes.PEDESTAL_MENU.get(), PedestalScreen::new);
+            event.register(MenuTypes.GROWTH_CHAMBER_MENU.get(), GrowthChamberScreen::new);
         }
 
     }

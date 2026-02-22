@@ -800,7 +800,7 @@ public class ItemRegistry {
                                     .stacksTo(1)
                                     .rarity(Rarity.UNCOMMON),
                             1_000_000L,   // 1M EU
-                            75_000L,      // input
+                            75_000L,      // inputItem
                             75_000L,      // output
                             0xb12e2e      // червоний
                     )
@@ -814,7 +814,7 @@ public class ItemRegistry {
                                     .stacksTo(1)
                                     .rarity(Rarity.RARE),
                             10_000_000L,  // 10M EU
-                            150_000L,     // input
+                            150_000L,     // inputItem
                             150_000L,     // output
                             0xFF4444      // яскраво-червоний
                     )
@@ -828,7 +828,7 @@ public class ItemRegistry {
                                     .stacksTo(1)
                                     .rarity(Rarity.EPIC),
                             1_000_000_000L, // 1G EU
-                            20_000_000L,    // input
+                            20_000_000L,    // inputItem
                             20_000_000L,    // output
                             0x3B6BFF        // синій
                     )
@@ -842,7 +842,7 @@ public class ItemRegistry {
                                     .stacksTo(1)
                                     .rarity(Rarity.EPIC),
                             50_000_000_000L, // 50G EU
-                            20_000_000L,     // input
+                            20_000_000L,     // inputItem
                             20_000_000L,     // output
                             0x0077FF         // глибокий синій
                     )
@@ -856,7 +856,7 @@ public class ItemRegistry {
                                     .stacksTo(1)
                                     .rarity(Rarity.EPIC),
                             500_000_000_000L, // 500G EU
-                            200_000_000L,      // input
+                            200_000_000L,      // inputItem
                             200_000_000L,      // output
                             0x00FFFF          // бірюзовий
                     )
@@ -870,7 +870,7 @@ public class ItemRegistry {
                                     .stacksTo(1)
                                     .rarity(Rarity.EPIC),
                             10_000_000_000_000L, // 10T EU
-                            500_000_000L,        // input
+                            500_000_000L,        // inputItem
                             500_000_000L,        // output
                             0xFFD700            // золотий
                     )

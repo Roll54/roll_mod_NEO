@@ -1,0 +1,9 @@
+{
+  "type": "roll_mod:growth_chamber",
+  "ingredient": {
+    "item": "roll_mod:hazmat_helmet"
+  },
+  "result": {
+    "id": "roll_mod:meteorite_boots"
+  }
+}
