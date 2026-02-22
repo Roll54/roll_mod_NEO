@@ -208,6 +208,10 @@ public final class ItemGroups {
                         }
                         add(out, ItemRegistry.SKIN_APPLICATOR);
 
+                        // Research Workbench
+                        out.accept(BlockRegistry.RESEARCH_WORKBENCH.get().asItem());
+                        add(out, ItemRegistry.BLUEPRINT_FIRE_RESISTANCE);
+
                     })
                     .build()
     );

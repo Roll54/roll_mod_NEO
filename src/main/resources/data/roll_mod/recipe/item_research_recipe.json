@@ -1,7 +1,9 @@
 {
   "type": "roll_mod:item_research",
-  "duration": 100,
-  "output": "roll_mod:blueprint_fire_resistance",
+  "output": {
+    "id": "roll_mod:blueprint_fire_resistance",
+    "count": 1
+  },
   "main_input": {
     "item": "minecraft:blaze_rod",
     "consume_on_success": true
@@ -15,5 +17,6 @@
       "item": "minecraft:blaze_powder",
       "success_chance": 0.25
     }
-  ]
+  ],
+  "duration": 100
 }

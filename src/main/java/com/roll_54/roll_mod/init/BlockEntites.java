@@ -23,6 +23,10 @@ public class BlockEntites {
             BLOCK_ENTITIES.register("growth_chamber_be", () -> BlockEntityType.Builder.of(
                     GrowthChamberBlockEntity::new, BlockRegistry.GROWTH_CHAMBER.get()).build(null));
 
+    public static final Supplier<BlockEntityType<ResearchWorkbenchBlockEntity>> RESEARCH_WORKBENCH_BE =
+            BLOCK_ENTITIES.register("research_workbench_be", () -> BlockEntityType.Builder.of(
+                    ResearchWorkbenchBlockEntity::new, BlockRegistry.RESEARCH_WORKBENCH.get()).build(null));
+
 
 
     public static void register(IEventBus eventBus){

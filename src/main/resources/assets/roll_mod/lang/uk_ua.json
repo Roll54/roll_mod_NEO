@@ -1116,5 +1116,7 @@
   "item.roll_mod.meteorite_metal_nano_saber": "Метеоритна електро-шабля",
   "tooltip.roll_mod.meteorite_metal_nano_saber": "Метеоритний метал придає неймовірної сили лезу",
 
-  "death.attack.sulfur_damage": "%s задихнувся від сірчаних випарів"
+  "death.attack.sulfur_damage": "%s задихнувся від сірчаних випарів",
+  "block.roll_mod.research_workbench": "Дослідницький верстак",
+  "item.roll_mod.blueprint_fire_resistance": "Схема: Вогнестійкість"
 }

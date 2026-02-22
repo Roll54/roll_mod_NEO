@@ -3,8 +3,7 @@ package com.roll_54.roll_mod.init;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.blocks.*;
-import com.roll_54.roll_mod.blocks.regenblock.RegenBlock;
-import net.minecraft.world.item.BlockItem;
+import com.roll_54.roll_mod.blocks.regenblock.RegenBlock;import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
@@ -94,10 +93,15 @@ public class BlockRegistry {
             "growth_chamber",
             () -> new GrowthChamberBlock(BlockBehaviour.Properties.of()));
 
+    public static final DeferredBlock<Block> RESEARCH_WORKBENCH = BLOCKS.register(
+            "research_workbench",
+            () -> new ResearchWorkbenchBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.STONE)));
+
     static {
         ITEMS.register("treated_planks", () -> new BlockItem(TREATED_PLANKS.get(), new Item.Properties()));
         ITEMS.register("treated_log", () -> new BlockItem(TREATED_LOG.get(), new Item.Properties()));
         ITEMS.register("lapotronic_laser_block", () -> new BlockItem(LAPOTRONIC_LASER_BLOCK.get(), new Item.Properties()));
+        ITEMS.register("research_workbench", () -> new BlockItem(RESEARCH_WORKBENCH.get(), new Item.Properties()));
     }
 
     public static void register(IEventBus eventBus) {

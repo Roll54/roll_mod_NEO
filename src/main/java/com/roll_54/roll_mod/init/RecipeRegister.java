@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.init;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.recipe.GrowthChamberRecipe;
+import com.roll_54.roll_mod.recipe.ItemResearchRecipe;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -29,6 +30,17 @@ public class RecipeRegister {
                 @Override
                 public String toString() {
                     return "growth_chamber";
+                }
+            });
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ItemResearchRecipe>> ITEM_RESEARCH_SERIALIZER =
+            RECIPE_SERIALIZERS.register("item_research", ItemResearchRecipe.Serializer::new);
+
+    public static final DeferredHolder<RecipeType<?>, RecipeType<ItemResearchRecipe>> ITEM_RESEARCH_TYPE =
+            RECIPE_TYPES.register("item_research", () -> new RecipeType<ItemResearchRecipe>() {
+                @Override
+                public String toString() {
+                    return "item_research";
                 }
             });
 

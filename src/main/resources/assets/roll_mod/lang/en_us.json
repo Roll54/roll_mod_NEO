@@ -1104,5 +1104,7 @@
   "block.roll_mod.end_quartz": "End Quartz Ore",
   "block.roll_mod.deepslate_diamond": "Deepslate Diamond Ore",
   "block.roll_mod.deepslate_bort": "Deepslate Bort Ore",
-  "death.attack.sulfur_damage": " was dissolved by sulfur"
+  "death.attack.sulfur_damage": " was dissolved by sulfur",
+  "block.roll_mod.research_workbench": "Research Workbench",
+  "item.roll_mod.blueprint_fire_resistance": "Blueprint: Fire Resistance"
 }

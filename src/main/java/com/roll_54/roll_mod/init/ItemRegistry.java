@@ -1135,6 +1135,9 @@ public class ItemRegistry {
 
     public static final DeferredHolder<Item, Item> SKIN_APPLICATOR = ITEMS.register("skin_applicator", () -> new ComponentApplicatorItem(new Item.Properties()));
 
+    // ── Research Blueprints ────────────────────────────────────────────────────
+    public static final DeferredHolder<Item, Item> BLUEPRINT_FIRE_RESISTANCE = registerSimple("blueprint_fire_resistance", new Item.Properties().stacksTo(1));
+
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }

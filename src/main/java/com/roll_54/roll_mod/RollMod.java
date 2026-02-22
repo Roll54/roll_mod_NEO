@@ -9,6 +9,7 @@ import com.roll_54.roll_mod.init.*;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
 import com.roll_54.roll_mod.screen.screen.GrowthChamberScreen;
 import com.roll_54.roll_mod.screen.screen.PedestalScreen;
+import com.roll_54.roll_mod.screen.screen.ResearchWorkbenchScreen;
 import com.roll_54.roll_mod.util.RMMItemProperties;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -95,6 +96,7 @@ public final class RollMod {
         public static void registerScreens(RegisterMenuScreensEvent event){
             event.register(MenuTypes.PEDESTAL_MENU.get(), PedestalScreen::new);
             event.register(MenuTypes.GROWTH_CHAMBER_MENU.get(), GrowthChamberScreen::new);
+            event.register(MenuTypes.RESEARCH_WORKBENCH_MENU.get(), ResearchWorkbenchScreen::new);
         }
 
     }

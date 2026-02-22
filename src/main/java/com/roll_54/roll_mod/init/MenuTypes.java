@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.init;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.screen.menu.GrowthChamberMenu;
 import com.roll_54.roll_mod.screen.menu.PedestalMenu;
+import com.roll_54.roll_mod.screen.menu.ResearchWorkbenchMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -29,4 +30,7 @@ public class MenuTypes {
 
     public static final DeferredHolder<MenuType<?>, MenuType<GrowthChamberMenu>> GROWTH_CHAMBER_MENU =
             registerMenuType("growth_chamber_menu", GrowthChamberMenu::new);
+
+    public static final DeferredHolder<MenuType<?>, MenuType<ResearchWorkbenchMenu>> RESEARCH_WORKBENCH_MENU =
+            registerMenuType("research_workbench_menu", ResearchWorkbenchMenu::new);
 }
