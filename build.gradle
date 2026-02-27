@@ -61,6 +61,10 @@ repositories {
         url = "https://thedarkcolour.github.io/KotlinForForge/"
     }
 
+    maven {
+        url = "https://maven.firstdark.dev/snapshots"
+    }
+
 }
 
 base {
@@ -192,6 +196,8 @@ dependencies {
 
     //jar in jar
     api jarJar("dev.technici4n:GrandPower:${project.grandpower_version}")
+
+    implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

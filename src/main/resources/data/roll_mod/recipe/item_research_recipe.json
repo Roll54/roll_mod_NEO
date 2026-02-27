@@ -16,7 +16,11 @@
     {
       "item": "minecraft:blaze_powder",
       "success_chance": 0.25
+    },
+    {
+      "item": "minecraft:clay_ball",
+      "success_chance": 0.02
     }
   ],
-  "duration": 100
+  "duration": 60
 }
