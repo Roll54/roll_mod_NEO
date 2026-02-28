@@ -79,6 +79,7 @@ public final class RollMod {
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LEDOK_PLUSH.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LORP_OOO_PLUSH.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.YAN_PLUSH.get(), RenderType.cutout());
+       // ItemBlockRenderTypes.setRenderLayer(BlockRegistry.RESEARCH_WORKBENCH.get(), renderType -> renderType == RenderType.cutout());
 
         RMMItemProperties.addCustomProperties();
 

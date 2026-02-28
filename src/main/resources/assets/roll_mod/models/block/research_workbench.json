@@ -1,6 +1,93 @@
 {
-  "parent": "minecraft:block/cube_all",
-  "textures": {
-    "all": "roll_mod:block/research_workbench"
-  }
+	"format_version": "1.9.0",
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"render_type": "minecraft:cutout",
+	"texture_size": [128, 128],
+	"elements": [
+		{
+			"name": "tabletop",
+			"from": [0, 13, 0],
+			"to": [32, 16, 16],
+			"rotation": {"angle": 0, "axis": "y", "origin": [0, 15, 0]},
+			"color": 1,
+			"faces": {
+				"north": {"uv": [2.5, 2.75, 6.5, 3.125], "texture": "#missing"},
+				"east": {"uv": [0.5, 2.75, 2.5, 3.125], "texture": "#missing"},
+				"south": {"uv": [8.5, 2.75, 12.5, 3.125], "texture": "#missing"},
+				"west": {"uv": [6.5, 2.75, 8.5, 3.125], "texture": "#missing"},
+				"up": {"uv": [6.5, 2.75, 2.5, 0.75], "texture": "#missing"},
+				"down": {"uv": [10.5, 0.75, 6.5, 2.75], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "leg",
+			"from": [1, -1, 11],
+			"to": [4, 13, 14],
+			"rotation": {"angle": -22.5, "axis": "x", "origin": [1, 11, 11]},
+			"color": 6,
+			"faces": {
+				"north": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"east": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"south": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"west": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"up": {"uv": [0, 0, 0.375, 0.375], "texture": "#missing"},
+				"down": {"uv": [0, 0, 0.375, 0.375], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "leg",
+			"from": [1, 0, 2],
+			"to": [4, 14, 5],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [1, 12, 2]},
+			"color": 6,
+			"faces": {
+				"north": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"east": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"south": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"west": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"up": {"uv": [0, 0, 0.375, 0.375], "texture": "#missing"},
+				"down": {"uv": [0, 0, 0.375, 0.375], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "leg",
+			"from": [28, -1, 11],
+			"to": [31, 13, 14],
+			"rotation": {"angle": -22.5, "axis": "x", "origin": [28, 11, 11]},
+			"color": 6,
+			"faces": {
+				"north": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"east": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"south": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"west": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"up": {"uv": [0, 0, 0.375, 0.375], "texture": "#missing"},
+				"down": {"uv": [0, 0, 0.375, 0.375], "texture": "#missing"}
+			}
+		},
+		{
+			"name": "leg",
+			"from": [28, 0, 2],
+			"to": [31, 14, 5],
+			"rotation": {"angle": 22.5, "axis": "x", "origin": [28, 12, 2]},
+			"color": 6,
+			"faces": {
+				"north": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"east": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"south": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"west": {"uv": [0, 0, 0.375, 1.75], "texture": "#missing"},
+				"up": {"uv": [0, 0, 0.375, 0.375], "texture": "#missing"},
+				"down": {"uv": [0, 0, 0.375, 0.375], "texture": "#missing"}
+			}
+		}
+	],
+	"display": {},
+	"groups": [
+		{
+			"name": "group",
+			"origin": [8, 8, 8],
+			"color": 0,
+			"children": [0, 1, 2, 3, 4]
+		}
+	]
 }

@@ -262,4 +262,15 @@ public class GrowthChamberBlockEntity extends BlockEntity implements MenuProvide
         }
     }
 
+    @Override
+    public boolean canPlaceItem(int slot, ItemStack stack) {
+        // Prevent accidental insertion into the output slot when accessed without sided logic
+        return slot == INPUT_SLOT;
+    }
+
+    @Override
+    public int getMaxStackSize() {
+        return 64;
+    }
+
 }

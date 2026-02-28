@@ -85,10 +85,7 @@ public class PYOreDataGen {
      */
 
     private static void registerOreVariants(
-            String oreName,
-            BlockBehaviour.Properties props,
-            String... dimensions
-    ) {
+            String oreName, BlockBehaviour.Properties props, int minXp, int maxXp, String... dimensions) {
         for (String prefix : dimensions) {
             String id = prefix + "_" + oreName;
 

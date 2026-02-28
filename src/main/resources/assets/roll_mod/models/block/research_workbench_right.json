@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/air",
+  "textures": {
+    "particle": "roll_mod:block/research_table/research_table_top"
+  }
+}
