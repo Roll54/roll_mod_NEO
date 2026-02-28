@@ -25,7 +25,11 @@ public class RMMDataGenerators {
 
         generator.addProvider(event.includeServer(), new RMMDataMapProvider(packOutput, lookupProvider));
 
-        generator.addProvider(event.includeServer(), new RMMItemModelProvider(packOutput, existingFileHelper));
+        generator.addProvider(event.includeClient(), new RMMItemModelProvider(packOutput, existingFileHelper));
+
+        generator.addProvider(event.includeClient(), new PYOreBlockStateProvider(packOutput, existingFileHelper));
+
+        generator.addProvider(event.includeServer(), new PYOreLootTableProvider(packOutput, lookupProvider));
 
         generator.addProvider(event.includeServer(), new RMMDatapackProvider(packOutput, lookupProvider));
 
