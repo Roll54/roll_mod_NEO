@@ -1,6 +1,9 @@
 package com.roll_54.roll_mod.data.datagen;
 
-import com.roll_54.roll_mod.PYDatagen.PYOreDataGen;
+import com.roll_54.roll_mod.data.datagen.py.OreDefinition;
+import com.roll_54.roll_mod.data.datagen.py.OreDefinitions;
+import com.roll_54.roll_mod.data.datagen.py.PyTextureTemplates.BlockSubLayer;
+import com.roll_54.roll_mod.init.GeneratedOreRegistry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.BlockLootSubProvider;
@@ -9,6 +12,7 @@ import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
+import net.neoforged.neoforge.registries.DeferredHolder;
 
 import java.util.List;
 import java.util.Map;
@@ -28,27 +32,41 @@ public class PYOreLootTableProvider extends LootTableProvider {
 
         @Override
         protected void generate() {
-            Map<String, Item> rawItems = PYOreDataGen.ORE_ITEMS.getEntries().stream()
-                    .filter(entry -> entry.getId().getPath().startsWith("raw_"))
-                    .collect(Collectors.toMap(entry -> entry.getId().getPath(), entry -> entry.get()));
+            // Map items and blocks from GeneratedOreRegistry
+            Map<String, Item> items = GeneratedOreRegistry.ITEMS.getEntries().stream()
+                    .collect(Collectors.toMap(entry -> entry.getId().getPath(), DeferredHolder::get));
 
-            for (var entry : PYOreDataGen.ORE_BLOCKS.getEntries()) {
-                Block block = entry.get();
-                String path = entry.getId().getPath();
-                int idx = path.indexOf('_');
-                String oreName = idx >= 0 && idx + 1 < path.length() ? path.substring(idx + 1) : path;
-                Item raw = rawItems.get("raw_" + oreName);
-                if (raw != null) {
-                    add(block, b -> createOreDrop(b, raw));
-                } else {
-                    dropSelf(block);
+            Map<String, Block> blocks = GeneratedOreRegistry.BLOCKS.getEntries().stream()
+                    .collect(Collectors.toMap(entry -> entry.getId().getPath(), DeferredHolder::get));
+
+            for (OreDefinition def : OreDefinitions.ALL) {
+                // Determine Raw Item
+                String rawItemName = "raw_" + def.oreName();
+                Item rawItem = items.get(rawItemName);
+
+                // For each base block variant
+                for (BlockSubLayer base : def.bases()) {
+                    String blockName = base.id() + "_" + def.oreName();
+                    Block block = blocks.get(blockName);
+
+                    if (block != null) {
+                        if (rawItem != null) {
+                            // Silk touch -> Block, otherwise -> Item (with fortune)
+                            this.add(block, (b) -> this.createOreDrop(b, rawItem));
+                        } else {
+                            // If no raw item, drop self
+                            this.dropSelf(block);
+                        }
+                    }
                 }
             }
         }
 
         @Override
         protected Iterable<Block> getKnownBlocks() {
-            return (Iterable<Block>) PYOreDataGen.ORE_BLOCKS.getEntries().stream().map(holder -> holder.get()).toList();
+            return GeneratedOreRegistry.BLOCKS.getEntries().stream()
+                    .map(DeferredHolder::get)
+                    .collect(Collectors.toList());
         }
     }
 }
