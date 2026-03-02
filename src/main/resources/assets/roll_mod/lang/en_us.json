@@ -1106,5 +1106,11 @@
   "block.roll_mod.deepslate_bort": "Deepslate Bort Ore",
   "death.attack.sulfur_damage": " was dissolved by sulfur",
   "block.roll_mod.research_workbench": "Research Workbench",
-  "item.roll_mod.blueprint_fire_resistance": "Blueprint: Fire Resistance"
+  "item.roll_mod.blueprint_fire_resistance": "Blueprint: Fire Resistance",
+  "item.roll_mod.nether_cartridge": "Nether Cartridge",
+  "item.roll_mod.end_cartridge": "End Cartridge",
+  "item.roll_mod.tier_1_rocket": "Tier 1 Rocket",
+  "item.roll_mod.tier_2_rocket": "Tier 2 Rocket",
+  "item.roll_mod.tier_3_rocket": "Tier 3 Rocket",
+  "item.roll_mod.rocket_fuel_canister": "Rocket Fuel Canister"
 }

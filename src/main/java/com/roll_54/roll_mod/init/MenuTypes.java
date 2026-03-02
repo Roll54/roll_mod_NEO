@@ -4,6 +4,7 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.screen.menu.GrowthChamberMenu;
 import com.roll_54.roll_mod.screen.menu.PedestalMenu;
 import com.roll_54.roll_mod.screen.menu.ResearchWorkbenchMenu;
+import com.roll_54.roll_mod.screen.menu.RocketControllerMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
@@ -20,11 +21,6 @@ public class MenuTypes {
         return MENUS.register(name, () -> IMenuTypeExtension.create(factory));
     }
 
-    public static void register(net.neoforged.bus.api.IEventBus eventBus) {
-        MENUS.register(eventBus);
-    }
-
-
     public static final DeferredHolder<MenuType<?>, MenuType<PedestalMenu>> PEDESTAL_MENU =
             registerMenuType("pedestal_menu", PedestalMenu::new);
 
@@ -33,4 +29,11 @@ public class MenuTypes {
 
     public static final DeferredHolder<MenuType<?>, MenuType<ResearchWorkbenchMenu>> RESEARCH_WORKBENCH_MENU =
             registerMenuType("research_workbench_menu", ResearchWorkbenchMenu::new);
+
+    public static final DeferredHolder<MenuType<?>, MenuType<RocketControllerMenu>> ROCKET_CONTROLLER_MENU =
+            registerMenuType("rocket_controller_menu", RocketControllerMenu::new);
+
+    public static void register(net.neoforged.bus.api.IEventBus eventBus) {
+        MENUS.register(eventBus);
+    }
 }

@@ -27,6 +27,9 @@ public class BlockEntites {
             BLOCK_ENTITIES.register("research_workbench_be", () -> BlockEntityType.Builder.of(
                     ResearchWorkbenchBlockEntity::new, BlockRegistry.RESEARCH_WORKBENCH.get()).build(null));
 
+    public static final Supplier<BlockEntityType<RocketControllerBlockEntity>> ROCKET_CONTROLLER_BE =
+            BLOCK_ENTITIES.register("rocket_controller_be", () -> BlockEntityType.Builder.of(
+                    RocketControllerBlockEntity::new, BlockRegistry.ROCKET_CONTROLLER_BLOCK.get()).build(null));
 
 
     public static void register(IEventBus eventBus){

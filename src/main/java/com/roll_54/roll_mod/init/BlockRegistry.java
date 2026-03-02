@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class BlockRegistry {
@@ -90,10 +91,20 @@ public class BlockRegistry {
             () -> new RegenBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.AMETHYST))
     );
 
-    public static final DeferredBlock<Block> PEDESTAL_BLOCK = BLOCKS.register(
-            "pedestal_block",
-            () -> new PedestalBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.STONE))
-    );
+    public static final DeferredHolder<Block, Block> PEDESTAL_BLOCK =
+            BLOCKS.register("pedestal_block",
+                    () -> new PedestalBlock(
+                            BlockBehaviour.Properties.of().strength(6f).requiresCorrectToolForDrops().noOcclusion()
+                    ));
+
+    public static final DeferredHolder<Block, RocketControllerBlock> ROCKET_CONTROLLER_BLOCK =
+            BLOCKS.register("rocket_controller",
+                    () -> new RocketControllerBlock(
+                            BlockBehaviour.Properties.of()
+                                    .strength(4.0F)
+                                    .requiresCorrectToolForDrops()
+                                    .sound(SoundType.METAL)
+                    ));
 
     public static final DeferredBlock<Block> GROWTH_CHAMBER = BLOCKS.register(
             "growth_chamber",
@@ -108,6 +119,7 @@ public class BlockRegistry {
         ITEMS.register("treated_log", () -> new BlockItem(TREATED_LOG.get(), new Item.Properties()));
         ITEMS.register("lapotronic_laser_block", () -> new BlockItem(LAPOTRONIC_LASER_BLOCK.get(), new Item.Properties()));
         ITEMS.register("research_workbench", () -> new BlockItem(RESEARCH_WORKBENCH.get(), new Item.Properties()));
+        ITEMS.register("rocket_controller", () -> new BlockItem(ROCKET_CONTROLLER_BLOCK.get(), new Item.Properties()));
     }
 
     public static void register(IEventBus eventBus) {

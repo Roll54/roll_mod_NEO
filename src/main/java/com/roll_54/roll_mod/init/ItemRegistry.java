@@ -331,7 +331,6 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> PVC_INGOT = ITEMS.register("pvc_ingot", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> PVC_PLATE = ITEMS.register("pvc_plate", () -> new Item(new Item.Properties()));
 
-    // «Покращений MI»
     public static final DeferredHolder<Item, Item> ADV_CONVEYOR = ITEMS.register("advanced_conveyor", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> ADV_PISTON = ITEMS.register("advanced_piston", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> ADV_ROBOT_ARM = ITEMS.register("advanced_robot_arm", () -> new Item(new Item.Properties()));
@@ -1145,7 +1144,28 @@ public class ItemRegistry {
     // ── Research Blueprints ────────────────────────────────────────────────────
     public static final DeferredHolder<Item, Item> BLUEPRINT_FIRE_RESISTANCE = registerSimple("blueprint_fire_resistance", new Item.Properties().stacksTo(1));
 
+    // Rocket Cartridges
+    public static final DeferredHolder<Item, Item> NETHER_CARTRIDGE = registerSimple("nether_cartridge", new Item.Properties().stacksTo(1));
+    public static final DeferredHolder<Item, Item> END_CARTRIDGE = registerSimple("end_cartridge", new Item.Properties().stacksTo(1));
+
+    // ── Rockets ───────────────────────────────────────────────────────────────
+    public static final DeferredHolder<Item, com.roll_54.roll_mod.modItems.RocketItem> TIER_1_ROCKET =
+            ITEMS.register("tier_1_rocket", () -> new com.roll_54.roll_mod.modItems.RocketItem(
+                    new Item.Properties().stacksTo(1), 1));
+    public static final DeferredHolder<Item, com.roll_54.roll_mod.modItems.RocketItem> TIER_2_ROCKET =
+            ITEMS.register("tier_2_rocket", () -> new com.roll_54.roll_mod.modItems.RocketItem(
+                    new Item.Properties().stacksTo(1), 2));
+    public static final DeferredHolder<Item, com.roll_54.roll_mod.modItems.RocketItem> TIER_3_ROCKET =
+            ITEMS.register("tier_3_rocket", () -> new com.roll_54.roll_mod.modItems.RocketItem(
+                    new Item.Properties().stacksTo(1), 3));
+
+    // ── Rocket Fuel ───────────────────────────────────────────────────────────
+    // Stack up to 64 so players can fill the fuel slot easily
+    public static final DeferredHolder<Item, Item> ROCKET_FUEL_CANISTER =
+            ITEMS.register("rocket_fuel_canister", () -> new Item(new Item.Properties().stacksTo(64)));
+
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }
 }
+

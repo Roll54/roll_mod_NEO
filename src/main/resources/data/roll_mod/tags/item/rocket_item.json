@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:tier_1_rocket",
+    "roll_mod:tier_2_rocket",
+    "roll_mod:tier_3_rocket"
+  ]
+}
