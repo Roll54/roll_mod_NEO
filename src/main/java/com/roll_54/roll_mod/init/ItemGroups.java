@@ -3,7 +3,6 @@ package com.roll_54.roll_mod.init;
 import aztech.modern_industrialization.MIComponents;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
-import com.roll_54.roll_mod.PYDatagen.PYOreDataGen;
 import com.roll_54.roll_mod.RollMod;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
@@ -227,7 +226,6 @@ public final class ItemGroups {
                             out.accept(entry.get());
                         }
                         for (DeferredHolder<Block, ? extends Block> entry : BlockRegistry.BLOCKS.getEntries()) {
-                            if (PYOreDataGen.ORE_BLOCKS.getEntries().contains(entry)) continue; // ← пропускаємо руди
 
                             Block block = entry.get();
                             Item item = block.asItem();
@@ -239,30 +237,30 @@ public final class ItemGroups {
                     .build()
     );
 
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> PY_DATAGEN_TAB = TABS.register(
-            "py_datagen",
-            () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.roll_mod.py_datagen"))
-                    .icon(() -> new ItemStack(BlockRegistry.ROLL_PLUSH.get()))
-                    .displayItems((params, out) -> {
 
-                        // усі предмети із PYItems
-                        for (DeferredHolder<Item, ? extends Item> entry : PYOreDataGen.ORE_ITEMS.getEntries()) {
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GENERATED_ORES_TAB = TABS.register(
+            "generated_ores",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.roll_mod.generated_ores"))
+                    .icon(() -> new ItemStack(ItemRegistry.METEORITE_PICKAXE.get()))
+                    .displayItems((params, out) -> {
+                        // All items from GeneratedOreRegistry
+                        for (DeferredHolder<Item, ? extends Item> entry : GeneratedOreRegistry.ITEMS.getEntries()) {
                             out.accept(entry.get());
                         }
 
-                        // усі блоки із PYOreDataGen
-                        for (DeferredHolder<Block, ? extends Block> entry : PYOreDataGen.ORE_BLOCKS.getEntries()) {
+                        // All blocks from GeneratedOreRegistry
+                        for (DeferredHolder<Block, ? extends Block> entry : GeneratedOreRegistry.BLOCKS.getEntries()) {
                             Block block = entry.get();
                             Item item = block.asItem();
-                            if (item != net.minecraft.world.item.Items.AIR) {
+                            if (item != Items.AIR) {
                                 out.accept(item);
                             }
                         }
-
                     })
                     .build()
     );
+
     private static <T extends Item> void add(CreativeModeTab.Output out, DeferredHolder<Item, T> h) {
         out.accept(h.get());
     }
@@ -285,3 +283,4 @@ public final class ItemGroups {
         return head;
     }
 }
+

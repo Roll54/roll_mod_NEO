@@ -4,7 +4,6 @@ import com.roll_54.roll_mod.blocks.entity.render.PedestalBlockEntityRenderer;
 import com.roll_54.roll_mod.data.RMMAttachment;
 import com.roll_54.roll_mod.data.RMMComponents;
 import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
-import com.roll_54.roll_mod.PYDatagen.PYOreDataGen;
 import com.roll_54.roll_mod.init.*;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
 import com.roll_54.roll_mod.screen.screen.GrowthChamberScreen;
@@ -45,8 +44,9 @@ public final class RollMod {
 
         ItemRegistry.register(eventBus);
         BlockRegistry.register(eventBus);
+        GeneratedOreRegistry.register(eventBus);
         ItemGroups.register(eventBus);
-        PYOreDataGen.register(eventBus);
+//        PYOreDataGen.register(eventBus);
 //        PYItems.register(eventBus);
         BlockEntites.register(eventBus);
         ModEffects.register(eventBus);

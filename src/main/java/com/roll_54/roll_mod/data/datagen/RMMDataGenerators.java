@@ -22,6 +22,7 @@ public class RMMDataGenerators {
         ExistingFileHelper existingFileHelper = event.getExistingFileHelper();
         CompletableFuture<HolderLookup.Provider> lookupProvider = event.getLookupProvider();
 
+        generator.addProvider(event.includeClient(), new PYOreTextureProvider(packOutput));
 
         generator.addProvider(event.includeServer(), new RMMDataMapProvider(packOutput, lookupProvider));
 
@@ -33,6 +34,10 @@ public class RMMDataGenerators {
 
         generator.addProvider(event.includeServer(), new RMMDatapackProvider(packOutput, lookupProvider));
 
+
+        generator.addProvider(event.includeClient(), new PYOreItemModelProvider(packOutput, existingFileHelper));
+
+        generator.addProvider(event.includeServer(), new PYOreBlockTagsProvider(packOutput, lookupProvider, existingFileHelper));
 
     }
 }
