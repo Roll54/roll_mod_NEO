@@ -162,10 +162,16 @@ public class PYOreTextureProvider implements DataProvider {
 
     private BufferedImage applyColorMultiply(BufferedImage image, String hexColor) {
         String hex = hexColor.startsWith("#") ? hexColor.substring(1) : hexColor;
-        int rgb = Integer.parseInt(hex, 16);
-        int r = (rgb >> 16) & 0xFF;
-        int g = (rgb >> 8) & 0xFF;
-        int b = rgb & 0xFF;
+        int rgbVal = Integer.parseInt(hex, 16);
+        float r = ((rgbVal >> 16) & 0xFF) / 255f;
+        float g = ((rgbVal >> 8) & 0xFF) / 255f;
+        float b = (rgbVal & 0xFF) / 255f;
+
+        // Convert tint to HSB
+        float[] hsbTint = java.awt.Color.RGBtoHSB((int)(r*255), (int)(g*255), (int)(b*255), null);
+        float tintHue = hsbTint[0];
+        float tintSat = hsbTint[1];
+        float tintBri = hsbTint[2];
 
         BufferedImage out = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         for (int y = 0; y < image.getHeight(); y++) {
@@ -176,14 +182,25 @@ public class PYOreTextureProvider implements DataProvider {
                     out.setRGB(x, y, 0);
                     continue;
                 }
+
                 int pr = (argb >> 16) & 0xFF;
                 int pg = (argb >> 8) & 0xFF;
                 int pb = argb & 0xFF;
-                int nr = (pr * r) / 255;
-                int ng = (pg * g) / 255;
-                int nb = (pb * b) / 255;
-                int narb = (a << 24) | (nr << 16) | (ng << 8) | nb;
-                out.setRGB(x, y, narb);
+
+                // Calculate luminance of the pixel (assuming grayscale or close to it)
+                // Standard weighting: 0.299 R + 0.587 G + 0.114 B
+                float lum = (pr * 0.299f + pg * 0.587f + pb * 0.114f) / 255f;
+
+                // Adjust luminance based on the tint's brightness.
+                // We want to preserve the shading (lum) but scale it by the tint's brightness.
+                float newBri = lum * tintBri;
+
+                // Reconstruct color using Tint Hue/Sat and Adjusted Brightness
+                int newRgb = java.awt.Color.HSBtoRGB(tintHue, tintSat, newBri);
+
+                // Combine with original alpha
+                int resultArgb = (a << 24) | (newRgb & 0x00FFFFFF);
+                out.setRGB(x, y, resultArgb);
             }
         }
         return out;

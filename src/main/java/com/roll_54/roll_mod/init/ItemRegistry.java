@@ -42,6 +42,7 @@ public class ItemRegistry {
 
     private ItemRegistry() {
     }
+
     private static final int AQUA = 0x55FFFF;// §b
     private static final int SKULK_BLUE = 0x19c8ff; // my own
     private static final int YELLOW = 0xFFFF55;     // §e
@@ -51,7 +52,6 @@ public class ItemRegistry {
     private static final int GREEN = 0x55FF55;
     private static final int LIGHT_GREN = 0x73ff85;
     private static final int WHITE = 0xFFFFFF;
-
 
 
     public static final DeferredRegister<Item> ITEMS =
@@ -263,7 +263,7 @@ public class ItemRegistry {
             "amethyst_oscillator", () -> new Item(new Item.Properties())
     );
     public static final DeferredHolder<Item, Item> REDSTONE_TUBE = registerTooltip(
-            "redstone_tube", TooltipOptions.nameAndLore(RED, 1,WHITE)
+            "redstone_tube", TooltipOptions.nameAndLore(RED, 1, WHITE)
     );
 
     public static final DeferredHolder<Item, Item> MIRROR = registerTooltip(
@@ -312,7 +312,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> STANDARD_CHIP_PMIC = ITEMS.register("standard_chip_pmic", () -> new Item(new Item.Properties()));
 
 
-    public static final DeferredHolder<Item, Item> RED_LENS= registerTooltip("red_lens", TooltipOptions.name(0xD32F2F));
+    public static final DeferredHolder<Item, Item> RED_LENS = registerTooltip("red_lens", TooltipOptions.name(0xD32F2F));
     public static final DeferredHolder<Item, Item> GREEN_LENS = registerTooltip("green_lens", TooltipOptions.name(0x388E3C));
     public static final DeferredHolder<Item, Item> YELLOW_LENS = registerTooltip("yellow_lens", TooltipOptions.name(0xFBC02D));
     public static final DeferredHolder<Item, Item> WHITE_LENS = registerTooltip("white_lens", TooltipOptions.name(0xEDEDED));
@@ -515,7 +515,7 @@ public class ItemRegistry {
                             .saturationModifier(3f)
                             .fast()
                             .effect(() -> new MobEffectInstance(MobEffects.DIG_SPEED, 18000, 1), 1.0f)
-                            .effect(() -> new MobEffectInstance(MobEffects. FIRE_RESISTANCE, 30000, 0), 1.0f)
+                            .effect(() -> new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 30000, 0), 1.0f)
                             .build()
             ))
     );
@@ -781,7 +781,7 @@ public class ItemRegistry {
             );
 
     public static final DeferredHolder<Item, Item> TRANSMISSION = registerTooltip("transmission", TooltipOptions.nameAndLore(0x8E9D7A, 1, 0x8E9D7A));
-    public static final DeferredHolder<Item, Item> MAGNALIUM_ENGINE = registerTooltip("magnalium_engine", TooltipOptions.   nameAndLore(0x8E9D7A, 2, 0x8E9D7A));
+    public static final DeferredHolder<Item, Item> MAGNALIUM_ENGINE = registerTooltip("magnalium_engine", TooltipOptions.nameAndLore(0x8E9D7A, 2, 0x8E9D7A));
     public static final DeferredHolder<Item, Item> SOAP_STONE_DUST = ITEMS.register("soap_stone_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> MANGANESE_OXIDE = ITEMS.register("manganese_oxide", () -> new Item(new Item.Properties().component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true).component(DataComponents.RARITY, Rarity.RARE)));
     public static final DeferredHolder<Item, Item> TREATED_PLATE = ITEMS.register("treated_plate", () -> new Item(new Item.Properties()));
@@ -880,6 +880,13 @@ public class ItemRegistry {
 
     public static final DeferredHolder<Item, Item> POTASSIUM_DUST = ITEMS.register("potassium_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> STONE_DUST = ITEMS.register("stone_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> DEEPSLATE_DUST = ITEMS.register("deepslate_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> NETHERRACK_DUST = ITEMS.register("netherrack_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> END_STONE_DUST = ITEMS.register("end_stone_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MOON_STONE_DUST = ITEMS.register("moon_stone_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MARS_STONE_DUST = ITEMS.register("mars_stone_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> VENUS_STONE_DUST = ITEMS.register("venus_stone_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MERCURY_STONE_DUST = ITEMS.register("mercury_stone_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> CLAY_DUST = ITEMS.register("clay_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> CALCIUM_CHLORIDE_DUST = ITEMS.register("calcium_chloride_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SODIUM_TUNGSTATE_DUST = ITEMS.register("sodium_tungstate_dust", () -> new Item(new Item.Properties()));

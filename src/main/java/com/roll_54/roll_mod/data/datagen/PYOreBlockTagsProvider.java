@@ -22,7 +22,7 @@ public class PYOreBlockTagsProvider extends BlockTagsProvider {
     @Override
     protected void addTags(HolderLookup.Provider provider) {
         var pickaxeTag = tag(BlockTags.MINEABLE_WITH_PICKAXE);
-        var needsIronTag = tag(BlockTags.NEEDS_IRON_TOOL); // Defaulting to Iron for now
+        var needsIronTag = tag(BlockTags.NEEDS_STONE_TOOL); // Defaulting to Iron for now
 
         for (OreDefinition def : OreDefinitions.ALL) {
             for (BlockSubLayer base : def.bases()) {
