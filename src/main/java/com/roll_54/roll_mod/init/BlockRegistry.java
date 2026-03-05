@@ -104,6 +104,7 @@ public class BlockRegistry {
                                     .strength(4.0F)
                                     .requiresCorrectToolForDrops()
                                     .sound(SoundType.METAL)
+                                    .noOcclusion()
                     ));
 
     public static final DeferredBlock<Block> GROWTH_CHAMBER = BLOCKS.register(

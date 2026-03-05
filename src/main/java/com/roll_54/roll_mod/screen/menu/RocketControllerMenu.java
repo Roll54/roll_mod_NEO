@@ -31,19 +31,19 @@ public class RocketControllerMenu extends AbstractContainerMenu {
         addPlayerHotbar(inv);
 
         IItemHandler handler = this.blockEntity.getItemHandler();
-        this.addSlot(new SlotItemHandler(handler, 0, 80, 20) { // Rocket Slot
+        this.addSlot(new SlotItemHandler(handler, 0, 9, 15) { // Rocket Slot
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(TagRegistry.ROCKET_ITEM);
             }
         });
-        this.addSlot(new SlotItemHandler(handler, 1, 50, 50) { // Fuel Slot
+        this.addSlot(new SlotItemHandler(handler, 1, 9, 33) { // Fuel Slot
             @Override
             public boolean mayPlace(ItemStack stack) {
                 return stack.is(TagRegistry.ROCKET_FUEL);
             }
         });
-        this.addSlot(new SlotItemHandler(handler, 2, 110, 50)); // Cartridge Slot
+        this.addSlot(new SlotItemHandler(handler, 2, 9, 51)); // Cartridge Slot
 
         addDataSlots(data);
     }
@@ -57,6 +57,9 @@ public class RocketControllerMenu extends AbstractContainerMenu {
     private static final int VANILLA_FIRST_SLOT_INDEX = 0;
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
     private static final int TE_INVENTORY_SLOT_COUNT = 3;
+
+    /** Absolute slot index of the cartridge slot inside this menu. */
+    public static final int CARTRIDGE_SLOT_INDEX = TE_INVENTORY_FIRST_SLOT_INDEX + 2; // 36 + 2 = 38
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int index) {

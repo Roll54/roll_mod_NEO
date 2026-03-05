@@ -1,10 +1,13 @@
 package com.roll_54.roll_mod.init;
 
+import com.roll_54.roll_mod.data.RMMComponents;
 import com.roll_54.roll_mod.modArmor.HazmatBootsItem;
 import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
 import com.roll_54.roll_mod.modItems.*;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.modItems.electricItems.*;
+import com.roll_54.roll_mod.modItems.spaceModule.DimensionCartridgeCItem;
+import com.roll_54.roll_mod.modItems.spaceModule.RocketItem;
 import com.roll_54.roll_mod.util.TooltipOptions;
 import com.roll_54.roll_mod.util.TooltipManager;
 import net.minecraft.core.Holder;
@@ -1144,19 +1147,44 @@ public class ItemRegistry {
     // ── Research Blueprints ────────────────────────────────────────────────────
     public static final DeferredHolder<Item, Item> BLUEPRINT_FIRE_RESISTANCE = registerSimple("blueprint_fire_resistance", new Item.Properties().stacksTo(1));
 
-    // Rocket Cartridges
-    public static final DeferredHolder<Item, Item> NETHER_CARTRIDGE = registerSimple("nether_cartridge", new Item.Properties().stacksTo(1));
-    public static final DeferredHolder<Item, Item> END_CARTRIDGE = registerSimple("end_cartridge", new Item.Properties().stacksTo(1));
+    // Rocket Cartridges — each carries its target dimension via CartridgeData component
+    public static final DeferredHolder<Item, Item> OVERWORLD_CARTRIDGE = ITEMS.register("overworld_cartridge",
+            () -> new DimensionCartridgeCItem(new Item.Properties().stacksTo(1),
+                    "minecraft:overworld", "dimension.minecraft.overworld", 5, 1));
+
+    public static final DeferredHolder<Item, Item> NETHER_CARTRIDGE = ITEMS.register("nether_cartridge",
+            () -> new DimensionCartridgeCItem(new Item.Properties().stacksTo(1),
+                    "minecraft:the_nether", "dimension.minecraft.the_nether", 5, 1));
+
+    public static final DeferredHolder<Item, Item> END_CARTRIDGE = ITEMS.register("end_cartridge",
+            () -> new DimensionCartridgeCItem(new Item.Properties().stacksTo(1),
+                    "minecraft:the_end", "dimension.minecraft.the_end", 15, 1));
+
+    public static final DeferredHolder<Item, Item> MOON_CARTRIDGE = ITEMS.register("moon_cartridge",
+            () -> new DimensionCartridgeCItem(new Item.Properties().stacksTo(1),
+                    "ad_astra:moon", "dimension.ad_astra.moon", 10, 1));
+
+    public static final DeferredHolder<Item, Item> MARS_CARTRIDGE = ITEMS.register("mars_cartridge",
+            () -> new DimensionCartridgeCItem(new Item.Properties().stacksTo(1),
+                    "ad_astra:mars", "dimension.ad_astra.mars", 10, 2));
+
+    public static final DeferredHolder<Item, Item> VENUS_CARTRIDGE = ITEMS.register("venus_cartridge",
+            () -> new DimensionCartridgeCItem(new Item.Properties().stacksTo(1),
+                    "ad_astra:venus", "dimension.ad_astra.venus", 50, 3));
+
+    public static final DeferredHolder<Item, Item> MERCURY_CARTRIDGE = ITEMS.register("mercury_cartridge",
+            () -> new DimensionCartridgeCItem(new Item.Properties().stacksTo(1),
+                    "ad_astra:mercury", "dimension.ad_astra.mercury", 10, 3));
 
     // ── Rockets ───────────────────────────────────────────────────────────────
-    public static final DeferredHolder<Item, com.roll_54.roll_mod.modItems.RocketItem> TIER_1_ROCKET =
-            ITEMS.register("tier_1_rocket", () -> new com.roll_54.roll_mod.modItems.RocketItem(
+    public static final DeferredHolder<Item, RocketItem> TIER_1_ROCKET =
+            ITEMS.register("tier_1_rocket", () -> new RocketItem(
                     new Item.Properties().stacksTo(1), 1));
-    public static final DeferredHolder<Item, com.roll_54.roll_mod.modItems.RocketItem> TIER_2_ROCKET =
-            ITEMS.register("tier_2_rocket", () -> new com.roll_54.roll_mod.modItems.RocketItem(
+    public static final DeferredHolder<Item, RocketItem> TIER_2_ROCKET =
+            ITEMS.register("tier_2_rocket", () -> new RocketItem(
                     new Item.Properties().stacksTo(1), 2));
-    public static final DeferredHolder<Item, com.roll_54.roll_mod.modItems.RocketItem> TIER_3_ROCKET =
-            ITEMS.register("tier_3_rocket", () -> new com.roll_54.roll_mod.modItems.RocketItem(
+    public static final DeferredHolder<Item, RocketItem> TIER_3_ROCKET =
+            ITEMS.register("tier_3_rocket", () -> new RocketItem(
                     new Item.Properties().stacksTo(1), 3));
 
     // ── Rocket Fuel ───────────────────────────────────────────────────────────

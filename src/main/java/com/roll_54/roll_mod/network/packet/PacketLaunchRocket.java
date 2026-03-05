@@ -1,13 +1,12 @@
 package com.roll_54.roll_mod.network.packet;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.init.ItemRegistry;
+import com.roll_54.roll_mod.data.RMMComponents;
 import com.roll_54.roll_mod.init.TagRegistry;
+import com.roll_54.roll_mod.modItems.spaceModule.CartridgeData;
 import com.roll_54.roll_mod.screen.menu.RocketControllerMenu;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
@@ -16,7 +15,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.neoforged.neoforge.network.handling.IPayloadContext;
@@ -47,23 +45,19 @@ public record PacketLaunchRocket(BlockPos pos) implements CustomPacketPayload {
                     if (!rocket.is(TagRegistry.ROCKET_ITEM)) return;
                     if (!fuel.is(TagRegistry.ROCKET_FUEL)) return;
 
-                    int tier = 1;
-                    CustomData customData = rocket.get(DataComponents.CUSTOM_DATA);
-                    if (customData != null) {
-                        CompoundTag tag = customData.copyTag();
-                        if (tag.contains("rocket_tier")) {
-                            tier = tag.getInt("rocket_tier");
-                        }
-                    }
+                    int tier = rocket.getOrDefault(RMMComponents.ROCKET_TIER.get(), 1);
+
+                    CartridgeData cartridgeData = cartridge.get(RMMComponents.CARTRIDGE_DATA.get());
+                    if (cartridgeData == null) return;
+                    if (tier < cartridgeData.requiredTier()) return; // tier too low
 
                     int requiredFuel = 5 * tier;
                     if (fuel.getCount() < requiredFuel) return;
 
                     ResourceKey<Level> targetDim = null;
-                    if (cartridge.getItem() == ItemRegistry.NETHER_CARTRIDGE.get()) {
-                        targetDim = Level.NETHER;
-                    } else if (cartridge.getItem() == ItemRegistry.END_CARTRIDGE.get()) {
-                        targetDim = Level.END;
+                    ResourceLocation dimId = ResourceLocation.tryParse(cartridgeData.dimensionRaw());
+                    if (dimId != null) {
+                        targetDim = ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, dimId);
                     }
 
                     if (targetDim != null) {

@@ -68,5 +68,13 @@ public class RMMItemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.VENUS_STONE_DUST.get());
      //   basicItem(ItemRegistry.MERCURY_STONE_DUST.get()); needs texture
 
+        basicItem(ItemRegistry.OVERWORLD_CARTRIDGE.get());
+        basicItem(ItemRegistry.NETHER_CARTRIDGE.get());
+        basicItem(ItemRegistry.END_CARTRIDGE.get());
+        basicItem(ItemRegistry.MOON_CARTRIDGE.get());
+        basicItem(ItemRegistry.MARS_CARTRIDGE.get());
+        basicItem(ItemRegistry.MERCURY_CARTRIDGE.get());
+        basicItem(ItemRegistry.VENUS_CARTRIDGE.get());
+
     }
 }

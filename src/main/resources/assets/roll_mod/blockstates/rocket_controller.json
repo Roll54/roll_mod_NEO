@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "additional=false,facing=north": { "model": "roll_mod:block/rocket_controller", "y": 0   },
+    "additional=false,facing=east":  { "model": "roll_mod:block/rocket_controller", "y": 90  },
+    "additional=false,facing=south": { "model": "roll_mod:block/rocket_controller", "y": 180 },
+    "additional=false,facing=west":  { "model": "roll_mod:block/rocket_controller", "y": 270 },
+    "additional=true,facing=north":  { "model": "minecraft:block/air"},
+    "additional=true,facing=east":   { "model": "minecraft:block/air"},
+    "additional=true,facing=south":  { "model": "minecraft:block/air"},
+    "additional=true,facing=west":   { "model": "minecraft:block/air"}
+  }
+}

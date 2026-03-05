@@ -6,7 +6,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -57,6 +59,15 @@ public class RocketControllerBlockEntity extends BlockEntity implements MenuProv
 
     public ItemStackHandler getItemHandler() {
         return itemHandler;
+    }
+
+    public void drops() {
+        if (level == null) return;
+        SimpleContainer inv = new SimpleContainer(itemHandler.getSlots());
+        for (int i = 0; i < itemHandler.getSlots(); i++) {
+            inv.setItem(i, itemHandler.getStackInSlot(i));
+        }
+        Containers.dropContents(level, worldPosition, inv);
     }
 
     public static void tick(net.minecraft.world.level.Level level, BlockPos pos, BlockState state, RocketControllerBlockEntity blockEntity) {

@@ -1,0 +1,52 @@
+{
+  "credit": "Right half (additional block) - same texture, no screen",
+  "textures": {
+    "0": "roll_mod:block/launch_pad/launchpad_side_large",
+    "3": "roll_mod:block/launch_pad/launchpad_side_small_3",
+    "4": "roll_mod:block/launch_pad/launchpad_side_small_2",
+    "5": "roll_mod:block/launch_pad/launchpad_side_small_1",
+    "6": "roll_mod:block/launch_pad/launch_pad",
+    "particle": "roll_mod:block/launch_pad/launchpad_side_large"
+  },
+  "elements": [
+    {
+      "comment": "top pad - right half",
+      "from": [0, 14, 0],
+      "to":   [16, 16, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 2],  "texture": "#6"},
+        "east":  {"uv": [0, 0, 16, 2],  "texture": "#6"},
+        "south": {"uv": [0, 0, 16, 2],  "texture": "#6"},
+        "west":  {"uv": [0, 0, 16, 2],  "texture": "#6"},
+        "up":    {"uv": [0, 0, 16, 16], "texture": "#6"},
+        "down":  {"uv": [0, 0, 16, 16], "texture": "#6"}
+      }
+    },
+    {
+      "comment": "bottom pad - right half",
+      "from": [0, 0, 0],
+      "to":   [16, 2, 16],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 2],  "texture": "#6"},
+        "east":  {"uv": [0, 0, 16, 2],  "texture": "#6"},
+        "south": {"uv": [0, 0, 16, 2],  "texture": "#6"},
+        "west":  {"uv": [0, 0, 16, 2],  "texture": "#6"},
+        "up":    {"uv": [0, 0, 16, 16], "texture": "#6"},
+        "down":  {"uv": [0, 0, 16, 16], "texture": "#6"}
+      }
+    },
+    {
+      "comment": "main body - right half",
+      "from": [0, 2, 0],
+      "to":   [16, 14, 16],
+      "faces": {
+        "north": {"uv": [0, 2, 16, 14], "texture": "#0"},
+        "east":  {"uv": [0, 2, 16, 14], "texture": "#4"},
+        "south": {"uv": [0, 2, 16, 14], "texture": "#0"},
+        "west":  {"uv": [0, 2, 16, 14], "texture": "#3"},
+        "up":    {"uv": [0, 0, 16, 16], "texture": "#6"},
+        "down":  {"uv": [0, 0, 16, 16], "texture": "#6"}
+      }
+    }
+  ]
+}

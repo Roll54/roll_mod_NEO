@@ -1,6 +1,10 @@
 package com.roll_54.roll_mod;
 
 import com.roll_54.roll_mod.blocks.entity.render.PedestalBlockEntityRenderer;
+import com.roll_54.roll_mod.blocks.entity.render.RocketControllerBlockEntityRenderer;
+import com.roll_54.roll_mod.blocks.entity.render.model.rocket.normal.NormalRocketModel;
+import com.roll_54.roll_mod.blocks.entity.render.model.rocket.small.SmallRocketModel;
+import com.roll_54.roll_mod.blocks.entity.render.model.rocket.tiny.TinyRocketModel;
 import com.roll_54.roll_mod.data.RMMAttachment;
 import com.roll_54.roll_mod.data.RMMComponents;
 import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
@@ -80,6 +84,7 @@ public final class RollMod {
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LEDOK_PLUSH.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LORP_OOO_PLUSH.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.YAN_PLUSH.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.ROCKET_CONTROLLER_BLOCK.get(), RenderType.cutout());
        // ItemBlockRenderTypes.setRenderLayer(BlockRegistry.RESEARCH_WORKBENCH.get(), renderType -> renderType == RenderType.cutout());
 
         RMMItemProperties.addCustomProperties();
@@ -92,6 +97,14 @@ public final class RollMod {
         @SubscribeEvent
         public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(BlockEntites.PEDESTAL_BE.get(), PedestalBlockEntityRenderer::new);
+            event.registerBlockEntityRenderer(BlockEntites.ROCKET_CONTROLLER_BE.get(), RocketControllerBlockEntityRenderer::new);
+        }
+
+        @SubscribeEvent
+        public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
+            event.registerLayerDefinition(TinyRocketModel.LAYER_LOCATION,   TinyRocketModel::createBodyLayer);
+            event.registerLayerDefinition(SmallRocketModel.LAYER_LOCATION,  SmallRocketModel::createBodyLayer);
+            event.registerLayerDefinition(NormalRocketModel.LAYER_LOCATION, NormalRocketModel::createBodyLayer);
         }
 
         @SubscribeEvent

@@ -1118,5 +1118,16 @@
 
   "death.attack.sulfur_damage": "%s задихнувся від сірчаних випарів",
   "block.roll_mod.research_workbench": "Дослідницький верстак",
-  "item.roll_mod.blueprint_fire_resistance": "Схема: Вогнестійкість"
+  "item.roll_mod.blueprint_fire_resistance": "Схема: Вогнестійкість",
+
+  "block.roll_mod.rocket_controller": "Пусковий майданчик",
+
+  "gui.roll_mod.rocket.flight_button": "Зліт",
+  "gui.roll_mod.rocket.no_rocket": "Ракета відсутня!",
+  "gui.roll_mod.rocket.no_cartridge": "Вставте картридж!",
+  "gui.roll_mod.rocket.no_fuel": "Паливо відсутнє!",
+  "gui.roll_mod.rocket.not_enough_fuel": "Недостатньо палива! Потрібно %s, є %s.",
+  "gui.roll_mod.rocket.tier_too_low": "Рівень ракети занадто низький для цього картриджа!",
+  "gui.roll_mod.rocket.cartridge_requires": "Картридж вимагає: Рівень %s",
+  "gui.roll_mod.rocket.your_rocket_tier": "Ваша ракета: Рівень %s"
 }

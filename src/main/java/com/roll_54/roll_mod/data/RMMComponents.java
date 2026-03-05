@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.data;
 
 import com.mojang.serialization.Codec;
+import com.roll_54.roll_mod.modItems.spaceModule.CartridgeData;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -35,6 +36,11 @@ public class RMMComponents {
     public static final Supplier<DataComponentType<Integer>> REGEN_TIMER;
     public static final Supplier<DataComponentType<String>> REGEN_TEXTURE_PATH;
 
+    // Rocket cartridge — stores full cartridge data (dimension, name, fuel amount)
+    public static final Supplier<DataComponentType<CartridgeData>> CARTRIDGE_DATA;
+    // Rocket item — stores the tier
+    public static final Supplier<DataComponentType<Integer>> ROCKET_TIER;
+
     private static <D> DeferredHolder<DataComponentType<?>, DataComponentType<D>> create(String name, Codec<D> codec, StreamCodec<? super RegistryFriendlyByteBuf, D> streamCodec) {
         return COMPONENTS.registerComponentType(name, (b) -> b.persistent(codec).networkSynchronized(streamCodec));
     }
@@ -62,6 +68,11 @@ public class RMMComponents {
         // RegenBlock components
         REGEN_TIMER = create("regen_timer", Codec.INT, ByteBufCodecs.INT);
         REGEN_TEXTURE_PATH = create("regen_texture_path", Codec.STRING, ByteBufCodecs.stringUtf8(32767));
+
+        // Rocket cartridge data
+        CARTRIDGE_DATA = create("cartridge_data", CartridgeData.CODEC, CartridgeData.STREAM_CODEC);
+        // Rocket tier
+        ROCKET_TIER = create("rocket_tier", Codec.INT, ByteBufCodecs.INT);
     }
 
     public static void init(IEventBus bus) {
