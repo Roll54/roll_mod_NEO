@@ -7,7 +7,7 @@ import com.roll_54.roll_mod.blocks.entity.render.model.rocket.small.SmallRocketM
 import com.roll_54.roll_mod.blocks.entity.render.model.rocket.tiny.TinyRocketModel;
 import com.roll_54.roll_mod.data.RMMAttachment;
 import com.roll_54.roll_mod.data.RMMComponents;
-import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
+import com.roll_54.roll_mod.items.armor.ModArmorMaterials;
 import com.roll_54.roll_mod.init.*;
 import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
 import com.roll_54.roll_mod.screen.screen.GrowthChamberScreen;

@@ -1,6 +1,0 @@
-{
-  "type": "neoforge:add_features",
-  "biomes": "minecraft:soul_sand_valley",
-  "features": "roll_mod:sulfur_berry_block_placed",
-  "step": "vegetal_decoration"
-}

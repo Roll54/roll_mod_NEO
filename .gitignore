@@ -119,4 +119,5 @@ runs/
 !gradle-wrapper.jar
 /lang_out/
 /src/generated/resources/.cache/
-/src/generated/resources/.cache/
+src/generated/resources/
+

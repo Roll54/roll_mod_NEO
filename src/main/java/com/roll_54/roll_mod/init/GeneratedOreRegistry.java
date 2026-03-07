@@ -1,9 +1,9 @@
 package com.roll_54.roll_mod.init;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.data.datagen.py.OreDefinition;
-import com.roll_54.roll_mod.data.datagen.py.OreDefinitions;
-import com.roll_54.roll_mod.data.datagen.py.PyTextureTemplates.BlockSubLayer;
+import com.roll_54.roll_mod.data.datagen.ore.OreDefinition;
+import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;
+import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;

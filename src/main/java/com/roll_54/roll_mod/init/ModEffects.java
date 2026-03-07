@@ -1,8 +1,8 @@
 package com.roll_54.roll_mod.init;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.mobEffect.SulfurPoisoningEffect;
-import com.roll_54.roll_mod.mobEffect.SulfurResistanceEffect;
+import com.roll_54.roll_mod.effect.SulfurPoisoningEffect;
+import com.roll_54.roll_mod.effect.SulfurResistanceEffect;
 import net.minecraft.world.effect.MobEffect;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;

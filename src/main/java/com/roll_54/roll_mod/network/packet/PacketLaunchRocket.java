@@ -3,7 +3,7 @@ package com.roll_54.roll_mod.network.packet;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.data.RMMComponents;
 import com.roll_54.roll_mod.init.TagRegistry;
-import com.roll_54.roll_mod.modItems.spaceModule.CartridgeData;
+import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
 import com.roll_54.roll_mod.screen.menu.RocketControllerMenu;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;

@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.data;
 
 import com.mojang.serialization.Codec;
-import com.roll_54.roll_mod.modItems.spaceModule.CartridgeData;
+import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;

@@ -1,13 +1,12 @@
 package com.roll_54.roll_mod.init;
 
-import com.roll_54.roll_mod.data.RMMComponents;
-import com.roll_54.roll_mod.modArmor.HazmatBootsItem;
-import com.roll_54.roll_mod.modArmor.ModArmorMaterials;
-import com.roll_54.roll_mod.modItems.*;
+import com.roll_54.roll_mod.items.armor.HazmatBootsItem;
+import com.roll_54.roll_mod.items.armor.ModArmorMaterials;
+import com.roll_54.roll_mod.items.*;
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.modItems.electricItems.*;
-import com.roll_54.roll_mod.modItems.spaceModule.DimensionCartridgeCItem;
-import com.roll_54.roll_mod.modItems.spaceModule.RocketItem;
+import com.roll_54.roll_mod.items.electricItems.*;
+import com.roll_54.roll_mod.items.spaceModule.DimensionCartridgeCItem;
+import com.roll_54.roll_mod.items.spaceModule.RocketItem;
 import com.roll_54.roll_mod.util.TooltipOptions;
 import com.roll_54.roll_mod.util.TooltipManager;
 import net.minecraft.core.Holder;
