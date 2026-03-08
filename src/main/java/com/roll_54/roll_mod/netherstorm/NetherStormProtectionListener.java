@@ -2,7 +2,7 @@ package com.roll_54.roll_mod.netherstorm;
 
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.init.ModEffects;
+import com.roll_54.roll_mod.registry.ModEffects;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;

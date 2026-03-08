@@ -11,8 +11,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
 import static com.roll_54.roll_mod.blocks.entity.ResearchWorkbenchBlockEntity.*;
-import static com.roll_54.roll_mod.init.BlockRegistry.RESEARCH_WORKBENCH;
-import static com.roll_54.roll_mod.init.MenuTypes.RESEARCH_WORKBENCH_MENU;
+import static com.roll_54.roll_mod.registry.BlockRegistry.RESEARCH_WORKBENCH;
+import static com.roll_54.roll_mod.registry.MenuTypes.RESEARCH_WORKBENCH_MENU;
 
 public class ResearchWorkbenchMenu extends AbstractContainerMenu {
 

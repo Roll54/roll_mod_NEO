@@ -10,8 +10,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
-import static com.roll_54.roll_mod.init.BlockRegistry.GROWTH_CHAMBER;
-import static com.roll_54.roll_mod.init.MenuTypes.GROWTH_CHAMBER_MENU;
+import static com.roll_54.roll_mod.registry.BlockRegistry.GROWTH_CHAMBER;
+import static com.roll_54.roll_mod.registry.MenuTypes.GROWTH_CHAMBER_MENU;
 
 public class GrowthChamberMenu  extends AbstractContainerMenu {
     public final GrowthChamberBlockEntity blockEntity;

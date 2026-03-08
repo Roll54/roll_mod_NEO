@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.data.datagen;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.init.ItemRegistry;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;

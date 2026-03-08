@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.data.datagen.ore;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.init.GeneratedOreRegistry;
+import com.roll_54.roll_mod.registry.GeneratedOreRegistry;
 import net.minecraft.data.PackOutput;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -16,7 +16,7 @@ public class OreBlockStateProvider extends BlockStateProvider {
     protected void registerStatesAndModels() {
         for (OreDefinition def : OreDefinitions.ALL) {
             for (var base : def.bases()) {
-                String blockId = base.id() + "_" + def.oreName();
+                String blockId = base.id() + "_" + def.id();
                 GeneratedOreRegistry.BLOCKS.getEntries().stream()
                         .filter(holder -> holder.getId().getPath().equals(blockId))
                         .findFirst()

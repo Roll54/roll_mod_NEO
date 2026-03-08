@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.screen.menu;
 
 import com.roll_54.roll_mod.blocks.entity.PedestalBlockEntity;
-import com.roll_54.roll_mod.init.BlockRegistry;
+import com.roll_54.roll_mod.registry.BlockRegistry;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -13,7 +13,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
-import static com.roll_54.roll_mod.init.MenuTypes.PEDESTAL_MENU;
+import static com.roll_54.roll_mod.registry.MenuTypes.PEDESTAL_MENU;
 
 /// вся логіка інтерфейсу тута
 public class PedestalMenu extends AbstractContainerMenu {

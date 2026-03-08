@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.data.datagen;
 
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinition;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;
+import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -15,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.CompletableFuture;
 
 import static com.roll_54.roll_mod.RollMod.MODID;
-import static com.roll_54.roll_mod.init.TagRegistry.*;
+import static com.roll_54.roll_mod.registry.TagRegistry.*;
 
 
 public class RollItemTagProvider extends ItemTagsProvider {
@@ -47,7 +48,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
 
         for (OreDefinition definition : OreDefinitions.ALL) {
 
-            String material = definition.oreName();
+            String material = definition.id();
 
             ResourceLocation rawItem = ResourceLocation.fromNamespaceAndPath(MODID, "raw_" + material);
             ResourceLocation crushedItem = ResourceLocation.fromNamespaceAndPath(MODID, "crushed_" + material + "_ore");
@@ -56,6 +57,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
             ResourceLocation dustItem = ResourceLocation.fromNamespaceAndPath(MODID, material + "_dust");
             ResourceLocation dustPureItem = ResourceLocation.fromNamespaceAndPath(MODID, "pure_" + material + "_dust");
             ResourceLocation dustImpureItem = ResourceLocation.fromNamespaceAndPath(MODID, "impure_" + material + "_dust");
+
 
             raw.addOptional(rawItem);
             crushed.addOptional(crushedItem);
@@ -79,6 +81,26 @@ public class RollItemTagProvider extends ItemTagsProvider {
             materialAppender.addOptional(dustItem);
             materialAppender.addOptional(dustPureItem);
             materialAppender.addOptional(dustImpureItem);
+
+            TagKey<Item> craftMaterial = TagKey.create(
+                    Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath("c", "ores/" + material)
+            );
+
+            var craftMaterialAppender = tag(craftMaterial);
+
+            craftMaterialAppender.addOptional(rawItem);
+
+            for (OreTextureTemplates.BlockSubLayer layer : OreTextureTemplates.BlockSubLayer.values()) {
+
+                ResourceLocation oreBlockItem = ResourceLocation.fromNamespaceAndPath(
+                        MODID,
+                        layer.id() + "_" + material + "_ore"
+                );
+
+                craftMaterialAppender.addOptional(oreBlockItem);
+            }
+
         }
     }
 

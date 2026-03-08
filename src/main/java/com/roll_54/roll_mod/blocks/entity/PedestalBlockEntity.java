@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.blocks.entity;
 
-import com.roll_54.roll_mod.init.BlockEntites;
+import com.roll_54.roll_mod.registry.BlockEntites;
 import com.roll_54.roll_mod.screen.menu.PedestalMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;

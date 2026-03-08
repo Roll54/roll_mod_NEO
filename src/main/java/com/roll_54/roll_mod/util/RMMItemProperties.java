@@ -2,7 +2,7 @@ package com.roll_54.roll_mod.util;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.data.RMMComponents;
-import com.roll_54.roll_mod.init.ItemRegistry;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import com.roll_54.roll_mod.items.electricItems.EnergyDrillItem;
 import com.roll_54.roll_mod.items.electricItems.EnergySwordItem;
 import net.minecraft.client.renderer.item.ItemProperties;

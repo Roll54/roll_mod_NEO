@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.blocks.entity;
 
-import com.roll_54.roll_mod.init.BlockEntites;
-import com.roll_54.roll_mod.init.RecipeRegister;
+import com.roll_54.roll_mod.registry.BlockEntites;
+import com.roll_54.roll_mod.registry.RecipeRegister;
 import com.roll_54.roll_mod.recipe.GrowthChamberRecipe;
 import com.roll_54.roll_mod.recipe.GrowthChamberRecipeInput;
 import com.roll_54.roll_mod.screen.menu.GrowthChamberMenu;

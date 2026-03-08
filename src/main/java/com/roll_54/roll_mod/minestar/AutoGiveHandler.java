@@ -2,7 +2,7 @@ package com.roll_54.roll_mod.minestar;
 
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.init.ModConfigs;
+import com.roll_54.roll_mod.registry.ModConfigs;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
@@ -18,7 +18,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import java.util.List;
 
 import static com.roll_54.roll_mod.data.RMMAttachment.AUTO_GIVE;
-import static com.roll_54.roll_mod.init.ItemRegistry.ERROR_ITEM;
+import static com.roll_54.roll_mod.registry.ItemRegistry.ERROR_ITEM;
 
 @EventBusSubscriber(modid = RollMod.MODID)
 public class AutoGiveHandler {

@@ -3,7 +3,7 @@ package com.roll_54.roll_mod.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.roll_54.roll_mod.init.RecipeRegister;
+import com.roll_54.roll_mod.registry.RecipeRegister;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;

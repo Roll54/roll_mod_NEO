@@ -32,7 +32,7 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-import static com.roll_54.roll_mod.init.BlockEntites.RESEARCH_WORKBENCH_BE;
+import static com.roll_54.roll_mod.registry.BlockEntites.RESEARCH_WORKBENCH_BE;
 
 public class ResearchWorkbenchBlock extends BaseEntityBlock {
 

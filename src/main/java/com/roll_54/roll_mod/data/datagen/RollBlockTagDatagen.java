@@ -4,7 +4,7 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinition;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
-import com.roll_54.roll_mod.init.GeneratedOreRegistry;
+import com.roll_54.roll_mod.registry.GeneratedOreRegistry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
 
-import static com.roll_54.roll_mod.init.TagRegistry.*;
+import static com.roll_54.roll_mod.registry.TagRegistry.*;
 
 public class RollBlockTagDatagen extends BlockTagsProvider {
     public RollBlockTagDatagen(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
@@ -32,7 +32,7 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
         for (OreDefinition def : OreDefinitions.ALL) {
             for (BlockSubLayer base : def.bases()) {
 
-                String blockId = base.id() + "_" + def.oreName();
+                String blockId = base.id() + "_" + def.id();
 
                 GeneratedOreRegistry.BLOCKS.getEntries().stream()
                         .filter(holder -> holder.getId().getPath().equals(blockId))

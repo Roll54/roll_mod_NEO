@@ -4,7 +4,7 @@ import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 
-import static com.roll_54.roll_mod.init.DamageTypes.sulfurDamageType;
+import static com.roll_54.roll_mod.registry.DamageTypes.sulfurDamageType;
 
 public class SulfurPoisoningEffect extends MobEffect {
 

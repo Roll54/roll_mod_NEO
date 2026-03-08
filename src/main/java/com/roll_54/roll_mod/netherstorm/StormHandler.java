@@ -1,9 +1,9 @@
 package com.roll_54.roll_mod.netherstorm;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.init.BlockRegistry;
-import com.roll_54.roll_mod.init.ModConfigs;
-import com.roll_54.roll_mod.init.ModEffects;
+import com.roll_54.roll_mod.registry.BlockRegistry;
+import com.roll_54.roll_mod.registry.ModConfigs;
+import com.roll_54.roll_mod.registry.ModEffects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;

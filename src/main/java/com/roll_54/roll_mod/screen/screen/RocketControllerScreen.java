@@ -3,7 +3,7 @@ package com.roll_54.roll_mod.screen.screen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.data.RMMComponents;
-import com.roll_54.roll_mod.init.TagRegistry;
+import com.roll_54.roll_mod.registry.TagRegistry;
 import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
 import com.roll_54.roll_mod.network.packet.PacketLaunchRocket;
 import com.roll_54.roll_mod.screen.menu.RocketControllerMenu;

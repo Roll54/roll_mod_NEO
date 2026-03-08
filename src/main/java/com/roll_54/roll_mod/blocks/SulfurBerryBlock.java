@@ -1,10 +1,10 @@
 package com.roll_54.roll_mod.blocks;
 
 import com.mojang.serialization.MapCodec;
-import com.roll_54.roll_mod.init.ModConfigs;
+import com.roll_54.roll_mod.registry.ModConfigs;
 import com.roll_54.roll_mod.netherstorm.StormHandler;
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.init.ItemRegistry;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;

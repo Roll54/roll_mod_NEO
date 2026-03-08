@@ -18,7 +18,7 @@ import net.minecraft.world.level.levelgen.feature.stateproviders.RandomizedIntSt
 import java.util.List;
 
 import static com.roll_54.roll_mod.RollMod.MODID;
-import static com.roll_54.roll_mod.init.BlockRegistry.SULFUR_BERRY_BLOCK;
+import static com.roll_54.roll_mod.registry.BlockRegistry.SULFUR_BERRY_BLOCK;
 
 public class RMMConfiguredFeatures {
     // CF -> PF -> BM

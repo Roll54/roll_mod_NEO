@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.blocks;
 
 import com.mojang.serialization.MapCodec;
-import com.roll_54.roll_mod.init.ItemRegistry;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ItemLike;

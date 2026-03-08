@@ -27,7 +27,7 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-import static com.roll_54.roll_mod.init.BlockEntites.ROCKET_CONTROLLER_BE;
+import static com.roll_54.roll_mod.registry.BlockEntites.ROCKET_CONTROLLER_BE;
 
 public class RocketControllerBlock extends BaseEntityBlock {
     public static final MapCodec<RocketControllerBlock> CODEC = simpleCodec(RocketControllerBlock::new);

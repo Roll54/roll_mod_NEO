@@ -7,7 +7,7 @@ import com.roll_54.roll_mod.blocks.entity.RocketControllerBlockEntity;
 import com.roll_54.roll_mod.blocks.entity.render.model.rocket.normal.NormalRocketModel;
 import com.roll_54.roll_mod.blocks.entity.render.model.rocket.small.SmallRocketModel;
 import com.roll_54.roll_mod.blocks.entity.render.model.rocket.tiny.TinyRocketModel;
-import com.roll_54.roll_mod.init.TagRegistry;
+import com.roll_54.roll_mod.registry.TagRegistry;
 import com.roll_54.roll_mod.items.spaceModule.RocketItem;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.LightTexture;

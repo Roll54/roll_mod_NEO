@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.Nullable;
 
-import static com.roll_54.roll_mod.init.BlockEntites.GROWTH_CHAMBER_BE;
+import static com.roll_54.roll_mod.registry.BlockEntites.GROWTH_CHAMBER_BE;
 
 public class GrowthChamberBlock extends BaseEntityBlock {
     public static final MapCodec<GrowthChamberBlock> CODEC = simpleCodec(GrowthChamberBlock::new);

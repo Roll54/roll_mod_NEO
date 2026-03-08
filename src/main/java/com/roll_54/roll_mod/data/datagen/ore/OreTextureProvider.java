@@ -68,7 +68,7 @@ public class OreTextureProvider implements DataProvider {
     }
 
     private void generateItems(CachedOutput cache, OreDefinition def, Path itemTexOut) throws IOException {
-        String ore = def.oreName();
+        String ore = def.id();
         createItemTexture(cache, "raw_" + ore, def.itemBase(), def.hexColor(), itemTexOut);
         createItemTexture(cache, ore + "_dust", ItemBase.DUST, def.hexColor(), itemTexOut);
         createCrushed(cache, def, itemTexOut);
@@ -77,13 +77,13 @@ public class OreTextureProvider implements DataProvider {
     private void generateBlocks(CachedOutput cache, OreDefinition def, Path blockTexOut) throws IOException {
         BlockOverlay overlay = def.overlay();
         for (BlockSubLayer base : def.bases()) {
-            String blockId = base.id() + "_" + def.oreName();
-            createBlockTexture(cache, base, overlay, def.oreName(), def.hexColor(), blockTexOut, blockId);
+            String blockId = base.id() + "_" + def.id();
+            createBlockTexture(cache, base, overlay, def.id(), def.hexColor(), blockTexOut, blockId);
         }
     }
 
     private void createCrushed(CachedOutput cache, OreDefinition def, Path itemTexOut) throws IOException {
-        String ore = def.oreName();
+        String ore = def.id();
         String tint = def.hexColor();
 
         createItemMultilayerTexture(cache, "crushed_" + ore + "_ore",

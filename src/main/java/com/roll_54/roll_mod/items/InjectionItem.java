@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.items;
 
-import com.roll_54.roll_mod.init.ItemRegistry;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;

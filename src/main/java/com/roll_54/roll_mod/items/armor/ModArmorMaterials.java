@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.items.armor;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.init.ItemRegistry;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;

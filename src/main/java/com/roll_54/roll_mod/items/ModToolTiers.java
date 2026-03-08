@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.items;
 
 import com.roll_54.roll_mod.data.ModTags;
-import com.roll_54.roll_mod.init.ItemRegistry;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.world.item.Tier;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.neoforged.neoforge.common.SimpleTier;

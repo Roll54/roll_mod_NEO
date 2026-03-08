@@ -1,8 +1,8 @@
 package com.roll_54.roll_mod.data.datagen.ore;
 
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
-import com.roll_54.roll_mod.init.GeneratedOreRegistry;
-import com.roll_54.roll_mod.init.ItemRegistry;
+import com.roll_54.roll_mod.registry.GeneratedOreRegistry;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
@@ -52,12 +52,12 @@ public class OreLootTableProvider extends LootTableProvider {
 
             for (OreDefinition def : OreDefinitions.ALL) {
                 // Determine Raw Item
-                String rawItemName = "raw_" + def.oreName();
+                String rawItemName = "raw_" + def.id();
                 Item rawItem = items.get(rawItemName);
 
                 // For each base block variant
                 for (BlockSubLayer base : def.bases()) {
-                    String blockName = base.id() + "_" + def.oreName();
+                    String blockName = base.id() + "_" + def.id();
                     Block block = blocks.get(blockName);
 
                     // Determine Base Dust Item (stone_dust, etc.)

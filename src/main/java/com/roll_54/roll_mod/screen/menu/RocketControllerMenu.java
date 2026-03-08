@@ -1,8 +1,8 @@
 package com.roll_54.roll_mod.screen.menu;
 
-import com.roll_54.roll_mod.init.BlockRegistry;
-import com.roll_54.roll_mod.init.MenuTypes;
-import com.roll_54.roll_mod.init.TagRegistry;
+import com.roll_54.roll_mod.registry.BlockRegistry;
+import com.roll_54.roll_mod.registry.MenuTypes;
+import com.roll_54.roll_mod.registry.TagRegistry;
 import com.roll_54.roll_mod.blocks.entity.RocketControllerBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;

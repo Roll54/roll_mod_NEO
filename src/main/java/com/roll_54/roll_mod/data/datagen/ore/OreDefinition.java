@@ -7,17 +7,19 @@ import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.ItemBase;
 import java.util.List;
 
 public record OreDefinition(
-        String oreName,
+        String id,
         String hexColor,
         List<BlockSubLayer> bases,
         BlockOverlay overlay,
         ItemBase itemBase,
-        Integer minExperience,
-        Integer maxExperience
+        int minExperience,
+        int maxExperience,
+        String enUsName,
+        String ukUaName
 ) {
     public OreDefinition {
-        if (oreName == null || oreName.isBlank()) {
-            throw new IllegalArgumentException("oreName is required");
+        if (id == null || id.isBlank()) {
+            throw new IllegalArgumentException("id is required");
         }
         if (hexColor == null || hexColor.isBlank()) {
             throw new IllegalArgumentException("hexColor is required");
@@ -30,6 +32,12 @@ public record OreDefinition(
         }
         if (itemBase == null) {
             throw new IllegalArgumentException("itemBase is required");
+        }
+        if (enUsName == null || enUsName.isBlank()) {
+            throw new IllegalArgumentException("enUsName is required");
+        }
+        if (ukUaName == null || ukUaName.isBlank()) {
+            throw new IllegalArgumentException("ukUaName is required");
         }
     }
 }

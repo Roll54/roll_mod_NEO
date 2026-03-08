@@ -40,7 +40,11 @@ public class RollDataGenerators {
 
         generator.addProvider(event.includeServer(), new RollBlockTagDatagen(packOutput, lookupProvider, existingFileHelper));
 
-        generator.addProvider(event.includeServer(), new RollItemTagProvider(packOutput, lookupProvider, existingFileHelper ));
+        generator.addProvider(event.includeServer(), new RollItemTagProvider(packOutput, lookupProvider, existingFileHelper));
+
+        // Language providers for ores
+        generator.addProvider(event.includeClient(), new OreLangProvider(packOutput, RollMod.MODID, "en_us", existingFileHelper));
+        generator.addProvider(event.includeClient(), new OreLangProvider(packOutput, RollMod.MODID, "uk_ua", existingFileHelper));
 
     }
 }
