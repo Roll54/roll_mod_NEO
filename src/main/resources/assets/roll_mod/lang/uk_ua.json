@@ -316,6 +316,7 @@
   "item.roll_mod.prospector_pickaxe": "Кайло геолога",
   "message.roll_mod.prospector.found": "⛏ Знайдено руду: %s",
   "message.roll_mod.prospector.none": "❌ Руд не знайдено",
+  "message.roll_mod.no_safe_landing": "❌ Безпечне місце для приземлення не знайдено в радіусі 20 блоків! Телепортацію скасовано.",
 
   "item.roll_mod.injection.description": "Ін'єкція моментального використання, яка надає ефекти",
 

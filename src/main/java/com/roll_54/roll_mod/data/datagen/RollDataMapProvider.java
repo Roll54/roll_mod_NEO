@@ -19,5 +19,8 @@ public class RollDataMapProvider extends DataMapProvider {
 
         this.builder(NeoForgeDataMaps.COMPOSTABLES)
                 .add(ResourceLocation.parse("silentgear:netherwood_leaves"), new Compostable(0.25f), false);
+//        this.builder(NeoForgeDataMaps.FURNACE_FUELS)
+//                .
+
     }
 }

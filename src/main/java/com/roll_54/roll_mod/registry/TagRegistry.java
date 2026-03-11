@@ -19,6 +19,6 @@ public class TagRegistry {
     public static final TagKey<Item> DUST_IMPURE_ORE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "dust_impure_ore"));
     public static final TagKey<Item> DUST_ORE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "dust_ore"));
     public static final TagKey<Item> RAW_ORE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "raw_ore"));
-
+    public static final TagKey<Item> C_DUSTSTAG = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "dusts"));
 
 }

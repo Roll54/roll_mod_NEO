@@ -45,6 +45,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
         var dust = tag(DUST_ORE);
         var dustPure = tag(DUST_PURE_ORE);
         var dustImpure = tag(DUST_IMPURE_ORE);
+        var cDusts = tag(C_DUSTSTAG);
 
         for (OreDefinition definition : OreDefinitions.ALL) {
 
@@ -66,6 +67,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
             dust.addOptional(dustItem);
             dustPure.addOptional(dustPureItem);
             dustImpure.addOptional(dustImpureItem);
+            cDusts.addOptional(dustItem);
 
             TagKey<Item> materialTag = TagKey.create(
                     Registries.ITEM,
@@ -101,8 +103,18 @@ public class RollItemTagProvider extends ItemTagsProvider {
                 craftMaterialAppender.addOptional(oreBlockItem);
             }
 
+            TagKey<Item> dustMaterial = TagKey.create(
+                    Registries.ITEM,
+                    ResourceLocation.fromNamespaceAndPath("c", "dusts/" + material)
+            );
+
+            var dustMaterialAppender = tag(dustMaterial);
+
+            dustMaterialAppender.addOptional(dustItem);
+
         }
+
+
     }
 
 }
-

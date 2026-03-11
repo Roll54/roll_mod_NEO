@@ -382,6 +382,53 @@ public class ItemRegistry {
     );
 
 
+    // New research blueprints
+    public static final DeferredHolder<Item, Item> RESEARCH_ROCKET_CONTROLLER = registerTooltip(
+            "research_rocket_controller",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+    public static final DeferredHolder<Item, Item> RESEARCH_ROCKET_T2 = registerTooltip(
+            "research_rocket_t2",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+    public static final DeferredHolder<Item, Item> RESEARCH_ROCKET_T3 = registerTooltip(
+            "research_rocket_t3",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+    public static final DeferredHolder<Item, Item> RESEARCH_LITHOGRAPHY = registerTooltip(
+            "research_lithography",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+    public static final DeferredHolder<Item, Item> RESEARCH_HIGH_EFFICIENCY_STEAM_TURBINE = registerTooltip(
+            "research_high_efficiency_steam_turbine",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+    public static final DeferredHolder<Item, Item> RESEARCH_BETTER_CIRCUITS_LV = registerTooltip(
+            "research_better_circuits_lv",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+    public static final DeferredHolder<Item, Item> RESEARCH_BETTER_CIRCUITS_MV = registerTooltip(
+            "research_better_circuits_mv",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+    public static final DeferredHolder<Item, Item> RESEARCH_BETTER_CIRCUITS_HV = registerTooltip(
+            "research_better_circuits_hv",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+    public static final DeferredHolder<Item, Item> RESEARCH_BETTER_CIRCUITS_EV = registerTooltip(
+            "research_better_circuits_ev",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+    public static final DeferredHolder<Item, Item> RESEARCH_BETTER_CIRCUITS_IV = registerTooltip(
+            "research_better_circuits_iv",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+    public static final DeferredHolder<Item, Item> RESEARCH_ENERGY_CRYSTALS = registerTooltip(
+            "research_energy_crystals",
+            new TooltipOptions(2, LIGHT_PURPLE, WHITE, false)
+    );
+
+
     // Броня (заготовки, стак по 1, з тултіпом)
     public static final DeferredHolder<Item, Item> GRAVIK_CASING = ITEMS.register("gravik_casing", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_QUANTUM_HELMET = registerTooltip(

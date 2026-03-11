@@ -332,6 +332,7 @@
   "item.roll_mod.meteorite_metal_prospector_pickaxe": "Meteorite Metal Prospector Pickaxe",
   "message.roll_mod.prospector.found": "⛏ Found ore: %s",
   "message.roll_mod.prospector.none": "❌ No ores found",
+  "message.roll_mod.no_safe_landing": "❌ No safe landing spot found within 20 blocks! Teleportation cancelled.",
 
   "item.roll_mod.meteorite_metal_nano_saber": "Meteorite Metal Saber",
   "tooltip.roll_mod.meteorite_metal_nano_saber": "Unique sword out of meteorite metal",
@@ -442,5 +443,53 @@
   "item.roll_mod.moon_stone_dust": "Moon Stone Dust",
   "item.roll_mod.mars_stone_dust": "Mars Stone Dust",
   "item.roll_mod.venus_stone_dust": "Venus Stone Dust",
-  "item.roll_mod.mercury_stone_dust": "Mercury Stone Dust"
+  "item.roll_mod.mercury_stone_dust": "Mercury Stone Dust",
+
+  "item.roll_mod.fuel_canister": "Empty Fuel Canister",
+
+  "item.roll_mod.research_rocket_controller": "Research: Rocket Controller",
+  "item.roll_mod.research_rocket_t2": "Research: Tier 2 Rocket",
+  "item.roll_mod.research_rocket_t3": "Research: Tier 3 Rocket",
+  "item.roll_mod.research_lithography": "Research: Lithography",
+  "item.roll_mod.research_high_efficiency_steam_turbine": "Research: High-Efficiency Steam Turbine",
+  "item.roll_mod.research_better_circuits_lv": "Research: Better Circuits (LV)",
+  "item.roll_mod.research_better_circuits_mv": "Research: Better Circuits (MV)",
+  "item.roll_mod.research_better_circuits_hv": "Research: Better Circuits (HV)",
+  "item.roll_mod.research_better_circuits_ev": "Research: Better Circuits (EV)",
+  "item.roll_mod.research_better_circuits_iv": "Research: Better Circuits (IV)",
+  "item.roll_mod.research_energy_crystals": "Research: Energy Crystals",
+
+
+  "loreitem.roll_mod.research_rocket_controller.tooltip_line1": "Blueprint for building the Rocket Controller.",
+  "loreitem.roll_mod.research_rocket_controller.tooltip_line2": "Required to manage and launch rockets from your base.",
+
+  "loreitem.roll_mod.research_rocket_t2.tooltip_line1": "Unlocks construction of Tier 2 rockets.",
+  "loreitem.roll_mod.research_rocket_t2.tooltip_line2": "Supports travel to mid-range planetary orbits.",
+
+  "loreitem.roll_mod.research_rocket_t3.tooltip_line1": "Unlocks construction of Tier 3 rockets.",
+  "loreitem.roll_mod.research_rocket_t3.tooltip_line2": "Designed for the most distant and hostile destinations.",
+
+  "loreitem.roll_mod.research_lithography.tooltip_line1": "Research into precision wafer lithography.",
+  "loreitem.roll_mod.research_lithography.tooltip_line2": "Enables production of advanced integrated circuits.",
+
+  "loreitem.roll_mod.research_high_efficiency_steam_turbine.tooltip_line1": "Improves the efficiency of industrial steam turbines.",
+  "loreitem.roll_mod.research_high_efficiency_steam_turbine.tooltip_line2": "Generates more power without increasing fuel usage.",
+
+  "loreitem.roll_mod.research_better_circuits_lv.tooltip_line1": "Optimizes low-voltage circuit design.",
+  "loreitem.roll_mod.research_better_circuits_lv.tooltip_line2": "Reduces cost and improves performance of LV machines.",
+
+  "loreitem.roll_mod.research_better_circuits_mv.tooltip_line1": "Optimizes medium-voltage circuit design.",
+  "loreitem.roll_mod.research_better_circuits_mv.tooltip_line2": "Essential for scaling up your MV infrastructure.",
+
+  "loreitem.roll_mod.research_better_circuits_hv.tooltip_line1": "Refines high-voltage circuit topologies.",
+  "loreitem.roll_mod.research_better_circuits_hv.tooltip_line2": "Required for stable late-game power distribution.",
+
+  "loreitem.roll_mod.research_better_circuits_ev.tooltip_line1": "Pushes extra‑voltage circuit engineering further.",
+  "loreitem.roll_mod.research_better_circuits_ev.tooltip_line2": "Enables ultra‑high throughput EV machines.",
+
+  "loreitem.roll_mod.research_better_circuits_iv.tooltip_line1": "Frontier research into extreme‑voltage circuits.",
+  "loreitem.roll_mod.research_better_circuits_iv.tooltip_line2": "Needed for the most advanced IV‑tier technology.",
+
+  "loreitem.roll_mod.research_energy_crystals.tooltip_line1": "Studies properties of condensed energy crystal lattices.",
+  "loreitem.roll_mod.research_energy_crystals.tooltip_line2": "Unlocks powerful storage and crystal‑based energy tools."
 }
