@@ -97,7 +97,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
 
                 ResourceLocation oreBlockItem = ResourceLocation.fromNamespaceAndPath(
                         MODID,
-                        layer.id() + "_" + material + "_ore"
+                        layer.id() + "_" + material
                 );
 
                 craftMaterialAppender.addOptional(oreBlockItem);
