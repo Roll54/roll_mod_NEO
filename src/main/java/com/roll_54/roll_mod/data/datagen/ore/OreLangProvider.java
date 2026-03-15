@@ -20,12 +20,6 @@ public class OreLangProvider extends LanguageProvider {
 
             String oreName = isEnglish ? def.enUsName() : def.ukUaName();
 
-            boolean endsWithA = false;
-            if (!isEnglish) {
-                String trimmed = oreName.trim();
-                endsWithA = !trimmed.isEmpty() && trimmed.charAt(trimmed.length() - 1) == 'а';
-            }
-
             String rawSuffix;
             String crushedSuffix;
             String refinedSuffix;
@@ -42,11 +36,11 @@ public class OreLangProvider extends LanguageProvider {
                 dustImpureSuffix = " (Impure Dust)";
             } else {
                 // Ukrainian masculine/feminine variants depending on name ending
-                rawSuffix = endsWithA ? " (Необроблена)" : " (Необроблений)";
-                crushedSuffix = endsWithA ? " (Дроблена)" : " (Дроблений)";
-                refinedSuffix = endsWithA ? " (Рафінована)" : " (Рафінований)";
-                purifiedSuffix = endsWithA ? " (Очищена)" : " (Очищений)";
-                dustImpureSuffix = endsWithA ? " (Неочищена)" : " (Неочищений)";
+                rawSuffix = " (необроблена копалина)";
+                crushedSuffix = " (дроблена копалина)";
+                refinedSuffix = " (рафінована копалина)";
+                purifiedSuffix = " (очищена копалина)";
+                dustImpureSuffix =  " (неочищена копалина)";
             }
 
             add("item.roll_mod.raw_" + def.id(), oreName + rawSuffix);
@@ -71,14 +65,14 @@ public class OreLangProvider extends LanguageProvider {
                 };
 
                 String baseName = switch (base) {
-                    case STONE -> isEnglish ? "Stone" : "Камінь";
-                    case DEEPSLATE -> isEnglish ? "Deepslate" : "Глибосланець";
-                    case NETHERRACK -> isEnglish ? "Netherrack" : "Незерак";
-                    case END -> isEnglish ? "End Stone" : "Ендерняк";
-                    case MOON -> isEnglish ? "Moon Stone" : "Місячний камінь";
-                    case MARS -> isEnglish ? "Mars Stone" : "Марсіанський камінь";
-                    case VENUS -> isEnglish ? "Venus Stone" : "Венеріанський камінь";
-                    case MERCURY -> isEnglish ? "Mercury Stone" : "Меркуріанський камінь";
+                    case STONE -> isEnglish ? "Stone" : "Кам'яна руда";
+                    case DEEPSLATE -> isEnglish ? "Deepslate" : "Глибосланецева руда";
+                    case NETHERRACK -> isEnglish ? "Netherrack" : "Незеракова руда";
+                    case END -> isEnglish ? "End Stone" : "Ендернякова руда";
+                    case MOON -> isEnglish ? "Moon Stone" : "Місячна руда";
+                    case MARS -> isEnglish ? "Mars Stone" : "Марсіанська руда";
+                    case VENUS -> isEnglish ? "Venus Stone" : "Венеріанська руда";
+                    case MERCURY -> isEnglish ? "Mercury Stone" : "Меркуріанська руда";
                 };
 
                 String blockKey = "block.roll_mod." + baseId + "_" + def.id();
