@@ -7,7 +7,6 @@
     "NanoSuitGravichestplateAbilityMixin",
     "ArmorReductionMixin",
     "GraviChestPlateItemMixin",
-    "HudRendererMixin",
     "PhantomSpawnerMixin"
   ],
   "client": [

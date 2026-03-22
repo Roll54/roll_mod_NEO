@@ -75,7 +75,7 @@ public final class OreDefinitions {
             new OreDefinition("olivine", "#89a23c", List.of(BlockSubLayer.END), BlockOverlay.REDSTONE, ItemBase.AMETHYST, 17, 35, "Olivine", "Олівін"),
             new OreDefinition("trona", "#eae2c5", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.QUARTZ, ItemBase.QUARTZ, 11, 23, "Trona", "Трона"), //
             new OreDefinition("bismuth", "#9e61bc", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.BISMUTH, ItemBase.GOLD, 15, 31, "Bismuth", "Бісмут"),
-            new OreDefinition("quartz", "#b9b1a3", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.QUARTZ, ItemBase.QUARTZ, 10, 25, "Quartz", "Кварц"), //треба замінити
+            new OreDefinition("quartz", "#b9b1a3", List.of(BlockSubLayer.NETHERRACK, BlockSubLayer.END), BlockOverlay.QUARTZ, ItemBase.QUARTZ, 10, 25, "Quartz", "Кварц"), //треба замінити
             new OreDefinition("diamond", "#7ce8d9", List.of(BlockSubLayer.DEEPSLATE), BlockOverlay.DIAMOND, ItemBase.DIAMOND, 25, 55, "Diamond", "Алмаз"), //треба замінити
             new OreDefinition("bort", "#5cc8bc", List.of(BlockSubLayer.DEEPSLATE), BlockOverlay.DIAMOND, ItemBase.SALT_CRYSTAL, 20, 45, "Bort", "Борт"), //
             new OreDefinition("cassiterite_sand", "#9e927b", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE), BlockOverlay.TIN, ItemBase.TIN, 11, 22, "Cassiterite Sand", "Каситеритовий пісок"), //

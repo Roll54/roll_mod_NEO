@@ -187,10 +187,10 @@ dependencies {
         }
     }
 
-    implementation "net.swedz:tesseract-api-neoforge:${tesseract_version}"
+    implementation "curse.maven:tesseract-api-neoforge-1067672:7796728"
     implementation "curse.maven:kubejs-238086:7143884"
-    implementation "curse.maven:mi-tweaks-1068413:7024055"
-    implementation "curse.maven:extended-industrialization-1068418:7169246"
+    implementation "curse.maven:mi-tweaks-1068413:7722383"
+    implementation "curse.maven:extended-industrialization-1068418:7722451"
     implementation "curse.maven:crafttweaker-239197:6929483"
     implementation "curse.maven:emi-580555:6420931"
 

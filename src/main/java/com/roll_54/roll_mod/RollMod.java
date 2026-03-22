@@ -9,7 +9,6 @@ import com.roll_54.roll_mod.data.RMMAttachment;
 import com.roll_54.roll_mod.data.RMMComponents;
 import com.roll_54.roll_mod.items.armor.ModArmorMaterials;
 import com.roll_54.roll_mod.registry.*;
-import com.roll_54.roll_mod.mi.MIConditionsBootstrap;
 import com.roll_54.roll_mod.screen.screen.GrowthChamberScreen;
 import com.roll_54.roll_mod.screen.screen.PedestalScreen;
 import com.roll_54.roll_mod.screen.screen.ResearchWorkbenchScreen;
@@ -25,11 +24,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.swedz.tesseract.neoforge.capabilities.CapabilitiesListeners;
-import net.swedz.tesseract.neoforge.compat.mi.TesseractMI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +40,6 @@ public final class RollMod {
 
         IEventBus eventBus = container.getEventBus();
         //need to work with energy
-        TesseractMI.init(MODID);
-        eventBus.addListener(RegisterCapabilitiesEvent.class, (event) -> CapabilitiesListeners.triggerAll(MODID, event));
 
         ItemRegistry.register(eventBus);
         BlockRegistry.register(eventBus);
@@ -71,7 +65,6 @@ public final class RollMod {
     private void onCommonSetup(final FMLCommonSetupEvent event) {
         // Тут можна ініціалізувати інтеграції/дані, якщо потрібно.
         LOGGER.info("[{}] common setup", MODID);
-        MIConditionsBootstrap.init();
 
     }
 
