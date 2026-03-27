@@ -9,7 +9,7 @@ import java.util.List;
 public final class OreDefinitions {
     private OreDefinitions() {}
 
-    public static final List<OreDefinition> ALL = List.of(
+    public static final List<OreDefinition> ORE_DEFINITIONS = List.of(
             new OreDefinition("mica", "#6fb82a", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.COPPER, ItemBase.COPPER, 10, 20, "Mica", "Слюда"),
             new OreDefinition("hematite", "#d1553f", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE, BlockSubLayer.NETHERRACK, BlockSubLayer.MOON), BlockOverlay.REDSTONE, ItemBase.IRON, 12, 25, "Hematite", "Гематит"),
             new OreDefinition("yellow_limonite", "#a38933", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE), BlockOverlay.GOLD, ItemBase.IRON, 10, 22, "Yellow Limonite", "Жовтий лімоніт"),

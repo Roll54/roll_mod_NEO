@@ -25,7 +25,7 @@ public class GeneratedOreRegistry {
             BlockBehaviour.Properties.of().strength(3.0F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.STONE);
 
     public static void register(IEventBus eventBus) {
-        for (OreDefinition def : OreDefinitions.ALL) {
+        for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
             registerOreSet(def);
         }
         BLOCKS.register(eventBus);

@@ -47,7 +47,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
         var dustImpure = tag(DUST_IMPURE_ORE);
         var cDusts = tag(C_DUSTSTAG);
 
-        for (OreDefinition definition : OreDefinitions.ALL) {
+        for (OreDefinition definition : OreDefinitions.ORE_DEFINITIONS) {
 
             String material = definition.id();
 

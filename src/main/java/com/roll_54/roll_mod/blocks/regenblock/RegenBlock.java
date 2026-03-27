@@ -14,14 +14,14 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
  */
 public class RegenBlock extends AbstractRegenBlock {
 
-    public RegenBlock(BlockBehaviour.Properties properties) {
-        super(properties);
+    public RegenBlock(BlockBehaviour.Properties properties, int timerSeconds) {
+        super(properties, timerSeconds);
     }
 
     @Override
-    protected int getTimerSeconds() {
+    public int getTimerSeconds() {
         // Default 20 minutes (1200 seconds)
-        return 1200;
+        return timerSeconds;
     }
 
     @Override

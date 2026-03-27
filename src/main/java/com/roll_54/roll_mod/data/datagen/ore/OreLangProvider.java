@@ -16,7 +16,7 @@ public class OreLangProvider extends LanguageProvider {
     @Override
     protected void addTranslations() {
 
-        for (OreDefinition def : OreDefinitions.ALL) {
+        for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
 
             String oreName = isEnglish ? def.enUsName() : def.ukUaName();
 

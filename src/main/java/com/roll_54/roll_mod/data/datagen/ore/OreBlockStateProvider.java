@@ -14,7 +14,7 @@ public class OreBlockStateProvider extends BlockStateProvider {
 
     @Override
     protected void registerStatesAndModels() {
-        for (OreDefinition def : OreDefinitions.ALL) {
+        for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
             for (var base : def.bases()) {
                 String blockId = base.id() + "_" + def.id();
                 GeneratedOreRegistry.BLOCKS.getEntries().stream()

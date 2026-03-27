@@ -29,7 +29,7 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
 
         var commonOreBlocks = tag(ORE_BLOCKS);
 
-        for (OreDefinition def : OreDefinitions.ALL) {
+        for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
             for (BlockSubLayer base : def.bases()) {
 
                 String blockId = base.id() + "_" + def.id();

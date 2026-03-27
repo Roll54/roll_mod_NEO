@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "enabled=true": {"model": "roll_mod:block/test_regen_block_overlay"},
+    "enabled=false": {"model": "roll_mod:block/test_regen_block_sub"}
+  }
+}

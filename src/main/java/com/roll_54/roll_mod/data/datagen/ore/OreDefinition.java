@@ -18,26 +18,6 @@ public record OreDefinition(
         String ukUaName
 ) {
     public OreDefinition {
-        if (id == null || id.isBlank()) {
-            throw new IllegalArgumentException("id is required");
-        }
-        if (hexColor == null || hexColor.isBlank()) {
-            throw new IllegalArgumentException("hexColor is required");
-        }
-        if (bases == null || bases.isEmpty()) {
-            throw new IllegalArgumentException("bases are required");
-        }
-        if (overlay == null) {
-            throw new IllegalArgumentException("overlay is required");
-        }
-        if (itemBase == null) {
-            throw new IllegalArgumentException("itemBase is required");
-        }
-        if (enUsName == null || enUsName.isBlank()) {
-            throw new IllegalArgumentException("enUsName is required");
-        }
-        if (ukUaName == null || ukUaName.isBlank()) {
-            throw new IllegalArgumentException("ukUaName is required");
-        }
+
     }
 }

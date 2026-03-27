@@ -13,6 +13,7 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.util.RandomSource;
 import org.jetbrains.annotations.Nullable;
+import org.jspecify.annotations.NonNull;
 
 /**
  * Abstract RegenBlock for NeoForge.
@@ -36,21 +37,22 @@ import org.jetbrains.annotations.Nullable;
 public abstract class AbstractRegenBlock extends Block {
     // Block state for tracking if this block is currently breakable
     public static final BooleanProperty BREAKABLE = BlockStateProperties.ENABLED;
+    public int timerSeconds; // Default 20 minutes
 
-    protected AbstractRegenBlock(Properties properties) {
+    protected AbstractRegenBlock(Properties properties, int timerSeconds) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(BREAKABLE, true));
+        this.timerSeconds = timerSeconds;
     }
 
     /**
-     * Get the timer duration in seconds.
-     * Default is 1200 seconds (20 minutes).
-     * Override to support dynamic timers or retrieve from block data.
+     * Gets the timer duration in seconds for the block's regeneration.
+     * This value is set in the constructor.
      *
-     * @return The timer duration in seconds
+     * @return The timer duration in seconds.
      */
-    protected int getTimerSeconds() {
-        return 12; // Default 20 minutes
+    public int getTimerSeconds() {
+        return timerSeconds; // Default 20 minutes
     }
 
     /**
@@ -114,13 +116,13 @@ public abstract class AbstractRegenBlock extends Block {
      * This is the key to making the block unbreakable except through the onDestroyedByPlayer logic.
      */
     @Override
-    public float getDestroyProgress(@Nullable BlockState state, @Nullable Player player, net.minecraft.world.level.BlockGetter level, @Nullable BlockPos pos) {
-//        if (player != null && player.isCreative()) {
-//            return 1.0F; // Creative players can break it instantly
-//        }
-//
-//        // In survival mode, the block is unbreakable (mining speed = 0)
-        return 1.0F;
+    public float getDestroyProgress(@Nullable BlockState state, @Nullable Player player, net.minecraft.world.level.@NonNull BlockGetter level, @Nullable BlockPos pos) {
+        if (player != null && !state.getValue(BREAKABLE)) {
+            return 0.0F; // if breakable is false, mining speed is 0 (unbreakable)
+        }
+
+        // if breakable is true, we can allow normal mining speed (or you can customize this further)
+        return super.getDestroyProgress(state, player, level, pos);
     }
 
     @Override

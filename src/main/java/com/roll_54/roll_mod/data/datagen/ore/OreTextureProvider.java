@@ -57,7 +57,7 @@ public class OreTextureProvider implements DataProvider {
                 Files.createDirectories(blockTexOut);
                 Files.createDirectories(itemTexOut);
 
-                for (OreDefinition def : OreDefinitions.ALL) {
+                for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
                     generateItems(cache, def, itemTexOut);
                     generateBlocks(cache, def, blockTexOut);
                 }

@@ -18,7 +18,7 @@ public class OreItemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
-        for (OreDefinition def : OreDefinitions.ALL) {
+        for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
             String ore = def.id();
             emit("raw_" + ore);
             emit(ore + "_dust");

@@ -50,7 +50,7 @@ public class OreLootTableProvider extends LootTableProvider {
             Map<String, Block> blocks = GeneratedOreRegistry.BLOCKS.getEntries().stream()
                     .collect(Collectors.toMap(entry -> entry.getId().getPath(), DeferredHolder::get));
 
-            for (OreDefinition def : OreDefinitions.ALL) {
+            for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
                 // Determine Raw Item
                 String rawItemName = "raw_" + def.id();
                 Item rawItem = items.get(rawItemName);

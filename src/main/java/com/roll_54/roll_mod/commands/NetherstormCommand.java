@@ -1,28 +1,20 @@
 package com.roll_54.roll_mod.commands;
 
+import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.roll_54.roll_mod.netherstorm.StormHandler;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.netherstorm.StormHandler;
 
 import static com.roll_54.roll_mod.data.RMMAttachment.STORM_PROTECTED;
 
-@EventBusSubscriber(modid = RollMod.MODID)
-public class StormCommands {
+public class NetherstormCommand {
 
-    @SubscribeEvent
-    public static void onRegisterCommands(RegisterCommandsEvent e) {
-        var d = e.getDispatcher();
-
-        AutoGiveCommands.register(d);
-
+    public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         var adminRoot = Commands.literal("rollmod")
                 .requires(src -> src.hasPermission(2))
                 .then(Commands.literal("admin")
@@ -156,6 +148,6 @@ public class StormCommands {
                         )
                 );
 
-        d.register(adminRoot);
+        dispatcher.register(adminRoot);
     }
 }
