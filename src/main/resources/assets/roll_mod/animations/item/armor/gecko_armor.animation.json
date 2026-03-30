@@ -1,0 +1,27 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"gecko_armor": {
+			"loop": true,
+			"animation_length": 0.1667,
+			"bones": {
+				"bipedHead": {
+					"scale": {
+						"0.0": {
+							"vector": [1, 1, 1]
+						},
+						"0.0833": {
+							"vector": [1, 1.1, 1]
+						},
+						"0.125": {
+							"vector": [1, 1.15, 1]
+						},
+						"0.1667": {
+							"vector": [1, 1.15, 1]
+						}
+					}
+				}
+			}
+		}
+	}
+}

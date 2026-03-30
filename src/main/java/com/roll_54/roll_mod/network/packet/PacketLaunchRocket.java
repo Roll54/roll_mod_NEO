@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.network.packet;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.data.RMMComponents;
+import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.registry.TagRegistry;
 import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
 import com.roll_54.roll_mod.screen.menu.RocketControllerMenu;
@@ -56,9 +56,9 @@ public record PacketLaunchRocket(BlockPos pos) implements CustomPacketPayload {
                     if (!rocket.is(TagRegistry.ROCKET_ITEM)) return;
                     if (!fuel.is(TagRegistry.ROCKET_FUEL)) return;
 
-                    int tier = rocket.getOrDefault(RMMComponents.ROCKET_TIER.get(), 1);
+                    int tier = rocket.getOrDefault(ComponentsRegistry.ROCKET_TIER.get(), 1);
 
-                    CartridgeData cartridgeData = cartridge.get(RMMComponents.CARTRIDGE_DATA.get());
+                    CartridgeData cartridgeData = cartridge.get(ComponentsRegistry.CARTRIDGE_DATA.get());
                     if (cartridgeData == null) return;
                     if (tier < cartridgeData.requiredTier()) return;
 

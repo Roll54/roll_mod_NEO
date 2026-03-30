@@ -238,6 +238,7 @@
   "tooltip.roll_mod.on": "ON",
   "tooltip.roll_mod.off": "OFF",
   "tooltip.roll_mod.battery_toggled": "Battery: %s",
+  "tooltip.roll_mod.sc_price": "Sc price: %s",
 
   "item.roll_mod.redstone_battery": "Redstone Battery",
   "item.roll_mod.energium_battery": "Energium Battery",

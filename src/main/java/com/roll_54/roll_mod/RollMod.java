@@ -6,7 +6,7 @@ import com.roll_54.roll_mod.blocks.entity.render.model.rocket.normal.NormalRocke
 import com.roll_54.roll_mod.blocks.entity.render.model.rocket.small.SmallRocketModel;
 import com.roll_54.roll_mod.blocks.entity.render.model.rocket.tiny.TinyRocketModel;
 import com.roll_54.roll_mod.data.RMMAttachment;
-import com.roll_54.roll_mod.data.RMMComponents;
+import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.items.armor.ModArmorMaterials;
 import com.roll_54.roll_mod.registry.*;
 import com.roll_54.roll_mod.screen.screen.GrowthChamberScreen;
@@ -53,7 +53,7 @@ public final class RollMod {
         eventBus.addListener(this::onCommonSetup);
         eventBus.addListener(this::onClientSetup);
         SoundRegistry.SOUND_EVENTS.register(eventBus);
-        RMMComponents.COMPONENTS.register(eventBus);
+        ComponentsRegistry.COMPONENTS.register(eventBus);
         RMMAttachment.ATTACHMENT_TYPES.register(eventBus);
         ModConfigs.init();
         MenuTypes.register(eventBus);
@@ -68,9 +68,11 @@ public final class RollMod {
 
     }
 
+    @SuppressWarnings("deprecation")
     private void onClientSetup(final FMLClientSetupEvent event) {
         // Прив’язка меню -> екран (GUI)
         LOGGER.info("[{}] client setup", MODID);
+
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LATEX_DANDELION.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SULFUR_BERRY_BLOCK.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.ROLL_PLUSH.get(), RenderType.cutout());
@@ -107,6 +109,7 @@ public final class RollMod {
             event.register(MenuTypes.RESEARCH_WORKBENCH_MENU.get(), ResearchWorkbenchScreen::new);
             event.register(MenuTypes.ROCKET_CONTROLLER_MENU.get(), RocketControllerScreen::new);
         }
+
 
     }
 

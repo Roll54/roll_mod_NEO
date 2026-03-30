@@ -4,6 +4,7 @@ import com.roll_54.roll_mod.items.armor.HazmatBootsItem;
 import com.roll_54.roll_mod.items.armor.ModArmorMaterials;
 import com.roll_54.roll_mod.items.*;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.items.armor.geckolib.ExampleArmorItem;
 import com.roll_54.roll_mod.items.electricItems.*;
 import com.roll_54.roll_mod.items.spaceModule.DimensionCartridgeCItem;
 import com.roll_54.roll_mod.items.spaceModule.RocketItem;
@@ -1222,6 +1223,9 @@ public class ItemRegistry {
             () -> new DimensionCartridgeCItem(new Item.Properties().stacksTo(1),
                     "stellaris:mercury", "dimension.ad_astra.mercury", 10, 3));
 
+    public static final DeferredHolder<Item, Item> EMPTY_CARTRIDGE =
+            ITEMS.register("empty_cartridge", () -> new Item(new Item.Properties()));
+
     // ── Rockets ───────────────────────────────────────────────────────────────
     public static final DeferredHolder<Item, RocketItem> TIER_1_ROCKET =
             ITEMS.register("tier_1_rocket", () -> new RocketItem(
@@ -1240,6 +1244,25 @@ public class ItemRegistry {
 
     public static final DeferredHolder<Item, Item> FUEL_CANISTER =
             ITEMS.register("fuel_canister", () -> new Item(new Item.Properties().stacksTo(64)));
+
+
+    public static final DeferredHolder<Item, Item> LITHIUM_SOAP =
+            ITEMS.register("lithium_soap", () -> new Item(new Item.Properties()));
+
+    public static final DeferredHolder<Item, Item> POTASSIUM_SOAP =
+            ITEMS.register("potassium_soap", () -> new Item(new Item.Properties()));
+
+    public static final DeferredHolder<Item, Item> SODIUM_SOAP =
+            ITEMS.register("sodium_soap", () -> new Item(new Item.Properties()));
+
+
+    public static final DeferredHolder<Item, ExampleArmorItem> EXAMPLE_ARMOR_HELMET = ITEMS.register("example_armor_helmet", () -> new ExampleArmorItem(ModArmorMaterials.METEORITE_ARMOR, ArmorItem.Type.HELMET, new Item.Properties()));
+
+
+
+
+
+
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }

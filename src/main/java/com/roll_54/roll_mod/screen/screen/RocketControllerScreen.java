@@ -2,7 +2,7 @@ package com.roll_54.roll_mod.screen.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.data.RMMComponents;
+import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.registry.TagRegistry;
 import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
 import com.roll_54.roll_mod.network.packet.PacketLaunchRocket;
@@ -90,12 +90,12 @@ public class RocketControllerScreen extends AbstractContainerScreen<RocketContro
             return List.of(Component.translatable("gui.roll_mod.rocket.no_rocket"));
         }
 
-        if (cartridge.isEmpty() || !cartridge.has(RMMComponents.CARTRIDGE_DATA.get())) {
+        if (cartridge.isEmpty() || !cartridge.has(ComponentsRegistry.CARTRIDGE_DATA.get())) {
             return List.of(Component.translatable("gui.roll_mod.rocket.no_cartridge"));
         }
 
-        int rocketTier = rocket.getOrDefault(RMMComponents.ROCKET_TIER.get(), 1);
-        CartridgeData data = cartridge.get(RMMComponents.CARTRIDGE_DATA.get());
+        int rocketTier = rocket.getOrDefault(ComponentsRegistry.ROCKET_TIER.get(), 1);
+        CartridgeData data = cartridge.get(ComponentsRegistry.CARTRIDGE_DATA.get());
 
         if (data != null && rocketTier < data.requiredTier()) {
             return List.of(

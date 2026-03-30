@@ -405,5 +405,6 @@
   "item.roll_mod.moon_stone_dust": "Місячнокам'яний пил",
   "item.roll_mod.mars_stone_dust": "Марсіанський кам'яний пил",
   "item.roll_mod.venus_stone_dust": "Венеріанський кам'яний пил",
-  "item.roll_mod.mercury_stone_dust": "Меркуріанський кам'яний пил"
+  "item.roll_mod.mercury_stone_dust": "Меркуріанський кам'яний пил",
+  "tooltip.roll_mod.sc_price": "Ціна СК: %s"
 }

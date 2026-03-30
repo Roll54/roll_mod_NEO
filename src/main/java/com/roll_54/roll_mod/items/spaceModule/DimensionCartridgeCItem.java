@@ -7,7 +7,7 @@ import net.minecraft.world.item.TooltipFlag;
 
 import java.util.List;
 
-import static com.roll_54.roll_mod.data.RMMComponents.CARTRIDGE_DATA;
+import static com.roll_54.roll_mod.registry.ComponentsRegistry.CARTRIDGE_DATA;
 
 public class DimensionCartridgeCItem extends Item {
 

@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.items;
 
 import aztech.modern_industrialization.MIComponents;
-import com.roll_54.roll_mod.data.RMMComponents;
+import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.TypedDataComponent;
@@ -21,12 +21,12 @@ import static net.minecraft.core.component.DataComponents.LORE;
 public class ComponentApplicatorItem extends Item {
 
     private static final Set<DataComponentType<?>> BLACKLIST = Set.of(
-            RMMComponents.APPLICATOR_COLOR.get(),
+            ComponentsRegistry.APPLICATOR_COLOR.get(),
             CUSTOM_NAME,
             LORE,
-            RMMComponents.ACTIVATED.get(),
+            ComponentsRegistry.ACTIVATED.get(),
             MIComponents.ENERGY.get(),
-            RMMComponents.SKIN_APPLICATOR_USED.get()
+            ComponentsRegistry.SKIN_APPLICATOR_USED.get()
 
     );
 
@@ -56,7 +56,7 @@ public class ComponentApplicatorItem extends Item {
         }
 
         // ❌ якщо вже використано — блокуємо
-        if (target.has(RMMComponents.SKIN_APPLICATOR_USED.get())) {
+        if (target.has(ComponentsRegistry.SKIN_APPLICATOR_USED.get())) {
             player.displayClientMessage(
                     Component.translatable("message.roll_mod.skin_applicator_already_used").withStyle(ChatFormatting.RED),
                     true // над хотбаром
@@ -66,7 +66,7 @@ public class ComponentApplicatorItem extends Item {
 
         copyNonBlacklisted(applicator, target);
 
-        target.set(RMMComponents.SKIN_APPLICATOR_USED.get(), true);
+        target.set(ComponentsRegistry.SKIN_APPLICATOR_USED.get(), true);
 
         applicator.shrink(1);
 

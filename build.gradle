@@ -65,6 +65,16 @@ repositories {
         url = "https://maven.firstdark.dev/snapshots"
     }
 
+
+    // GECKOLIB!!!
+    maven {
+        name = 'GeckoLib'
+        url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/'
+        content {
+            includeGroup("software.bernie.geckolib")
+        }
+    }
+
 }
 
 base {
@@ -196,6 +206,10 @@ dependencies {
 
     //jar in jar
     api jarJar("dev.technici4n:GrandPower:${project.grandpower_version}")
+
+
+    //geckolib
+    implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolibVersion}"
 
    // implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
 }

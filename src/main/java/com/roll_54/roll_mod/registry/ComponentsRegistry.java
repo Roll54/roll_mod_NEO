@@ -1,7 +1,9 @@
-package com.roll_54.roll_mod.data;
+package com.roll_54.roll_mod.registry;
 
 import com.mojang.serialization.Codec;
+import com.roll_54.roll_mod.data.UpgradeComponent;
 import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
+import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -11,9 +13,10 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.List;
 import java.util.function.Supplier;
 
-public class RMMComponents {
+public class ComponentsRegistry {
     public static final DeferredRegister.DataComponents COMPONENTS;
     public static final Supplier<DataComponentType<Boolean>> ACTIVATED;
     //skins for items
@@ -74,6 +77,14 @@ public class RMMComponents {
         // Rocket tier
         ROCKET_TIER = create("rocket_tier", Codec.INT, ByteBufCodecs.INT);
     }
+
+
+    public static final DeferredHolder<DataComponentType<?>, DataComponentType<List<UpgradeComponent>>> UPGRADES =
+            COMPONENTS.register("upgrades", () ->
+                    DataComponentType.<List<UpgradeComponent>>builder()
+                            .persistent(Codec.list(UpgradeComponent.CODEC))
+                            .build()
+            );
 
     public static void init(IEventBus bus) {
         COMPONENTS.register(bus);

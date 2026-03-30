@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.util;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.data.RMMComponents;
+import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import com.roll_54.roll_mod.items.electricItems.EnergyDrillItem;
 import com.roll_54.roll_mod.items.electricItems.EnergySwordItem;
@@ -20,21 +20,21 @@ public class RMMItemProperties {
                         item,
                         ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "trans"),
                         (stack, level, entity, seed) ->
-                                stack.getOrDefault(RMMComponents.TRANS.get(), 0f)
+                                stack.getOrDefault(ComponentsRegistry.TRANS.get(), 0f)
                 );
 
                 ItemProperties.register(
                         item,
                         ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "cat"),
                         (stack, level, entity, seed) ->
-                                stack.getOrDefault(RMMComponents.CAT.get(), 0f)
+                                stack.getOrDefault(ComponentsRegistry.CAT.get(), 0f)
                 );
 
                 ItemProperties.register(
                         item,
                         ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "meteorite_skin"),
                         (stack, level, entity, seed) ->
-                                stack.getOrDefault(RMMComponents.METEORITE_SKIN.get(), 0f)
+                                stack.getOrDefault(ComponentsRegistry.METEORITE_SKIN.get(), 0f)
                 );
             }
         }
@@ -45,41 +45,41 @@ public class RMMItemProperties {
                         item,
                         ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "activated"),
                         (stack, level, entity, seed) ->
-                                stack.getOrDefault(RMMComponents.ACTIVATED.get(), false) ? 1.0F : 0.0F
+                                stack.getOrDefault(ComponentsRegistry.ACTIVATED.get(), false) ? 1.0F : 0.0F
                 );
                 ItemProperties.register(
                         item,
                         ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "murasama"),
                         (stack, level, entity, seed) ->
-                                stack.getOrDefault(RMMComponents.MURASAMA.get(), 0f)
+                                stack.getOrDefault(ComponentsRegistry.MURASAMA.get(), 0f)
                 );
             }
             ItemProperties.register(
                     item,
                     ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "lavender"),
                     (stack, level, entity, seed) ->
-                            stack.getOrDefault(RMMComponents.LAVENDER.get(), 0.0F)
+                            stack.getOrDefault(ComponentsRegistry.LAVENDER.get(), 0.0F)
             );
 
             ItemProperties.register(
                     item,
                     ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "flame"),
                     (stack, level, entity, seed) ->
-                            stack.getOrDefault(RMMComponents.FLAME.get(), 0.0F)
+                            stack.getOrDefault(ComponentsRegistry.FLAME.get(), 0.0F)
             );
 
             ItemProperties.register(
                     item,
                     ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "skin_rgb"),
                     (stack, level, entity, seed) ->
-                            stack.getOrDefault(RMMComponents.SKIN_RGB.get(), 0.0F)
+                            stack.getOrDefault(ComponentsRegistry.SKIN_RGB.get(), 0.0F)
             );
 
             ItemProperties.register(
                     item,
                     ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "lime"),
                     (stack, level, entity, seed) ->
-                            stack.getOrDefault(RMMComponents.LIME.get(), 0.0F)
+                            stack.getOrDefault(ComponentsRegistry.LIME.get(), 0.0F)
             );
         }
 
@@ -87,7 +87,7 @@ public class RMMItemProperties {
                 ItemRegistry.SKIN_APPLICATOR.get(),
                 ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "applicator_color"),
                 (stack, level, entity, seed) ->
-                        stack.getOrDefault(RMMComponents.APPLICATOR_COLOR.get(), 0)
+                        stack.getOrDefault(ComponentsRegistry.APPLICATOR_COLOR.get(), 0)
         );
 
 

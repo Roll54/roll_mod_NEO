@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.items.electricItems;
 
 import aztech.modern_industrialization.MIComponents;
-import com.roll_54.roll_mod.data.RMMComponents;
+import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.util.EnergyFormatUtils;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
 import net.minecraft.ChatFormatting;
@@ -106,14 +106,14 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
 
         if (Screen.hasShiftDown()) {
 
-            if (stack.getOrDefault(RMMComponents.TRANS.get(), 0.0F) >= 1.0F) {
+            if (stack.getOrDefault(ComponentsRegistry.TRANS.get(), 0.0F) >= 1.0F) {
                 tooltip.add(
                         Component.translatable("tooltip.roll_mod.mining_drill.trans")
                                 .withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.ITALIC)
                 );
             }
 
-            if (stack.getOrDefault(RMMComponents.CAT.get(), 0.0F) >= 1.0F) {
+            if (stack.getOrDefault(ComponentsRegistry.CAT.get(), 0.0F) >= 1.0F) {
                 tooltip.add(
                         Component.translatable("tooltip.roll_mod.mining_drill.cat")
                                 .withStyle(ChatFormatting.LIGHT_PURPLE).withStyle(ChatFormatting.ITALIC)
@@ -303,8 +303,8 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
         if (!state.is(Blocks.CAKE)) return false;
 
         level.destroyBlock(pos, false);
-        stack.set(RMMComponents.CAT.get(), 1.0F);
-        stack.set(RMMComponents.TRANS.get(), 0.0F);
+        stack.set(ComponentsRegistry.CAT.get(), 1.0F);
+        stack.set(ComponentsRegistry.TRANS.get(), 0.0F);
 
         level.playSound(
                 null,
@@ -328,8 +328,8 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
         if (!state.is(Blocks.BEACON)) return false;
 
         level.destroyBlock(pos, false);
-        stack.set(RMMComponents.TRANS.get(), 1.0F);
-        stack.set(RMMComponents.CAT.get(), 0.0F);
+        stack.set(ComponentsRegistry.TRANS.get(), 1.0F);
+        stack.set(ComponentsRegistry.CAT.get(), 0.0F);
 
         level.playSound(
                 null,
