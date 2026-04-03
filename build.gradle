@@ -215,7 +215,6 @@ dependencies {
     implementation "curse.maven:crafttweaker-239197:6929483"
 
     implementation "curse.maven:emi-580555:6420931"
-
     // compile against the JEI API but do not include it at runtime
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     // at runtime, use the full JEI jar for NeoForge

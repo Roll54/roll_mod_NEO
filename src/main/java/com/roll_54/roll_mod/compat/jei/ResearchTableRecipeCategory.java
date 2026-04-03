@@ -52,8 +52,7 @@ public class ResearchTableRecipeCategory implements IRecipeCategory<RecipeHolder
         );
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(BlockRegistry.RESEARCH_WORKBENCH.get()));
         this.arrow = helper.drawableBuilder(
-                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "textures/gui/research_workbench/research_workbench_gui_progress.png"),
-                        176, 14, 24, 17
+                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "textures/gui/research_workbench/research_workbench_gui_pointed.png"), 0, 166, 68, 48
                 )
                 .buildAnimated(200, IDrawableAnimated.StartDirection.LEFT, false);
     }
@@ -109,7 +108,7 @@ public class ResearchTableRecipeCategory implements IRecipeCategory<RecipeHolder
     @Override
     public void draw(RecipeHolder<ItemResearchRecipe> recipeHolder, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
         // Draw animated arrow
-        arrow.draw(guiGraphics, 79, 35);
+        arrow.draw(guiGraphics, 39, 4);
 
         // Manual catalyst cycling and tooltip
         ItemResearchRecipe recipe = recipeHolder.value();
