@@ -3,7 +3,10 @@ package com.roll_54.roll_mod.data.datagen;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.data.PackOutput;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
+import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 
 public class RolltemModelProvider extends ItemModelProvider {
@@ -76,5 +79,48 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.MERCURY_CARTRIDGE.get());
         basicItem(ItemRegistry.VENUS_CARTRIDGE.get());
 
+        getBuilder(ItemRegistry.RESEARCH_ROCKET_CONTROLLER.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special"));
+
+        getBuilder(ItemRegistry.RESEARCH_ROCKET_T2.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special1"));
+
+        getBuilder(ItemRegistry.RESEARCH_ROCKET_T3.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research"));
+
+        getBuilder(ItemRegistry.RESEARCH_LITHOGRAPHY.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special"));
+
+        getBuilder(ItemRegistry.RESEARCH_HIGH_EFFICIENCY_STEAM_TURBINE.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special1"));
+
+        getBuilder(ItemRegistry.RESEARCH_BETTER_CIRCUITS_LV.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research"));
+
+        getBuilder(ItemRegistry.RESEARCH_BETTER_CIRCUITS_MV.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special"));
+
+        getBuilder(ItemRegistry.RESEARCH_BETTER_CIRCUITS_HV.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special1"));
+
+        getBuilder(ItemRegistry.RESEARCH_BETTER_CIRCUITS_EV.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research"));
+
+        getBuilder(ItemRegistry.RESEARCH_BETTER_CIRCUITS_IV.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special"));
+
+        getBuilder(ItemRegistry.RESEARCH_ENERGY_CRYSTALS.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special1"));
     }
 }
