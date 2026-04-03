@@ -1,58 +1,53 @@
-package com.roll_54.roll_mod.screen.menu;
+package com.roll_54.roll_mod.gui.menu;
 
-import com.roll_54.roll_mod.blocks.entity.PedestalBlockEntity;
-import com.roll_54.roll_mod.registry.BlockRegistry;
+import com.roll_54.roll_mod.blocks.entity.GrowthChamberBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ContainerLevelAccess;
-import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.neoforge.items.SlotItemHandler;
 
-import static com.roll_54.roll_mod.registry.MenuTypes.PEDESTAL_MENU;
+import static com.roll_54.roll_mod.registry.BlockRegistry.GROWTH_CHAMBER;
+import static com.roll_54.roll_mod.registry.MenuTypes.GROWTH_CHAMBER_MENU;
 
-/// вся логіка інтерфейсу тута
-public class PedestalMenu extends AbstractContainerMenu {
-    public final PedestalBlockEntity blockEntity;
+public class GrowthChamberMenu  extends AbstractContainerMenu {
+    public final GrowthChamberBlockEntity blockEntity;
     private final Level level;
+    private final ContainerData data;
 
-    public PedestalMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
-        this(containerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
+    public GrowthChamberMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
+        this(pContainerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()), new SimpleContainerData(2));
     }
 
-    public PedestalMenu(int containerId, Inventory inv, BlockEntity blockEntity){
-        super(PEDESTAL_MENU.get(), containerId);
-        this.blockEntity = ((PedestalBlockEntity) blockEntity);
+    public GrowthChamberMenu(int pContainerId, Inventory inv, BlockEntity entity, ContainerData data) {
+        super(GROWTH_CHAMBER_MENU.get(), pContainerId);
+        this.blockEntity = ((GrowthChamberBlockEntity) entity);
         this.level = inv.player.level();
+        this.data = data;
 
-        addPlayerHotbar(inv);
         addPlayerInventory(inv);
-        // оці 2 зверху відповідають за дефолтний інвентар гравця і його хотбар бо це 2 різні GUI
+        addPlayerHotbar(inv);
 
-        this.addSlot(new SlotItemHandler(this.blockEntity.inventory, 0, 80, 35)); // мега букви щоб додати 1 слот з індексом 0, бо програмісти рахують з 0.
-        // також слоти ми рахуємо від магічних чисел  де 0X 0Y це самий верхній лівий кут.
+        this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 0, 54, 34));
+        this.addSlot(new SlotItemHandler(blockEntity.itemHandler, 1, 104, 34));
 
+        addDataSlots(data);
     }
 
-
-    private void addPlayerInventory(Inventory playerInventory) {
-        for (int i = 0; i < 3; ++i) {
-            for (int l = 0; l < 9; ++l) {
-                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 84 + i * 18));
-            }
-        }
+    public boolean isCrafting() {
+        return data.get(0) > 0;
     }
 
-    private void addPlayerHotbar(Inventory playerInventory) {
-        for (int i = 0; i < 9; ++i) {
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
-        }
-    }
+    public int getScaledArrowProgress() {
+        int progress = this.data.get(0);
+        int maxProgress = this.data.get(1);
+        int arrowPixelSize = 24;
 
+        return maxProgress != 0 && progress != 0 ? progress * arrowPixelSize / maxProgress : 0;
+    }
 
     // CREDIT GOES TO: diesieben07 | https://github.com/diesieben07/SevenCommons
     // must assign a slot number to each of the slots used by the GUI.
@@ -70,11 +65,7 @@ public class PedestalMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     // THIS YOU HAVE TO DEFINE!
-    private static final int TE_INVENTORY_SLOT_COUNT = 1;  // must be the number of slots you have!
-
-    /// НАЙВАЖЛИВІША НАХУЙ ІНТА ЦЕ КІЛЬКІСТЬ СЛОТІВ МАЄ СПІВПАДАТИ
-    /// З public final ItemStackHandler inventory = new ItemStackHandler(1)
-
+    private static final int TE_INVENTORY_SLOT_COUNT = 2;  // MUST BE THE NUMBER OF SLOTS YOU HAVE!
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
@@ -109,7 +100,22 @@ public class PedestalMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player player) {
-        return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()), player, BlockRegistry.PEDESTAL_BLOCK.get());
-    } //завжди вставляємо блок який має мати цей інтерфейс.
+    public boolean stillValid(Player pPlayer) {
+        return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
+                pPlayer, GROWTH_CHAMBER.get());
+    }
+
+    private void addPlayerInventory(Inventory playerInventory) {
+        for (int i = 0; i < 3; ++i) {
+            for (int l = 0; l < 9; ++l) {
+                this.addSlot(new Slot(playerInventory, l + i * 9 + 9, 8 + l * 18, 84 + i * 18));
+            }
+        }
+    }
+
+    private void addPlayerHotbar(Inventory playerInventory) {
+        for (int i = 0; i < 9; ++i) {
+            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+        }
+    }
 }

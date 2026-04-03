@@ -1,7 +1,7 @@
-package com.roll_54.roll_mod.screen.screen;
+package com.roll_54.roll_mod.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.roll_54.roll_mod.screen.menu.ResearchWorkbenchMenu;
+import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;

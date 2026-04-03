@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.blocks.entity;
 
 import com.roll_54.roll_mod.registry.BlockEntites;
-import com.roll_54.roll_mod.screen.menu.PedestalMenu;
+import com.roll_54.roll_mod.gui.menu.PedestalMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;

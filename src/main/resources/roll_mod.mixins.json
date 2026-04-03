@@ -4,12 +4,14 @@
   "package": "com.roll_54.roll_mod.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "NanoSuitGravichestplateAbilityMixin",
     "ArmorReductionMixin",
     "GraviChestPlateItemMixin",
-    "PhantomSpawnerMixin"
+    "ModifyEnergyHudRendererMixin",
+    "PhantomSpawnerMixin",
+    "NanoSuitGravichestplateAbilityMixin"
   ],
   "client": [
+
   ],
   "injectors": {
     "defaultRequire": 1

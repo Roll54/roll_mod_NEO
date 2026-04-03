@@ -3,7 +3,7 @@ package com.roll_54.roll_mod.recipe;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.roll_54.roll_mod.registry.RecipeRegister;
+import com.roll_54.roll_mod.registry.RecipeRegistry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -27,12 +27,7 @@ import java.util.List;
  *  - catalysts: list of {item, successChance}, one of which the player inserts into the catalyst slot
  *  - duration: how many ticks one research attempt takes
  */
-public record ItemResearchRecipe(
-        ItemStack output,
-        MainInput mainInput,
-        List<CatalystEntry> catalysts,
-        int duration
-) implements Recipe<ItemResearchRecipeInput> {
+public record ItemResearchRecipe(ItemStack output, MainInput mainInput, List<CatalystEntry> catalysts, int duration) implements Recipe<ItemResearchRecipeInput> {
 
     // ── inner records ──────────────────────────────────────────────
 
@@ -102,12 +97,12 @@ public record ItemResearchRecipe(
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return RecipeRegister.ITEM_RESEARCH_SERIALIZER.get();
+        return RecipeRegistry.ITEM_RESEARCH_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return RecipeRegister.ITEM_RESEARCH_TYPE.get();
+        return RecipeRegistry.ITEM_RESEARCH_RECIPE_TYPE.get();
     }
 
     // ── Serializer ─────────────────────────────────────────────────

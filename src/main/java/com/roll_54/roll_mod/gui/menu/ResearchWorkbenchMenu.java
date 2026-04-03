@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.screen.menu;
+package com.roll_54.roll_mod.gui.menu;
 
 import com.roll_54.roll_mod.blocks.entity.ResearchWorkbenchBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;

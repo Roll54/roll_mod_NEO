@@ -10,7 +10,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
-public class RecipeRegister {
+public class RecipeRegistry {
 
     public static final DeferredRegister<RecipeSerializer<?>> RECIPE_SERIALIZERS =
             DeferredRegister.create(Registries.RECIPE_SERIALIZER, RollMod.MODID);
@@ -36,7 +36,7 @@ public class RecipeRegister {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<ItemResearchRecipe>> ITEM_RESEARCH_SERIALIZER =
             RECIPE_SERIALIZERS.register("item_research", ItemResearchRecipe.Serializer::new);
 
-    public static final DeferredHolder<RecipeType<?>, RecipeType<ItemResearchRecipe>> ITEM_RESEARCH_TYPE =
+    public static final DeferredHolder<RecipeType<?>, RecipeType<ItemResearchRecipe>> ITEM_RESEARCH_RECIPE_TYPE =
             RECIPE_TYPES.register("item_research", () -> new RecipeType<ItemResearchRecipe>() {
                 @Override
                 public String toString() {

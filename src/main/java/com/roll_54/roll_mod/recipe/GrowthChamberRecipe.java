@@ -2,7 +2,7 @@ package com.roll_54.roll_mod.recipe;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import com.roll_54.roll_mod.registry.RecipeRegister;
+import com.roll_54.roll_mod.registry.RecipeRegistry;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -52,12 +52,12 @@ public record GrowthChamberRecipe(Ingredient inputItem, ItemStack output) implem
 
     @Override
     public RecipeSerializer<?> getSerializer() {
-        return RecipeRegister.GROWTH_CHAMBER_SERIALIZER.get();
+        return RecipeRegistry.GROWTH_CHAMBER_SERIALIZER.get();
     }
 
     @Override
     public RecipeType<?> getType() {
-        return RecipeRegister.GROWTH_CHAMBER_TYPE.get();
+        return RecipeRegistry.GROWTH_CHAMBER_TYPE.get();
     }
 /// читання самого джейсонна через серіалайзер.
 public static class Serializer implements RecipeSerializer<GrowthChamberRecipe> {

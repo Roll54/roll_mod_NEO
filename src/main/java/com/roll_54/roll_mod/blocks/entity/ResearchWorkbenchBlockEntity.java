@@ -1,10 +1,10 @@
 package com.roll_54.roll_mod.blocks.entity;
 
 import com.roll_54.roll_mod.registry.BlockEntites;
-import com.roll_54.roll_mod.registry.RecipeRegister;
+import com.roll_54.roll_mod.registry.RecipeRegistry;
 import com.roll_54.roll_mod.recipe.ItemResearchRecipe;
 import com.roll_54.roll_mod.recipe.ItemResearchRecipeInput;
-import com.roll_54.roll_mod.screen.menu.ResearchWorkbenchMenu;
+import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -155,7 +155,7 @@ public class ResearchWorkbenchBlockEntity extends BlockEntity implements MenuPro
         ItemStack catalyst = itemHandler.getStackInSlot(CATALYST_SLOT);
         if (catalyst.isEmpty()) return Optional.empty();
         return level.getRecipeManager().getRecipeFor(
-                RecipeRegister.ITEM_RESEARCH_TYPE.get(),
+                RecipeRegistry.ITEM_RESEARCH_RECIPE_TYPE.get(),
                 new ItemResearchRecipeInput(catalyst),
                 level);
     }

@@ -1,10 +1,10 @@
 package com.roll_54.roll_mod.blocks.entity;
 
 import com.roll_54.roll_mod.registry.BlockEntites;
-import com.roll_54.roll_mod.registry.RecipeRegister;
+import com.roll_54.roll_mod.registry.RecipeRegistry;
 import com.roll_54.roll_mod.recipe.GrowthChamberRecipe;
 import com.roll_54.roll_mod.recipe.GrowthChamberRecipeInput;
-import com.roll_54.roll_mod.screen.menu.GrowthChamberMenu;
+import com.roll_54.roll_mod.gui.menu.GrowthChamberMenu;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -164,7 +164,7 @@ public class GrowthChamberBlockEntity extends BlockEntity implements MenuProvide
     }
 
     private Optional<RecipeHolder<GrowthChamberRecipe>> getCurrentRecipe() {
-        return this.level.getRecipeManager().getRecipeFor(RecipeRegister.GROWTH_CHAMBER_TYPE.get(), new GrowthChamberRecipeInput(itemHandler.getStackInSlot(INPUT_SLOT)), level);
+        return this.level.getRecipeManager().getRecipeFor(RecipeRegistry.GROWTH_CHAMBER_TYPE.get(), new GrowthChamberRecipeInput(itemHandler.getStackInSlot(INPUT_SLOT)), level);
     }
 
 

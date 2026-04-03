@@ -9,10 +9,10 @@ import com.roll_54.roll_mod.data.RMMAttachment;
 import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.items.armor.ModArmorMaterials;
 import com.roll_54.roll_mod.registry.*;
-import com.roll_54.roll_mod.screen.screen.GrowthChamberScreen;
-import com.roll_54.roll_mod.screen.screen.PedestalScreen;
-import com.roll_54.roll_mod.screen.screen.ResearchWorkbenchScreen;
-import com.roll_54.roll_mod.screen.screen.RocketControllerScreen;
+import com.roll_54.roll_mod.gui.screen.GrowthChamberScreen;
+import com.roll_54.roll_mod.gui.screen.PedestalScreen;
+import com.roll_54.roll_mod.gui.screen.ResearchWorkbenchScreen;
+import com.roll_54.roll_mod.gui.screen.RocketControllerScreen;
 import com.roll_54.roll_mod.util.RMMItemProperties;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -57,7 +57,7 @@ public final class RollMod {
         RMMAttachment.ATTACHMENT_TYPES.register(eventBus);
         ModConfigs.init();
         MenuTypes.register(eventBus);
-        RecipeRegister.register(eventBus);
+        RecipeRegistry.register(eventBus);
 
         LOGGER.info("[{}] init complete.", MODID);
     }

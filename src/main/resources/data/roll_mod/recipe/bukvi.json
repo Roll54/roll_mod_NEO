@@ -1,0 +1,38 @@
+{
+  "type": "roll_mod:item_research",
+  "output": {
+    "id": "roll_mod:blueprint_fire_resistance",
+    "count": 1
+  },
+  "main_input": {
+    "item": "minecraft:gold_ingot",
+    "consume_on_success": true
+  },
+  "catalysts": [
+    {
+      "item": "minecraft:magma_cream",
+      "success_chance": 0.5
+    },
+    {
+      "item": "minecraft:blaze_powder",
+      "success_chance": 0.25
+    },
+    {
+      "item": "minecraft:clay_ball",
+      "success_chance": 0.02
+    },
+        {
+      "item": "modern_industrialization:le_uranium_dust",
+      "success_chance": 0.8
+    },
+    {
+      "item": "modern_industrialization:bauxite_dust",
+      "success_chance": 0.25
+    },
+    {
+      "item": "roll_mod:raw_crimson_iron",
+      "success_chance": 0.02
+    }
+  ],
+  "duration": 60
+}

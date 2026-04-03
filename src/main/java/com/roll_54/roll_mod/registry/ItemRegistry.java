@@ -4,6 +4,7 @@ import com.roll_54.roll_mod.items.armor.HazmatBootsItem;
 import com.roll_54.roll_mod.items.armor.ModArmorMaterials;
 import com.roll_54.roll_mod.items.*;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.items.armor.geckolib.ClownHatArmorItem;
 import com.roll_54.roll_mod.items.armor.geckolib.ExampleArmorItem;
 import com.roll_54.roll_mod.items.electricItems.*;
 import com.roll_54.roll_mod.items.spaceModule.DimensionCartridgeCItem;
@@ -1258,14 +1259,24 @@ public class ItemRegistry {
 
     public static final DeferredHolder<Item, ExampleArmorItem> EXAMPLE_ARMOR_HELMET = ITEMS.register("example_armor_helmet", () -> new ExampleArmorItem(ModArmorMaterials.METEORITE_ARMOR, ArmorItem.Type.HELMET, new Item.Properties()));
 
+    public static final DeferredHolder<Item, ClownHatArmorItem> CLOWN_HAT =
+            ITEMS.register("clown_hat", () -> new ClownHatArmorItem(
+                    ArmorMaterials.NETHERITE,
+                    ArmorItem.Type.HELMET,
+                    new Item.Properties()
+            ) {
+                @Override
+                public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+                    tooltip.add(Component.translatable("tooltip.roll_mod.clown_hat.line1")
+                            .withStyle(style -> style.withColor(0xFF5555)));
 
-
-
-
+                    tooltip.add(Component.translatable("tooltip.roll_mod.clown_hat.line2")
+                            .withStyle(style -> style.withColor(0xFFAA00)));
+                }
+            });
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
     }
 
 }
-

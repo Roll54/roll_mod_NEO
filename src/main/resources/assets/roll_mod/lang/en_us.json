@@ -54,7 +54,6 @@
   "item.roll_mod.smd_transistor": "SMD Transistor",
   "item.roll_mod.amethyst_oscillator": "Amethyst Oscillator",
   "item.roll_mod.mirror": "Mirror",
-
   "item.roll_mod.1_circuit": "Programmable Board \"1\"",
   "item.roll_mod.2_circuit": "Programmable Board \"2\"",
   "item.roll_mod.3_circuit": "Programmable Board \"3\"",
@@ -210,7 +209,6 @@
   "item.roll_mod.raw_rubber": "Raw Rubber",
   "item.roll_mod.rubber_ingot": "Гумовий злиток",
   "item.roll_mod.sulfur_berry": "Сірчана ягода",
-
   "block.roll_mod.treated_planks": "Просочені дошки",
   "block.roll_mod.treated_log": "Просочене колодо",
   "block.roll_mod.sulfur_berry_block": "Кущ сірчаних ягід",
@@ -226,12 +224,11 @@
   "message.roll_mod.storm_scanner.time_until_start": "До початку шторму: %s",
   "message.roll_mod.storm_scanner.detailed_info": "Детальніша інформація виведена в чат,",
   "message.roll_mod.storm_scanner.not_enough_energy": "⚠ not enough energy (%s / %s EU) for scanning!",
-  "item.roll_mod.lv_storm_scanner":"LV Storm scanner",
-  "item.roll_mod.hv_storm_scanner":"HV Storm scanner",
+  "item.roll_mod.lv_storm_scanner": "LV Storm scanner",
+  "item.roll_mod.hv_storm_scanner": "HV Storm scanner",
   "tooltip.roll_mod.storm_hint.1": "Provides information on the current storm status",
   "tooltip.roll_mod.storm_hint.2": "Right-click to scan storm status",
   "tooltip.roll_mod.hv_storm_hint.2": "Improved version of the scanner that shows time until storm start or end",
-
   "tooltip.roll_mod.energy": "Energy: %s / %s EU",
   "tooltip.roll_mod.mode": "Mode: %s",
   "tooltip.roll_mod.toggle_hint": "Right-click to toggle",
@@ -239,17 +236,13 @@
   "tooltip.roll_mod.off": "OFF",
   "tooltip.roll_mod.battery_toggled": "Battery: %s",
   "tooltip.roll_mod.sc_price": "Sc price: %s",
-
   "item.roll_mod.redstone_battery": "Redstone Battery",
   "item.roll_mod.energium_battery": "Energium Battery",
   "item.roll_mod.lapotron_battery_t1": "Lapotron Battery Mk.I",
   "item.roll_mod.lapotron_battery_t2": "Lapotron Battery Mk.II",
   "item.roll_mod.lapotron_battery_t3": "Lapotron Battery Mk.III",
   "item.roll_mod.ultra_battery": "Ultra Battery",
-
   "message.roll_mod.gravity_chestplate.warning": "⚡ Not enough energy!",
-
-
   "item.roll_mod.moon_phase_clock": "Lunar Clock",
   "tooltip.roll_mod.lunar_clock.no_energy": "⚡ Not enough energy!",
   "tooltip.roll_mod.lunar_clock.phase.0": "Full Moon",
@@ -261,39 +254,28 @@
   "tooltip.roll_mod.lunar_clock.phase.6": "First Quarter",
   "tooltip.roll_mod.lunar_clock.phase.7": "Waxing Gibbous",
   "tooltip.roll_mod.lunar_clock.desc": "Shows the current lunar phase when right-clicked.",
-
   "tooltip.roll_mod.general_press_shift": "Press SHIFT for detail.",
-
   "item.roll_mod.lv_mining_drill": "LV Mining Drill",
   "item.roll_mod.advanced_lv_mining_drill": "Advanced LV Mining Drill",
-
   "item.roll_mod.mv_mining_drill": "MV Mining Drill",
   "item.roll_mod.advanced_mv_mining_drill": "Advanced MV Mining Drill",
-
   "item.roll_mod.hv_mining_drill": "HV Mining Drill",
   "item.roll_mod.advanced_hv_mining_drill": "Advanced HV Mining Drill",
-
   "item.roll_mod.ev_mining_drill": "EV Mining Drill",
   "item.roll_mod.advanced_ev_mining_drill": "Advanced EV Mining Drill",
-
-
   "tooltip.roll_mod.mining_drill.arc": "Creates an electric arc that effortlessly cuts through rock",
   "tooltip.roll_mod.mining_drill.area": "Mines in a %sx%sx%s area",
   "tooltip.roll_mod.mining_drill.trademark": "A special electric drill created exclusively for %s",
   "tooltip.roll_mod.mining_drill.cost": "Per block break cost: %s",
   "tooltip.roll_mod.mining_drill.trans": "Trans rights is human rights",
   "tooltip.roll_mod.mining_drill.cat": "Meow, this cake was delicious UwU",
-
   "item.roll_mod.vanadium_slag_dust": "Ванадієво-магнетитовий жужіль",
   "loreitem.roll_mod.vanadium_slag_dust.tooltip_line1": "Де мій ванадій?! Що це чорт забирай таке!",
-
-
   "item.roll_mod.iron_iii_vanadate": "Iron(III) Vanadate",
   "item.roll_mod.calcium_metavanadate": "Calcium Metavanadate",
   "item.roll_mod.sodium_metavanadate": "Sodium Metavanadate",
   "item.roll_mod.vanadium_pentoxide": "Vanadium(V) Oxide",
   "item.roll_mod.vanadium_trioxide": "Vanadium(III) Oxide",
-
   "item.roll_mod.sodium_carbonate": "Sodium Carbonate",
   "item.roll_mod.calcium_carbonate": "Calcium Carbonate",
   "item.roll_mod.potassium_dust": "Potassium Dust",
@@ -303,53 +285,38 @@
   "item.roll_mod.sodium_tungstate_dust": "Sodium Tungstate Dust",
   "item.roll_mod.tungstic_acid_dust": "Tungstic Acid Dust",
   "item.roll_mod.tungsten_trioxide": "Tungsten Trioxide",
-
   "item.roll_mod.autogive_hint": "You can disable autogive of this book with the command",
-
   "item.roll_mod.error_item": "Error Item",
   "loreitem.roll_mod.error_item.tooltip_line1": "THIS ITEM SHOULD NOT EXIST!",
   "loreitem.roll_mod.error_item.tooltip_line2": "CONTACT ADMIN IMMEDIATELY!",
-
   "item.roll_mod.autogive_line_1": "This is Quest book with every knowlege of server",
   "item.roll_mod.autogive_line_2": "Use command /rollmod autogive false to disable autogive",
-
   "block.roll_mod.lapotronic_laser_block": "Lapotronic Laser Block",
-
   "item.roll_mod.uranium_mush": "Uranium Mush",
   "item.roll_mod.hot_titanium_gum": "Hot Titanium Gum",
   "item.roll_mod.golden_potato": "Golden Potato",
   "item.roll_mod.golden_potato_mush": "Golden Potato Mush",
   "tooltip.roll_mod.uranium_mush": "Very high-calorie food",
-
   "item.roll_mod.very_nutritious_candy": "Nutritious Candy",
   "tooltip.roll_mod.very_nutritious_candy": "Somehow very nutritious... Oh... Well this explains ALOT",
-
   "effect.roll_mod.sulfur_resistance": "Sulfur Resistance",
-
   "item.roll_mod.shchedryk.desc": "Ukrainian carol \"Shchedryk\"",
   "item.roll_mod.shchedryk_music_disc": "Music Disc — Shchedryk",
-
   "item.roll_mod.prospector_pickaxe": "Prospector Pickaxe",
   "item.roll_mod.meteorite_metal_prospector_pickaxe": "Meteorite Metal Prospector Pickaxe",
   "message.roll_mod.prospector.found": "⛏ Found ore: %s",
   "message.roll_mod.prospector.none": "❌ No ores found",
   "message.roll_mod.no_safe_landing": "❌ No safe landing spot found within 20 blocks! Teleportation cancelled.",
-
   "item.roll_mod.meteorite_metal_nano_saber": "Meteorite Metal Saber",
   "tooltip.roll_mod.meteorite_metal_nano_saber": "Unique sword out of meteorite metal",
-
   "item.roll_mod.injection.description": "Ін'єкція моментального використання, яка надає ефекти",
-
   "item.roll_mod.injection.effect_single": "Надає ефект:",
   "item.roll_mod.injection.effect_plural": "Надає ефекти:",
-
   "item.roll_mod.injection.effect_line": "+ %s %s (%ss)",
   "item.roll_mod.injection.effect_level": " %s LVL",
-
   "item.roll_mod.redstone_tube": "Redstone Tube",
   "loreitem.roll_mod.redstone_tube.tooltip_line1": "Primitive Transistor",
   "item.roll_mod.energium_laser": "Energium Laser",
-
   "item.roll_mod.purple_boule": "Fluix doped monocrystalsilicon Boule",
   "item.roll_mod.purple_wafer": "Fluix Wafer",
   "item.roll_mod.purple_wafer_accumulation": "Accumulation Wafer",
@@ -360,20 +327,17 @@
   "item.roll_mod.purple_chip_soc": "System-on-Chip",
   "item.roll_mod.purple_wafer_ram": "RAM Wafer",
   "item.roll_mod.purple_wafer_concurrent": "Concurrent Logic Wafer",
-
   "item.roll_mod.blue_boule": "Lapotron Doped Monocrystalsilicon Boule",
   "item.roll_mod.blue_wafer": "Lapotron Doped Wafer",
   "item.roll_mod.blue_wafer_ram": "RAM Wafer",
   "item.roll_mod.blue_chip_ram": "RAM Chip",
   "item.roll_mod.blue_wafer_concurrent": "Concurrent Logic Wafer",
   "item.roll_mod.blue_chip_concurrent": "Concurrent Logic Chip",
-
   "item.roll_mod.blue_wafer_not": "NOT Logic Wafer",
   "item.roll_mod.blue_wafer_or": "OR Logic Wafer",
   "item.roll_mod.blue_wafer_and": "AND Logic Wafer",
   "item.roll_mod.blue_wafer_nand": "NAND Logic Wafer",
   "item.roll_mod.blue_wafer_pmic": "Power Management Wafer",
-
   "item.roll_mod.standard_wafer_not": "NOT Wafer",
   "item.roll_mod.standard_chip_not": "NOT Chip",
   "item.roll_mod.standard_wafer_or": "OR Wafer",
@@ -384,7 +348,6 @@
   "item.roll_mod.standard_chip_nand": "NAND Chip",
   "item.roll_mod.standard_wafer_pmic": "Power Management Wafer",
   "item.roll_mod.standard_chip_pmic": "Power Management Chip",
-
   "item.roll_mod.red_lens": "Red Lens",
   "item.roll_mod.green_lens": "Green Lens",
   "item.roll_mod.yellow_lens": "Yellow Lens",
@@ -392,14 +355,11 @@
   "item.roll_mod.purple_lens": "Purple Lens",
   "item.roll_mod.light_blue_lens": "Light blue Lens",
   "item.roll_mod.pale_lens": "Pale Lens",
-
   "item.roll_mod.mv_electric_saber": "MV Electric Saber",
   "item.roll_mod.hv_electric_saber": "HV Electric Saber",
   "item.roll_mod.ev_electric_saber": "EV Electric Saber",
   "item.roll_mod.iv_electric_saber": "IV Electric Saber",
-
   "item.roll_mod.skin_applicator": "Skin Applicator",
-
   "itemGroup.roll_mod.py_datagen": "Datagen items",
   "death.attack.sulfur_damage": " was dissolved by sulfur",
   "block.roll_mod.research_workbench": "Research Workbench",
@@ -426,9 +386,7 @@
   "dimension.ad_astra.mars": "Mars",
   "dimension.ad_astra.venus": "Venus",
   "dimension.ad_astra.mercury": "Mercury",
-
   "block.roll_mod.rocket_controller": "Rocket Controller",
-
   "gui.roll_mod.rocket.flight_button": "Flight",
   "gui.roll_mod.rocket.no_rocket": "No rocket present!",
   "gui.roll_mod.rocket.no_cartridge": "Insert a cartridge!",
@@ -437,7 +395,6 @@
   "gui.roll_mod.rocket.tier_too_low": "Rocket tier is too low for this cartridge!",
   "gui.roll_mod.rocket.cartridge_requires": "Cartridge requires: Tier %s",
   "gui.roll_mod.rocket.your_rocket_tier": "Your rocket: Tier %s",
-
   "item.roll_mod.deepslate_dust": "Deepslate Dust",
   "item.roll_mod.netherrack_dust": "Netherrack Dust",
   "item.roll_mod.end_stone_dust": "End Stone Dust",
@@ -445,9 +402,7 @@
   "item.roll_mod.mars_stone_dust": "Mars Stone Dust",
   "item.roll_mod.venus_stone_dust": "Venus Stone Dust",
   "item.roll_mod.mercury_stone_dust": "Mercury Stone Dust",
-
   "item.roll_mod.fuel_canister": "Empty Fuel Canister",
-
   "item.roll_mod.research_rocket_controller": "Research: Rocket Controller",
   "item.roll_mod.research_rocket_t2": "Research: Tier 2 Rocket",
   "item.roll_mod.research_rocket_t3": "Research: Tier 3 Rocket",
@@ -459,38 +414,24 @@
   "item.roll_mod.research_better_circuits_ev": "Research: Better Circuits (EV)",
   "item.roll_mod.research_better_circuits_iv": "Research: Better Circuits (IV)",
   "item.roll_mod.research_energy_crystals": "Research: Energy Crystals",
-
-
   "loreitem.roll_mod.research_rocket_controller.tooltip_line1": "Blueprint for building the Rocket Controller.",
   "loreitem.roll_mod.research_rocket_controller.tooltip_line2": "Required to manage and launch rockets from your base.",
-
   "loreitem.roll_mod.research_rocket_t2.tooltip_line1": "Unlocks construction of Tier 2 rockets.",
   "loreitem.roll_mod.research_rocket_t2.tooltip_line2": "Supports travel to mid-range planetary orbits.",
-
   "loreitem.roll_mod.research_rocket_t3.tooltip_line1": "Unlocks construction of Tier 3 rockets.",
   "loreitem.roll_mod.research_rocket_t3.tooltip_line2": "Designed for the most distant and hostile destinations.",
-
   "loreitem.roll_mod.research_lithography.tooltip_line1": "Research into precision wafer lithography.",
   "loreitem.roll_mod.research_lithography.tooltip_line2": "Enables production of advanced integrated circuits.",
-
   "loreitem.roll_mod.research_high_efficiency_steam_turbine.tooltip_line1": "Improves the efficiency of industrial steam turbines.",
   "loreitem.roll_mod.research_high_efficiency_steam_turbine.tooltip_line2": "Generates more power without increasing fuel usage.",
-
   "loreitem.roll_mod.research_better_circuits_lv.tooltip_line1": "Optimizes low-voltage circuit design.",
   "loreitem.roll_mod.research_better_circuits_lv.tooltip_line2": "Reduces cost and improves performance of LV machines.",
-
   "loreitem.roll_mod.research_better_circuits_mv.tooltip_line1": "Optimizes medium-voltage circuit design.",
   "loreitem.roll_mod.research_better_circuits_mv.tooltip_line2": "Essential for scaling up your MV infrastructure.",
-
   "loreitem.roll_mod.research_better_circuits_hv.tooltip_line1": "Refines high-voltage circuit topologies.",
   "loreitem.roll_mod.research_better_circuits_hv.tooltip_line2": "Required for stable late-game power distribution.",
-
   "loreitem.roll_mod.research_better_circuits_ev.tooltip_line1": "Pushes extra‑voltage circuit engineering further.",
-  "loreitem.roll_mod.research_better_circuits_ev.tooltip_line2": "Enables ultra‑high throughput EV machines.",
+  "loreitem.roll_mod.research_better_circuits_ev.tooltip_line2": "Enables ultra‑high throughput EV machines."
 
-  "loreitem.roll_mod.research_better_circuits_iv.tooltip_line1": "Frontier research into extreme‑voltage circuits.",
-  "loreitem.roll_mod.research_better_circuits_iv.tooltip_line2": "Needed for the most advanced IV‑tier technology.",
 
-  "loreitem.roll_mod.research_energy_crystals.tooltip_line1": "Studies properties of condensed energy crystal lattices.",
-  "loreitem.roll_mod.research_energy_crystals.tooltip_line2": "Unlocks powerful storage and crystal‑based energy tools."
 }

@@ -75,6 +75,17 @@ repositories {
         }
     }
 
+    maven {
+        // location of the maven that hosts JEI files since January 2023
+        name = "Jared's maven"
+        url = "https://maven.blamejared.com/"
+    }
+    maven {
+        // location of a maven mirror for JEI files, as a fallback
+        name = "ModMaven"
+        url = "https://modmaven.dev"
+    }
+
 }
 
 base {
@@ -202,7 +213,14 @@ dependencies {
     implementation "curse.maven:mi-tweaks-1068413:7722383"
     implementation "curse.maven:extended-industrialization-1068418:7722451"
     implementation "curse.maven:crafttweaker-239197:6929483"
+
     implementation "curse.maven:emi-580555:6420931"
+
+    // compile against the JEI API but do not include it at runtime
+    compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+    // at runtime, use the full JEI jar for NeoForge
+    runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+
 
     //jar in jar
     api jarJar("dev.technici4n:GrandPower:${project.grandpower_version}")

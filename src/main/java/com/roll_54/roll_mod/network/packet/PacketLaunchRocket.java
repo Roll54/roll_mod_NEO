@@ -4,7 +4,7 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.registry.TagRegistry;
 import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
-import com.roll_54.roll_mod.screen.menu.RocketControllerMenu;
+import com.roll_54.roll_mod.gui.menu.RocketControllerMenu;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;

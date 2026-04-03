@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.screen.screen;
+package com.roll_54.roll_mod.gui.screen;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.roll_54.roll_mod.RollMod;
@@ -6,7 +6,7 @@ import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.registry.TagRegistry;
 import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
 import com.roll_54.roll_mod.network.packet.PacketLaunchRocket;
-import com.roll_54.roll_mod.screen.menu.RocketControllerMenu;
+import com.roll_54.roll_mod.gui.menu.RocketControllerMenu;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;

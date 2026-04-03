@@ -1,10 +1,10 @@
 package com.roll_54.roll_mod.registry;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.screen.menu.GrowthChamberMenu;
-import com.roll_54.roll_mod.screen.menu.PedestalMenu;
-import com.roll_54.roll_mod.screen.menu.ResearchWorkbenchMenu;
-import com.roll_54.roll_mod.screen.menu.RocketControllerMenu;
+import com.roll_54.roll_mod.gui.menu.GrowthChamberMenu;
+import com.roll_54.roll_mod.gui.menu.PedestalMenu;
+import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
+import com.roll_54.roll_mod.gui.menu.RocketControllerMenu;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
