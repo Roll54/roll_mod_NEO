@@ -78,6 +78,7 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.MARS_CARTRIDGE.get());
         basicItem(ItemRegistry.MERCURY_CARTRIDGE.get());
         basicItem(ItemRegistry.VENUS_CARTRIDGE.get());
+        basicItem(ItemRegistry.EMPTY_CARTRIDGE.get());
 
         getBuilder(ItemRegistry.RESEARCH_ROCKET_CONTROLLER.get().toString())
                 .parent(new ModelFile.UncheckedModelFile("item/handheld"))
@@ -122,5 +123,10 @@ public class RolltemModelProvider extends ItemModelProvider {
         getBuilder(ItemRegistry.RESEARCH_ENERGY_CRYSTALS.get().toString())
                 .parent(new ModelFile.UncheckedModelFile("item/handheld"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special1"));
+
+        basicItem(ItemRegistry.LITHIUM_SOAP.get());
+        basicItem(ItemRegistry.POTASSIUM_SOAP.get());
+        basicItem(ItemRegistry.SODIUM_SOAP.get());
+
     }
 }

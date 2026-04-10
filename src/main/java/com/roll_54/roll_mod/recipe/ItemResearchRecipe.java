@@ -27,7 +27,12 @@ import java.util.List;
  *  - catalysts: list of {item, successChance}, one of which the player inserts into the catalyst slot
  *  - duration: how many ticks one research attempt takes
  */
-public record ItemResearchRecipe(ItemStack output, MainInput mainInput, List<CatalystEntry> catalysts, int duration) implements Recipe<ItemResearchRecipeInput> {
+public record ItemResearchRecipe(
+        ItemStack output,
+        MainInput mainInput,
+        List<CatalystEntry> catalysts,
+        int duration
+) implements Recipe<ItemResearchRecipeInput> {
 
     // ── inner records ──────────────────────────────────────────────
 

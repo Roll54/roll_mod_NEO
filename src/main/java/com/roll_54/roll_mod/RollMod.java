@@ -26,6 +26,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.swedz.tesseract.neoforge.compat.mi.TesseractMI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,12 @@ public final class RollMod {
         ModConfigs.init();
         MenuTypes.register(eventBus);
         RecipeRegistry.register(eventBus);
+
+//        LOGGER.info("[{}] test bukvi", MODID);
+//        TesseractMI.init("roll_mod");
+//        LOGGER.info("[{}] test bukvi end", MODID);
+    // somehow ruins js code
+
 
         LOGGER.info("[{}] init complete.", MODID);
     }
