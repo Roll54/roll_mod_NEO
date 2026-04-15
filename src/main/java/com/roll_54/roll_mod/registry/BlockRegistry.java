@@ -27,12 +27,6 @@ public class BlockRegistry {
             BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.BAMBOO_WOOD)
     );
 
-    public static final DeferredBlock<Block> RESEARCH_WORKBENCH_TEST = BLOCKS.registerBlock(
-            "research_workbench_test",
-            Block::new,
-            BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.BAMBOO_WOOD)
-    );
-
     public static final DeferredBlock<Block> TREATED_LOG = BLOCKS.register(
             "treated_log",
             () -> new RotatedPillarBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOD))
@@ -113,7 +107,11 @@ public class BlockRegistry {
 
     public static final DeferredBlock<Block> RESEARCH_WORKBENCH = BLOCKS.register(
             "research_workbench",
-            () -> new ResearchWorkbenchBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.STONE).noOcclusion()));
+            () -> new ResearchWorkbenchBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.COPPER).noOcclusion()));
+
+    public static final DeferredBlock<Block> TELESCOPE = BLOCKS.register(
+            "telescope",
+            () -> new TelescopeBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.STONE).noOcclusion()));
 
     static {
         ITEMS.register("treated_planks", () -> new BlockItem(TREATED_PLANKS.get(), new Item.Properties()));

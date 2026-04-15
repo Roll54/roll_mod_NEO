@@ -36,7 +36,7 @@ public class RocketControllerBlockEntityRenderer implements BlockEntityRenderer<
     //   Tier 2 SMALL  sized(0.8, 3.2) → 3.2 / 7.1875 ≈ 0.4452
     //   Tier 3 NORMAL sized(1.1, 4.4) → 4.4 / 7.1875 ≈ 0.6122
     private static final float SCALE_TINY   = 0.6122f;
-    private static final float SCALE_SMALL  = 0.4452f;
+    private static final float SCALE_SMALL  = 0.6122f;
     private static final float SCALE_NORMAL = 0.6122f;
 
     private final TinyRocketModel<Entity> tinyModel;
@@ -87,13 +87,13 @@ public class RocketControllerBlockEntityRenderer implements BlockEntityRenderer<
         poseStack.pushPose();
 
         // Center horizontally on the block, lift above block top.
-        poseStack.translate(0.5, 2.0, 0.5);
+        poseStack.translate(0.5, 2.2, 0.5);
 
         // Uniform scale: 1 model unit = 1/16 block by MC convention; negative Y flips model upright.
-        poseStack.scale(scale, -scale, scale);
+        poseStack.scale(scale +0.2F, -scale -0.2F, scale + 0.2F);
 
         // Rotate 180° so the "front" faces south (positive Z).
-        poseStack.mulPose(Axis.YP.rotationDegrees(180.0f));
+        poseStack.mulPose(Axis.YP.rotationDegrees(90.0f));
 
         model.renderToBuffer(poseStack, consumer, combinedLight, packedOverlay, 0xFFFFFFFF);
 

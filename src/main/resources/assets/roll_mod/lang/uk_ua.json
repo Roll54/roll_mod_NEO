@@ -414,5 +414,6 @@
   "tooltip.roll_mod.clown_hat.line1": "Вітаю: ВИ КЛОУН!!!",
   "tooltip.roll_mod.clown_hat.line2": "Вітаємо з першим квітням, тепер ви можете пофлексити своїми знаннями create",
   "gui.roll_mod.jei.research_workbench.title": "Дослідження",
-  "gui.roll_mod.jei.research_workbench.chance": "Шанс: %s"
+  "gui.roll_mod.jei.research_workbench.chance": "Шанс: %s",
+  "button.roll_mod.close": "Закрити"
 }

@@ -10,11 +10,15 @@ import me.fzzyhmstrs.fzzy_config.validation.minecraft.ValidatedIdentifier;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedDouble;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.data.worldgen.DimensionTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 
+import java.awt.*;
 import java.util.LinkedHashMap;
 import static com.roll_54.roll_mod.RollMod.MODID;
+import static net.minecraft.server.RegistryLayer.DIMENSIONS;
 
 public class MyConfig extends Config {
 
@@ -32,6 +36,8 @@ public class MyConfig extends Config {
 
     public Options options = new Options();
 
+
+    //that how to make maps in config
     public static class Options extends ConfigSection {
 
         public ValidatedIdentifierMap<Double> itemWeights =
@@ -122,6 +128,21 @@ public class MyConfig extends Config {
         public ValidatedDouble MOB_HP_BUFF = new ValidatedDouble(2.5D, 200, 1);
 
 
+    }
+
+
+    public SolarPanelOptions solarPanelOptions = new SolarPanelOptions();
+
+    public class SolarPanelOptions extends ConfigSection {
+
+        public static ValidatedIdentifierMap<Double> dimensionMultipliers =
+                new ValidatedIdentifierMap<Double>(
+                        new LinkedHashMap<>(),
+                        ValidatedIdentifier.ofRegistryKey(
+                                Registries.DIMENSION
+                        ),
+                        new ValidatedDouble(1.0, 100.0, 0.01)
+                );
     }
 
 

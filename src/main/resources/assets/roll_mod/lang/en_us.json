@@ -431,7 +431,8 @@
   "loreitem.roll_mod.research_better_circuits_hv.tooltip_line1": "Refines high-voltage circuit topologies.",
   "loreitem.roll_mod.research_better_circuits_hv.tooltip_line2": "Required for stable late-game power distribution.",
   "loreitem.roll_mod.research_better_circuits_ev.tooltip_line1": "Pushes extra‑voltage circuit engineering further.",
-  "loreitem.roll_mod.research_better_circuits_ev.tooltip_line2": "Enables ultra‑high throughput EV machines."
+  "loreitem.roll_mod.research_better_circuits_ev.tooltip_line2": "Enables ultra‑high throughput EV machines.",
+  "button.roll_mod.close": "Close"
 
 
 }

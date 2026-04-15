@@ -6,6 +6,7 @@ import com.roll_54.roll_mod.recipe.ItemResearchRecipe;
 import com.roll_54.roll_mod.recipe.ItemResearchRecipeInput;
 import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -15,6 +16,7 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.WorldlyContainer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -35,7 +37,7 @@ import java.util.Optional;
  *   1 – CATALYST    (the item the player inserts to trigger research)
  *   2 – OUTPUT      (blueprint is placed here on success)
  */
-public class ResearchWorkbenchBlockEntity extends BlockEntity implements MenuProvider {
+public class ResearchWorkbenchBlockEntity extends BlockEntity implements MenuProvider, WorldlyContainer {
 
     // slot indices
     public static final int MAIN_INPUT_SLOT = 0;
@@ -213,4 +215,80 @@ public class ResearchWorkbenchBlockEntity extends BlockEntity implements MenuPro
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
+
+	@Override
+	public int[] getSlotsForFace(Direction side) {
+		if (side == Direction.DOWN) {
+			return new int[]{OUTPUT_SLOT};
+		}
+		if (side == Direction.UP) {
+			return new int[]{MAIN_INPUT_SLOT};
+		}
+		return new int[]{CATALYST_SLOT};
+	}
+
+	@Override
+	public boolean canPlaceItemThroughFace(int index, ItemStack itemStackIn, @Nullable Direction direction) {
+		if (direction == Direction.UP && index == MAIN_INPUT_SLOT) {
+			return true;
+		}
+		if (direction != Direction.UP && direction != Direction.DOWN && index == CATALYST_SLOT) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean canTakeItemThroughFace(int index, ItemStack stack, Direction direction) {
+		return direction == Direction.DOWN && index == OUTPUT_SLOT;
+	}
+
+	@Override
+	public int getContainerSize() {
+		return itemHandler.getSlots();
+	}
+
+	@Override
+	public boolean isEmpty() {
+		for (int i = 0; i < itemHandler.getSlots(); i++) {
+			if (!itemHandler.getStackInSlot(i).isEmpty()) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public ItemStack getItem(int index) {
+		return itemHandler.getStackInSlot(index);
+	}
+
+	@Override
+	public ItemStack removeItem(int index, int count) {
+		return itemHandler.extractItem(index, count, false);
+	}
+
+	@Override
+	public ItemStack removeItemNoUpdate(int index) {
+		ItemStack stack = getItem(index);
+		setItem(index, ItemStack.EMPTY);
+		return stack;
+	}
+
+	@Override
+	public void setItem(int index, ItemStack stack) {
+		itemHandler.setStackInSlot(index, stack);
+	}
+
+	@Override
+	public boolean stillValid(Player player) {
+		return true;
+	}
+
+	@Override
+	public void clearContent() {
+		for (int i = 0; i < itemHandler.getSlots(); i++) {
+			itemHandler.setStackInSlot(i, ItemStack.EMPTY);
+		}
+	}
 }

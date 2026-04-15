@@ -31,6 +31,10 @@ public class BlockEntites {
             BLOCK_ENTITIES.register("rocket_controller_be", () -> BlockEntityType.Builder.of(
                     RocketControllerBlockEntity::new, BlockRegistry.ROCKET_CONTROLLER_BLOCK.get()).build(null));
 
+    public static final Supplier<BlockEntityType<RocketControllerBlockEntity>> TELESCOPE_BE =
+            BLOCK_ENTITIES.register("telescope_be", () -> BlockEntityType.Builder.of(
+                    RocketControllerBlockEntity::new, BlockRegistry.TELESCOPE.get()).build(null));
+
 
     public static void register(IEventBus eventBus){
             BLOCK_ENTITIES.register(eventBus);
