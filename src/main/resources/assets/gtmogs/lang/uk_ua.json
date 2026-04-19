@@ -25,6 +25,10 @@
   "ore_vein.gtmogs.vanilla/end/scheelite": "Шеєліт",
   "ore_vein.gtmogs.vanilla/end/uraninite": "Ураніт",
   "ore_vein.gtmogs.vanilla/end/blue_ores": "Лазурит",
+  "ore_vein.gtmogs.vanilla/end/olivine": "Маґнезієві мінерали",
+  "ore_vein.gtmogs.vanilla/end/sheldonite": "Платина",
+  "ore_vein.gtmogs.vanilla/end/azure_silver": "Лазурне срібло",
+
 
   "ore_vein.gtmogs.vanilla/nether/antimony_copper": "Стибій-мідь",
   "ore_vein.gtmogs.vanilla/nether/emerald_berrylium": "Берилій",
@@ -34,6 +38,8 @@
   "ore_vein.gtmogs.vanilla/nether/nether_quartz": "Незерський кварц",
   "ore_vein.gtmogs.vanilla/nether/nether_redstone": "Незерський редстоун",
   "ore_vein.gtmogs.vanilla/nether/sulfur": "Сірка",
+  "ore_vein.gtmogs.vanilla/nether/bismuth": "Бісмутин",
+  "ore_vein.gtmogs.vanilla/nether/stannite": "Станніт",
 
   "ore_vein.gtmogs.vanilla/overworld/overworld_bauxite": "Глибосланцевий боксит",
   "ore_vein.gtmogs.vanilla/overworld/overworld_bauxite_up": "Кам'яний боксит",
