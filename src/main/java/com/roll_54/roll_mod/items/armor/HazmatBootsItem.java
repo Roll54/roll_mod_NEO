@@ -7,7 +7,9 @@ import com.roll_54.roll_mod.util.TooltipOptions;
 import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.Item;
@@ -53,17 +55,18 @@ public class HazmatBootsItem extends TooltipArmorItem {
     public @NonNull ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
         return ItemAttributeModifiers.builder()
                 .add(
-                        AttributeRegistry.SULFUR_ARMOR,
-                        new AttributeModifier(
-                                ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "gravichestplate_flight") //todo назвать по вумному.
-                                //MI.id("gravichestplate_flight") стара фігня
-                                , 1.5, AttributeModifier.Operation.
+                        AttributeRegistry.SULFUR_ARMOR, new AttributeModifier(
+                                RollMod.id("hazmatboots_sulfur_armor"),
+                                1.5,
+                                AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.FEET
+                )
 
-                                //ADD_MULTIPLIED_BASE
-                                ADD_VALUE
-                        ),
-                        EquipmentSlotGroup.FEET)
-                .build();
+                .add(
+                        Attributes.ARMOR, new AttributeModifier(
+                                RollMod.id("hazmatboots_armor"),
+                                4,
+                                AttributeModifier.Operation.ADD_VALUE),EquipmentSlotGroup.FEET
+                ).build();
 
     }
 }

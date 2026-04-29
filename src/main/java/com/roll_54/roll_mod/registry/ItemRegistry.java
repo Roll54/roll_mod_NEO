@@ -1,11 +1,14 @@
 package com.roll_54.roll_mod.registry;
 
 import com.roll_54.roll_mod.items.armor.HazmatBootsItem;
+import com.roll_54.roll_mod.items.armor.HazmatChestplateItem;
+import com.roll_54.roll_mod.items.armor.HazmatLeggingsItem;
 import com.roll_54.roll_mod.items.armor.ModArmorMaterials;
 import com.roll_54.roll_mod.items.*;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.items.armor.geckolib.ClownHatArmorItem;
 import com.roll_54.roll_mod.items.armor.geckolib.ExampleArmorItem;
+import com.roll_54.roll_mod.items.armor.geckolib.HazmatHelmetItem;
 import com.roll_54.roll_mod.items.armor.geckolib.MultiProtectingGraviChestItem;
 import com.roll_54.roll_mod.items.electricItems.*;
 import com.roll_54.roll_mod.items.spaceModule.DimensionCartridgeCItem;
@@ -98,43 +101,32 @@ public class ItemRegistry {
 
 
     // БРОНІКИ!!!
-    public static final DeferredHolder<Item, Item> HAZMAT_HELMET = ITEMS.register(
+    public static final DeferredHolder<Item, HazmatHelmetItem> HAZMAT_HELMET = ITEMS.register(
             "hazmat_helmet",
-            () -> new TooltipArmorItem.Builder(
-                    Holder.direct(ModArmorMaterials.HAZMAT_ARMOR.get()),
-                    ArmorItem.Type.HELMET,
-                    new Item.Properties().stacksTo(1).durability(2400)
+            () -> new HazmatHelmetItem(
+                    new HazmatHelmetItem.Properties().stacksTo(1),
+                    TooltipOptions.nameAndLore(0xe8c52a, 2, 0xc28400)
+
             )
-                    .tooltipLines(2)
-                    .nameColor(0xe8c52a)  // золотий
-                    .loreColor(0xc28400)  // яскраво-жовтий
-                    .build()
+
     );
 
     public static final DeferredHolder<Item, Item> HAZMAT_CHESTPLATE = ITEMS.register(
             "hazmat_chestplate",
-            () -> new TooltipArmorItem.Builder(
-                    Holder.direct(ModArmorMaterials.HAZMAT_ARMOR.get()),
+            () -> new HazmatChestplateItem(
                     ArmorItem.Type.CHESTPLATE,
-                    new Item.Properties().stacksTo(1).durability(2400)
+                    new HazmatChestplateItem.Properties().stacksTo(1).durability(2400),
+                    TooltipOptions.nameAndLore(0xe8c52a, 2, 0xc28400)
             )
-                    .tooltipLines(2)
-                    .nameColor(0xe8c52a)
-                    .loreColor(0xc28400)
-                    .build()
     );
 
     public static final DeferredHolder<Item, Item> HAZMAT_LEGGINGS = ITEMS.register(
             "hazmat_leggings",
-            () -> new TooltipArmorItem.Builder(
-                    Holder.direct(ModArmorMaterials.HAZMAT_ARMOR.get()),
+            () -> new HazmatLeggingsItem(
                     ArmorItem.Type.LEGGINGS,
-                    new Item.Properties().stacksTo(1).durability(2400)
+                    new Item.Properties().stacksTo(1).durability(2400),
+                    TooltipOptions.nameAndLore(0xe8c52a, 2, 0xc28400)
             )
-                    .tooltipLines(1)
-                    .nameColor(0xe8c52a)
-                    .loreColor(0xc28400)
-                    .build()
     );
 
     public static final DeferredHolder<Item, Item> HAZMAT_BOOTS = ITEMS.register(

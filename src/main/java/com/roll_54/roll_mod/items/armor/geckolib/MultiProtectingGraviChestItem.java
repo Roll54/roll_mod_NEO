@@ -103,7 +103,7 @@ public class MultiProtectingGraviChestItem extends ArmorItem implements ISimpleE
         if (this.isActivatedSecond(stack)) {
             builder.add(
                     AttributeRegistry.SULFUR_ARMOR,
-                    new AttributeModifier(RollMod.id("gravichestplate_sulfur_armor"), 6.0, AttributeModifier.Operation.ADD_MULTIPLIED_BASE),
+                    new AttributeModifier(RollMod.id("gravichestplate_sulfur_armor"), 16.0, AttributeModifier.Operation.ADD_VALUE),
                     EquipmentSlotGroup.CHEST
             );
         }
