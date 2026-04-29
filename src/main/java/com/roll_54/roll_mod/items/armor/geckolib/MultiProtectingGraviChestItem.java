@@ -6,19 +6,21 @@ import com.roll_54.roll_mod.client.gecko.MultiProtectingGraviChestPlateRenderer;
 import com.roll_54.roll_mod.data.TwoStateToggleableItem;
 import com.roll_54.roll_mod.registry.AttributeRegistry;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.ArmorItem;
-import net.minecraft.world.item.ArmorMaterial;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.common.NeoForgeMod;
 import software.bernie.geckolib.animatable.GeoItem;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
@@ -27,14 +29,18 @@ import software.bernie.geckolib.animation.AnimatableManager;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
+import java.util.List;
 import java.util.function.Consumer;
 
-import static com.roll_54.roll_mod.registry.ComponentsRegistry.FIRST_STATE_ACTIVATED;
-import static com.roll_54.roll_mod.registry.ComponentsRegistry.SECOND_STATE_ACTIVATED;
+import static com.roll_54.roll_mod.registry.ComponentsRegistry.*;
+import static net.minecraft.world.level.Level.NETHER;
 
 public class MultiProtectingGraviChestItem extends ArmorItem implements ISimpleEnergyItem, TwoStateToggleableItem, GeoItem {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    public static long ENERGY_CAPACITY = 20000000L;
+
+    // Important numbers... I need to remember this number...
+    public static long ENERGY_CAPACITY = 2_000_000_000L;
+
 
 
     public MultiProtectingGraviChestItem(Holder<ArmorMaterial> material, Properties properties) {
@@ -139,19 +145,34 @@ public class MultiProtectingGraviChestItem extends ArmorItem implements ISimpleE
     }
 
 
-    /* todo реалізувати.
+
     @Override
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
         if (level.isClientSide())
             return;
         if (entity instanceof Player player && stack == player.getItemBySlot(EquipmentSlot.CHEST)) {
-            if (player.getAbilities().flying) {
-                setEnergy(stack, Math.max(0, getEnergy(stack) - FLIGHT_COST));
+            if (player.getAbilities().flying && isActivatedFirst(stack)) {
+                setStoredEnergy(stack, Math.max(0, getStoredEnergy(stack) - 5000));
+            }
+            if (isActivatedSecond(stack)){
+                setStoredEnergy(stack, Math.max(0, getStoredEnergy(stack) - 10000));
             }
         }
     }
-    */
 
-
+    @Override
+    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+        if (Screen.hasShiftDown()) {
+            tooltip.add(Component.translatable("cartridge.destination")
+                    .withStyle(net.minecraft.ChatFormatting.AQUA));
+            tooltip.add(Component.translatable("cartridge.required_tier")
+                    .withStyle(net.minecraft.ChatFormatting.GOLD));
+            tooltip.add(Component.translatable("cartridge.fuel_required")
+                    .withStyle(net.minecraft.ChatFormatting.GRAY));
+        } else {
+            tooltip.add(Component.translatable("bukvi"));
+        }
+        super.appendHoverText(stack, context, tooltip, flag);
+    }
 
 }

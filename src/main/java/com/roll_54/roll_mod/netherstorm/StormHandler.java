@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.netherstorm;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.registry.BlockRegistry;
+import com.roll_54.roll_mod.registry.AttributeRegistry;
 import com.roll_54.roll_mod.registry.ModConfigs;
 import com.roll_54.roll_mod.registry.ModEffects;
 import net.minecraft.core.BlockPos;
@@ -21,25 +21,19 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-import static com.roll_54.roll_mod.data.ModTags.STORM_PROTECTIVE_TAG;
 import static com.roll_54.roll_mod.data.RMMAttachment.STORM_PROTECTED;
 
 @EventBusSubscriber(modid = RollMod.MODID)
 public class StormHandler {
 
     public static int TIME_TO_SPAWN_WITHERS = 18000;
-    public static int TIME_TO_SPAWN_BERRIES = 3000;
 
     private static StormState state;
 
@@ -88,72 +82,41 @@ public class StormHandler {
         }
     }
 
-    //Перевірка на захист від шторму ДЛЯ ВСІЄЇ БРОНІ, а то хулє ми шапку надягаємо і нам добре?
-    private static boolean isWearingFullProtectiveSet(ServerPlayer player) {
-        return player.getItemBySlot(EquipmentSlot.HEAD).is(STORM_PROTECTIVE_TAG)
-                && player.getItemBySlot(EquipmentSlot.CHEST).is(STORM_PROTECTIVE_TAG)
-                && player.getItemBySlot(EquipmentSlot.LEGS).is(STORM_PROTECTIVE_TAG)
-                && player.getItemBySlot(EquipmentSlot.FEET).is(STORM_PROTECTIVE_TAG);
-    }
+    public static boolean isPlayerProtectedFromStorm(ServerPlayer player){
+        boolean protection = false;
+        double protectionPoints = player.getAttributes().getValue(AttributeRegistry.SULFUR_ARMOR);
+        var gamemode = player.gameMode.getGameModeForPlayer();
 
+        if (
+                gamemode == GameType.CREATIVE ||
+                gamemode == GameType.SPECTATOR ||
+                player.hasEffect(ModEffects.SULFUR_RESISTANCE) ||
+                player.getData(STORM_PROTECTED) ||
+                        protectionPoints >= 16
+        )
+            protection = true;
+
+        return protection;
+    }
 
     private static void applyStormInNether(MinecraftServer server) {
 
         ServerLevel nether = server.getLevel(Level.NETHER);
+
         if (nether == null) return;
 
         for (ServerPlayer player : nether.players()) {
-            // пропускаємо креатив/спектатор
-            var gm = player.gameMode.getGameModeForPlayer();
-            if (gm.isCreative() || gm == GameType.SPECTATOR) continue;
 
-
-            boolean hasFullSet = true;
-            List<ItemStack> armorPieces = new ArrayList<>();
-
-            for (EquipmentSlot slot : EquipmentSlot.values()) {
-                if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
-
-                    ItemStack piece = player.getItemBySlot(slot);
-                    armorPieces.add(piece);
-
-                    if (!piece.is(STORM_PROTECTIVE_TAG)) {
-                        hasFullSet = false;
-                    }
-                }
-            }
-            boolean hasPrimeProtection = player.getData(STORM_PROTECTED);
-            if (hasFullSet  || player.hasEffect(ModEffects.SULFUR_RESISTANCE)|| hasPrimeProtection) {
-                // 🔧 Зношення кожні 20 тік
-                if (player.tickCount % 20 == 1) {
-                    for (int i = 0; i < armorPieces.size(); i++) {
-                        ItemStack piece = armorPieces.get(i);
-
-                        if (piece.is(STORM_PROTECTIVE_TAG)) {
-                            EquipmentSlot slot = EquipmentSlot.values()[i + 2]; // HEAD..FEET are after HAND slots
-                            piece.hurtAndBreak(1, player, slot);
-                        }
-                    }
-                }
-
-            } else {
-                // ❌ Немає повного сету → негативні ефекти
+            if (!isPlayerProtectedFromStorm(player) ){
                 player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 1600, 3));
                 player.addEffect(new MobEffectInstance(ModEffects.SULFUR_POISONING, 200, 4));
                 player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200, 0));
-            }
-
-
-            if (isWearingFullProtectiveSet(player)) {
-                // гарантовано нема wither/poison під час шторму з повним сетом
+            } else {
                 player.removeEffect(ModEffects.SULFUR_POISONING);
                 player.removeEffect(MobEffects.POISON);
             }
+        }
 
-        }
-        if (state != null && state.stormTicks % TIME_TO_SPAWN_BERRIES == 0) {
-            tryGrowSulfurBerries(nether);
-        }
     }
 
     private static void startStorm(MinecraftServer server) {
@@ -308,7 +271,7 @@ public class StormHandler {
         }
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     private static BlockPos findGroundedPosNearPlayer(ServerLevel level, ServerPlayer player, int radius, int tries) {
         for (int i = 0; i < tries; i++) {
             int dx = level.random.nextIntBetweenInclusive(-radius, radius);
@@ -325,7 +288,7 @@ public class StormHandler {
     /**
      * Від заданої точки шукає найближчу «землю під ногами»: спускаємось вниз, трохи перевіряємо вгору.
      */
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     private static BlockPos findGroundedPosFrom(ServerLevel level, BlockPos from, int verticalScan) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(from.getX(), from.getY(), from.getZ());
 
@@ -445,33 +408,5 @@ public class StormHandler {
         mob.getPersistentData().putBoolean("roll_mod:storm_spawn", true);
     }
 
-    private static void tryGrowSulfurBerries(ServerLevel nether) {
-        RandomSource random = nether.random;
 
-        for (int i = 0; i < 10; i++) {
-            ServerPlayer player = nether.getRandomPlayer();
-            if (player == null) return;
-
-            int x = player.getBlockX() + random.nextIntBetweenInclusive(-16, 16);
-            int z = player.getBlockZ() + random.nextIntBetweenInclusive(-16, 16);
-            int y = player.getBlockY() + random.nextIntBetweenInclusive(-4, 4);
-
-            BlockPos pos = new BlockPos(x, y, z);
-            BlockPos above = pos.above();
-
-            var state = nether.getBlockState(pos);
-            if ((state.is(Blocks.SOUL_SAND) || state.is(Blocks.SOUL_SOIL))
-                    && nether.isEmptyBlock(above)) {
-
-                var berryBlock = BlockRegistry.SULFUR_BERRY_BLOCK.get().defaultBlockState();
-
-                if (berryBlock.hasProperty(BlockStateProperties.AGE_7)) {
-                    berryBlock = berryBlock.setValue(BlockStateProperties.AGE_7, 0);
-                }
-
-                nether.setBlock(above, berryBlock, 3);
-                RollMod.LOGGER.info("[NetherStorm] Grew sulfur berry at {}, {}, {}", x, y + 1, z);
-            }
-        }
-    }
 }

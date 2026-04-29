@@ -25,10 +25,6 @@ public class HudRender {
             ItemStack chest = mc.player.getItemBySlot(EquipmentSlot.CHEST);
             Item active = chest.getItem();
 
-            if (active instanceof MultiProtectingGraviChestItem) {
-
-                active = chest.getItem();
-
                 if (active instanceof MultiProtectingGraviChestItem) {
 
                     MultiProtectingGraviChestItem gsp = (MultiProtectingGraviChestItem) active;
@@ -43,15 +39,14 @@ public class HudRender {
                         gravichestplateActiveComponent = Component.translatable("bukvi").setStyle(Style.EMPTY.withColor(ChatFormatting.RED));
                     }
 
-                    guiGraphics.drawString(mc.font, gravichestplateActiveComponent, 4, 0, 16383998);
+                    guiGraphics.drawString(mc.font, gravichestplateActiveComponent, 4, 10, 16383998);
                     long energyPercentage = gsp.getStoredEnergy(chest) * 100L / ENERGY_CAPACITY;
                     Component fillText = Component.translatable("bukvi1", energyPercentage);
-                    guiGraphics.drawString(mc.font, fillText, 4, 10, 16383998);
+                    guiGraphics.drawString(mc.font, fillText, 4, 0, 16383998);
 
                 }
 
                 guiGraphics.pose().popPose();
-            }
 
         }
     }
