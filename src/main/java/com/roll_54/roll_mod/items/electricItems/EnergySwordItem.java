@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.items.electricItems;
 
 import aztech.modern_industrialization.MIComponents;
-import com.roll_54.roll_mod.data.ToggleableItem;
+import com.roll_54.roll_mod.data.OneStateToggleableItem;
 import com.roll_54.roll_mod.util.EnergyFormatUtils;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
 import net.minecraft.ChatFormatting;
@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class EnergySwordItem extends Item implements ToggleableItem, ISimpleEnergyItem {
+public class EnergySwordItem extends Item implements OneStateToggleableItem, ISimpleEnergyItem {
 
     private final long energyCapacity;
     private final long energyPerHit;

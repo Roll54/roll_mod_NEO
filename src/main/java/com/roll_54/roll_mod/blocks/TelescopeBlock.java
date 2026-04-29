@@ -6,20 +6,15 @@ import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
-import com.lowdragmc.lowdraglib2.gui.ui.elements.inventory.InventorySlots;
 import com.lowdragmc.lowdraglib2.gui.ui.style.StylesheetManager;
-import com.lowdragmc.lowdraglib2.syncdata.holder.IPersistManagedHolder;
-import com.mojang.serialization.MapCodec;
 import com.roll_54.roll_mod.blocks.entity.TelescopeBlockEntity;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BaseEntityBlock;
@@ -35,9 +30,10 @@ import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
-public class TelescopeBlock extends BaseEntityBlock implements BlockUIMenuType.BlockUI{
+public class TelescopeBlock extends BaseEntityBlock implements BlockUIMenuType.BlockUI {
     public static final MapCodec<TelescopeBlock> CODEC = simpleCodec(TelescopeBlock::new);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -49,8 +45,7 @@ public class TelescopeBlock extends BaseEntityBlock implements BlockUIMenuType.B
     @Override
     protected RenderShape getRenderShape(BlockState blockState) {
         return RenderShape.MODEL;
-    } // <- block is not invinsible
-
+    }
 
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
@@ -59,7 +54,7 @@ public class TelescopeBlock extends BaseEntityBlock implements BlockUIMenuType.B
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos blockPos, BlockState blockState) {
-        return new TelescopeBlockEntity(blockPos, blockState);//ТИМЧАСОВО
+        return new TelescopeBlockEntity(blockPos, blockState);
     }
 
     @Override
@@ -95,23 +90,15 @@ public class TelescopeBlock extends BaseEntityBlock implements BlockUIMenuType.B
         builder.add(FACING);
     }
 
+
+    /**
+     * Creates and returns the {@link ModularUI} associated with the provided {@link BlockUIHolder}.
+     *
+     * @param holder the {@link BlockUIHolder} containing contextual information for constructing the {@link ModularUI}.
+     * @return a {@link ModularUI} generated based on the given {@link BlockUIHolder}.
+     */
     @Override
     public ModularUI createUI(BlockUIMenuType.BlockUIHolder holder) {
-        var root = new UIElement().addClass("panel_bg").addChildren(
-                new Label().setText("Block UI"),
-                new InventorySlots(),
-                new Button().setText(Component.translatable("button.roll_mod.close")).setOnClick(e ->
-                    holder.player.closeContainer()
-                )
-
-        );
-        return ModularUI.of(
-                UI.of(root, StylesheetManager.INSTANCE.getStylesheetSafe(StylesheetManager.GDP)),
-                holder.player
-        );
+        return null;
     }
-
-
-
-
 }

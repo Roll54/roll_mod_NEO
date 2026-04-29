@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.items.electricItems.refactored;
 
 import aztech.modern_industrialization.MIComponents;
-import com.roll_54.roll_mod.data.ToggleableItem;
+import com.roll_54.roll_mod.data.OneStateToggleableItem;
 import com.roll_54.roll_mod.data.UpgradeComponent;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
 import net.minecraft.core.component.DataComponentType;
@@ -13,7 +13,7 @@ import java.util.List;
 
 import static com.roll_54.roll_mod.registry.ComponentsRegistry.UPGRADES;
 
-public class ComponentEnergyDrill  extends Item implements ISimpleEnergyItem, ToggleableItem {
+public class ComponentEnergyDrill  extends Item implements ISimpleEnergyItem, OneStateToggleableItem {
     private final int tier;
 
     public ComponentEnergyDrill(Properties properties, int tier) {

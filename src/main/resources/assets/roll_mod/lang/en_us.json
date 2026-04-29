@@ -432,7 +432,13 @@
   "loreitem.roll_mod.research_better_circuits_hv.tooltip_line2": "Required for stable late-game power distribution.",
   "loreitem.roll_mod.research_better_circuits_ev.tooltip_line1": "Pushes extra‑voltage circuit engineering further.",
   "loreitem.roll_mod.research_better_circuits_ev.tooltip_line2": "Enables ultra‑high throughput EV machines.",
-  "button.roll_mod.close": "Close"
+  "button.roll_mod.close": "Close",
+  "key.roll_mod.gravichestplate.chestplate_toggle_one": "Toggle Chestplate Mode 1",
+  "key.roll_mod.gravichestplate.chestplate_toggle_two": "Toggle Chestplate Mode 2",
+  "key.roll_mod.gravichestplate.chestplate_toggle_three": "Toggle Chestplate Mode 3",
+  "key.categories.roll_mod": "Roll Mod",
 
+  "bukvi": "PLACEHOLDER TEXT, WIP!!!",
+  "bukvi1": "PLACEHOLDER TEXT, WIP!!! %s"
 
 }

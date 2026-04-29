@@ -10,7 +10,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 
-@EventBusSubscriber(modid = RollMod.MODID) // реєстрація на ігровому (Forge) bus
+@EventBusSubscriber(modid = RollMod.MODID) // реєстрація на ігровому bus
 public final class EndPortalOnlyPlayers {
     private EndPortalOnlyPlayers() {}
 

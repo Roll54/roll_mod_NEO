@@ -3,7 +3,6 @@ package com.roll_54.roll_mod.registry;
 import com.mojang.serialization.Codec;
 import com.roll_54.roll_mod.data.UpgradeComponent;
 import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
-import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -18,7 +17,9 @@ import java.util.function.Supplier;
 
 public class ComponentsRegistry {
     public static final DeferredRegister.DataComponents COMPONENTS;
-    public static final Supplier<DataComponentType<Boolean>> ACTIVATED;
+    public static final Supplier<DataComponentType<Boolean>> FIRST_STATE_ACTIVATED;
+    public static final Supplier<DataComponentType<Boolean>> SECOND_STATE_ACTIVATED;
+    public static final Supplier<DataComponentType<Boolean>> THIRD_STATE_ACTIVATED;
     //skins for items
     public static final Supplier<DataComponentType<Float>> TRANS;
     public static final Supplier<DataComponentType<Float>> CAT;
@@ -51,7 +52,10 @@ public class ComponentsRegistry {
     static {
         COMPONENTS = DeferredRegister.createDataComponents(Registries.DATA_COMPONENT_TYPE, "roll_mod");
 
-        ACTIVATED = create("activated", Codec.BOOL, ByteBufCodecs.BOOL);
+        FIRST_STATE_ACTIVATED = create("first_activated", Codec.BOOL, ByteBufCodecs.BOOL);
+        SECOND_STATE_ACTIVATED = create("second_activated", Codec.BOOL, ByteBufCodecs.BOOL);
+        THIRD_STATE_ACTIVATED = create("third_activated", Codec.BOOL, ByteBufCodecs.BOOL);
+
         TRANS = create("trans", Codec.FLOAT, ByteBufCodecs.FLOAT);
         CAT = create("cat", Codec.FLOAT, ByteBufCodecs.FLOAT);
         //ENERGY_USAGE_PERTICK = create( "energy_usage_pertick", Codec.INT, ByteBufCodecs.INT);

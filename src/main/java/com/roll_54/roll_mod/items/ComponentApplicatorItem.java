@@ -24,7 +24,7 @@ public class ComponentApplicatorItem extends Item {
             ComponentsRegistry.APPLICATOR_COLOR.get(),
             CUSTOM_NAME,
             LORE,
-            ComponentsRegistry.ACTIVATED.get(),
+            ComponentsRegistry.FIRST_STATE_ACTIVATED.get(),
             MIComponents.ENERGY.get(),
             ComponentsRegistry.SKIN_APPLICATOR_USED.get()
 

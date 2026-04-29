@@ -6,6 +6,7 @@ import com.roll_54.roll_mod.items.*;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.items.armor.geckolib.ClownHatArmorItem;
 import com.roll_54.roll_mod.items.armor.geckolib.ExampleArmorItem;
+import com.roll_54.roll_mod.items.armor.geckolib.MultiProtectingGraviChestItem;
 import com.roll_54.roll_mod.items.electricItems.*;
 import com.roll_54.roll_mod.items.spaceModule.DimensionCartridgeCItem;
 import com.roll_54.roll_mod.items.spaceModule.RocketItem;
@@ -1274,6 +1275,16 @@ public class ItemRegistry {
                             .withStyle(style -> style.withColor(0xFFAA00)));
                 }
             });
+
+    public static final DeferredHolder<Item, MultiProtectingGraviChestItem> MULTI_PROTECTING_GRAVI_CHESTPLATE =
+            ITEMS.register("multi_protecting_gravi_chestplate", () -> new MultiProtectingGraviChestItem(ModArmorMaterials.METEORITE_ARMOR, new Item.Properties()));
+
+
+
+
+
+
+
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);

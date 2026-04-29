@@ -3,6 +3,8 @@ package com.roll_54.roll_mod.registry;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.recipe.GrowthChamberRecipe;
 import com.roll_54.roll_mod.recipe.ItemResearchRecipe;
+import com.roll_54.roll_mod.recipe.TelescopeRecipe;
+import com.roll_54.roll_mod.recipe.TelescopeRecipeSerializer;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
@@ -41,6 +43,17 @@ public class RecipeRegistry {
                 @Override
                 public String toString() {
                     return "item_research";
+                }
+            });
+
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TelescopeRecipe>> TELESCOPE_RECIPE_SERIALIZER =
+            RECIPE_SERIALIZERS.register("telescope", TelescopeRecipeSerializer::new);
+
+    public static final DeferredHolder<RecipeType<?>, RecipeType<TelescopeRecipe>> TELESCOPE_RECIPE_TYPE =
+            RECIPE_TYPES.register("telescope", () -> new RecipeType<TelescopeRecipe>() {
+                @Override
+                public String toString() {
+                    return "telescope";
                 }
             });
 

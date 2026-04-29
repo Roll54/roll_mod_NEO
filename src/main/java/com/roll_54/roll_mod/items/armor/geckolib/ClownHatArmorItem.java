@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.items.armor.geckolib;
 
-import com.roll_54.roll_mod.client.ClownHatRenderer;
+import com.roll_54.roll_mod.client.gecko.ClownHatRenderer;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.core.Holder;
 import net.minecraft.world.entity.EquipmentSlot;

@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.network;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.network.packet.PacketLaunchRocket;
+import com.roll_54.roll_mod.network.packet.armor.TwotypedActivateItemPacket;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -16,6 +17,11 @@ public class NetworkHandler {
                 PacketLaunchRocket.TYPE,
                 PacketLaunchRocket.STREAM_CODEC,
                 PacketLaunchRocket::handle
+        );
+        registrar.playToServer(
+                TwotypedActivateItemPacket.TYPE,
+                TwotypedActivateItemPacket.STREAM_CODEC,
+                TwotypedActivateItemPacket::handle
         );
     }
 }

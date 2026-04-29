@@ -2,10 +2,11 @@ package com.roll_54.roll_mod.items.electricItems;
 
 import aztech.modern_industrialization.MIComponents;
 import com.roll_54.roll_mod.util.EnergyFormatUtils;
-import com.roll_54.roll_mod.data.ToggleableItem;
+import com.roll_54.roll_mod.data.OneStateToggleableItem;
 import dev.technici4n.grandpower.api.ILongEnergyStorage;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,7 +21,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.List;
 
-public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, ToggleableItem {
+public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, OneStateToggleableItem {
 
     private final long energyCapacity;
     private final long maxInput;
@@ -36,7 +37,7 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, Toggle
     }
 
     @Override
-    public net.minecraft.core.component.DataComponentType<Long> getEnergyComponent() {
+    public DataComponentType<Long> getEnergyComponent() {
         return MIComponents.ENERGY.get();
     }
 

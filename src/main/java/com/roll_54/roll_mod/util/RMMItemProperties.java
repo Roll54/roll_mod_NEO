@@ -45,7 +45,7 @@ public class RMMItemProperties {
                         item,
                         ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "activated"),
                         (stack, level, entity, seed) ->
-                                stack.getOrDefault(ComponentsRegistry.ACTIVATED.get(), false) ? 1.0F : 0.0F
+                                stack.getOrDefault(ComponentsRegistry.FIRST_STATE_ACTIVATED.get(), false) ? 1.0F : 0.0F
                 );
                 ItemProperties.register(
                         item,
