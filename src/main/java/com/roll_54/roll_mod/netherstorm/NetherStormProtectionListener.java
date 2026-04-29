@@ -2,21 +2,16 @@ package com.roll_54.roll_mod.netherstorm;
 
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.registry.ModEffects;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent;
 
-import static com.roll_54.roll_mod.data.ModTags.STORM_PROTECTIVE_TAG;
-import static com.roll_54.roll_mod.data.RMMAttachment.STORM_PROTECTED;
-import static com.roll_54.roll_mod.netherstorm.StormHandler.isStormActive;
+import static com.roll_54.roll_mod.netherstorm.StormHandler.isPlayerProtectedFromStorm;
 
 @EventBusSubscriber(modid = RollMod.MODID)
 public final class NetherStormProtectionListener {
@@ -24,34 +19,22 @@ public final class NetherStormProtectionListener {
     private NetherStormProtectionListener() {}
 
     @SubscribeEvent
-    public static void onTravel(EntityTravelToDimensionEvent e) {
+    public static void onTravel(EntityTravelToDimensionEvent event) {
 
-        if (!(e.getEntity() instanceof ServerPlayer player)) return;
+        if (!(event.getEntity() instanceof ServerPlayer player)) return;
 
-        ResourceKey<Level> to = e.getDimension();
+        ResourceKey<Level> to = event.getDimension();
 
         if (to != Level.NETHER) return;
 
-        boolean hasFullSet = true;
-
-        for (EquipmentSlot slot : EquipmentSlot.values()) {
-            if (slot.getType() == EquipmentSlot.Type.HUMANOID_ARMOR) {
-                ItemStack piece = player.getItemBySlot(slot);
-                if (!piece.is(STORM_PROTECTIVE_TAG)) {
-                    hasFullSet = false;
-                    break;
-                }
-            }
+        if (isPlayerProtectedFromStorm(player)) {
+            return;
+        } else {
+            event.setCanceled(true);
         }
 
-        boolean hasEffect = player.hasEffect(ModEffects.SULFUR_RESISTANCE);
-        boolean hasPrimeProtection = player.hasData(STORM_PROTECTED);
 
-        if (hasFullSet || hasEffect || !isStormActive() || hasPrimeProtection) return;
-
-        e.setCanceled(true);
-
-        // 💬 Повідомлення ГРАВЦЮ, ВІД ЙОГО ІМЕНІ
+        // todo ланг кеї...
         Component msg = Component.literal(player.getName().getString() + ": ")
                 .withStyle(ChatFormatting.WHITE)
                 .append(
