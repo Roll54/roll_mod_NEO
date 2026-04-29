@@ -21,16 +21,16 @@ public class HazmatLeggingsItem extends TooltipArmorItem {
         return ItemAttributeModifiers.builder()
                 .add(
                         AttributeRegistry.SULFUR_ARMOR, new AttributeModifier(
-                                RollMod.id("hazmatchestplate_sulfur_armor"),
-                                2,
-                                AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.CHEST
+                                RollMod.id("hazmatleggings_sulfur_armor"),
+                                2.5,
+                                AttributeModifier.Operation.ADD_VALUE), EquipmentSlotGroup.LEGS
                 )
 
                 .add(
                         Attributes.ARMOR, new AttributeModifier(
-                                RollMod.id("hazmatchestplate_armor"),
+                                RollMod.id("hazmatleggings_armor"),
                                 2,
-                                AttributeModifier.Operation.ADD_VALUE),EquipmentSlotGroup.CHEST
+                                AttributeModifier.Operation.ADD_VALUE),EquipmentSlotGroup.LEGS
                 ).build();
 
     }
