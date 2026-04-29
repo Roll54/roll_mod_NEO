@@ -160,6 +160,7 @@ public class MultiProtectingGraviChestItem extends ArmorItem implements ISimpleE
         }
     }
 
+    //todo тут треба доробити тристейт
     @Override
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         if (Screen.hasShiftDown()) {

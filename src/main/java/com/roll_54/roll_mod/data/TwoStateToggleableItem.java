@@ -9,6 +9,7 @@ import static com.roll_54.roll_mod.registry.ComponentsRegistry.SECOND_STATE_ACTI
 
 @SuppressWarnings({"unchecked", "rawtypes"})
 public interface TwoStateToggleableItem {
+
     default boolean getDefaultActivatedState() {
         return false;
     }
