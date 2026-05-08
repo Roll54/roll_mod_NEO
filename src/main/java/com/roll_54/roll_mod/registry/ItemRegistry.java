@@ -1273,6 +1273,14 @@ public class ItemRegistry {
 
 
 
+    public static final DeferredHolder<Item, Item> PRIMITIVE_BATTERY =
+            ITEMS.register("primitive_battery", () -> new Item(new Item.Properties()));
+
+    public static final DeferredHolder<Item, Item> EMPTY_PRIMITIVE_BATTERY =
+            ITEMS.register("empty_primitive_battery", () -> new Item(new Item.Properties()));
+
+
+
 
 
 

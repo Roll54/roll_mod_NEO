@@ -301,6 +301,18 @@
   "item.roll_mod.advanced_ev_mining_drill": "EV покращений бур",
 
   "tooltip.roll_mod.general_press_shift": "Затисніть Shift, щоб переглянути деталі",
+  "tooltip.roll_mod.gravichestplate_state_0": "Режим 0: Політ",
+  "tooltip.roll_mod.gravichestplate_state_0_desc": "Дозволяє творчий політ. Витрачає 5000 EU за тик під час польоту.",
+  "tooltip.roll_mod.gravichestplate_state_1": "Режим 1: Сірчаний броній",
+  "tooltip.roll_mod.gravichestplate_state_1_desc": "Дарує додатковий захист від сірчаної шкоди. Витрачає 10000 EU за тик.",
+  "tooltip.roll_mod.gravichestplate_state_2": "Режим 2: Елітра",
+  "tooltip.roll_mod.gravichestplate_state_2_desc": "Покращує планування та політ на элітрі. Витрачає 20000 EU за тик під час планування.",
+  "hud.roll_mod.energy": "Енергія: %s%%",
+  "hud.roll_mod.creative_flight": "Творчий політ: %s",
+  "hud.roll_mod.storm_protection": "Захист від шторму: %s",
+  "hud.roll_mod.elytra_flight": "Політ на елітрі: %s",
+  "hud.roll_mod.on": "ВКЛ",
+  "hud.roll_mod.off": "ВИМК",
 
 
   "tooltip.roll_mod.mining_drill.arc": "Створює плазмову дугу, яка легко розтинає породу",
@@ -415,5 +427,9 @@
   "tooltip.roll_mod.clown_hat.line2": "Вітаємо з першим квітням, тепер ви можете пофлексити своїми знаннями create",
   "gui.roll_mod.jei.research_workbench.title": "Дослідження",
   "gui.roll_mod.jei.research_workbench.chance": "Шанс: %s",
-  "button.roll_mod.close": "Закрити"
+  "button.roll_mod.close": "Закрити",
+  "key.roll_mod.gravichestplate.chestplate_toggle_one": "Перемкнути творчий політ",
+  "key.roll_mod.gravichestplate.chestplate_toggle_two": "Перемкнути захист від шторму",
+  "key.roll_mod.gravichestplate.chestplate_toggle_three": "Перемкнути режим елітра",
+  "key.roll_mod.elytra_boost": "Прискорення елітра"
 }

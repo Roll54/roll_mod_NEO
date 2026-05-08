@@ -127,6 +127,8 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.LITHIUM_SOAP.get());
         basicItem(ItemRegistry.POTASSIUM_SOAP.get());
         basicItem(ItemRegistry.SODIUM_SOAP.get());
+        basicItem(ItemRegistry.EMPTY_PRIMITIVE_BATTERY.get());
+        basicItem(ItemRegistry.PRIMITIVE_BATTERY.get());
 
     }
 }

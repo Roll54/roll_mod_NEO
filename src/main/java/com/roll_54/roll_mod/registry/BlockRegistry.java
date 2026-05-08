@@ -3,8 +3,12 @@ package com.roll_54.roll_mod.registry;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.blocks.*;
-import com.roll_54.roll_mod.blocks.regenblock.RegenBlock;import net.minecraft.world.item.BlockItem;
+import com.roll_54.roll_mod.blocks.regenblock.RegenBlock;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -14,6 +18,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
+
+import java.util.List;
 
 public class BlockRegistry {
     public static final DeferredRegister.Blocks BLOCKS =
@@ -113,13 +119,30 @@ public class BlockRegistry {
             "telescope",
             () -> new TelescopeBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.STONE).noOcclusion()));
 
+
+    public static final DeferredBlock<Block> GRINDING_WHEELS = BLOCKS.register(
+            "grinding_wheels",
+            () -> new Block(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.METAL))
+    );
+
     static {
         ITEMS.register("treated_planks", () -> new BlockItem(TREATED_PLANKS.get(), new Item.Properties()));
         ITEMS.register("treated_log", () -> new BlockItem(TREATED_LOG.get(), new Item.Properties()));
         ITEMS.register("lapotronic_laser_block", () -> new BlockItem(LAPOTRONIC_LASER_BLOCK.get(), new Item.Properties()));
         ITEMS.register("research_workbench", () -> new BlockItem(RESEARCH_WORKBENCH.get(), new Item.Properties()));
         ITEMS.register("rocket_controller", () -> new BlockItem(ROCKET_CONTROLLER_BLOCK.get(), new Item.Properties()));
-        ITEMS.register("bukvi_ore_block", () -> new BlockItem(BUKVI_ORE_BLOCK.get(), new Item.Properties()));
+        ITEMS.register("bukvi_ore_block", () -> new BlockItem(BUKVI_ORE_BLOCK.get(), new Item.Properties())
+        {
+            @Override
+            public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+                tooltip.add(Component.translatable("tooltip.roll_mod.clown_hat.line1")
+                        .withStyle(style -> style.withColor(0xFF5555)));
+
+                tooltip.add(Component.translatable("tooltip.roll_mod.clown_hat.line2")
+                        .withStyle(style -> style.withColor(0xFFAA00)));
+            }
+        });
+        ITEMS.register("grinding_wheels", () -> new BlockItem(GRINDING_WHEELS.get(), new Item.Properties()));
     }
 
     public static void register(IEventBus eventBus) {

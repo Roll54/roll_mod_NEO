@@ -255,6 +255,18 @@
   "tooltip.roll_mod.lunar_clock.phase.7": "Waxing Gibbous",
   "tooltip.roll_mod.lunar_clock.desc": "Shows the current lunar phase when right-clicked.",
   "tooltip.roll_mod.general_press_shift": "Press SHIFT for detail.",
+  "tooltip.roll_mod.gravichestplate_state_0": "State 0: Flight Mode",
+  "tooltip.roll_mod.gravichestplate_state_0_desc": "Enables creative flight. Consumes 5,000 EU per tick while flying.",
+  "tooltip.roll_mod.gravichestplate_state_1": "State 1: Sulfur Armor Mode",
+  "tooltip.roll_mod.gravichestplate_state_1_desc": "Grants extra protection against sulfur damage. Consumes 10,000 EU per tick.",
+  "tooltip.roll_mod.gravichestplate_state_2": "State 2: Elytra Mode",
+  "tooltip.roll_mod.gravichestplate_state_2_desc": "Enhances gliding and elytra flight. Consumes 20,000 EU per tick while gliding.",
+  "hud.roll_mod.energy": "Energy: %s%%",
+  "hud.roll_mod.creative_flight": "Creative Flight: %s",
+  "hud.roll_mod.storm_protection": "Storm Protection: %s",
+  "hud.roll_mod.elytra_flight": "Elytra Flight: %s",
+  "hud.roll_mod.on": "ON",
+  "hud.roll_mod.off": "OFF",
   "item.roll_mod.lv_mining_drill": "LV Mining Drill",
   "item.roll_mod.advanced_lv_mining_drill": "Advanced LV Mining Drill",
   "item.roll_mod.mv_mining_drill": "MV Mining Drill",
@@ -433,12 +445,17 @@
   "loreitem.roll_mod.research_better_circuits_ev.tooltip_line1": "Pushes extra‑voltage circuit engineering further.",
   "loreitem.roll_mod.research_better_circuits_ev.tooltip_line2": "Enables ultra‑high throughput EV machines.",
   "button.roll_mod.close": "Close",
-  "key.roll_mod.gravichestplate.chestplate_toggle_one": "Toggle Chestplate Mode 1",
-  "key.roll_mod.gravichestplate.chestplate_toggle_two": "Toggle Chestplate Mode 2",
-  "key.roll_mod.gravichestplate.chestplate_toggle_three": "Toggle Chestplate Mode 3",
+  "key.roll_mod.gravichestplate.chestplate_toggle_one": "Toggle Creative Flight",
+  "key.roll_mod.gravichestplate.chestplate_toggle_two": "Toggle Storm Protection",
+  "key.roll_mod.gravichestplate.chestplate_toggle_three": "Toggle Elytra Mode",
+  "key.roll_mod.elytra_boost": "Elytra Boost",
   "key.categories.roll_mod": "Roll Mod",
+  "item.roll_mod.primitive_battery": "Primitive Battery",
+  "item.roll_mod.empty_primitive_battery": "Empty Primitive Battery",
 
   "bukvi": "PLACEHOLDER TEXT, WIP!!!",
   "bukvi1": "PLACEHOLDER TEXT, WIP!!! %s"
+
+
 
 }

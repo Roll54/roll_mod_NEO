@@ -4,7 +4,6 @@ import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.world.item.ItemStack;
 
-// todo зробити клятий тристейт...
 @SuppressWarnings({"unchecked", "rawtypes"})
 public interface TriStateToggleAbleItem {
 
