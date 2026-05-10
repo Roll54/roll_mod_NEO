@@ -10,9 +10,9 @@
     "PhantomSpawnerMixin",
     "NanoSuitGravichestplateAbilityMixin",
     "MIKeyMapInvoker",
-    "SingleBlockCraftingMachinesMixin"
-
-
+    "SingleBlockCraftingMachinesMixin",
+    "CommandBlockLoggingMixin",
+    "MinecartCommandBlockLoggingMixin"
   ],
   "client": [
 
