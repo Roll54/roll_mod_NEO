@@ -4,7 +4,6 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.Item;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
@@ -69,7 +68,7 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.MOON_STONE_DUST.get());
         basicItem(ItemRegistry.MARS_STONE_DUST.get());
         basicItem(ItemRegistry.VENUS_STONE_DUST.get());
-     //   basicItem(ItemRegistry.MERCURY_STONE_DUST.get()); needs texture
+        basicItem(ItemRegistry.MERCURY_STONE_DUST.get());
 
         basicItem(ItemRegistry.OVERWORLD_CARTRIDGE.get());
         basicItem(ItemRegistry.NETHER_CARTRIDGE.get());
@@ -129,6 +128,17 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.SODIUM_SOAP.get());
         basicItem(ItemRegistry.EMPTY_PRIMITIVE_BATTERY.get());
         basicItem(ItemRegistry.PRIMITIVE_BATTERY.get());
+        basicItem(ItemRegistry.RAW_QUANTUM_BOOTS.get());
+        basicItem(ItemRegistry.RAW_QUANTUM_CHESTPLATE.get());
+        basicItem(ItemRegistry.RAW_QUANTUM_LEGGINGS.get());
+        basicItem(ItemRegistry.RAW_QUANTUM_HELMET.get());
+        basicItem(ItemRegistry.RAW_PLATINUM_DUST.get());
+        basicItem(ItemRegistry.RAW_PALLADIUM_DUST.get());
+        basicItem(ItemRegistry.RAW_CRYSTAL_CHIP.get());
+        basicItem(ItemRegistry.RAW_CRYSTAL_CHIP_PARTS.get());
+        basicItem(ItemRegistry.RAW_LATEX.get());
+        basicItem(ItemRegistry.RAW_RUBBER.get());
+
 
     }
 }

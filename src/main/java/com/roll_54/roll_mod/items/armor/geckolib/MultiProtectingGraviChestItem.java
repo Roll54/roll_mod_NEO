@@ -257,7 +257,7 @@ public class MultiProtectingGraviChestItem extends ArmorItem implements ISimpleE
             tooltip.add(Component.translatable("tooltip.roll_mod.gravichestplate_state_2_desc")
                     .withStyle(net.minecraft.ChatFormatting.GRAY));
         } else {
-            tooltip.add(Component.translatable("bukvi"));
+            tooltip.add(Component.translatable("tooltip.roll_mod.general_press_shift"));
         }
         super.appendHoverText(stack, context, tooltip, flag);
     }

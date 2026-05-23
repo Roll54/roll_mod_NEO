@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.util;
+package com.roll_54.roll_mod.minestar;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -32,7 +32,7 @@ public class CommandBlockLogger {
         String timestamp = getCurrentTimestamp();
 
         return String.format(
-                "[%s] Block | Dimension: %s | BlockPos: X=%d Y=%d Z=%d | Command: %s%n",
+                "[%s] Block | Dimension: %s | BlockPos:(X Y Z) %.1f %.1f %.1f | Command: %s%n",
                 timestamp,
                 level.dimension().location(),
                 pos.getX(),

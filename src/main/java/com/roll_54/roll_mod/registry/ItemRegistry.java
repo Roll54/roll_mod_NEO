@@ -1273,17 +1273,22 @@ public class ItemRegistry {
 
 
 
-    public static final DeferredHolder<Item, Item> PRIMITIVE_BATTERY =
-            ITEMS.register("primitive_battery", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> PRIMITIVE_BATTERY =  ITEMS.register("primitive_battery", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> EMPTY_PRIMITIVE_BATTERY = ITEMS.register("empty_primitive_battery", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> POTASSIUM_NITRITE_DUST = ITEMS.register("potassium_nitrite_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SODIUM_NITRITE_DUST = ITEMS.register("sodium_nitrite_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> FLINT_DUST = ITEMS.register("flint_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> DIORITE_DUST = ITEMS.register("diorite_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> ANDESITE_DUST = ITEMS.register("andesite_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> GRANITE_DUST = ITEMS.register("granite_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> FELDSPARS_DUST = ITEMS.register("feldspars_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> METAL_MIXTURE_DUST = ITEMS.register("metal_mixture_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MARBLE_DUST = ITEMS.register("marble_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> CALCITE_DUST = ITEMS.register("calcite_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> BASALT_DUST = ITEMS.register("basalt_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> TUFF_DUST = ITEMS.register("tuff_dust", () -> new Item(new Item.Properties()));
 
-    public static final DeferredHolder<Item, Item> EMPTY_PRIMITIVE_BATTERY =
-            ITEMS.register("empty_primitive_battery", () -> new Item(new Item.Properties()));
-
-
-
-
-
-
+ 
 
 
     public static void register(IEventBus modBus) {

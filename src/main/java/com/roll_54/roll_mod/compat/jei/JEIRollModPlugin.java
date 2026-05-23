@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.compat.jei;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;
 import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
 import com.roll_54.roll_mod.recipe.ItemResearchRecipe;
 import com.roll_54.roll_mod.registry.BlockRegistry;
@@ -10,11 +11,13 @@ import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @JeiPlugin
@@ -31,8 +34,8 @@ public class JEIRollModPlugin implements IModPlugin {
     @Override
     public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(
-                new ResearchTableRecipeCategory(registration.getJeiHelpers().getGuiHelper())//,
-                //new GraftingTableRecipeCategory(registration.getJeiHelpers().getGuiHelper())
+                new ResearchTableRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
+                new CauldronWashingCategory(registration.getJeiHelpers().getGuiHelper())
         );
     }
 
@@ -49,6 +52,31 @@ public class JEIRollModPlugin implements IModPlugin {
                 ResearchTableRecipeCategory.ITEM_RESEARCH_TYPE,
                 engineeringTableRecipes
         );
+
+        // generate cauldron washing recipes from OreDefinitions
+        List<CauldronWashingRecipe> cauldronRecipes = new ArrayList<>();
+        for (var ore : OreDefinitions.ORE_DEFINITIONS) {
+            String id = ore.id();
+            // impure_<id>_dust -> <id>_dust
+            ResourceLocation inp = ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "impure_" + id + "_dust");
+            ResourceLocation out = ResourceLocation.fromNamespaceAndPath(RollMod.MODID, id + "_dust");
+            var inOpt = BuiltInRegistries.ITEM.getOptional(inp);
+            var outOpt = BuiltInRegistries.ITEM.getOptional(out);
+            if (inOpt.isPresent() && outOpt.isPresent()) {
+                cauldronRecipes.add(new CauldronWashingRecipe(new ItemStack(inOpt.get()), new ItemStack(outOpt.get()), 0.2f));
+            }
+
+            // crushed_<id>_ore -> purified_<id>_ore
+            ResourceLocation crushed = ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "crushed_" + id + "_ore");
+            ResourceLocation purified = ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "purified_" + id + "_ore");
+            var crushedOpt = BuiltInRegistries.ITEM.getOptional(crushed);
+            var purifiedOpt = BuiltInRegistries.ITEM.getOptional(purified);
+            if (crushedOpt.isPresent() && purifiedOpt.isPresent()) {
+                cauldronRecipes.add(new CauldronWashingRecipe(new ItemStack(crushedOpt.get()), new ItemStack(purifiedOpt.get()), 0.2f));
+            }
+        }
+
+        registration.addRecipes(CauldronWashingCategory.TYPE, cauldronRecipes);
     }
 
     @Override
@@ -57,6 +85,9 @@ public class JEIRollModPlugin implements IModPlugin {
                 new ItemStack(BlockRegistry.RESEARCH_WORKBENCH),
                 ResearchTableRecipeCategory.ITEM_RESEARCH_TYPE
         );
+
+        // cauldron catalyst
+        registration.addRecipeCatalyst(new ItemStack(net.minecraft.world.level.block.Blocks.CAULDRON), CauldronWashingCategory.TYPE);
     }
 
     @Override

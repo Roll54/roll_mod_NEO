@@ -1,6 +1,6 @@
 package com.roll_54.roll_mod.mixin;
 
-import com.roll_54.roll_mod.util.CommandBlockLogger;
+import com.roll_54.roll_mod.minestar.CommandBlockLogger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BaseCommandBlock;
 import net.minecraft.world.level.Level;

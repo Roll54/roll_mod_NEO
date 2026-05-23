@@ -5,10 +5,26 @@
   "item.roll_mod.hazmat_chestplate": "Hazmat Chestplate",
   "item.roll_mod.hazmat_leggings": "Hazmat Leggings",
   "item.roll_mod.hazmat_boots": "Hazmat Boots",
+  "loreitem.roll_mod.hazmat_helmet.tooltip_line1": "Sealed visor protection",
+  "loreitem.roll_mod.hazmat_helmet.tooltip_line2": "Filters hazardous air",
+  "loreitem.roll_mod.hazmat_chestplate.tooltip_line1": "Chemical resistant suit",
+  "loreitem.roll_mod.hazmat_chestplate.tooltip_line2": "Improved durability",
+  "loreitem.roll_mod.hazmat_leggings.tooltip_line1": "Sealed lower body",
+  "loreitem.roll_mod.hazmat_leggings.tooltip_line2": "Flexible lining",
+  "loreitem.roll_mod.hazmat_boots.tooltip_line1": "Insulated boots",
+  "loreitem.roll_mod.hazmat_boots.tooltip_line2": "Non-slip soles",
   "item.roll_mod.meteorite_helmet": "Meteorite Helmet",
+  "loreitem.roll_mod.meteorite_helmet.tooltip_line1": "Forged from meteorite",
+  "loreitem.roll_mod.meteorite_helmet.tooltip_line2": "High impact resistance",
   "item.roll_mod.meteorite_chestplate": "Meteorite Chestplate",
+  "loreitem.roll_mod.meteorite_chestplate.tooltip_line1": "Meteorite alloy plating",
+  "loreitem.roll_mod.meteorite_chestplate.tooltip_line2": "Extreme protection",
   "item.roll_mod.meteorite_leggings": "Meteorite Leggings",
+  "loreitem.roll_mod.meteorite_leggings.tooltip_line1": "Meteorite alloy weave",
+  "loreitem.roll_mod.meteorite_leggings.tooltip_line2": "Enhanced mobility",
   "item.roll_mod.meteorite_boots": "Meteorite Boots",
+  "loreitem.roll_mod.meteorite_boots.tooltip_line1": "Meteorite reinforced",
+  "loreitem.roll_mod.meteorite_boots.tooltip_line2": "Stable footing",
   "itemGroup.roll_mod.main": "Roll Mod",
   "itemGroup.roll_mod.dev": "§сRoll Mod EVERY ITEM",
   "block.roll_mod.large_chemical_reactor": "Large Chemical Reactor",
@@ -254,7 +270,7 @@
   "tooltip.roll_mod.lunar_clock.phase.6": "First Quarter",
   "tooltip.roll_mod.lunar_clock.phase.7": "Waxing Gibbous",
   "tooltip.roll_mod.lunar_clock.desc": "Shows the current lunar phase when right-clicked.",
-  "tooltip.roll_mod.general_press_shift": "Press SHIFT for detail.",
+  "tooltip.roll_mod.general_press_shift": "§8↓ [§7Shift§8] - details",
   "tooltip.roll_mod.gravichestplate_state_0": "State 0: Flight Mode",
   "tooltip.roll_mod.gravichestplate_state_0_desc": "Enables creative flight. Consumes 5,000 EU per tick while flying.",
   "tooltip.roll_mod.gravichestplate_state_1": "State 1: Sulfur Armor Mode",
@@ -454,8 +470,8 @@
   "item.roll_mod.empty_primitive_battery": "Empty Primitive Battery",
 
   "bukvi": "PLACEHOLDER TEXT, WIP!!!",
-  "bukvi1": "PLACEHOLDER TEXT, WIP!!! %s"
+  "bukvi1": "PLACEHOLDER TEXT, WIP!!! %s",
 
-
+  "item.roll_mod.multi_protecting_gravi_chestplate": "Gravichestplate"
 
 }
