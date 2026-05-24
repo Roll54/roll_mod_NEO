@@ -823,6 +823,9 @@ public class ItemRegistry {
                     )
             );
 
+    public static final DeferredHolder<Item, Item> HERBICIDE = ITEMS.register("herbicide", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> BIOMASS = ITEMS.register("biomass", () -> new Item(new Item.Properties()));
+
     public static final DeferredHolder<Item, Item> TRANSMISSION = registerTooltip("transmission", TooltipOptions.nameAndLore(0x8E9D7A, 1, 0x8E9D7A));
     public static final DeferredHolder<Item, Item> MAGNALIUM_ENGINE = registerTooltip("magnalium_engine", TooltipOptions.nameAndLore(0x8E9D7A, 2, 0x8E9D7A));
     public static final DeferredHolder<Item, Item> SOAP_STONE_DUST = ITEMS.register("soap_stone_dust", () -> new Item(new Item.Properties()));

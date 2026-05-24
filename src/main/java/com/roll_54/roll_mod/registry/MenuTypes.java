@@ -33,6 +33,9 @@ public class MenuTypes {
     public static final DeferredHolder<MenuType<?>, MenuType<RocketControllerMenu>> ROCKET_CONTROLLER_MENU =
             registerMenuType("rocket_controller_menu", RocketControllerMenu::new);
 
+    public static final DeferredHolder<MenuType<?>, MenuType<com.roll_54.roll_mod.gui.menu.CropManagerMenu>> CROP_MANAGER_MENU =
+            registerMenuType("crop_manager_menu", com.roll_54.roll_mod.gui.menu.CropManagerMenu::new);
+
     public static void register(net.neoforged.bus.api.IEventBus eventBus) {
         MENUS.register(eventBus);
     }
