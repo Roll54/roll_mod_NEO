@@ -119,6 +119,12 @@ public class BlockRegistry {
             "telescope",
             () -> new TelescopeBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.STONE).noOcclusion()));
 
+    public static final DeferredBlock<Block> CROP_MANAGER = BLOCKS.register(
+            "crop_manager",
+            () -> new CropManagerBlock(BlockBehaviour.Properties.of()
+                    .strength(3.0F, 9.0F)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops()));
 
     public static final DeferredBlock<Block> GRINDING_WHEELS = BLOCKS.register(
             "grinding_wheels",
@@ -143,6 +149,8 @@ public class BlockRegistry {
             }
         });
         ITEMS.register("grinding_wheels", () -> new BlockItem(GRINDING_WHEELS.get(), new Item.Properties()));
+        ITEMS.register("crop_manager", () -> new BlockItem(CROP_MANAGER.get(), new Item.Properties())
+        );
     }
 
     public static void register(IEventBus eventBus) {

@@ -35,6 +35,10 @@ public class BlockEntites {
             BLOCK_ENTITIES.register("telescope_be", () -> BlockEntityType.Builder.of(
                     RocketControllerBlockEntity::new, BlockRegistry.TELESCOPE.get()).build(null));
 
+    public static final Supplier<BlockEntityType<CropManagerBlockEntity>> CROP_MANAGER_BE =
+            BLOCK_ENTITIES.register("crop_manager_be", () -> BlockEntityType.Builder.of(
+                    CropManagerBlockEntity::new, BlockRegistry.CROP_MANAGER.get()).build(null));
+
 
     public static void register(IEventBus eventBus){
             BLOCK_ENTITIES.register(eventBus);
