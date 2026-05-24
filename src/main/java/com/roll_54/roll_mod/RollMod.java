@@ -14,6 +14,7 @@ import com.roll_54.roll_mod.gui.screen.GrowthChamberScreen;
 import com.roll_54.roll_mod.gui.screen.PedestalScreen;
 import com.roll_54.roll_mod.gui.screen.ResearchWorkbenchScreen;
 import com.roll_54.roll_mod.gui.screen.RocketControllerScreen;
+import com.roll_54.roll_mod.gui.screen.CropManagerScreen;
 import com.roll_54.roll_mod.util.RMMItemProperties;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -124,6 +125,7 @@ public final class RollMod {
             event.register(MenuTypes.GROWTH_CHAMBER_MENU.get(), GrowthChamberScreen::new);
             event.register(MenuTypes.RESEARCH_WORKBENCH_MENU.get(), ResearchWorkbenchScreen::new);
             event.register(MenuTypes.ROCKET_CONTROLLER_MENU.get(), RocketControllerScreen::new);
+            event.register(MenuTypes.CROP_MANAGER_MENU.get(), CropManagerScreen::new);
         }
 
         @SubscribeEvent

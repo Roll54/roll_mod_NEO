@@ -1,9 +1,12 @@
 package com.roll_54.roll_mod.registry;
 
+import com.roll_54.roll_mod.blocks.entity.CropManagerBlockEntity;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 
 @EventBusSubscriber
 public class CapabilityRegistry {
@@ -34,8 +37,15 @@ public class CapabilityRegistry {
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.EV_ELECTRIC_SABER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.IV_ELECTRIC_SABER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.MULTI_PROTECTING_GRAVI_CHESTPLATE.get());
-
-
-
+        event.registerBlockEntity(
+                Capabilities.EnergyStorage.BLOCK,
+                BlockEntites.CROP_MANAGER_BE.get(),
+                (blockEntity, side) -> blockEntity.getEnergyStorage()
+        );
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                BlockEntites.CROP_MANAGER_BE.get(),
+                (blockEntity, side) -> new SidedInvWrapper((CropManagerBlockEntity) blockEntity, side)
+        );
     }
 }
