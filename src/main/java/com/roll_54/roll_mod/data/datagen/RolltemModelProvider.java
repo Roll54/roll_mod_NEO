@@ -2,11 +2,16 @@ package com.roll_54.roll_mod.data.datagen;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.registry.ItemRegistry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+
+import java.util.Objects;
 
 public class RolltemModelProvider extends ItemModelProvider {
     public RolltemModelProvider(PackOutput output, ExistingFileHelper existingFileHelper) {
@@ -139,6 +144,27 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.RAW_LATEX.get());
         basicItem(ItemRegistry.RAW_RUBBER.get());
 
+        cropModelItem(ItemRegistry.ICEBERG_MINT_LEAF.get());
+        cropModelItem(ItemRegistry.ICEBERG_MINT_SEEDS.get());
+
 
     }
+
+
+    //мій апі для створення кропсів, я чуть чуть їбав всі текстури тикати в папку ітемів тому воно тут.
+    ItemModelBuilder cropModelItem(Item item) {
+        return this.cropModelItem((ResourceLocation) Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
+    }
+
+
+    ItemModelBuilder cropModelItem(ResourceLocation item){
+        return (ItemModelBuilder)((ItemModelBuilder)((ItemModelBuilder)this.getBuilder(item.toString())).parent(new ModelFile.UncheckedModelFile("item/generated"))).texture("layer0", ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "item/crop_textures/" + item.getPath()));
+    }
 }
+
+
+
+
+
+
+

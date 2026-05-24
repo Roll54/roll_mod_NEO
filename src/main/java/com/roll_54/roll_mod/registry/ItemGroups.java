@@ -215,6 +215,19 @@ public final class ItemGroups {
                     .build()
     );
 
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ROLL_CROPS = TABS.register(
+            "roll_crops",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.roll_mod.roll_crops_tab"))
+                    .icon(() -> new ItemStack(ItemRegistry.LATEX_DANDELION_FLOWER.get()))
+                    .displayItems((params, out) -> {
+                        for (DeferredHolder<Item, ? extends Item> entry : ItemRegistry.CROPS.getEntries()) {
+                            out.accept(entry.get());
+                        }
+                    })
+                    .build()
+    );
+
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> DEV_TAB = TABS.register(
             "dev",
             () -> CreativeModeTab.builder()

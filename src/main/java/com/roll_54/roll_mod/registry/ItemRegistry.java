@@ -62,8 +62,8 @@ public class ItemRegistry {
     private static final int WHITE = 0xFFFFFF;
 
 
-    public static final DeferredRegister<Item> ITEMS =
-            DeferredRegister.create(Registries.ITEM, RollMod.MODID);
+    public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, RollMod.MODID);
+    public static final DeferredRegister<Item> CROPS = DeferredRegister.create(Registries.ITEM, RollMod.MODID);
 
 
     private static DeferredHolder<Item, Item> registerSimple(String name) {
@@ -796,21 +796,21 @@ public class ItemRegistry {
 
     //DANDELIONS YAMMI!
     public static final DeferredHolder<Item, Item> LATEX_DANDELION_SEED =
-            ITEMS.register("latex_dandelion_seed",
+            CROPS.register("latex_dandelion_seed",
                     () -> new ItemNameBlockItem(
                             BlockRegistry.LATEX_DANDELION.get(), // ← твій блок
                             new Item.Properties()
                     )
             );
-    public static final DeferredHolder<Item, Item> LATEX_DANDELION_STEM = ITEMS.register("latex_dandelion_stem", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> LATEX_DANDELION_FLOWER = ITEMS.register("latex_dandelion_flower", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> LATEX_DANDELION_STEM = CROPS.register("latex_dandelion_stem", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> LATEX_DANDELION_FLOWER = CROPS.register("latex_dandelion_flower", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_LATEX = ITEMS.register("raw_latex", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RAW_RUBBER = ITEMS.register("raw_rubber", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RUBBER_INGOT = ITEMS.register("rubber_ingot", () -> new Item(new Item.Properties()));
 
 
     public static final DeferredHolder<Item, Item> SULFUR_BERRY =
-            ITEMS.register("sulfur_berry",
+            CROPS.register("sulfur_berry",
                     () -> new BlockItem(
                             BlockRegistry.SULFUR_BERRY_BLOCK.get(),
                             new Item.Properties()
@@ -1288,11 +1288,15 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> BASALT_DUST = ITEMS.register("basalt_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> TUFF_DUST = ITEMS.register("tuff_dust", () -> new Item(new Item.Properties()));
 
- 
+    public static final DeferredHolder<Item, Item> ICEBERG_MINT_SEEDS = CROPS.register("iceberg_mint_seeds", () -> new Item(new Item.Properties()));
+
+    public static final DeferredHolder<Item, Item> ICEBERG_MINT_LEAF = CROPS.register("iceberg_mint_leaf", () -> new Item(new Item.Properties()));
+
 
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
+        CROPS.register(modBus);
     }
 
 }
