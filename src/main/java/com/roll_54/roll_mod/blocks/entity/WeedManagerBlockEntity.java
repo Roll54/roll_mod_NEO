@@ -1,9 +1,8 @@
 package com.roll_54.roll_mod.blocks.entity;
 
-import com.agricraft.agricraft.api.AgriApi;
-import com.agricraft.agricraft.api.crop.AgriCrop;
-import com.agricraft.agricraft.api.crop.AgriGrowthStage;
-import com.agricraft.agricraft.api.plant.AgriWeed;
+import com.agricraft.agricraft.common.block.entity.CropBlockEntity;
+import com.roll_54.roll_mod.registry.BlockEntites;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -19,16 +18,15 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.NonNullList;
+import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import org.jetbrains.annotations.Nullable;
-import net.minecraft.core.NonNullList;
-import net.minecraft.world.ContainerHelper;
-import com.roll_54.roll_mod.registry.ItemRegistry;
 
-public class CropManagerBlockEntity extends BlockEntity implements MenuProvider, WorldlyContainer {
+public class WeedManagerBlockEntity extends BlockEntity implements MenuProvider, WorldlyContainer {
 
     private static final long CAPACITY = 100000L;
     private static final long MAX_TRANSFER = 1000L;
@@ -36,77 +34,53 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
 
     private final EnergyStorage energyStorage = new EnergyStorage((int) CAPACITY, (int) MAX_TRANSFER, (int) MAX_TRANSFER, 0);
     private int tickCounter = 0;
-    
-    // 0-7: Harvested crops
+
+    // 0-7: Harvested crops (unused here)
     // 8: Herbicide
     // 9: Biomass
     private final NonNullList<ItemStack> items = NonNullList.withSize(10, ItemStack.EMPTY);
 
-    public CropManagerBlockEntity(BlockPos pos, BlockState blockState) {
-        super(BlockEntites.CROP_MANAGER_BE.get(), pos, blockState);
+    public WeedManagerBlockEntity(BlockPos pos, BlockState blockState) {
+        super(BlockEntites.WEED_MANAGER_BE.get(), pos, blockState);
     }
 
-    public static void tick(Level level, BlockPos pos, BlockState state, CropManagerBlockEntity blockEntity) {
+    public static void tick(Level level, BlockPos pos, BlockState state, WeedManagerBlockEntity blockEntity) {
         if (level == null || level.isClientSide) return;
 
         blockEntity.tickCounter++;
-        // Check for crops to remove weeds every 10 ticks
-        if (blockEntity.tickCounter >= 1) {
+        if (blockEntity.tickCounter >= 10) {
             blockEntity.tickCounter = 0;
             blockEntity.processCropsInRange(level);
         }
     }
 
-    /**
-     * Detect and process all CropBlockEntity instances in the detection range
-     */
     private void processCropsInRange(Level level) {
         BlockPos center = getBlockPos();
 
-        int startX = center.getX() - 5;
-        int endX = center.getX() + 5;
-        int startZ = center.getZ() - 5;
-        int endZ = center.getZ() + 5;
-        int startY = center.getY();
-        int endY = center.getY();
+        int radius = 2; // diameter 4 blocks
+        int startX = center.getX() - radius;
+        int endX = center.getX() + radius;
+        int startZ = center.getZ() - radius;
+        int endZ = center.getZ() + radius;
+        int y = center.getY();
 
         for (int x = startX; x <= endX; x++) {
             for (int z = startZ; z <= endZ; z++) {
-                for (int y = startY; y <= endY; y++) {
-                    BlockPos checkPos = new BlockPos(x, y, z);
-                    AgriApi.getCrop(level, checkPos).ifPresent(crop -> {
-                        if (crop.getLevel() == null) return;
+                BlockPos checkPos = new BlockPos(x, y, z);
+                BlockEntity blockEntity = level.getBlockEntity(checkPos);
 
-                        boolean hasBiomassSpace = hasSpace(9, 10);
-                        boolean hasCropSpace = hasSpace(0, 8);
-
-                        if (canOperate() && crop.hasWeeds() && hasBiomassSpace && hasCropSpace) {
-                            ItemStack herbicideStack = this.items.get(8);
-                            if (herbicideStack.getItem() == ItemRegistry.HERBICIDE.get() && herbicideStack.getCount() > 0) {
-                                AgriWeed weed = crop.getWeed();
-                                AgriGrowthStage stage = crop.getWeedGrowthStage();
-
-                                crop.removeWeeds();
-                                herbicideStack.shrink(1);
-                                energyStorage.extractEnergy((int) COST_PER_OPERATION, false);
-
-                                ArrayList<ItemStack> drops = new ArrayList<>();
-                                weed.onRake(stage, drops::add, crop.getLevel().getRandom(), null);
-                                for (ItemStack stack : drops) {
-                                    insertItemIntoSlots(stack, 0, 8, level, center);
-                                }
-
-                                ItemStack biomassStack = new ItemStack(ItemRegistry.BIOMASS.get(), 1);
-                                insertItemIntoSlots(biomassStack, 9, 10, level, center);
-                            }
-                        }
-                        if (canOperate() && crop.hasPlant() && crop.isFullyGrown() && hasCropSpace) {
-                            crop.harvest((stack) -> {
-                                insertItemIntoSlots(stack, 0, 8, level, center);
-                            }, null);
+                if (blockEntity instanceof CropBlockEntity cropBlockEntity) {
+                    if (canOperate() && cropBlockEntity.hasWeeds()) {
+                        ItemStack herbicideStack = this.items.get(8);
+                        if (herbicideStack.getItem() == ItemRegistry.HERBICIDE.get() && herbicideStack.getCount() > 0 && hasSpace(9, 10)) {
+                            cropBlockEntity.removeWeeds();
+                            herbicideStack.shrink(1);
                             energyStorage.extractEnergy((int) COST_PER_OPERATION, false);
+
+                            ItemStack biomassStack = new ItemStack(ItemRegistry.BIOMASS.get(), 1);
+                            insertItemIntoSlots(biomassStack, 9, 10);
                         }
-                    });
+                    }
                 }
             }
         }
@@ -122,14 +96,11 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
         return false;
     }
 
-    /**
-     * Check if we have enough energy to perform the operation
-     */
     private boolean canOperate() {
         return energyStorage.getEnergyStored() >= COST_PER_OPERATION;
     }
 
-    private void insertItemIntoSlots(ItemStack stack, int start, int end, Level level, BlockPos pos) {
+    private void insertItemIntoSlots(ItemStack stack, int start, int end) {
         for (int i = start; i < end; i++) {
             if (stack.isEmpty()) break;
             ItemStack slotStack = this.items.get(i);
@@ -147,13 +118,9 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
         }
     }
 
-    // ── Energy Storage Implementation ─────────────────────────────────────
-
     public EnergyStorage getEnergyStorage() {
         return energyStorage;
     }
-
-    // ── NBT Serialization ────────────────────────────────────────────────
 
     @Override
     protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
@@ -171,8 +138,6 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
         ContainerHelper.loadAllItems(tag, this.items, registries);
     }
 
-    // ── Network Synchronization ──────────────────────────────────────────
-
     @Override
     @Nullable
     public Packet<ClientGamePacketListener> getUpdatePacket() {
@@ -186,7 +151,7 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("block.roll_mod.weed_removal");
+        return Component.translatable("block.roll_mod.weed_manager");
     }
 
     @Override
@@ -259,7 +224,7 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
     }
 
     @Override
-    public @org.jspecify.annotations.Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
+    public @Nullable AbstractContainerMenu createMenu(int i, Inventory inventory, Player player) {
         return new com.roll_54.roll_mod.gui.menu.CropManagerMenu(i, inventory, this);
     }
 }

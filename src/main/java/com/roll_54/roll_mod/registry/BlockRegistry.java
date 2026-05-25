@@ -126,6 +126,13 @@ public class BlockRegistry {
                     .sound(SoundType.METAL)
                     .requiresCorrectToolForDrops()));
 
+    public static final DeferredBlock<Block> WEED_MANAGER = BLOCKS.register(
+            "weed_manager",
+            () -> new WeedManagerBlock(BlockBehaviour.Properties.of()
+                    .strength(3.0F, 9.0F)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops()));
+
     public static final DeferredBlock<Block> GRINDING_WHEELS = BLOCKS.register(
             "grinding_wheels",
             () -> new Block(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.METAL))
@@ -150,6 +157,8 @@ public class BlockRegistry {
         });
         ITEMS.register("grinding_wheels", () -> new BlockItem(GRINDING_WHEELS.get(), new Item.Properties()));
         ITEMS.register("crop_manager", () -> new BlockItem(CROP_MANAGER.get(), new Item.Properties())
+        );
+        ITEMS.register("weed_manager", () -> new BlockItem(WEED_MANAGER.get(), new Item.Properties())
         );
     }
 

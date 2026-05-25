@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.gui.menu;
 
-import com.roll_54.roll_mod.blocks.entity.CropManagerBlockEntity;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
@@ -9,11 +9,11 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-import static com.roll_54.roll_mod.registry.BlockRegistry.CROP_MANAGER;
 import static com.roll_54.roll_mod.registry.MenuTypes.CROP_MANAGER_MENU;
 
 public class CropManagerMenu extends AbstractContainerMenu {
-    public final CropManagerBlockEntity blockEntity;
+    private final Container container;
+    private final BlockEntity blockEntity;
     private final Level level;
 
     public CropManagerMenu(int pContainerId, Inventory inv, FriendlyByteBuf extraData) {
@@ -22,28 +22,36 @@ public class CropManagerMenu extends AbstractContainerMenu {
 
     public CropManagerMenu(int pContainerId, Inventory inv, BlockEntity entity) {
         super(CROP_MANAGER_MENU.get(), pContainerId);
-        this.blockEntity = ((CropManagerBlockEntity) entity);
+        if (!(entity instanceof Container)) {
+            throw new IllegalStateException("BlockEntity is not a Container: " + entity);
+        }
+        this.blockEntity = entity;
+        this.container = (Container) entity;
         this.level = inv.player.level();
 
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
 
-        // Harvested crops (0-3)
-        this.addSlot(new Slot(this.blockEntity, 0, 44, 20));
-        this.addSlot(new Slot(this.blockEntity, 1, 62, 20));
-        this.addSlot(new Slot(this.blockEntity, 2, 44, 38));
-        this.addSlot(new Slot(this.blockEntity, 3, 62, 38));
+        // Harvested crops (0-7)
+        this.addSlot(new Slot(this.container, 0, 8, 20));
+        this.addSlot(new Slot(this.container, 1, 26, 20));
+        this.addSlot(new Slot(this.container, 2, 8, 38));
+        this.addSlot(new Slot(this.container, 3, 26, 38));
+        this.addSlot(new Slot(this.container, 4, 44, 20));
+        this.addSlot(new Slot(this.container, 5, 62, 20));
+        this.addSlot(new Slot(this.container, 6, 44, 38));
+        this.addSlot(new Slot(this.container, 7, 62, 38));
 
-        // Herbicide (4)
-        this.addSlot(new Slot(this.blockEntity, 4, 116, 20));
+        // Herbicide (8)
+        this.addSlot(new Slot(this.container, 8, 116, 20));
 
-        // Biomass (5)
-        this.addSlot(new Slot(this.blockEntity, 5, 116, 52));
+        // Biomass (9)
+        this.addSlot(new Slot(this.container, 9, 116, 37));
     }
 
     private static final int VANILLA_FIRST_SLOT_INDEX = 0;
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = 36;
-    private static final int TE_INVENTORY_SLOT_COUNT = 6;
+    private static final int TE_INVENTORY_SLOT_COUNT = 10;
 
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
@@ -76,7 +84,7 @@ public class CropManagerMenu extends AbstractContainerMenu {
     @Override
     public boolean stillValid(Player pPlayer) {
         return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
-                pPlayer, CROP_MANAGER.get());
+                pPlayer, blockEntity.getBlockState().getBlock());
     }
 
     private void addPlayerInventory(Inventory playerInventory) {
@@ -93,4 +101,3 @@ public class CropManagerMenu extends AbstractContainerMenu {
         }
     }
 }
-

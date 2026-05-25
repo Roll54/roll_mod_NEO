@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.registry;
 
 import com.roll_54.roll_mod.blocks.entity.CropManagerBlockEntity;
+import com.roll_54.roll_mod.blocks.entity.WeedManagerBlockEntity;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -46,6 +47,16 @@ public class CapabilityRegistry {
                 Capabilities.ItemHandler.BLOCK,
                 BlockEntites.CROP_MANAGER_BE.get(),
                 (blockEntity, side) -> new SidedInvWrapper((CropManagerBlockEntity) blockEntity, side)
+        );
+        event.registerBlockEntity(
+                Capabilities.EnergyStorage.BLOCK,
+                BlockEntites.WEED_MANAGER_BE.get(),
+                (blockEntity, side) -> blockEntity.getEnergyStorage()
+        );
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                BlockEntites.WEED_MANAGER_BE.get(),
+                (blockEntity, side) -> new SidedInvWrapper((WeedManagerBlockEntity) blockEntity, side)
         );
     }
 }

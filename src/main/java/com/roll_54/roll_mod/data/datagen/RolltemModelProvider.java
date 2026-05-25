@@ -144,27 +144,49 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.RAW_LATEX.get());
         basicItem(ItemRegistry.RAW_RUBBER.get());
 
-        cropModelItem(ItemRegistry.ICEBERG_MINT_LEAF.get());
-        cropModelItem(ItemRegistry.ICEBERG_MINT_SEEDS.get());
+        seedItemModel(ItemRegistry.ICEBERG_MINT_LEAF.get());
+        seedItemModel(ItemRegistry.ICEBERG_MINT_SEEDS.get());
+
+        // generates seed JSON: assets/roll_mod/models/seed/iceberg_mint.json
+        // and 8 crop stage JSONs: assets/roll_mod/models/crop/iceberg_mint_stage0.json to _stage7.json
+        generateAgricraftPlantModels("iceberg_mint", 4);
+
+        generateAgricraftPlantModels("sulfur_berry", 4);
+        generateAgricraftPlantModels("latex_dandelion", 6);
 
 
     }
 
 
     //мій апі для створення кропсів, я чуть чуть їбав всі текстури тикати в папку ітемів тому воно тут.
-    ItemModelBuilder cropModelItem(Item item) {
-        return this.cropModelItem((ResourceLocation) Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
+    ItemModelBuilder seedItemModel(Item item) {
+        return this.seedItemModel((ResourceLocation) Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
     }
-
-
-    ItemModelBuilder cropModelItem(ResourceLocation item){
+    ItemModelBuilder seedItemModel(ResourceLocation item){
         return (ItemModelBuilder)((ItemModelBuilder)((ItemModelBuilder)this.getBuilder(item.toString())).parent(new ModelFile.UncheckedModelFile("item/generated"))).texture("layer0", ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "item/crop_textures/" + item.getPath()));
     }
+
+    public void generateAgricraftPlantModels(String plantName, int numTextures) {
+        if (numTextures < 1 || numTextures > 8) {
+            throw new IllegalArgumentException("numTextures must be between 1 and 8 inclusive");
+        }
+
+        // 1. Generate the seed model (e.g. models/seed/iceberg_mint.json)
+        this.getBuilder("seed/" + plantName)
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/crop_textures/" + plantName + "_seeds"));
+
+        // 2. Generate 8 crop stages (0 through 7)
+        for (int stage = 0; stage < 8; stage++) {
+            // Equally divide the 8 stages among the available textures:
+            // e.g. if numTextures = 4, stage 0,1 -> texture 0; stage 2,3 -> texture 1, etc.
+            int textureIndex = (stage * numTextures) / 8;
+
+            this.getBuilder("crop/" + plantName + "_stage" + stage)
+                    .parent(new ModelFile.UncheckedModelFile("agricraft:crop/crop_hash"))
+                    .texture("crop", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "block/crops/" + plantName + "_stage" + textureIndex));
+        }
+    }
+
+
 }
-
-
-
-
-
-
-
