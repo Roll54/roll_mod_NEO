@@ -1,6 +1,8 @@
 package com.roll_54.roll_mod.blocks.entity;
 
-import com.agricraft.agricraft.common.block.entity.CropBlockEntity;
+import com.agricraft.agricraft.api.AgriApi;
+import com.agricraft.agricraft.api.crop.AgriGrowthStage;
+import com.agricraft.agricraft.api.plant.AgriWeed;
 import com.roll_54.roll_mod.registry.BlockEntites;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.BlockPos;
@@ -25,6 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.energy.EnergyStorage;
 import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
 
 public class WeedManagerBlockEntity extends BlockEntity implements MenuProvider, WorldlyContainer {
 
@@ -67,21 +70,33 @@ public class WeedManagerBlockEntity extends BlockEntity implements MenuProvider,
         for (int x = startX; x <= endX; x++) {
             for (int z = startZ; z <= endZ; z++) {
                 BlockPos checkPos = new BlockPos(x, y, z);
-                BlockEntity blockEntity = level.getBlockEntity(checkPos);
+                AgriApi.getCrop(level, checkPos).ifPresent(crop -> {
+                    if (crop.getLevel() == null) return;
 
-                if (blockEntity instanceof CropBlockEntity cropBlockEntity) {
-                    if (canOperate() && cropBlockEntity.hasWeeds()) {
+                    boolean hasBiomassSpace = hasSpace(9, 10);
+                    boolean hasCropSpace = hasSpace(0, 8);
+
+                    if (canOperate() && crop.hasWeeds() && hasBiomassSpace && hasCropSpace) {
                         ItemStack herbicideStack = this.items.get(8);
-                        if (herbicideStack.getItem() == ItemRegistry.HERBICIDE.get() && herbicideStack.getCount() > 0 && hasSpace(9, 10)) {
-                            cropBlockEntity.removeWeeds();
+                        if (herbicideStack.getItem() == ItemRegistry.HERBICIDE.get() && herbicideStack.getCount() > 0) {
+                            AgriWeed weed = crop.getWeed();
+                            AgriGrowthStage stage = crop.getWeedGrowthStage();
+
+                            crop.removeWeeds();
                             herbicideStack.shrink(1);
                             energyStorage.extractEnergy((int) COST_PER_OPERATION, false);
+
+                            ArrayList<ItemStack> drops = new ArrayList<>();
+                            weed.onRake(stage, drops::add, crop.getLevel().getRandom(), null);
+                            for (ItemStack stack : drops) {
+                                insertItemIntoSlots(stack, 0, 8);
+                            }
 
                             ItemStack biomassStack = new ItemStack(ItemRegistry.BIOMASS.get(), 1);
                             insertItemIntoSlots(biomassStack, 9, 10);
                         }
                     }
-                }
+                });
             }
         }
     }

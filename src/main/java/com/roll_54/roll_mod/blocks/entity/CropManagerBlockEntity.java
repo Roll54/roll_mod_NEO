@@ -1,7 +1,6 @@
 package com.roll_54.roll_mod.blocks.entity;
 
 import com.agricraft.agricraft.api.AgriApi;
-import com.agricraft.agricraft.api.crop.AgriCrop;
 import com.agricraft.agricraft.api.crop.AgriGrowthStage;
 import com.agricraft.agricraft.api.plant.AgriWeed;
 import net.minecraft.core.BlockPos;
@@ -26,7 +25,9 @@ import net.neoforged.neoforge.energy.EnergyStorage;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.ContainerHelper;
+import com.roll_54.roll_mod.registry.BlockEntites;
 import com.roll_54.roll_mod.registry.ItemRegistry;
+import java.util.ArrayList;
 
 public class CropManagerBlockEntity extends BlockEntity implements MenuProvider, WorldlyContainer {
 

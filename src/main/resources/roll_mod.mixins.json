@@ -29,7 +29,8 @@
     "antidupe.ShulkerBoxBlockMixin",
     "antidupe.TridentChargeMixin",
     "antidupe.TripwireBlockMixin",
-    "antidupe.TripwireHookBlockMixin"
+    "antidupe.TripwireHookBlockMixin",
+    "crops.CropBlockEntityMixin"
   ],
   "client": [
   ],
