@@ -18,6 +18,23 @@ public class RolltemModelProvider extends ItemModelProvider {
         super(output, RollMod.MODID, existingFileHelper);
     }
 
+    public enum AgricraftCropModel {
+        CROP_HASH("crop_hash"),
+        CROP_PLUS("crop_plus"),
+        CROP_GOURD("crop_gourd"),
+        CROP_CROSS("crop_cross");
+
+        private final String modelId;
+
+        AgricraftCropModel(String modelId) {
+            this.modelId = modelId;
+        }
+
+        public String modelId() {
+            return modelId;
+        }
+    }
+
     @Override
     protected void registerModels() {
         basicItem(ItemRegistry.PURPLE_BOULE.get());
@@ -143,16 +160,59 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.RAW_CRYSTAL_CHIP_PARTS.get());
         basicItem(ItemRegistry.RAW_LATEX.get());
         basicItem(ItemRegistry.RAW_RUBBER.get());
+        basicItem(ItemRegistry.BIOMASS.get());
+        basicItem(ItemRegistry.POTASSIUM_NITRITE_DUST.get());
+        basicItem(ItemRegistry.SODIUM_NITRITE_DUST.get());
+        basicItem(ItemRegistry.FLINT_DUST.get());
+        basicItem(ItemRegistry.DIORITE_DUST.get());
+        basicItem(ItemRegistry.ANDESITE_DUST.get());
+        basicItem(ItemRegistry.GRANITE_DUST.get());
+        basicItem(ItemRegistry.FELDSPARS_DUST.get());
+        //  basicItem(ItemRegistry.METAL_MIXTURE_DUST.get());
+        basicItem(ItemRegistry.MARBLE_DUST.get());
+        basicItem(ItemRegistry.CALCITE_DUST.get());
+        basicItem(ItemRegistry.BASALT_DUST.get());
+        basicItem(ItemRegistry.TUFF_DUST.get());
+
+        handheldItem(ItemRegistry.HERBICIDE_TIER_1.get());
+        handheldItem(ItemRegistry.HERBICIDE_TIER_2.get());
+        handheldItem(ItemRegistry.HERBICIDE_TIER_3.get());
+
 
         seedItemModel(ItemRegistry.ICEBERG_MINT_LEAF.get());
         seedItemModel(ItemRegistry.ICEBERG_MINT_SEEDS.get());
+        seedItemModel(ItemRegistry.NIKELIA_FLOWERS.get());
+        seedItemModel(ItemRegistry.NIKELIA_SEEDS.get());
+        seedItemModel(ItemRegistry.STONELIA_FLOWERS.get());
+        seedItemModel(ItemRegistry.STONELIA_SEEDS.get());
+        seedItemModel(ItemRegistry.RED_BELL_PEPPER_SEEDS.get());
+        seedItemModel(ItemRegistry.YELLOW_BELL_PEPPER_SEEDS.get());
+        seedItemModel(ItemRegistry.GREEN_BELL_PEPPER_SEEDS.get());
+        seedItemModel(ItemRegistry.SULFUR_BERRY_COFFEE_BEANS.get());
+        seedItemModel(ItemRegistry.SULFUR_BERRY_COFFEE_SEEDS.get());
+        seedItemModel(ItemRegistry.FLUORITE_PINEAPPLE.get());
+        seedItemModel(ItemRegistry.FLUORITE_PINEAPPLE_SEEDS.get());
 
         // generates seed JSON: assets/roll_mod/models/seed/iceberg_mint.json
         // and 8 crop stage JSONs: assets/roll_mod/models/crop/iceberg_mint_stage0.json to _stage7.json
-        generateAgricraftPlantModels("iceberg_mint", 4);
+        generateAgricraftPlantModels("iceberg_mint", 4, AgricraftCropModel.CROP_CROSS);
 
-        generateAgricraftPlantModels("sulfur_berry", 4);
-        generateAgricraftPlantModels("latex_dandelion", 6);
+        generateAgricraftPlantModels("sulfur_berry", 4, AgricraftCropModel.CROP_CROSS);
+        generateAgricraftPlantModels("latex_dandelion", 6, AgricraftCropModel.CROP_HASH);
+        generateAgricraftPlantModels("nikelia", 4, AgricraftCropModel.CROP_HASH);
+        generateAgricraftPlantModels("stonelia", 4, AgricraftCropModel.CROP_CROSS);
+
+        generateAgricraftPlantModels("wild_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        generateAgricraftPlantModels("red_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        generateAgricraftPlantModels("yellow_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        generateAgricraftPlantModels("green_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+
+        generateAgricraftPlantModels("sulfur_berry_coffee", 6, AgricraftCropModel.CROP_CROSS);
+
+        generateAgricraftPlantModels("rice", 4, AgricraftCropModel.CROP_CROSS);
+        generateAgricraftPlantModels("cabbage", 8, AgricraftCropModel.CROP_CROSS);
+        generateAgricraftPlantModels("tomato", 8, AgricraftCropModel.CROP_HASH);
+
 
 
     }
@@ -166,7 +226,7 @@ public class RolltemModelProvider extends ItemModelProvider {
         return (ItemModelBuilder)((ItemModelBuilder)((ItemModelBuilder)this.getBuilder(item.toString())).parent(new ModelFile.UncheckedModelFile("item/generated"))).texture("layer0", ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "item/crop_textures/" + item.getPath()));
     }
 
-    public void generateAgricraftPlantModels(String plantName, int numTextures) {
+    public void generateAgricraftPlantModels(String plantName, int numTextures, AgricraftCropModel cropModel) {
         if (numTextures < 1 || numTextures > 8) {
             throw new IllegalArgumentException("numTextures must be between 1 and 8 inclusive");
         }
@@ -183,7 +243,7 @@ public class RolltemModelProvider extends ItemModelProvider {
             int textureIndex = (stage * numTextures) / 8;
 
             this.getBuilder("crop/" + plantName + "_stage" + stage)
-                    .parent(new ModelFile.UncheckedModelFile("agricraft:crop/crop_hash"))
+                    .parent(new ModelFile.UncheckedModelFile("agricraft:crop/" + cropModel.modelId()))
                     .texture("crop", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "block/crops/" + plantName + "_stage" + textureIndex));
         }
     }

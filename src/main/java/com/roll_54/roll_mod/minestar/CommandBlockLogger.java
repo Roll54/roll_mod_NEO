@@ -32,7 +32,7 @@ public class CommandBlockLogger {
         String timestamp = getCurrentTimestamp();
 
         return String.format(
-                "[%s] Block | Dimension: %s | BlockPos:(X Y Z) %.1f %.1f %.1f | Command: %s%n",
+                "[%s] Block | Dimension: %s | BlockPos:(X Y Z) %d %d %d | Command: %s%n",
                 timestamp,
                 level.dimension().location(),
                 pos.getX(),

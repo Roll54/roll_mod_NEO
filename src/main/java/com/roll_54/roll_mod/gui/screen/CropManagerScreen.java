@@ -11,7 +11,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class CropManagerScreen extends AbstractContainerScreen<CropManagerMenu> {
     private static final ResourceLocation GUI_TEXTURE =
-            ResourceLocation.parse("roll_mod:textures/gui/crop_manager.png"); // using generic texture for now, or fallback if doesn't exist
+            ResourceLocation.parse("roll_mod:textures/gui/crop_blocks/crop_manager.png"); // using generic texture for now, or fallback if doesn't exist
 
     public CropManagerScreen(CropManagerMenu menu, Inventory playerInventory, Component title) {
         super(menu, playerInventory, title);
@@ -36,4 +36,7 @@ public class CropManagerScreen extends AbstractContainerScreen<CropManagerMenu> 
         super.render(pGuiGraphics, pMouseX, pMouseY, pPartialTick);
         this.renderTooltip(pGuiGraphics, pMouseX, pMouseY);
     }
+
+
+
 }

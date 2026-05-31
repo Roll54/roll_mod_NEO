@@ -1,0 +1,12 @@
+{
+  "acidity": "neutral",
+  "growth_modifier": 0.5,
+  "humidity": "watery",
+  "mods": [],
+  "nutrients": "medium",
+  "variants": [
+    {
+      "block": "minecraft:coarse_dirt"
+    }
+  ]
+}

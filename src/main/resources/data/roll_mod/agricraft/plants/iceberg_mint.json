@@ -17,7 +17,7 @@
     {
       "chance": 1,
       "item": "roll_mod:iceberg_mint_leaf",
-      "max": 5,
+      "max": 3,
       "min": 1,
       "required": true
     }
@@ -47,7 +47,7 @@
   },
   "seeds": [
     {
-      "grass_drop_chance": 0.1,
+      "grass_drop_chance": 1,
       "item": "roll_mod:iceberg_mint_seeds",
       "override_planting": true,
       "seed_drop_bonus": 0.0,

@@ -99,7 +99,7 @@ public final class RollMod {
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.ROCKET_CONTROLLER_BLOCK.get(), RenderType.cutout());
        // ItemBlockRenderTypes.setRenderLayer(BlockRegistry.RESEARCH_WORKBENCH.get(), renderType -> renderType == RenderType.cutout());
 
-        RMMItemProperties.addCustomProperties();
+        event.enqueueWork(RMMItemProperties::addCustomProperties);
 
 
     }

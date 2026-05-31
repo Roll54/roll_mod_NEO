@@ -33,6 +33,7 @@
     "crops.CropBlockEntityMixin"
   ],
   "client": [
+    "compat.CropRequirementCategoryRecipeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -11,5 +11,6 @@ public class ModConfigs {
 
     public static void init() {
         MAIN = ConfigApi.registerAndLoadConfig((Function0<? extends MyConfig>) MyConfig::new);
+        MyConfig.INSTANCE = MAIN;
     }
 }

@@ -8,6 +8,7 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jspecify.annotations.NonNull;
 
 import static com.roll_54.roll_mod.registry.MenuTypes.CROP_MANAGER_MENU;
 
@@ -54,9 +55,9 @@ public class CropManagerMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_SLOT_COUNT = 10;
 
     @Override
-    public ItemStack quickMoveStack(Player playerIn, int pIndex) {
+    public @NonNull ItemStack quickMoveStack(@NonNull Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
-        if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;
+        if (!sourceSlot.hasItem()) return ItemStack.EMPTY;
         ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyOfSourceStack = sourceStack.copy();
 
@@ -82,7 +83,7 @@ public class CropManagerMenu extends AbstractContainerMenu {
     }
 
     @Override
-    public boolean stillValid(Player pPlayer) {
+    public boolean stillValid(@NonNull Player pPlayer) {
         return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 pPlayer, blockEntity.getBlockState().getBlock());
     }

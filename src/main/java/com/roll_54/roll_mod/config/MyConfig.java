@@ -11,20 +11,37 @@ import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedDouble;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.data.worldgen.DimensionTypes;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import static com.roll_54.roll_mod.RollMod.MODID;
-import static net.minecraft.server.RegistryLayer.DIMENSIONS;
 
 public class MyConfig extends Config {
+
+    public static MyConfig INSTANCE;
 
     public MyConfig() {
         super(ResourceLocation.fromNamespaceAndPath(MODID, "roll_mod"), "", "");
 
+    }
+
+    public Messages messages = new Messages();
+
+    public static class Messages extends ConfigSection {
+        @Comment("A list of translation keys to broadcast to all players every 30 minutes.")
+        public ArrayList<String> broadcastMessages = new ArrayList<String>(
+                List.of(
+                        "message.roll_mod.broadcast.stay_hydrated",
+                        "message.roll_mod.broadcast.take_breaks",
+                        "message.roll_mod.broadcast.have_great_day"
+                )
+        );
+        @Comment("Period of time that need to broadcast a message")
+        public int TIME_TO_BROADCAST = 12000;
     }
 
     @Comment("BUKVI for nothing")

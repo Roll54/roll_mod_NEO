@@ -2,22 +2,29 @@
   "clip_products": [
     {
       "chance": 1,
-      "item": "roll_mod:iceberg_mint_leaf",
-      "max": 3,
-      "min": 1,
+      "item": "roll_mod:latex_dandelion_flower",
+      "max": 2,
+      "min": 0,
       "required": true
     }
   ],
   "cloneable": true,
   "growth_bonus": 0.025,
   "growth_chance": 0.65,
-  "harvest_stage": 4,
+  "harvest_stage": 2,
   "mods": [],
   "products": [
     {
       "chance": 1,
-      "item": "roll_mod:iceberg_mint_leaf",
-      "max": 5,
+      "item": "roll_mod:latex_dandelion_flower",
+      "max": 3,
+      "min": 1,
+      "required": true
+    },
+    {
+      "chance": 0.5,
+      "item": "roll_mod:latex_dandelion_stem",
+      "max": 2,
       "min": 1,
       "required": true
     }
@@ -32,20 +39,27 @@
     "soil_acidity": {
       "type": "equal",
       "tolerance_factor": 0.2,
-      "value": "slightly_acidic"
+      "value": "slightly_alkaline"
     },
     "soil_humidity": {
       "type": "equal",
       "tolerance_factor": 0.2,
-      "value": "damp"
+      "value": "dry"
     },
     "soil_nutrients": {
-      "type": "equal_or_higher",
+      "type": "equal",
       "tolerance_factor": 0.2,
-      "value": "very_high"
+      "value": "low"
     }
   },
   "seeds": [
+    {
+      "grass_drop_chance": 0,
+      "item": "roll_mod:latex_dandelion_seed",
+      "override_planting": true,
+      "seed_drop_bonus": 0.0,
+      "seed_drop_chance": 1.0
+    }
   ],
   "spread_chance": 0.6,
   "stages": [

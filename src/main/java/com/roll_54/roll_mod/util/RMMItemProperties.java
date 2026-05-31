@@ -10,10 +10,16 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 
+import java.util.List;
+import java.util.stream.StreamSupport;
+
 public class RMMItemProperties {
 
     public static void addCustomProperties() {
-        for (Item item : BuiltInRegistries.ITEM) {
+
+        List<Item> items = StreamSupport.stream(BuiltInRegistries.ITEM.spliterator(), false)
+                .toList();
+        for (Item item : items) {
             if (item instanceof EnergyDrillItem) {
 
                 ItemProperties.register(
@@ -39,7 +45,7 @@ public class RMMItemProperties {
             }
         }
 
-        for (Item item : BuiltInRegistries.ITEM){
+        for (Item item : items){
             if (item instanceof EnergySwordItem){
                 ItemProperties.register(
                         item,

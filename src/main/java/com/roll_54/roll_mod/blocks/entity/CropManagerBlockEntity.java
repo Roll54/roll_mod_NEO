@@ -3,6 +3,12 @@ package com.roll_54.roll_mod.blocks.entity;
 import com.agricraft.agricraft.api.AgriApi;
 import com.agricraft.agricraft.api.crop.AgriGrowthStage;
 import com.agricraft.agricraft.api.plant.AgriWeed;
+import com.agricraft.agricraft.common.block.entity.CropBlockEntity;
+import com.roll_54.roll_mod.compat.argicraft.AgriHerbicide;
+import com.roll_54.roll_mod.compat.argicraft.HerbicideHelper;
+import com.roll_54.roll_mod.registry.BlockEntites;
+import com.roll_54.roll_mod.registry.ComponentsRegistry;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup;
@@ -25,8 +31,6 @@ import net.neoforged.neoforge.energy.EnergyStorage;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.ContainerHelper;
-import com.roll_54.roll_mod.registry.BlockEntites;
-import com.roll_54.roll_mod.registry.ItemRegistry;
 import java.util.ArrayList;
 
 public class CropManagerBlockEntity extends BlockEntity implements MenuProvider, WorldlyContainer {
@@ -83,27 +87,41 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
 
                         if (canOperate() && crop.hasWeeds() && hasBiomassSpace && hasCropSpace) {
                             ItemStack herbicideStack = this.items.get(8);
-                            if (herbicideStack.getItem() == ItemRegistry.HERBICIDE.get() && herbicideStack.getCount() > 0) {
-                                AgriWeed weed = crop.getWeed();
-                                AgriGrowthStage stage = crop.getWeedGrowthStage();
-
-                                crop.removeWeeds();
-                                herbicideStack.shrink(1);
-                                energyStorage.extractEnergy((int) COST_PER_OPERATION, false);
-
-                                ArrayList<ItemStack> drops = new ArrayList<>();
-                                weed.onRake(stage, drops::add, crop.getLevel().getRandom(), null);
-                                for (ItemStack stack : drops) {
-                                    insertItemIntoSlots(stack, 0, 8, level, center);
+                            if (herbicideStack.getCount() > 0
+                                    && herbicideStack.has(ComponentsRegistry.HERBICIDE.get())
+                                    && crop instanceof CropBlockEntity cropEntity
+                                    && cropEntity instanceof AgriHerbicide herbicide
+                            ) {
+                                int perItem = herbicideStack.getOrDefault(ComponentsRegistry.HERBICIDE.get(), 0);
+                                if (perItem <= 0) {
+                                    return;
                                 }
+                                int available = perItem * herbicideStack.getCount();
+                                if (herbicide.roll_mod$getHerbicideAmount() > available * 2) {
+                                    return;
+                                }
+                                if (HerbicideHelper.applyHerbicide(herbicideStack, cropEntity)) {
+                                    AgriWeed weed = crop.getWeed();
+                                    AgriGrowthStage stage = crop.getWeedGrowthStage();
 
-                                ItemStack biomassStack = new ItemStack(ItemRegistry.BIOMASS.get(), 1);
-                                insertItemIntoSlots(biomassStack, 9, 10, level, center);
+                                    crop.removeWeeds();
+                                    herbicideStack.shrink(1);
+                                    energyStorage.extractEnergy((int) COST_PER_OPERATION, false);
+
+                                    ArrayList<ItemStack> drops = new ArrayList<>();
+                                    weed.onRake(stage, drops::add, crop.getLevel().getRandom(), null);
+                                    for (ItemStack stack : drops) {
+                                        insertItemIntoSlots(stack, 0, 8);
+                                    }
+
+                                    ItemStack biomassStack = new ItemStack(ItemRegistry.BIOMASS.get(), 1);
+                                    insertItemIntoSlots(biomassStack, 9, 10);
+                                }
                             }
                         }
                         if (canOperate() && crop.hasPlant() && crop.isFullyGrown() && hasCropSpace) {
                             crop.harvest((stack) -> {
-                                insertItemIntoSlots(stack, 0, 8, level, center);
+                                insertItemIntoSlots(stack, 0, 8);
                             }, null);
                             energyStorage.extractEnergy((int) COST_PER_OPERATION, false);
                         }
@@ -130,7 +148,7 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
         return energyStorage.getEnergyStored() >= COST_PER_OPERATION;
     }
 
-    private void insertItemIntoSlots(ItemStack stack, int start, int end, Level level, BlockPos pos) {
+    private void insertItemIntoSlots(ItemStack stack, int start, int end) {
         for (int i = start; i < end; i++) {
             if (stack.isEmpty()) break;
             ItemStack slotStack = this.items.get(i);
@@ -187,7 +205,7 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
 
     @Override
     public Component getDisplayName() {
-        return Component.translatable("block.roll_mod.weed_removal");
+        return Component.translatable("block.roll_mod.crop_manager");
     }
 
     @Override
@@ -203,7 +221,7 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
 
     @Override
     public boolean canPlaceItemThroughFace(int i, ItemStack itemStack, @org.jspecify.annotations.Nullable Direction direction) {
-        return i == 8 && itemStack.getItem() == ItemRegistry.HERBICIDE.get();
+        return i == 8 && itemStack.has(ComponentsRegistry.HERBICIDE.get());
     }
 
     @Override

@@ -35,6 +35,7 @@ public class ComponentsRegistry {
     public static final Supplier<DataComponentType<Boolean>> SKIN_APPLICATOR_USED;
 
     public static final Supplier<DataComponentType<Boolean>> STORM_PROTECTED;
+    public static final Supplier<DataComponentType<Integer>> HERBICIDE;
 
     // RegenBlock components
     public static final Supplier<DataComponentType<Integer>> REGEN_TIMER;
@@ -71,6 +72,8 @@ public class ComponentsRegistry {
         SKIN_APPLICATOR_USED = create("skin_applicator_used", Codec.BOOL, ByteBufCodecs.BOOL);
 
         STORM_PROTECTED = create("storm_protected", Codec.BOOL, ByteBufCodecs.BOOL);
+
+        HERBICIDE = create("herbicide", Codec.INT, ByteBufCodecs.INT);
 
         // RegenBlock components
         REGEN_TIMER = create("regen_timer", Codec.INT, ByteBufCodecs.INT);

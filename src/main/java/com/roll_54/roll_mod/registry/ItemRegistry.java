@@ -823,7 +823,7 @@ public class ItemRegistry {
                     )
             );
 
-    public static final DeferredHolder<Item, Item> HERBICIDE = ITEMS.register("herbicide", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> HERBICIDE = ITEMS.register("herbicide", () -> new HerbicideItem(new Item.Properties()));
     public static final DeferredHolder<Item, Item> BIOMASS = ITEMS.register("biomass", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> TRANSMISSION = registerTooltip("transmission", TooltipOptions.nameAndLore(0x8E9D7A, 1, 0x8E9D7A));
@@ -1275,8 +1275,7 @@ public class ItemRegistry {
             ITEMS.register("multi_protecting_gravi_chestplate", () -> new MultiProtectingGraviChestItem(ModArmorMaterials.METEORITE_ARMOR, new Item.Properties()));
 
 
-
-    public static final DeferredHolder<Item, Item> PRIMITIVE_BATTERY =  ITEMS.register("primitive_battery", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> PRIMITIVE_BATTERY = ITEMS.register("primitive_battery", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> EMPTY_PRIMITIVE_BATTERY = ITEMS.register("empty_primitive_battery", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> POTASSIUM_NITRITE_DUST = ITEMS.register("potassium_nitrite_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SODIUM_NITRITE_DUST = ITEMS.register("sodium_nitrite_dust", () -> new Item(new Item.Properties()));
@@ -1295,6 +1294,63 @@ public class ItemRegistry {
 
     public static final DeferredHolder<Item, Item> ICEBERG_MINT_LEAF = CROPS.register("iceberg_mint_leaf", () -> new Item(new Item.Properties()));
 
+    public static final DeferredHolder<Item, Item> NIKELIA_FLOWERS = CROPS.register("nikelia_flowers", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> NIKELIA_SEEDS = CROPS.register("nikelia_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> STONELIA_FLOWERS = CROPS.register("stonelia_flowers", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> STONELIA_SEEDS = CROPS.register("stonelia_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> RED_BELL_PEPPER_SEEDS = CROPS.register("red_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> YELLOW_BELL_PEPPER_SEEDS = CROPS.register("yellow_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> GREEN_BELL_PEPPER_SEEDS = CROPS.register("green_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SULFUR_BERRY_COFFEE_BEANS = CROPS.register("sulfur_berry_coffee_beans", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SULFUR_BERRY_COFFEE_SEEDS = CROPS.register("sulfur_berry_coffee_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE = CROPS.register("fluorite_pineapple", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE_SEEDS = CROPS.register("fluorite_pineapple_seeds", () -> new Item(new Item.Properties()));
+
+    public static final DeferredHolder<Item, Item> HERBICIDE_TIER_1 = ITEMS.register(
+            "herbicide_tier_1",
+            () -> new HerbicideItem(
+                    new Item.Properties()
+                            .component(
+                                    DataComponents.LORE,
+                                    new ItemLore(List.of(
+                                            Component.translatable(
+                                                    "tooltip.roll_mod.herbicide_tier_1"
+                                            ).withStyle(style -> style.withColor(0x44ff8e))
+                                    ))
+                            )
+                            .component(
+                                    ComponentsRegistry.HERBICIDE.get(),
+                                    200
+                            )
+            )
+    );
+    public static final DeferredHolder<Item, Item> HERBICIDE_TIER_2 = ITEMS.register("herbicide_tier_2", () -> new HerbicideItem(new Item.Properties()
+            .component(
+                    DataComponents.LORE,
+                    new ItemLore(List.of(
+                            Component.translatable(
+                                    "tooltip.roll_mod.herbicide_tier_2"
+                            ).withStyle(style -> style.withColor(0xff4b41))
+                    ))
+            )
+            .component(
+                    ComponentsRegistry.HERBICIDE.get(),
+                    1000
+            )
+    ));
+    public static final DeferredHolder<Item, Item> HERBICIDE_TIER_3 = ITEMS.register("herbicide_tier_3", () -> new HerbicideItem(new Item.Properties()
+            .component(
+                    DataComponents.LORE,
+                    new ItemLore(List.of(
+                            Component.translatable(
+                                    "tooltip.roll_mod.herbicide_tier_3"
+                            ).withStyle(style -> style.withColor(0x632cff))
+                    ))
+            )
+            .component(
+                    ComponentsRegistry.HERBICIDE.get(),
+                    4000
+            )));
 
 
     public static void register(IEventBus modBus) {
