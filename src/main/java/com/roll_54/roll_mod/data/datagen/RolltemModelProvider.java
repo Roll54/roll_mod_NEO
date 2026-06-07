@@ -178,6 +178,10 @@ public class RolltemModelProvider extends ItemModelProvider {
         handheldItem(ItemRegistry.HERBICIDE_TIER_2.get());
         handheldItem(ItemRegistry.HERBICIDE_TIER_3.get());
 
+        basicItem(ItemRegistry.IRIDIUM_BASED_BOARD_ASSEMBLY.get());
+        basicItem(ItemRegistry.IRIDIUM_BASED_BOARD.get());
+
+
 
         seedItemModel(ItemRegistry.ICEBERG_MINT_LEAF.get());
         seedItemModel(ItemRegistry.ICEBERG_MINT_SEEDS.get());

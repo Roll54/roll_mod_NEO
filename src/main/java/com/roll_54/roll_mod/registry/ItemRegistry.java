@@ -1289,6 +1289,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> CALCITE_DUST = ITEMS.register("calcite_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> BASALT_DUST = ITEMS.register("basalt_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> TUFF_DUST = ITEMS.register("tuff_dust", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SULFUR_SALTPETER_MIXTURE = ITEMS.register("sulfur_saltpeter_mixture", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> ICEBERG_MINT_SEEDS = CROPS.register("iceberg_mint_seeds", () -> new Item(new Item.Properties()));
 
@@ -1351,6 +1352,13 @@ public class ItemRegistry {
                     ComponentsRegistry.HERBICIDE.get(),
                     4000
             )));
+
+    public static final DeferredHolder<Item, Item> ALUMINA_CERAMIC_PLATE = ITEMS.register("alumina_ceramic_plate", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> ALUMINA_SMALL_CERAMIC_PLATE = ITEMS.register("alumina_small_ceramic_plate", () -> new Item(new Item.Properties()));
+
+    public static final DeferredHolder<Item, Item> IRIDIUM_BASED_BOARD = ITEMS.register("iridium_based_board", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> IRIDIUM_BASED_BOARD_ASSEMBLY = ITEMS.register("iridium_based_board_assembly", () -> new Item(new Item.Properties()));
+
 
 
     public static void register(IEventBus modBus) {
