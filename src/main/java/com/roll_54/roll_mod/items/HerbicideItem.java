@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
+import org.jspecify.annotations.NonNull;
 
 public class HerbicideItem extends Item {
 
@@ -17,7 +18,7 @@ public class HerbicideItem extends Item {
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public @NonNull InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
@@ -35,6 +36,6 @@ public class HerbicideItem extends Item {
             stack.shrink(1);
             return InteractionResult.CONSUME;
         }
-        return InteractionResult.PASS;
+        return InteractionResult.FAIL;
     }
 }

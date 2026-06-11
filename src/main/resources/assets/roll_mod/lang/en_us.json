@@ -476,6 +476,49 @@
   "bukvi": "PLACEHOLDER TEXT, WIP!!!",
   "bukvi1": "PLACEHOLDER TEXT, WIP!!! %s",
 
-  "item.roll_mod.multi_protecting_gravi_chestplate": "Gravichestplate"
+  "item.roll_mod.multi_protecting_gravi_chestplate": "Gravichestplate",
+
+  "item.roll_mod.potassium_nitrite_dust": "Potassium Nitrite Dust",
+  "item.roll_mod.sodium_nitrite_dust": "Sodium Nitrite Dust",
+  "item.roll_mod.flint_dust": "Flint Dust",
+  "item.roll_mod.diorite_dust": "Diorite Dust",
+  "item.roll_mod.andesite_dust": "Andesite Dust",
+  "item.roll_mod.granite_dust": "Granite Dust",
+  "item.roll_mod.feldspars_dust": "Feldspar Dust",
+  "item.roll_mod.metal_mixture_dust": "Metal Mixture Dust",
+  "item.roll_mod.marble_dust": "Marble Dust",
+  "item.roll_mod.calcite_dust": "Calcite Dust",
+  "item.roll_mod.basalt_dust": "Basalt Dust",
+  "item.roll_mod.tuff_dust": "Tuff Dust",
+  "item.roll_mod.sulfur_saltpeter_mixture": "Sulfur-Saltpeter Mixture",
+
+  "item.roll_mod.iceberg_mint_seeds": "Iceberg Mint Seeds",
+  "item.roll_mod.iceberg_mint_leaf": "Iceberg Mint Leaf",
+
+  "item.roll_mod.nikelia_flowers": "Nikelia Flowers",
+  "item.roll_mod.nikelia_seeds": "Nikelia Seeds",
+
+  "item.roll_mod.stonelia_flowers": "Stonelia Flowers",
+  "item.roll_mod.stonelia_seeds": "Stonelia Seeds",
+
+  "item.roll_mod.red_bell_pepper_seeds": "Red Bell Pepper Seeds",
+  "item.roll_mod.yellow_bell_pepper_seeds": "Yellow Bell Pepper Seeds",
+  "item.roll_mod.green_bell_pepper_seeds": "Green Bell Pepper Seeds",
+
+  "item.roll_mod.sulfur_berry_coffee_beans": "Sulfur Berry Coffee Beans",
+  "item.roll_mod.sulfur_berry_coffee_seeds": "Sulfur Berry Coffee Seeds",
+
+  "item.roll_mod.fluorite_pineapple": "Fluorite Pineapple",
+  "item.roll_mod.fluorite_pineapple_seeds": "Fluorite Pineapple Seeds",
+
+  "item.roll_mod.herbicide_tier_1": "Herbicide I",
+  "item.roll_mod.herbicide_tier_2": "Herbicide II",
+  "item.roll_mod.herbicide_tier_3": "Herbicide III",
+
+  "item.roll_mod.alumina_ceramic_plate": "Alumina Ceramic Plate",
+  "item.roll_mod.alumina_small_ceramic_plate": "Small Alumina Ceramic Plate",
+
+  "item.roll_mod.iridium_based_board": "Iridium-Based Board",
+  "item.roll_mod.iridium_based_board_assembly": "Iridium-Based Board Assembly"
 
 }

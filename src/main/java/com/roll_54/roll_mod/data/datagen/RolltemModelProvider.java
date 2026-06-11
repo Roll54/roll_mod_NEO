@@ -174,6 +174,10 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.BASALT_DUST.get());
         basicItem(ItemRegistry.TUFF_DUST.get());
         basicItem(ItemRegistry.QUBIT_SENSOR.get());
+        basicItem(ItemRegistry.ALUMINA_CERAMIC_PLATE.get());
+        basicItem(ItemRegistry.ALUMINA_SMALL_CERAMIC_PLATE.get());
+        basicItem(ItemRegistry.SULFUR_SALTPETER_MIXTURE.get());
+        basicItem(ItemRegistry.METAL_MIXTURE_DUST.get());
 
         handheldItem(ItemRegistry.HERBICIDE_TIER_1.get());
         handheldItem(ItemRegistry.HERBICIDE_TIER_2.get());

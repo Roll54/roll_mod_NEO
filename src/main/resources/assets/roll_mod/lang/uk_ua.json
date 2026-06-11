@@ -1163,5 +1163,49 @@
   "item.roll_mod.uraninite_dust": "Uraninite (Dust)",
   "item.roll_mod.vanadium_magnetite_dust": "Vanadium Magnetite (Dust)",
   "item.roll_mod.wulfenite_dust": "Wulfenite (Dust)",
-  "item.roll_mod.yellow_limonite_dust": "Yellow Limonite (Dust)"
+  "item.roll_mod.yellow_limonite_dust": "Yellow Limonite (Dust)",
+  "tooltip.roll_mod.herbicide_tier_1": "Слабкий гербіцид, трохи зменшує кількість бур'янів",
+  "tooltip.roll_mod.herbicide_tier_2": "Cередній гербіцид, помітно зменшує кількість бур'янів",
+  "tooltip.roll_mod.herbicide_tier_3": "Сильний гербіцид, значно зменшує кількість бур'янів",
+  "item.roll_mod.herbicide_tier_1": "Гербіцид першого покоління",
+  "item.roll_mod.herbicide_tier_2": "Гербіцид другого покоління",
+  "item.roll_mod.alumina_ceramic_plate": "Пластина з глиноземової кераміки",
+  "item.roll_mod.alumina_small_ceramic_plate": "Мала пластина з глиноземової кераміки",
+  "item.roll_mod.herbicide_tier_3": "Гербіцид третього покоління",
+
+  "item.roll_mod.potassium_nitrite_dust": "Пил нітриту калію",
+  "item.roll_mod.sodium_nitrite_dust": "Пил нітриту натрію",
+  "item.roll_mod.flint_dust": "Крем'яний пил",
+  "item.roll_mod.diorite_dust": "Діоритовий пил",
+  "item.roll_mod.andesite_dust": "Андезитовий пил",
+  "item.roll_mod.granite_dust": "Гранітний пил",
+  "item.roll_mod.feldspars_dust": "Пил польового шпату",
+  "item.roll_mod.metal_mixture_dust": "Металева суміш",
+  "item.roll_mod.marble_dust": "Мармуровий пил",
+  "item.roll_mod.calcite_dust": "Кальцитовий пил",
+  "item.roll_mod.basalt_dust": "Базальтовий пил",
+  "item.roll_mod.tuff_dust": "Туфовий пил",
+  "item.roll_mod.sulfur_saltpeter_mixture": "Суміш сірки та селітри",
+
+  "item.roll_mod.iceberg_mint_seeds": "Насіння м'яти айсберг",
+  "item.roll_mod.iceberg_mint_leaf": "Листя м'яти айсберг",
+
+  "item.roll_mod.nikelia_flowers": "Квіти нікелії",
+  "item.roll_mod.nikelia_seeds": "Насіння нікелії",
+
+  "item.roll_mod.stonelia_flowers": "Квіти стонелії",
+  "item.roll_mod.stonelia_seeds": "Насіння стонелії",
+
+  "item.roll_mod.red_bell_pepper_seeds": "Насіння червоного болгарського перцю",
+  "item.roll_mod.yellow_bell_pepper_seeds": "Насіння жовтого болгарського перцю",
+  "item.roll_mod.green_bell_pepper_seeds": "Насіння зеленого болгарського перцю",
+
+  "item.roll_mod.sulfur_berry_coffee_beans": "Кавові зерна сірчаної ягоди",
+  "item.roll_mod.sulfur_berry_coffee_seeds": "Насіння сірчаної кави",
+
+  "item.roll_mod.fluorite_pineapple": "Флюоритовий ананас",
+  "item.roll_mod.fluorite_pineapple_seeds": "Насіння флюоритового ананаса",
+
+  "item.roll_mod.iridium_based_board": "Укріплена іридієм плата",
+  "item.roll_mod.iridium_based_board_assembly": "Підготована іридієва плата"
 }
