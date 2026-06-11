@@ -54,17 +54,17 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.BLUE_CHIP_RAM.get());
         basicItem(ItemRegistry.BLUE_WAFER_CONCURRENT.get());
         basicItem(ItemRegistry.BLUE_CHIP_CONCURRENT.get());
+        basicItem(ItemRegistry.BLUE_CHIP_CPU.get());
 
         basicItem(ItemRegistry.BLUE_WAFER_NOT.get());
-        basicItem(ItemRegistry.BLUE_WAFER_OR.get());
-        basicItem(ItemRegistry.BLUE_WAFER_AND.get()); // absent
-        basicItem(ItemRegistry.BLUE_WAFER_NAND.get()); // absent
-        basicItem(ItemRegistry.BLUE_WAFER_PMIC.get()); // absent
+        basicItem(ItemRegistry.BLUE_WAFER_AND.get());
+        basicItem(ItemRegistry.BLUE_WAFER_NAND.get());
+        basicItem(ItemRegistry.BLUE_WAFER_PMIC.get());
+        basicItem(ItemRegistry.BLUE_WAFER_CPU.get());
+
 
         basicItem(ItemRegistry.STANDARD_WAFER_NOT.get());
         basicItem(ItemRegistry.STANDARD_CHIP_NOT.get());
-        basicItem(ItemRegistry.STANDARD_WAFER_OR.get());
-        basicItem(ItemRegistry.STANDARD_CHIP_OR.get());
         basicItem(ItemRegistry.STANDARD_WAFER_AND.get());
         basicItem(ItemRegistry.STANDARD_CHIP_AND.get());
         basicItem(ItemRegistry.STANDARD_WAFER_NAND.get());
@@ -142,7 +142,7 @@ public class RolltemModelProvider extends ItemModelProvider {
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special"));
 
         getBuilder(ItemRegistry.RESEARCH_ENERGY_CRYSTALS.get().toString())
-                .parent(new ModelFile.UncheckedModelFile("item/handheld"))
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special1"));
 
         basicItem(ItemRegistry.LITHIUM_SOAP.get());
@@ -173,6 +173,7 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.CALCITE_DUST.get());
         basicItem(ItemRegistry.BASALT_DUST.get());
         basicItem(ItemRegistry.TUFF_DUST.get());
+        basicItem(ItemRegistry.QUBIT_SENSOR.get());
 
         handheldItem(ItemRegistry.HERBICIDE_TIER_1.get());
         handheldItem(ItemRegistry.HERBICIDE_TIER_2.get());
@@ -181,7 +182,29 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.IRIDIUM_BASED_BOARD_ASSEMBLY.get());
         basicItem(ItemRegistry.IRIDIUM_BASED_BOARD.get());
 
-
+        // TEXTURES ARE NOT NEDEED FOR THESE ITEMS, THEY ARE DEV ONES.
+        getBuilder(ItemRegistry.EXAMPLE_ARMOR_HELMET.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/error_item"));
+        getBuilder(ItemRegistry.COPPER_GEAR.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/error_item"));
+        getBuilder(ItemRegistry.CHEMICAL_CORE.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/error_item"));
+        getBuilder(ItemRegistry.SUPERSTEEL_GEAR.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/error_item"));
+        getBuilder(ItemRegistry.SUPER_CIRCUIT.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/error_item"));
+        getBuilder(ItemRegistry.HERBICIDE.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/error_item"));
+        getBuilder(ItemRegistry.ENERGY_SWORD.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/error_item"));
+        //END OF DEV ITEMS
 
         seedItemModel(ItemRegistry.ICEBERG_MINT_LEAF.get());
         seedItemModel(ItemRegistry.ICEBERG_MINT_SEEDS.get());

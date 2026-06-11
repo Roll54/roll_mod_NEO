@@ -231,6 +231,15 @@ dependencies {
     implementation "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolibVersion}"
 
    implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
+
+
+    implementation files("jars/tab.jar")
+
+    implementation "curse.maven:ftb-essentials-410811:6979622"
+    implementation "curse.maven:ftb-ranks-forge-314905:6431744"
+    implementation "curse.maven:ftb-library-forge-404465:7134093"
+    implementation "curse.maven:architectury-api-419699:5786327"
+
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

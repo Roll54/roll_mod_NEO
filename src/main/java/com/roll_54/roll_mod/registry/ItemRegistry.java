@@ -286,12 +286,14 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> BLUE_WAFER = registerTooltip("blue_wafer", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_RAM = registerTooltip("blue_wafer_ram", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_CHIP_RAM = registerTooltip("blue_chip_ram", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_CHIP_CPU = registerTooltip("blue_chip_cpu", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_CONCURRENT = registerTooltip("blue_wafer_concurrent", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_CHIP_CONCURRENT = registerTooltip("blue_chip_concurrent", TooltipOptions.name(BLUE));
 
     //previous level logic
     public static final DeferredHolder<Item, Item> BLUE_WAFER_NOT = registerTooltip("blue_wafer_not", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_OR = registerTooltip("blue_wafer_or", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_WAFER_CPU = registerTooltip("blue_wafer_cpu", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_AND = registerTooltip("blue_wafer_and", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_NAND = registerTooltip("blue_wafer_nand", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_PMIC = registerTooltip("blue_wafer_pmic", TooltipOptions.name(BLUE));
@@ -299,8 +301,6 @@ public class ItemRegistry {
     //T1
     public static final DeferredHolder<Item, Item> STANDARD_WAFER_NOT = ITEMS.register("standard_wafer_not", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> STANDARD_CHIP_NOT = ITEMS.register("standard_chip_not", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> STANDARD_WAFER_OR = ITEMS.register("standard_wafer_or", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> STANDARD_CHIP_OR = ITEMS.register("standard_chip_or", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> STANDARD_WAFER_AND = ITEMS.register("standard_wafer_and", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> STANDARD_CHIP_AND = ITEMS.register("standard_chip_and", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> STANDARD_WAFER_NAND = ITEMS.register("standard_wafer_nand", () -> new Item(new Item.Properties()));
@@ -352,6 +352,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> FIN_MK4 = ITEMS.register("fin_mk4", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> SENSOR = ITEMS.register("sensor", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> QUBIT_SENSOR = ITEMS.register("qubit_sensor", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SATELLITE = registerTooltip(
             "satellite", TooltipOptions.name(AQUA)
     );
