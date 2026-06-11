@@ -60,8 +60,8 @@ public final class OreDefinitions {
             new OreDefinition("silver", "#d5e0f0", List.of(BlockSubLayer.STONE), BlockOverlay.IRON, ItemBase.ZINC, 14, 29, "Silver", "Срібло"),
             new OreDefinition("bauxite", "#b3643b", List.of(BlockSubLayer.MOON, BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE), BlockOverlay.COPPER, ItemBase.COPPER, 12, 25, "Bauxite", "Боксит"),
             new OreDefinition("salt", "#e3e0cf", List.of(BlockSubLayer.STONE), BlockOverlay.QUARTZ, ItemBase.SALT_CRYSTAL, 10, 15, "Salt", "Сіль"),
-            new OreDefinition("rock_salt", "#dad6c5", List.of(BlockSubLayer.STONE), BlockOverlay.QUARTZ, ItemBase.CRYSTAL, 10, 15, "Rock Salt", "Кам'яна сіль"),
-            new OreDefinition("lepidolite", "#af7cd3", List.of(BlockSubLayer.STONE), BlockOverlay.LAPIS, ItemBase.AMETHYST, 15, 30, "Lepidolite", "Лепідоліт"),
+            new OreDefinition("rock_salt", "#dad6c5", List.of(BlockSubLayer.STONE, BlockSubLayer.MOON), BlockOverlay.QUARTZ, ItemBase.CRYSTAL, 10, 15, "Rock Salt", "Кам'яна сіль"),
+            new OreDefinition("lepidolite", "#af7cd3", List.of(BlockSubLayer.STONE, BlockSubLayer.MOON), BlockOverlay.LAPIS, ItemBase.AMETHYST, 15, 30, "Lepidolite", "Лепідоліт"),
             new OreDefinition("tungstate", "#6e6b67", List.of(BlockSubLayer.END), BlockOverlay.IRON, ItemBase.IRON, 18, 36, "Tungstate", "Вольфрамат"),
             new OreDefinition("scheelite", "#d9a83a", List.of(BlockSubLayer.END), BlockOverlay.GOLD, ItemBase.ZINC, 16, 32, "Scheelite", "Шеєліт"),
             new OreDefinition("lithium", "#d8d0cc", List.of(BlockSubLayer.END), BlockOverlay.QUARTZ, ItemBase.QUARTZ, 12, 24, "Lithium", "Літій"),
@@ -87,7 +87,8 @@ public final class OreDefinitions {
             new OreDefinition("azure_silver", "#cb6494", List.of(BlockSubLayer.END), BlockOverlay.IRON, ItemBase.IRON, 24, 48, "Azure Silver", "Лазурне срібло"),
             new OreDefinition("stannite", "#B9C8C1", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.TIN, ItemBase.TIN, 13, 27, "Stannite", "Станніт"),
             new OreDefinition("crimson_iron", "#db4941", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.REDSTONE, ItemBase.TIN, 14, 29, "Crimson Iron", "Багряне залізо"),
-            new OreDefinition("nickel", "#b1b487", List.of(BlockSubLayer.STONE), BlockOverlay.ZINC, ItemBase.TIN, 12, 25, "Nickel", "Нікель")
+            new OreDefinition("nickel", "#b1b487", List.of(BlockSubLayer.STONE), BlockOverlay.ZINC, ItemBase.TIN, 12, 25, "Nickel", "Нікель"),
+            new OreDefinition("borax", "#eae2c5", List.of(BlockSubLayer.MOON), BlockOverlay.LAPIS, ItemBase.IRON, 1, 3, "Borax", "Бура")
 
             );
 }
