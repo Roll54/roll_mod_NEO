@@ -1307,6 +1307,10 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> SULFUR_BERRY_COFFEE_SEEDS = CROPS.register("sulfur_berry_coffee_seeds", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE = CROPS.register("fluorite_pineapple", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE_SEEDS = CROPS.register("fluorite_pineapple_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> HOPS_LEAF = CROPS.register("hops_leaf", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> HOPS_SEEDS = CROPS.register("hops_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> RUTILE_BELL_PEPPER = CROPS.register("rutile_bell_pepper", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> RUTILE_BELL_PEPPER_SEEDS = CROPS.register("rutile_bell_pepper_seeds", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> HERBICIDE_TIER_1 = ITEMS.register(
             "herbicide_tier_1",

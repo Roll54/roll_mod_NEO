@@ -1,10 +1,12 @@
 package com.roll_54.roll_mod.mixin.crops;
 
 import com.agricraft.agricraft.api.crop.AgriGrowthStage;
+import com.agricraft.agricraft.api.plant.AgriPlant;
 import com.agricraft.agricraft.api.plant.AgriWeed;
 import com.agricraft.agricraft.api.genetic.AgriGenome;
 import com.agricraft.agricraft.api.stat.AgriStatRegistry;
 import com.roll_54.roll_mod.compat.argicraft.AgriHerbicide;
+import com.roll_54.roll_mod.compat.argicraft.WeedResistant;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -128,15 +130,21 @@ public abstract class CropBlockEntityMixin implements AgriHerbicide {
 
     @Inject(method = "setWeed", at = @At("HEAD"), cancellable = true)
     private void roll_mod$blockWeedSetWhenHerbicidePresent(String weedId, AgriWeed weed, CallbackInfo ci) {
-        if (this.roll_mod$herbicideAmount > 0) {
+        if (this.roll_mod$herbicideAmount > 0 || this.roll_mod$isWeedsResistantPlant()) {
             ci.cancel();
         }
     }
 
     @Inject(method = "spreadWeeds", at = @At("HEAD"), cancellable = true)
     private void roll_mod$blockWeedSpreadWhenHerbicidePresent(CallbackInfo ci) {
-        if (this.roll_mod$herbicideAmount > 0) {
+        if (this.roll_mod$herbicideAmount > 0 || this.roll_mod$isWeedsResistantPlant()) {
             ci.cancel();
         }
+    }
+
+    @Unique
+    private boolean roll_mod$isWeedsResistantPlant() {
+        AgriPlant plant = ((CropBlockEntity) (Object) this).getPlant();
+        return plant instanceof WeedResistant resistant && resistant.roll_mod$isWeedsResistant();
     }
 }

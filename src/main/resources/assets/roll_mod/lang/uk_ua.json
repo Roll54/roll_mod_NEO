@@ -1,6 +1,9 @@
 {
   "block.roll_mod.lapotronic_laser_block": "Лапотронова фокусуюча лазерна лінза",
   "block.roll_mod.large_chemical_reactor": "Великий хімічний реактор",
+  "block.roll_mod.crop_manager": "Менеджер посівів",
+  "block.roll_mod.weed_manager": "Менеджер бур'янів",
+  "block.roll_mod.grinding_wheels": "Шліфувальні круги",
   "block.roll_mod.latex_dandelion": "Латексна кульбаба",
   "block.roll_mod.ledok_plush": "Плюшевий LeDok",
   "block.roll_mod.lorp_ooo_plush": "Плюшевий Lorp_OOO",
@@ -1206,6 +1209,37 @@
   "item.roll_mod.fluorite_pineapple": "Флюоритовий ананас",
   "item.roll_mod.fluorite_pineapple_seeds": "Насіння флюоритового ананаса",
 
+  "item.roll_mod.hops_leaf": "Лист хмелю",
+  "item.roll_mod.hops_seeds": "Насіння хмелю",
+  "item.roll_mod.rutile_bell_pepper": "Рутиловий перець",
+  "item.roll_mod.rutile_bell_pepper_seeds": "Насіння рутилового перцю",
+
   "item.roll_mod.iridium_based_board": "Укріплена іридієм плата",
-  "item.roll_mod.iridium_based_board_assembly": "Підготована іридієва плата"
+  "item.roll_mod.iridium_based_board_assembly": "Підготована іридієва плата",
+
+  "block.roll_mod.bukvi_ore_block": "Руда букви",
+  "block.roll_mod.growth_chamber": "Камера росту",
+  "block.roll_mod.pedestal_block": "П'єдестал",
+  "block.roll_mod.telescope": "Телескоп",
+
+  "item.roll_mod.biomass": "Біомаса",
+  "item.roll_mod.empty_cartridge": "Порожній картридж",
+  "item.roll_mod.energy_sword": "Енергетичний меч",
+  "item.roll_mod.example_armor_helmet": "Зразковий шолом",
+  "item.roll_mod.herbicide": "Гербіцид",
+  "item.roll_mod.lithium_soap": "Літієве мило",
+  "item.roll_mod.nano_battery": "Нанобатарея",
+  "item.roll_mod.potassium_soap": "Калієве мило",
+  "item.roll_mod.qubit_sensor": "Кубітовий сенсор",
+  "item.roll_mod.sodium_soap": "Натрієве мило",
+
+  "itemGroup.roll_mod.generated_ores": "Згенеровані руди",
+  "itemGroup.roll_mod.roll_crops_tab": "Культури Roll",
+
+  "effect.roll_mod.sulfur_poisoning": "Сірчане отруєння",
+
+  "jei.roll_mod.cauldron_washing": "Промивання в казані",
+
+  "message.roll_mod.skin_applicator_already_used": "Цей предмет уже має застосований скін!",
+  "tooltip.roll_mod.no_energy": "⚡ Недостатньо енергії!"
 }

@@ -511,6 +511,11 @@
   "item.roll_mod.fluorite_pineapple": "Fluorite Pineapple",
   "item.roll_mod.fluorite_pineapple_seeds": "Fluorite Pineapple Seeds",
 
+  "item.roll_mod.hops_leaf": "Hops Leaf",
+  "item.roll_mod.hops_seeds": "Hops Seeds",
+  "item.roll_mod.rutile_bell_pepper": "Rutile Bell Pepper",
+  "item.roll_mod.rutile_bell_pepper_seeds": "Rutile Bell Pepper Seeds",
+
   "item.roll_mod.herbicide_tier_1": "Herbicide I",
   "item.roll_mod.herbicide_tier_2": "Herbicide II",
   "item.roll_mod.herbicide_tier_3": "Herbicide III",
@@ -519,6 +524,50 @@
   "item.roll_mod.alumina_small_ceramic_plate": "Small Alumina Ceramic Plate",
 
   "item.roll_mod.iridium_based_board": "Iridium-Based Board",
-  "item.roll_mod.iridium_based_board_assembly": "Iridium-Based Board Assembly"
+  "item.roll_mod.iridium_based_board_assembly": "Iridium-Based Board Assembly",
+
+  "block.roll_mod.crop_manager": "Crop Manager",
+  "block.roll_mod.weed_manager": "Weed Manager",
+  "block.roll_mod.grinding_wheels": "Grinding Wheels",
+
+  "block.roll_mod.bukvi_ore_block": "Bukvi Ore",
+  "block.roll_mod.growth_chamber": "Growth Chamber",
+  "block.roll_mod.pedestal_block": "Pedestal",
+  "block.roll_mod.telescope": "Telescope",
+
+  "item.roll_mod.biomass": "Biomass",
+  "item.roll_mod.empty_cartridge": "Empty Cartridge",
+  "item.roll_mod.energy_sword": "Energy Sword",
+  "item.roll_mod.example_armor_helmet": "Example Armor Helmet",
+  "item.roll_mod.herbicide": "Herbicide",
+  "item.roll_mod.lithium_soap": "Lithium Soap",
+  "item.roll_mod.nano_battery": "Nano Battery",
+  "item.roll_mod.potassium_soap": "Potassium Soap",
+  "item.roll_mod.qubit_sensor": "Qubit Sensor",
+  "item.roll_mod.sodium_soap": "Sodium Soap",
+
+  "item.roll_mod.blue_chip_cpu": "CPU Chip",
+  "item.roll_mod.blue_wafer_cpu": "CPU Wafer",
+  "item.roll_mod.clown_hat": "Clown Mask",
+
+  "itemGroup.roll_mod.generated_ores": "Generated Ores",
+  "itemGroup.roll_mod.roll_crops_tab": "Roll Crops",
+
+  "effect.roll_mod.sulfur_poisoning": "Sulfur Poisoning",
+
+  "material.roll_mod.meteorite_metal": "§9Meteorite Metal",
+
+  "gui.roll_mod.jei.research_workbench.title": "Research",
+  "gui.roll_mod.jei.research_workbench.chance": "Chance: %s",
+  "jei.roll_mod.cauldron_washing": "Cauldron Washing",
+
+  "message.roll_mod.skin_applicator_already_used": "This item already has a skin applied!",
+  "tooltip.roll_mod.no_energy": "⚡ Not enough energy!",
+
+  "tooltip.roll_mod.clown_hat.line1": "Congratulations: YOU ARE A CLOWN!!!",
+  "tooltip.roll_mod.clown_hat.line2": "Happy April Fools' Day, now you can flex your create knowledge",
+  "tooltip.roll_mod.herbicide_tier_1": "Weak herbicide, slightly reduces the amount of weeds",
+  "tooltip.roll_mod.herbicide_tier_2": "Medium herbicide, noticeably reduces the amount of weeds",
+  "tooltip.roll_mod.herbicide_tier_3": "Strong herbicide, greatly reduces the amount of weeds"
 
 }
