@@ -35,6 +35,9 @@ public class StormHandler {
 
     public static int TIME_TO_SPAWN_WITHERS = 18000;
 
+    /** 5 minutes before the storm starts (5 * 60 * 20 ticks). */
+    public static final int WARNING_LEAD_TICKS = 6000;
+
     private static StormState state;
 
     /**
@@ -64,6 +67,10 @@ public class StormHandler {
             if (--state.ticksUntilNextStorm <= 0) {
                 startStorm(server);
             } else {
+                if (!state.warningSent && state.ticksUntilNextStorm <= WARNING_LEAD_TICKS) {
+                    sendStormWarning(server);
+                    state.warningSent = true;
+                }
                 state.dirty();
             }
             return;
@@ -119,11 +126,19 @@ public class StormHandler {
 
     }
 
+    private static void sendStormWarning(MinecraftServer server) {
+        for (ServerPlayer p : server.getPlayerList().getPlayers()) {
+            p.sendSystemMessage(Component.translatable("message.roll_mod.nether_storm.warning")
+                    .withStyle(s -> s.withColor(0xff8c00).withBold(true)));
+        }
+    }
+
     private static void startStorm(MinecraftServer server) {
         state.stormActive = true;
         state.stormTicks = 0;
         state.stormDuration = getRandomStormDuration();
         state.ticksUntilNextStorm = getRandomStormDelay();
+        state.warningSent = false;
         state.dirty();
 
         for (ServerPlayer p : server.getPlayerList().getPlayers()) {
@@ -197,6 +212,7 @@ public class StormHandler {
             state.stormTicks = 0;
             state.stormDuration = durationTicks != null ? durationTicks : getRandomStormDuration();
             state.ticksUntilNextStorm = getRandomStormDelay();
+            state.warningSent = false;
             state.dirty();
 
             for (ServerPlayer p : server.getPlayerList().getPlayers()) {

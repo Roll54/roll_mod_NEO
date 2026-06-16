@@ -1,0 +1,7 @@
+{
+  "parent": "agricraft:crop/tall_crop_cross",
+  "textures": {
+    "crop": "roll_mod:block/crops/hops_stage7",
+    "crop_top": "roll_mod:block/crops/hops_top_stage7"
+  }
+}

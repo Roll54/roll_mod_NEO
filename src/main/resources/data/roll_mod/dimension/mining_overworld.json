@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:overworld",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "features": false,
+      "lakes": false,
+      "biome": "roll_mod:mining_overworld",
+      "structure_overrides": [],
+      "layers": [
+        {
+          "height": 1,
+          "block": "minecraft:bedrock"
+        },
+        {
+          "height": 64,
+          "block": "minecraft:deepslate"
+        },
+        {
+          "height": 64,
+          "block": "minecraft:stone"
+        },
+        {
+          "height": 3,
+          "block": "minecraft:dirt"
+        },
+        {
+          "height": 1,
+          "block": "minecraft:grass_block"
+        }
+      ]
+    }
+  }
+}

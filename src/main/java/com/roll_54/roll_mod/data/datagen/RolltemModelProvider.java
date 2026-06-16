@@ -249,7 +249,6 @@ public class RolltemModelProvider extends ItemModelProvider {
         generateAgricraftPlantModels("tomato", 8, AgricraftCropModel.CROP_HASH);
 
         generateAgricraftPlantModels("rutile_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
-        generateAgricraftPlantModels("hops", 8, AgricraftCropModel.CROP_CROSS);
 
 
 

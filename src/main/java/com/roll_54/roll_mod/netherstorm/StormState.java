@@ -12,6 +12,7 @@ public class StormState extends SavedData {
     public int stormTicks = 0;
     public int stormDuration = 0;
     public int ticksUntilNextStorm = 0;
+    public boolean warningSent = false;
 
     public static StormState load(CompoundTag tag, HolderLookup.Provider provider) {
         StormState s = new StormState();
@@ -19,6 +20,7 @@ public class StormState extends SavedData {
         s.stormTicks = tag.getInt("stormTicks");
         s.stormDuration = tag.getInt("stormDuration");
         s.ticksUntilNextStorm = tag.getInt("ticksUntilNextStorm");
+        s.warningSent = tag.getBoolean("warningSent");
         return s;
     }
 
@@ -28,6 +30,7 @@ public class StormState extends SavedData {
         tag.putInt("stormTicks", stormTicks);
         tag.putInt("stormDuration", stormDuration);
         tag.putInt("ticksUntilNextStorm", ticksUntilNextStorm);
+        tag.putBoolean("warningSent", warningSent);
         return tag;
     }
 

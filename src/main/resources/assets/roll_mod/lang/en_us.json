@@ -28,6 +28,7 @@
   "itemGroup.roll_mod.main": "Roll Mod",
   "itemGroup.roll_mod.dev": "§сRoll Mod EVERY ITEM",
   "block.roll_mod.large_chemical_reactor": "Large Chemical Reactor",
+  "message.roll_mod.nether_storm.warning": "First and last call! The storm is approaching — leave the Nether NOW!",
   "message.roll_mod.nether_storm.start": "A nether storm is coming. Hold your breath, or perish!",
   "message.roll_mod.nether_storm.end": "The storm has stopped... but for how long?",
   "message.roll_mod.broadcast.stay_hydrated": "Don't forget to stay hydrated!",

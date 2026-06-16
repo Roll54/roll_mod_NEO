@@ -271,6 +271,7 @@
   "message.roll_mod.gravity_chestplate.warning": "⚡ Недостатньо енергії для польоту!",
   "message.roll_mod.nether_storm.end": "Шторм зупинився, а наскільки довго?",
   "message.roll_mod.nether_storm.start": "У Незері насувається шторм Затримайте дихання, або помріть!",
+  "message.roll_mod.nether_storm.warning": "Перший і останній попереджувальний дзвінок! Шторм наближається — покиньте Незер НЕГАЙНО!",
   "message.roll_mod.broadcast.stay_hydrated": "Не забувайте пити воду!",
   "message.roll_mod.broadcast.take_breaks": "Пам’ятайте робити перерви!",
   "message.roll_mod.broadcast.have_great_day": "Гарного вам дня!",
