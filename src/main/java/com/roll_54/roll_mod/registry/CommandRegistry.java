@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.registry;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.commands.AutoGiveCommands;
+import com.roll_54.roll_mod.commands.GitCopyCommand;
 import com.roll_54.roll_mod.commands.NetherstormCommand;
 import com.roll_54.roll_mod.commands.RegenBlockCommands;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,5 +19,6 @@ public class CommandRegistry {
         AutoGiveCommands.register(dispatcher);
         RegenBlockCommands.register(dispatcher);
         NetherstormCommand.register(dispatcher);
+        GitCopyCommand.register(dispatcher);
     }
 }

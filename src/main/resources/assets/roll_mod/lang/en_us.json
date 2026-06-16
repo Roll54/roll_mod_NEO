@@ -569,6 +569,14 @@
   "tooltip.roll_mod.clown_hat.line2": "Happy April Fools' Day, now you can flex your create knowledge",
   "tooltip.roll_mod.herbicide_tier_1": "Weak herbicide, slightly reduces the amount of weeds",
   "tooltip.roll_mod.herbicide_tier_2": "Medium herbicide, noticeably reduces the amount of weeds",
-  "tooltip.roll_mod.herbicide_tier_3": "Strong herbicide, greatly reduces the amount of weeds"
+  "tooltip.roll_mod.herbicide_tier_3": "Strong herbicide, greatly reduces the amount of weeds",
+
+  "message.roll_mod.git.start": "Pulling server_scripts from GitHub…",
+  "message.roll_mod.git.copied": "Scripts updated. Server will /reload in 5 minutes.",
+  "message.roll_mod.git.no_permission": "Only roll_54 can run this command.",
+  "message.roll_mod.git.busy": "An update is already in progress.",
+  "message.roll_mod.git.failed": "Update failed: %s",
+  "message.roll_mod.git.reload_warning_title": "Server reloading in 1 minute",
+  "message.roll_mod.git.reload_warning_subtitle": "Find safe place"
 
 }

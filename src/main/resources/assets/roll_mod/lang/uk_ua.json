@@ -1242,5 +1242,13 @@
   "jei.roll_mod.cauldron_washing": "Промивання в казані",
 
   "message.roll_mod.skin_applicator_already_used": "Цей предмет уже має застосований скін!",
-  "tooltip.roll_mod.no_energy": "⚡ Недостатньо енергії!"
+  "tooltip.roll_mod.no_energy": "⚡ Недостатньо енергії!",
+
+  "message.roll_mod.git.start": "Завантаження server_scripts з GitHub…",
+  "message.roll_mod.git.copied": "Скрипти оновлено. Сервер виконає /reload через 5 хвилин.",
+  "message.roll_mod.git.no_permission": "Цю команду може виконати лише roll_54.",
+  "message.roll_mod.git.busy": "Оновлення вже виконується.",
+  "message.roll_mod.git.failed": "Помилка оновлення: %s",
+  "message.roll_mod.git.reload_warning_title": "Зміна рецептів через 1 хвилину",
+  "message.roll_mod.git.reload_warning_subtitle": "Знайдіть безпечне місце!"
 }

@@ -29,6 +29,27 @@ public class MyConfig extends Config {
 
     }
 
+    public GitUpdater gitUpdater = new GitUpdater();
+
+    public static class GitUpdater extends ConfigSection {
+        @Comment("Nicknames allowed to run '/rollmod admin git_copy'. Case-insensitive. Console and command blocks can never run it.")
+        public ArrayList<String> allowedPlayers = new ArrayList<String>(
+                List.of("roll_54")
+        );
+        @Comment("GitHub repository owner.")
+        public String repoOwner = "Roll54";
+        @Comment("GitHub repository name.")
+        public String repoName = "crafts-for-modern";
+        @Comment("Branch to pull from.")
+        public String branch = "main";
+        @Comment("Folder inside the repository to copy into kubejs/server_scripts.")
+        public String sourceFolder = "server_scripts";
+        @Comment("Seconds to wait after the copy completes before running /reload.")
+        public int reloadDelaySeconds = 300;
+        @Comment("Seconds before the reload to show players the red warning title.")
+        public int warnBeforeReloadSeconds = 60;
+    }
+
     public Messages messages = new Messages();
 
     public static class Messages extends ConfigSection {
