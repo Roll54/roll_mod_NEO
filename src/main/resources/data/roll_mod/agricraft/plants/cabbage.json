@@ -2,8 +2,8 @@
   "clip_products": [
     {
       "chance": 1,
-      "item": "rusticdelight:bell_pepper_green",
-      "max": 4,
+      "item": "farmersdelight:cabbage",
+      "max": 2,
       "min": 1,
       "required": true
     }
@@ -16,8 +16,8 @@
   "products": [
     {
       "chance": 1,
-      "item": "rusticdelight:bell_pepper_green",
-      "max": 4,
+      "item": "farmersdelight:cabbage",
+      "max": 2,
       "min": 1,
       "required": true
     }
@@ -48,7 +48,7 @@
   "seeds": [
     {
       "grass_drop_chance": 0,
-      "item": "roll_mod:green_bell_pepper_seeds",
+      "item": "farmersdelight:cabbage_seeds",
       "override_planting": true,
       "seed_drop_bonus": 0.0,
       "seed_drop_chance": 1.0

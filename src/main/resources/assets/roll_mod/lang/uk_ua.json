@@ -1,6 +1,9 @@
 {
   "block.roll_mod.lapotronic_laser_block": "Лапотронова фокусуюча лазерна лінза",
   "block.roll_mod.large_chemical_reactor": "Великий хімічний реактор",
+  "block.roll_mod.crop_manager": "Менеджер посівів",
+  "block.roll_mod.weed_manager": "Менеджер бур'янів",
+  "block.roll_mod.grinding_wheels": "Шліфувальні круги",
   "block.roll_mod.latex_dandelion": "Латексна кульбаба",
   "block.roll_mod.ledok_plush": "Плюшевий LeDok",
   "block.roll_mod.lorp_ooo_plush": "Плюшевий Lorp_OOO",
@@ -268,6 +271,7 @@
   "message.roll_mod.gravity_chestplate.warning": "⚡ Недостатньо енергії для польоту!",
   "message.roll_mod.nether_storm.end": "Шторм зупинився, а наскільки довго?",
   "message.roll_mod.nether_storm.start": "У Незері насувається шторм Затримайте дихання, або помріть!",
+  "message.roll_mod.nether_storm.warning": "Перший і останній попереджувальний дзвінок! Шторм наближається — покиньте Незер НЕГАЙНО!",
   "message.roll_mod.broadcast.stay_hydrated": "Не забувайте пити воду!",
   "message.roll_mod.broadcast.take_breaks": "Пам’ятайте робити перерви!",
   "message.roll_mod.broadcast.have_great_day": "Гарного вам дня!",
@@ -1163,5 +1167,88 @@
   "item.roll_mod.uraninite_dust": "Uraninite (Dust)",
   "item.roll_mod.vanadium_magnetite_dust": "Vanadium Magnetite (Dust)",
   "item.roll_mod.wulfenite_dust": "Wulfenite (Dust)",
-  "item.roll_mod.yellow_limonite_dust": "Yellow Limonite (Dust)"
+  "item.roll_mod.yellow_limonite_dust": "Yellow Limonite (Dust)",
+  "tooltip.roll_mod.herbicide_tier_1": "Слабкий гербіцид, трохи зменшує кількість бур'янів",
+  "tooltip.roll_mod.herbicide_tier_2": "Cередній гербіцид, помітно зменшує кількість бур'янів",
+  "tooltip.roll_mod.herbicide_tier_3": "Сильний гербіцид, значно зменшує кількість бур'янів",
+  "item.roll_mod.herbicide_tier_1": "Гербіцид першого покоління",
+  "item.roll_mod.herbicide_tier_2": "Гербіцид другого покоління",
+  "item.roll_mod.alumina_ceramic_plate": "Пластина з глиноземової кераміки",
+  "item.roll_mod.alumina_small_ceramic_plate": "Мала пластина з глиноземової кераміки",
+  "item.roll_mod.herbicide_tier_3": "Гербіцид третього покоління",
+
+  "item.roll_mod.potassium_nitrite_dust": "Пил нітриту калію",
+  "item.roll_mod.sodium_nitrite_dust": "Пил нітриту натрію",
+  "item.roll_mod.flint_dust": "Крем'яний пил",
+  "item.roll_mod.diorite_dust": "Діоритовий пил",
+  "item.roll_mod.andesite_dust": "Андезитовий пил",
+  "item.roll_mod.granite_dust": "Гранітний пил",
+  "item.roll_mod.feldspars_dust": "Пил польового шпату",
+  "item.roll_mod.metal_mixture_dust": "Металева суміш",
+  "item.roll_mod.marble_dust": "Мармуровий пил",
+  "item.roll_mod.calcite_dust": "Кальцитовий пил",
+  "item.roll_mod.basalt_dust": "Базальтовий пил",
+  "item.roll_mod.tuff_dust": "Туфовий пил",
+  "item.roll_mod.sulfur_saltpeter_mixture": "Суміш сірки та селітри",
+
+  "item.roll_mod.iceberg_mint_seeds": "Насіння м'яти айсберг",
+  "item.roll_mod.iceberg_mint_leaf": "Листя м'яти айсберг",
+
+  "item.roll_mod.nikelia_flowers": "Квіти нікелії",
+  "item.roll_mod.nikelia_seeds": "Насіння нікелії",
+
+  "item.roll_mod.stonelia_flowers": "Квіти стонелії",
+  "item.roll_mod.stonelia_seeds": "Насіння стонелії",
+
+  "item.roll_mod.red_bell_pepper_seeds": "Насіння червоного болгарського перцю",
+  "item.roll_mod.yellow_bell_pepper_seeds": "Насіння жовтого болгарського перцю",
+  "item.roll_mod.green_bell_pepper_seeds": "Насіння зеленого болгарського перцю",
+
+  "item.roll_mod.sulfur_berry_coffee_beans": "Кавові зерна сірчаної ягоди",
+  "item.roll_mod.sulfur_berry_coffee_seeds": "Насіння сірчаної кави",
+
+  "item.roll_mod.fluorite_pineapple": "Флюоритовий ананас",
+  "item.roll_mod.fluorite_pineapple_seeds": "Насіння флюоритового ананаса",
+
+  "item.roll_mod.hops_leaf": "Лист хмелю",
+  "item.roll_mod.hops_seeds": "Насіння хмелю",
+  "item.roll_mod.rutile_bell_pepper": "Рутиловий перець",
+  "item.roll_mod.rutile_bell_pepper_seeds": "Насіння рутилового перцю",
+
+  "item.roll_mod.iridium_based_board": "Укріплена іридієм плата",
+  "item.roll_mod.iridium_based_board_assembly": "Підготована іридієва плата",
+
+  "block.roll_mod.bukvi_ore_block": "Руда букви",
+  "block.roll_mod.growth_chamber": "Камера росту",
+  "block.roll_mod.pedestal_block": "П'єдестал",
+  "block.roll_mod.telescope": "Телескоп",
+
+  "item.roll_mod.biomass": "Біомаса",
+  "item.roll_mod.empty_cartridge": "Порожній картридж",
+  "item.roll_mod.energy_sword": "Енергетичний меч",
+  "item.roll_mod.example_armor_helmet": "Зразковий шолом",
+  "item.roll_mod.herbicide": "Гербіцид",
+  "item.roll_mod.lithium_soap": "Літієве мило",
+  "item.roll_mod.nano_battery": "Нанобатарея",
+  "item.roll_mod.potassium_soap": "Калієве мило",
+  "item.roll_mod.qubit_sensor": "Кубітовий сенсор",
+  "item.roll_mod.sodium_soap": "Натрієве мило",
+
+  "itemGroup.roll_mod.generated_ores": "Згенеровані руди",
+  "itemGroup.roll_mod.roll_crops_tab": "Культури Roll",
+
+  "effect.roll_mod.sulfur_poisoning": "Сірчане отруєння",
+
+  "jei.roll_mod.cauldron_washing": "Промивання в казані",
+
+  "message.roll_mod.skin_applicator_already_used": "Цей предмет уже має застосований скін!",
+  "tooltip.roll_mod.no_energy": "⚡ Недостатньо енергії!",
+
+  "message.roll_mod.git.start": "Завантаження server_scripts з GitHub…",
+  "message.roll_mod.git.copied": "Скрипти оновлено. Сервер виконає /reload через 5 хвилин.",
+  "message.roll_mod.git.no_permission": "Цю команду може виконати лише roll_54.",
+  "message.roll_mod.git.busy": "Оновлення вже виконується.",
+  "message.roll_mod.git.failed": "Помилка оновлення: %s",
+  "message.roll_mod.git.reload_warning_title": "Зміна рецептів через 1 хвилину",
+  "message.roll_mod.git.reload_warning_subtitle": "Знайдіть безпечне місце!"
 }

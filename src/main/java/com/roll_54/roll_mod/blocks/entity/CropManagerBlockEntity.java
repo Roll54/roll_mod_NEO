@@ -85,7 +85,8 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
                         boolean hasBiomassSpace = hasSpace(9, 10);
                         boolean hasCropSpace = hasSpace(0, 8);
 
-                        if (canOperate() && crop.hasWeeds() && hasBiomassSpace && hasCropSpace) {
+                        if (canOperate() && crop.hasWeeds() && hasBiomassSpace && hasCropSpace
+                                && !HerbicideHelper.isWeedResistant(crop)) {
                             ItemStack herbicideStack = this.items.get(8);
                             if (herbicideStack.getCount() > 0
                                     && herbicideStack.has(ComponentsRegistry.HERBICIDE.get())

@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.mixin.compat;
+package com.roll_54.roll_mod.mixin.crops;
 
 import java.util.List;
 import net.minecraft.world.level.block.Block;

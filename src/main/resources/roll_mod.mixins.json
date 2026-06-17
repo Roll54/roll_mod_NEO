@@ -30,10 +30,11 @@
     "antidupe.TridentChargeMixin",
     "antidupe.TripwireBlockMixin",
     "antidupe.TripwireHookBlockMixin",
-    "crops.CropBlockEntityMixin"
+    "crops.CropBlockEntityMixin",
+    "crops.AgriPlantMixin"
   ],
   "client": [
-    "compat.CropRequirementCategoryRecipeMixin"
+    "crops.CropRequirementCategoryRecipeMixin"
   ],
   "injectors": {
     "defaultRequire": 1
