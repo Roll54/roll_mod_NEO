@@ -1364,6 +1364,8 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> IRIDIUM_BASED_BOARD = ITEMS.register("iridium_based_board", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> IRIDIUM_BASED_BOARD_ASSEMBLY = ITEMS.register("iridium_based_board_assembly", () -> new Item(new Item.Properties()));
 
+    public static final DeferredHolder<Item, Item> NYLON_STRING = ITEMS.register("nylon_string", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> NYLON_FABRIC = ITEMS.register("nylon_fabric", () -> new Item(new Item.Properties()));
 
 
     public static void register(IEventBus modBus) {

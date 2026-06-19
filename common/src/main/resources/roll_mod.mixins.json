@@ -17,6 +17,7 @@
     "antidupe.BaseRailBlockMixin",
     "antidupe.BeehiveBlockEntityMixin",
     "antidupe.ConnectionMixin",
+    "antidupe.DripstoneLavaCauldronMixin",
     "antidupe.FallingBlockEntityMixin",
     "antidupe.HopperBlockEntityMixin",
     "antidupe.HorseScreenHandlerMixin",
