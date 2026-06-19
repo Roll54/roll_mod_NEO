@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_bauxite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_bauxite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_bauxite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_bauxite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:bauxite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_bauxite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_bauxite_dust",
+      "required": false
+    }
+  ]
+}

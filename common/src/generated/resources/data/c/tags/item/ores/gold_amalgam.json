@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_gold_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_gold_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_gold_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_gold_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_gold_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_gold_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_gold_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_gold_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_gold_amalgam",
+      "required": false
+    }
+  ]
+}

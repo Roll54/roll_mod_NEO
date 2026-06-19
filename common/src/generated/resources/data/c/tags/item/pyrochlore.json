@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_pyrochlore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_pyrochlore_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_pyrochlore_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_pyrochlore_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pyrochlore_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_pyrochlore_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_pyrochlore_dust",
+      "required": false
+    }
+  ]
+}

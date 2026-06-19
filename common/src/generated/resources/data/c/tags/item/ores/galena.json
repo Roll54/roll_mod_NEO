@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_galena",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_galena",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_galena",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_galena",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_galena",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_galena",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_galena",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_galena",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_galena",
+      "required": false
+    }
+  ]
+}

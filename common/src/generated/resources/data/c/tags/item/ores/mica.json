@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_mica",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_mica",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_mica",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_mica",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_mica",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_mica",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_mica",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_mica",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_mica",
+      "required": false
+    }
+  ]
+}

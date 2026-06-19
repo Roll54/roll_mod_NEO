@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_lepidolite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_lepidolite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_lepidolite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_lepidolite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_lepidolite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_lepidolite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_lepidolite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_lepidolite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_lepidolite",
+      "required": false
+    }
+  ]
+}

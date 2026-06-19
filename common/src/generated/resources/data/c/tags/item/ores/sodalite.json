@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_sodalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_sodalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_sodalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_sodalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_sodalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_sodalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_sodalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_sodalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_sodalite",
+      "required": false
+    }
+  ]
+}

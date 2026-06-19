@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_trona",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_trona",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_trona",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_trona",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_trona",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_trona",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_trona",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_trona",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_trona",
+      "required": false
+    }
+  ]
+}

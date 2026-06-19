@@ -1,0 +1,320 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_mica",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_hematite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_yellow_limonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_biotite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_garnierite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_pentlandite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_chalcopyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_certus_quartz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_pyrochlore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_pyrope",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_apatite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_galena",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_pyrolusite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_chromite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_malachite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_fluorite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_pyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_cinnabar",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_peridot",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_sodalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_lazurite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_lapis_lazuli",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_tetrahedrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_stibnite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_ilmenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_blue_topaz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_topaz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_chalcocite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_bornite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_sulfur",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_sphalerite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_monazite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_ruby",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_redstone",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_saltpeter",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_emerald",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_beryllium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_tantalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_molybdenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_wulfenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_powellite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_molybdenum",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_gold",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_goethite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_vanadium_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_rutile",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_bauxite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_rock_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_lepidolite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_tungstate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_scheelite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_lithium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_sheldonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_uraninite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_thorium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_pitchblende",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_cassiterite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_rhodochrosite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_lead",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_olivine",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_trona",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_bismuth",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_quartz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_diamond",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_bort",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_cassiterite_sand",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_iridium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_gold_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_silver_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_lignite_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_azure_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_stannite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_crimson_iron",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_nickel",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_borax",
+      "required": false
+    }
+  ]
+}

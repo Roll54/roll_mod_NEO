@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_salt_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_salt_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_salt_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:salt_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_salt_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_salt_dust",
+      "required": false
+    }
+  ]
+}

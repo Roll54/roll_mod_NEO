@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_beryllium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_beryllium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_beryllium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_beryllium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_beryllium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_beryllium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_beryllium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_beryllium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_beryllium",
+      "required": false
+    }
+  ]
+}

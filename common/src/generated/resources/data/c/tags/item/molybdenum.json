@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_molybdenum",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_molybdenum_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_molybdenum_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_molybdenum_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:molybdenum_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_molybdenum_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_molybdenum_dust",
+      "required": false
+    }
+  ]
+}

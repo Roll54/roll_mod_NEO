@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_pyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_pyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_pyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_pyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_pyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_pyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_pyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_pyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_pyrite",
+      "required": false
+    }
+  ]
+}

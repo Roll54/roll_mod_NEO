@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_pentlandite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_pentlandite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_pentlandite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_pentlandite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pentlandite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_pentlandite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_pentlandite_dust",
+      "required": false
+    }
+  ]
+}

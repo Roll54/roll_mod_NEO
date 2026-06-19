@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_cinnabar",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_cinnabar",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_cinnabar",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_cinnabar",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_cinnabar",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_cinnabar",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_cinnabar",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_cinnabar",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_cinnabar",
+      "required": false
+    }
+  ]
+}

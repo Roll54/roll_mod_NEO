@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_pyrochlore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_pyrochlore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_pyrochlore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_pyrochlore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_pyrochlore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_pyrochlore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_pyrochlore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_pyrochlore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_pyrochlore",
+      "required": false
+    }
+  ]
+}

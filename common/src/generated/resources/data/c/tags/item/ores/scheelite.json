@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_scheelite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_scheelite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_scheelite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_scheelite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_scheelite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_scheelite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_scheelite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_scheelite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_scheelite",
+      "required": false
+    }
+  ]
+}

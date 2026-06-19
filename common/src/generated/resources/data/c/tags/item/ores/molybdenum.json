@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_molybdenum",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_molybdenum",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_molybdenum",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_molybdenum",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_molybdenum",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_molybdenum",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_molybdenum",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_molybdenum",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_molybdenum",
+      "required": false
+    }
+  ]
+}

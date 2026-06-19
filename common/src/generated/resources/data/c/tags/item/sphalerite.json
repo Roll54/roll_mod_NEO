@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_sphalerite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_sphalerite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_sphalerite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_sphalerite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:sphalerite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_sphalerite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_sphalerite_dust",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_stibnite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_stibnite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_stibnite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_stibnite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stibnite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_stibnite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_stibnite_dust",
+      "required": false
+    }
+  ]
+}

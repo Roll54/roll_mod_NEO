@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_stannite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_stannite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_stannite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_stannite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_stannite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_stannite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_stannite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_stannite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_stannite",
+      "required": false
+    }
+  ]
+}

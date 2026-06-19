@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_uraninite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_uraninite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_uraninite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_uraninite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_uraninite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_uraninite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_uraninite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_uraninite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_uraninite",
+      "required": false
+    }
+  ]
+}

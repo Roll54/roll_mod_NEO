@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_cassiterite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_cassiterite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_cassiterite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_cassiterite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_cassiterite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_cassiterite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_cassiterite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_cassiterite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_cassiterite",
+      "required": false
+    }
+  ]
+}

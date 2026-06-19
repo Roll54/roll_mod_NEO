@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_crimson_iron",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_crimson_iron_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_crimson_iron_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_crimson_iron_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crimson_iron_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_crimson_iron_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_crimson_iron_dust",
+      "required": false
+    }
+  ]
+}

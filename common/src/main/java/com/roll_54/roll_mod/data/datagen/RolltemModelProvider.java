@@ -185,6 +185,8 @@ public class RolltemModelProvider extends ItemModelProvider {
 
         basicItem(ItemRegistry.IRIDIUM_BASED_BOARD_ASSEMBLY.get());
         basicItem(ItemRegistry.IRIDIUM_BASED_BOARD.get());
+        basicItem(ItemRegistry.NYLON_FABRIC.get());
+        basicItem(ItemRegistry.NYLON_STRING.get());
 
         // TEXTURES ARE NOT NEDEED FOR THESE ITEMS, THEY ARE DEV ONES.
         getBuilder(ItemRegistry.EXAMPLE_ARMOR_HELMET.get().toString())

@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+
+[[mods]]
+modId = "${mod_id_server}"
+version = "${mod_version}"
+displayName = "${mod_name} (Server)"
+authors = "${mod_authors}"
+description = '''${mod_description} — dedicated-server features (chat, prime, pvp, shop, commands). Requires ${mod_id}.'''
+
+[[mixins]]
+config = "${mod_id_server}.mixins.json"
+
+# Requires the common jar — server will not load without it.
+[[dependencies."${mod_id_server}"]]
+modId = "${mod_id}"
+type = "required"
+versionRange = "[${mod_version},)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${mod_id_server}"]]
+modId = "neoforge"
+type = "required"
+versionRange = "${neo_version_range}"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies."${mod_id_server}"]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"

@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_lead",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_lead_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_lead_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_lead_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:lead_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_lead_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_lead_dust",
+      "required": false
+    }
+  ]
+}

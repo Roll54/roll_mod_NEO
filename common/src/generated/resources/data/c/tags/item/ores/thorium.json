@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_thorium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_thorium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_thorium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_thorium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_thorium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_thorium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_thorium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_thorium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_thorium",
+      "required": false
+    }
+  ]
+}

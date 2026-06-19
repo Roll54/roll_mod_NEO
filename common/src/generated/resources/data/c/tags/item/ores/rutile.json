@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_rutile",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_rutile",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_rutile",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_rutile",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_rutile",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_rutile",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_rutile",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_rutile",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_rutile",
+      "required": false
+    }
+  ]
+}

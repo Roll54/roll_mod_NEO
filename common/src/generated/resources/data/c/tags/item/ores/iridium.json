@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_iridium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_iridium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_iridium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_iridium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_iridium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_iridium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_iridium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_iridium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_iridium",
+      "required": false
+    }
+  ]
+}

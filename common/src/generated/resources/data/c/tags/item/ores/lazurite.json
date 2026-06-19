@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_lazurite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_lazurite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_lazurite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_lazurite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_lazurite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_lazurite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_lazurite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_lazurite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_lazurite",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_thorium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_thorium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_thorium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_thorium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:thorium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_thorium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_thorium_dust",
+      "required": false
+    }
+  ]
+}

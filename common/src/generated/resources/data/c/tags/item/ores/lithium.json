@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_lithium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_lithium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_lithium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_lithium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_lithium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_lithium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_lithium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_lithium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_lithium",
+      "required": false
+    }
+  ]
+}

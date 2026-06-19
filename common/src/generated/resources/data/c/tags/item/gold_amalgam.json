@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_gold_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_gold_amalgam_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_gold_amalgam_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_gold_amalgam_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:gold_amalgam_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_gold_amalgam_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_gold_amalgam_dust",
+      "required": false
+    }
+  ]
+}

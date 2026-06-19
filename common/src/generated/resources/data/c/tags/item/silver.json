@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_silver_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_silver_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_silver_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:silver_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_silver_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_silver_dust",
+      "required": false
+    }
+  ]
+}

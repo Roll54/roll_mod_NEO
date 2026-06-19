@@ -1,0 +1,85 @@
+base {
+    archivesName = mod_id_client
+}
+
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    mods {
+        // this jar's own mod
+        "${mod_id_client}" {
+            sourceSet(sourceSets.main)
+        }
+        // the common mod, so dev runs owned by this project load it too
+        "${mod_id}" {
+            sourceSet(project(':common').sourceSets.main)
+        }
+    }
+
+    runs {
+        client {
+            client()
+            loadedMods = [mods."${mod_id}", mods."${mod_id_client}"]
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            programArgument '--username'
+            programArgument 'TestPlayer'
+        }
+        data {
+            data()
+            loadedMods = [mods."${mod_id}", mods."${mod_id_client}"]
+            programArguments.addAll '--mod', project.mod_id, '--all',
+                    '--output', file('../common/src/generated/resources/').getAbsolutePath(),
+                    '--existing', file('../common/src/main/resources/').getAbsolutePath()
+        }
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+}
+
+dependencies {
+    implementation project(':common')
+
+    // JEI is client-only.
+    compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
+    runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+
+    // AgriCraft (a common-module api dependency) requires resourcefulconfig at runtime.
+    // The data run doesn't read run/mods, so put it on the dev-run classpath for datagen.
+    runtimeOnly files("../run/mods/resourcefulconfig-neoforge-1.21-3.0.11.jar")
+
+    jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
+        version {
+            strictly "[${mixinextras_version},)"
+            prefer mixinextras_version
+        }
+    }
+}
+
+var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
+    var replaceProperties = [minecraft_version      : minecraft_version,
+                             minecraft_version_range: minecraft_version_range,
+                             neo_version            : neo_version,
+                             neo_version_range      : neo_version_range,
+                             loader_version_range   : loader_version_range,
+                             mod_id                 : mod_id,
+                             mod_id_client          : mod_id_client,
+                             mod_name               : mod_name,
+                             mod_license            : mod_license,
+                             mod_version            : mod_version,
+                             mod_authors            : mod_authors,
+                             mod_description        : mod_description]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from "src/main/templates"
+    into "build/generated/sources/modMetadata"
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata

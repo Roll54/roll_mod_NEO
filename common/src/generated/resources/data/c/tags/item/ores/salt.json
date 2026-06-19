@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_salt",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_salt",
+      "required": false
+    }
+  ]
+}

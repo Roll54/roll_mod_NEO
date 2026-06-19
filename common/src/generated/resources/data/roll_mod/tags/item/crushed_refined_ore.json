@@ -1,0 +1,320 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:refined_mica_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_hematite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_yellow_limonite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_biotite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_magnetite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_garnierite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_pentlandite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_chalcopyrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_certus_quartz_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_pyrochlore_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_pyrope_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_apatite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_galena_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_pyrolusite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_chromite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_malachite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_fluorite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_pyrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_cinnabar_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_peridot_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_sodalite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_lazurite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_lapis_lazuli_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_tetrahedrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_stibnite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_ilmenite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_blue_topaz_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_topaz_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_chalcocite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_bornite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_sulfur_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_sphalerite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_monazite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_ruby_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_redstone_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_saltpeter_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_emerald_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_beryllium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_tantalite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_molybdenite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_wulfenite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_powellite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_molybdenum_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_gold_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_goethite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_vanadium_magnetite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_rutile_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_silver_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_bauxite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_salt_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_rock_salt_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_lepidolite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_tungstate_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_scheelite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_lithium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_sheldonite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_uraninite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_thorium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_pitchblende_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_cassiterite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_rhodochrosite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_lead_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_olivine_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_trona_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_bismuth_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_quartz_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_diamond_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_bort_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_cassiterite_sand_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_iridium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_gold_amalgam_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_silver_amalgam_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_coal_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_lignite_coal_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_azure_silver_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_stannite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_crimson_iron_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_nickel_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_borax_ore",
+      "required": false
+    }
+  ]
+}

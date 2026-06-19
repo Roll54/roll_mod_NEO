@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_lignite_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_lignite_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_lignite_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_lignite_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_lignite_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_lignite_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_lignite_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_lignite_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_lignite_coal",
+      "required": false
+    }
+  ]
+}

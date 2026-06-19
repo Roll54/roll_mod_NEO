@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_vanadium_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_vanadium_magnetite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_vanadium_magnetite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_vanadium_magnetite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:vanadium_magnetite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_vanadium_magnetite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_vanadium_magnetite_dust",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_biotite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_biotite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_biotite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_biotite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:biotite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_biotite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_biotite_dust",
+      "required": false
+    }
+  ]
+}

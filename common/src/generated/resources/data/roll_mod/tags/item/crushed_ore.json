@@ -1,0 +1,320 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:crushed_mica_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_hematite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_yellow_limonite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_biotite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_magnetite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_garnierite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_pentlandite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_chalcopyrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_certus_quartz_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_pyrochlore_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_pyrope_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_apatite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_galena_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_pyrolusite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_chromite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_malachite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_fluorite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_pyrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_cinnabar_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_peridot_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_sodalite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_lazurite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_lapis_lazuli_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_tetrahedrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_stibnite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_ilmenite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_blue_topaz_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_topaz_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_chalcocite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_bornite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_sulfur_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_sphalerite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_monazite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_ruby_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_redstone_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_saltpeter_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_emerald_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_beryllium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_tantalite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_molybdenite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_wulfenite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_powellite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_molybdenum_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_gold_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_goethite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_vanadium_magnetite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_rutile_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_silver_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_bauxite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_salt_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_rock_salt_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_lepidolite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_tungstate_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_scheelite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_lithium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_sheldonite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_uraninite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_thorium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_pitchblende_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_cassiterite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_rhodochrosite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_lead_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_olivine_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_trona_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_bismuth_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_quartz_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_diamond_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_bort_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_cassiterite_sand_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_iridium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_gold_amalgam_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_silver_amalgam_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_coal_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_lignite_coal_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_azure_silver_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_stannite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_crimson_iron_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_nickel_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_borax_ore",
+      "required": false
+    }
+  ]
+}

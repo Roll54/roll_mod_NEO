@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_chalcocite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_chalcocite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_chalcocite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_chalcocite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_chalcocite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_chalcocite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_chalcocite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_chalcocite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_chalcocite",
+      "required": false
+    }
+  ]
+}

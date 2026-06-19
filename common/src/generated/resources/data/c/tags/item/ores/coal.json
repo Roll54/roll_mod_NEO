@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_coal",
+      "required": false
+    }
+  ]
+}
