@@ -1,0 +1,6 @@
+{
+  "chance": 0.75,
+  "child": "minecraft:azure_bluet",
+  "parent1": "minecraft:dandelion",
+  "parent2": "minecraft:lily_of_the_valley"
+}

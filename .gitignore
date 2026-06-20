@@ -121,3 +121,4 @@ runs/
 /src/generated/resources/.cache/
 src/generated/resources/
 
+/common/src/generated/

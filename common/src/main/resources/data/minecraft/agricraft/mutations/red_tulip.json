@@ -1,0 +1,6 @@
+{
+  "chance": 0.75,
+  "child": "minecraft:red_tulip",
+  "parent1": "minecraft:poppy",
+  "parent2": "minecraft:allium"
+}
