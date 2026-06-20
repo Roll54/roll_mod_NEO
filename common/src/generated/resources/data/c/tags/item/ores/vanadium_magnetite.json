@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_vanadium_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_vanadium_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_vanadium_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_vanadium_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_vanadium_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_vanadium_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_vanadium_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_vanadium_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_vanadium_magnetite",
+      "required": false
+    }
+  ]
+}

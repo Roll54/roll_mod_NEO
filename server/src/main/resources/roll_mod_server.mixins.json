@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.roll_54.roll_mod_server.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "prime.LivingEntityMixin",
+    "prime.MixinLivingEntityPrimeFeature",
+    "prime.MixinServerPlayerEntityPrimeFeature",
+    "spawn.SpawnPointMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

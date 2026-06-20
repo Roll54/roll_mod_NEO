@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_pyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_pyrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_pyrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_pyrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pyrite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_pyrite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_pyrite_dust",
+      "required": false
+    }
+  ]
+}

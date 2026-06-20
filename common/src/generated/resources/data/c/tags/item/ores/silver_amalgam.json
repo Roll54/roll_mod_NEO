@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_silver_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_silver_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_silver_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_silver_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_silver_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_silver_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_silver_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_silver_amalgam",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_silver_amalgam",
+      "required": false
+    }
+  ]
+}

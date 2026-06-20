@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_galena",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_galena_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_galena_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_galena_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:galena_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_galena_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_galena_dust",
+      "required": false
+    }
+  ]
+}

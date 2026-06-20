@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_ruby",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_ruby_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_ruby_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_ruby_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:ruby_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_ruby_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_ruby_dust",
+      "required": false
+    }
+  ]
+}

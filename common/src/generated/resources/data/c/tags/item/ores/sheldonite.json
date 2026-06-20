@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_sheldonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_sheldonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_sheldonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_sheldonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_sheldonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_sheldonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_sheldonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_sheldonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_sheldonite",
+      "required": false
+    }
+  ]
+}

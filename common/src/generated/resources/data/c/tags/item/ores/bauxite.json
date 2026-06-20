@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_bauxite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_bauxite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_bauxite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_bauxite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_bauxite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_bauxite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_bauxite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_bauxite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_bauxite",
+      "required": false
+    }
+  ]
+}

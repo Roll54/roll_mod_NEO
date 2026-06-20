@@ -1,0 +1,17 @@
+{
+  "type": "roll_mod:shop_dim",
+  "generator": {
+    "type": "minecraft:flat",
+    "settings": {
+      "features": false,
+      "lakes": false,
+      "biome": "roll_mod:shop_dim",
+      "structure_overrides": [],
+      "layers": [
+        { "height": 1, "block": "minecraft:bedrock" },
+        { "height": 4, "block": "minecraft:stone" },
+        { "height": 1, "block": "minecraft:smooth_stone" }
+      ]
+    }
+  }
+}

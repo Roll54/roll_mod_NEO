@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_lignite_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_lignite_coal_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_lignite_coal_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_lignite_coal_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:lignite_coal_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_lignite_coal_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_lignite_coal_dust",
+      "required": false
+    }
+  ]
+}

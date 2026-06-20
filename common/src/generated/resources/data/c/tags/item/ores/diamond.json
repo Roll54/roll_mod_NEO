@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_diamond",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_diamond",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_diamond",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_diamond",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_diamond",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_diamond",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_diamond",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_diamond",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_diamond",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_rhodochrosite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_rhodochrosite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_rhodochrosite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_rhodochrosite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_rhodochrosite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_rhodochrosite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_rhodochrosite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_rhodochrosite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_rhodochrosite",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_bort",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_bort_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_bort_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_bort_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:bort_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_bort_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_bort_dust",
+      "required": false
+    }
+  ]
+}

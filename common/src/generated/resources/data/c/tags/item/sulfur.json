@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_sulfur",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_sulfur_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_sulfur_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_sulfur_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:sulfur_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_sulfur_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_sulfur_dust",
+      "required": false
+    }
+  ]
+}

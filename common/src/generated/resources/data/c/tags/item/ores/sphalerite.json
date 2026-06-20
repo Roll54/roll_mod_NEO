@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_sphalerite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_sphalerite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_sphalerite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_sphalerite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_sphalerite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_sphalerite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_sphalerite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_sphalerite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_sphalerite",
+      "required": false
+    }
+  ]
+}

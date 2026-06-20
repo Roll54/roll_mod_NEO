@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_crimson_iron",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_crimson_iron",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_crimson_iron",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_crimson_iron",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_crimson_iron",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_crimson_iron",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_crimson_iron",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_crimson_iron",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_crimson_iron",
+      "required": false
+    }
+  ]
+}

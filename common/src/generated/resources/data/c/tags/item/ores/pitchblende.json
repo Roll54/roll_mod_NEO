@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_pitchblende",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_pitchblende",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_pitchblende",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_pitchblende",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_pitchblende",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_pitchblende",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_pitchblende",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_pitchblende",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_pitchblende",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_powellite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_powellite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_powellite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_powellite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:powellite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_powellite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_powellite_dust",
+      "required": false
+    }
+  ]
+}

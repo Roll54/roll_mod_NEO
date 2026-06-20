@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_bismuth",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_bismuth",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_bismuth",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_bismuth",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_bismuth",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_bismuth",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_bismuth",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_bismuth",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_bismuth",
+      "required": false
+    }
+  ]
+}

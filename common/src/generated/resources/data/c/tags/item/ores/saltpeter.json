@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_saltpeter",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_saltpeter",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_saltpeter",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_saltpeter",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_saltpeter",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_saltpeter",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_saltpeter",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_saltpeter",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_saltpeter",
+      "required": false
+    }
+  ]
+}

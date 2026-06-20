@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_bornite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_bornite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_bornite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_bornite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_bornite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_bornite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_bornite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_bornite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_bornite",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_azure_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_azure_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_azure_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_azure_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_azure_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_azure_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_azure_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_azure_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_azure_silver",
+      "required": false
+    }
+  ]
+}

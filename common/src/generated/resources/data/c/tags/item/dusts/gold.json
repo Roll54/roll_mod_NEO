@@ -1,0 +1,8 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:gold_dust",
+      "required": false
+    }
+  ]
+}

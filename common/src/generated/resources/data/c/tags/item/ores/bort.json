@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_bort",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_bort",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_bort",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_bort",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_bort",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_bort",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_bort",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_bort",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_bort",
+      "required": false
+    }
+  ]
+}

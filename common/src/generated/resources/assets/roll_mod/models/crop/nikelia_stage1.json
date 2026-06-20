@@ -1,0 +1,6 @@
+{
+  "parent": "agricraft:crop/crop_hash",
+  "textures": {
+    "crop": "roll_mod:block/crops/nikelia_stage0"
+  }
+}

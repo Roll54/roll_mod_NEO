@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_beryllium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_beryllium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_beryllium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_beryllium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:beryllium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_beryllium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_beryllium_dust",
+      "required": false
+    }
+  ]
+}

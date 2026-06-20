@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_ruby",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_ruby",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_ruby",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_ruby",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_ruby",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_ruby",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_ruby",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_ruby",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_ruby",
+      "required": false
+    }
+  ]
+}

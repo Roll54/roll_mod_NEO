@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_cassiterite_sand",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_cassiterite_sand_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_cassiterite_sand_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_cassiterite_sand_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:cassiterite_sand_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_cassiterite_sand_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_cassiterite_sand_dust",
+      "required": false
+    }
+  ]
+}

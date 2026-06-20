@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_topaz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_topaz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_topaz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_topaz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_topaz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_topaz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_topaz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_topaz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_topaz",
+      "required": false
+    }
+  ]
+}

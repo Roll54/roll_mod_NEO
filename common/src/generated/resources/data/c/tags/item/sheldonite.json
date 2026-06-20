@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_sheldonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_sheldonite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_sheldonite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_sheldonite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:sheldonite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_sheldonite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_sheldonite_dust",
+      "required": false
+    }
+  ]
+}

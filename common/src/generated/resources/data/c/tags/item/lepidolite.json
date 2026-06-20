@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_lepidolite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_lepidolite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_lepidolite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_lepidolite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:lepidolite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_lepidolite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_lepidolite_dust",
+      "required": false
+    }
+  ]
+}

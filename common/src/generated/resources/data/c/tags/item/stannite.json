@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_stannite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_stannite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_stannite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_stannite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stannite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_stannite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_stannite_dust",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_redstone",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_redstone",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_redstone",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_redstone",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_redstone",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_redstone",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_redstone",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_redstone",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_redstone",
+      "required": false
+    }
+  ]
+}

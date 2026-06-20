@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_quartz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_quartz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_quartz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_quartz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_quartz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_quartz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_quartz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_quartz",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_quartz",
+      "required": false
+    }
+  ]
+}

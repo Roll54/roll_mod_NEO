@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_uraninite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_uraninite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_uraninite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_uraninite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:uraninite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_uraninite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_uraninite_dust",
+      "required": false
+    }
+  ]
+}

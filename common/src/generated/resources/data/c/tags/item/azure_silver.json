@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_azure_silver",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_azure_silver_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_azure_silver_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_azure_silver_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:azure_silver_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_azure_silver_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_azure_silver_dust",
+      "required": false
+    }
+  ]
+}

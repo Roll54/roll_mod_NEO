@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_emerald",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_emerald_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_emerald_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_emerald_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:emerald_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_emerald_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_emerald_dust",
+      "required": false
+    }
+  ]
+}

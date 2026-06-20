@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_tungstate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_tungstate_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_tungstate_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_tungstate_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:tungstate_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_tungstate_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_tungstate_dust",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_olivine",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_olivine",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_olivine",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_olivine",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_olivine",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_olivine",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_olivine",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_olivine",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_olivine",
+      "required": false
+    }
+  ]
+}

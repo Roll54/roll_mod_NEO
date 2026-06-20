@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+
+[[mods]]
+modId = "${mod_id_client}"
+version = "${mod_version}"
+displayName = "${mod_name} (Client)"
+authors = "${mod_authors}"
+description = '''${mod_description} — client-side renderers, screens and key bindings. Requires ${mod_id}.'''
+
+[[mixins]]
+config = "${mod_id_client}.mixins.json"
+
+# Requires the common jar — client will not load without it.
+[[dependencies."${mod_id_client}"]]
+modId = "${mod_id}"
+type = "required"
+versionRange = "[${mod_version},)"
+ordering = "AFTER"
+side = "CLIENT"
+
+[[dependencies."${mod_id_client}"]]
+modId = "neoforge"
+type = "required"
+versionRange = "${neo_version_range}"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies."${mod_id_client}"]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "CLIENT"

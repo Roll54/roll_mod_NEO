@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_chalcopyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_chalcopyrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_chalcopyrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_chalcopyrite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:chalcopyrite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_chalcopyrite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_chalcopyrite_dust",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_borax",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_borax_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_borax_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_borax_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:borax_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_borax_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_borax_dust",
+      "required": false
+    }
+  ]
+}

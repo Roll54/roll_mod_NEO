@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_wulfenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_wulfenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_wulfenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_wulfenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_wulfenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_wulfenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_wulfenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_wulfenite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_wulfenite",
+      "required": false
+    }
+  ]
+}

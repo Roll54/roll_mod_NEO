@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_chalcopyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_chalcopyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_chalcopyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_chalcopyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_chalcopyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_chalcopyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_chalcopyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_chalcopyrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_chalcopyrite",
+      "required": false
+    }
+  ]
+}

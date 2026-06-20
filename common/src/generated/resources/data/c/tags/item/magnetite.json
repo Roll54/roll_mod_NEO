@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_magnetite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_magnetite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_magnetite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:magnetite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_magnetite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_magnetite_dust",
+      "required": false
+    }
+  ]
+}

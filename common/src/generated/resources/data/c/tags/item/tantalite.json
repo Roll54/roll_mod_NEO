@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_tantalite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_tantalite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_tantalite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_tantalite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:tantalite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_tantalite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_tantalite_dust",
+      "required": false
+    }
+  ]
+}

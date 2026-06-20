@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_pyrope",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_pyrope",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_pyrope",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_pyrope",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_pyrope",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_pyrope",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_pyrope",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_pyrope",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_pyrope",
+      "required": false
+    }
+  ]
+}

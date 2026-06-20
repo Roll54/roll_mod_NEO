@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_lithium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_lithium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_lithium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_lithium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:lithium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_lithium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_lithium_dust",
+      "required": false
+    }
+  ]
+}

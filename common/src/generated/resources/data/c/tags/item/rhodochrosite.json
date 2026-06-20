@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_rhodochrosite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_rhodochrosite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_rhodochrosite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_rhodochrosite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:rhodochrosite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_rhodochrosite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_rhodochrosite_dust",
+      "required": false
+    }
+  ]
+}

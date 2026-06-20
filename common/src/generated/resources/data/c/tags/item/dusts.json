@@ -1,0 +1,320 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:mica_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:hematite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:yellow_limonite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:biotite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:magnetite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:garnierite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pentlandite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:chalcopyrite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:certus_quartz_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pyrochlore_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pyrope_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:apatite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:galena_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pyrolusite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:chromite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:malachite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:fluorite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pyrite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:cinnabar_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:peridot_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:sodalite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:lazurite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:lapis_lazuli_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:tetrahedrite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stibnite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:ilmenite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:blue_topaz_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:topaz_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:chalcocite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:bornite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:sulfur_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:sphalerite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:monazite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:ruby_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:redstone_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:saltpeter_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:emerald_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:beryllium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:tantalite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:molybdenite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:wulfenite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:powellite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:molybdenum_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:gold_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:goethite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:vanadium_magnetite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:rutile_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:silver_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:bauxite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:salt_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:rock_salt_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:lepidolite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:tungstate_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:scheelite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:lithium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:sheldonite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:uraninite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:thorium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pitchblende_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:cassiterite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:rhodochrosite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:lead_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:olivine_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:trona_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:bismuth_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:quartz_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:diamond_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:bort_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:cassiterite_sand_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:iridium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:gold_amalgam_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:silver_amalgam_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:coal_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:lignite_coal_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:azure_silver_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stannite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crimson_iron_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:nickel_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:borax_dust",
+      "required": false
+    }
+  ]
+}

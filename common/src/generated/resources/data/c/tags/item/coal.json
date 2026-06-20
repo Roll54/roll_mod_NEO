@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_coal",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_coal_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_coal_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_coal_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:coal_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_coal_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_coal_dust",
+      "required": false
+    }
+  ]
+}

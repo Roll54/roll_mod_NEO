@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_tungstate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_tungstate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_tungstate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_tungstate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_tungstate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_tungstate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_tungstate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_tungstate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_tungstate",
+      "required": false
+    }
+  ]
+}

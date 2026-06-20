@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_apatite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_apatite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_apatite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_apatite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_apatite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_apatite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_apatite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_apatite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_apatite",
+      "required": false
+    }
+  ]
+}

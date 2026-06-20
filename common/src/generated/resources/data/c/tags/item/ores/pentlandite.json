@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_pentlandite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_pentlandite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_pentlandite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_pentlandite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_pentlandite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_pentlandite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_pentlandite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_pentlandite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_pentlandite",
+      "required": false
+    }
+  ]
+}

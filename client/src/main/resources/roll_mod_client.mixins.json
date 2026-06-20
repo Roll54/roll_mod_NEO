@@ -1,0 +1,16 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.roll_54.roll_mod_client.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ModifyEnergyHudRendererMixin",
+    "crops.CropRequirementCategoryRecipeMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  }
+}

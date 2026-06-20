@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_yellow_limonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_yellow_limonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_yellow_limonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_yellow_limonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_yellow_limonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_yellow_limonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_yellow_limonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_yellow_limonite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_yellow_limonite",
+      "required": false
+    }
+  ]
+}

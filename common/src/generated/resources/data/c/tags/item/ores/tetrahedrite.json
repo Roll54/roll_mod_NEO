@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_tetrahedrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_tetrahedrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_tetrahedrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_tetrahedrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_tetrahedrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_tetrahedrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_tetrahedrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_tetrahedrite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_tetrahedrite",
+      "required": false
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_goethite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_goethite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_goethite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_goethite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:goethite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_goethite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_goethite_dust",
+      "required": false
+    }
+  ]
+}

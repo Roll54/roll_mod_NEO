@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_rutile",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_rutile_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_rutile_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_rutile_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:rutile_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_rutile_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_rutile_dust",
+      "required": false
+    }
+  ]
+}

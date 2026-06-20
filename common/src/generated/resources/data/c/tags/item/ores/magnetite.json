@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_magnetite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_magnetite",
+      "required": false
+    }
+  ]
+}

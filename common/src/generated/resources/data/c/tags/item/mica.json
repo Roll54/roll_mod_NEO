@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_mica",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_mica_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_mica_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_mica_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mica_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_mica_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_mica_dust",
+      "required": false
+    }
+  ]
+}

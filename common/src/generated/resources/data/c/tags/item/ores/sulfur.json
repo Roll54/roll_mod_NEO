@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_sulfur",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_sulfur",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_sulfur",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_sulfur",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_sulfur",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_sulfur",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_sulfur",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_sulfur",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_sulfur",
+      "required": false
+    }
+  ]
+}

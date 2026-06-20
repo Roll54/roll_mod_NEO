@@ -1,0 +1,32 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_iridium",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crushed_iridium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_iridium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_iridium_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:iridium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_iridium_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:impure_iridium_dust",
+      "required": false
+    }
+  ]
+}

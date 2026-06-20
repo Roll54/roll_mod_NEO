@@ -1,0 +1,40 @@
+{
+  "values": [
+    {
+      "id": "roll_mod:raw_lead",
+      "required": false
+    },
+    {
+      "id": "roll_mod:stone_lead",
+      "required": false
+    },
+    {
+      "id": "roll_mod:deepslate_lead",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherrack_lead",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mars_lead",
+      "required": false
+    },
+    {
+      "id": "roll_mod:moon_lead",
+      "required": false
+    },
+    {
+      "id": "roll_mod:venus_lead",
+      "required": false
+    },
+    {
+      "id": "roll_mod:mercury_lead",
+      "required": false
+    },
+    {
+      "id": "roll_mod:end_lead",
+      "required": false
+    }
+  ]
+}
