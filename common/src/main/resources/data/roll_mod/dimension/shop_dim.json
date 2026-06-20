@@ -1,17 +1,16 @@
 {
-  "type": "roll_mod:spawn_dim",
+  "type": "roll_mod:shop_dim",
   "generator": {
     "type": "minecraft:flat",
     "settings": {
       "features": false,
       "lakes": false,
-      "biome": "roll_mod:spawn_dim",
+      "biome": "roll_mod:shop_dim",
       "structure_overrides": [],
       "layers": [
         { "height": 1, "block": "minecraft:bedrock" },
-        { "height": 50, "block": "minecraft:stone" },
-        { "height": 3, "block": "minecraft:sand" },
-        { "height": 9, "block": "minecraft:water" }
+        { "height": 4, "block": "minecraft:stone" },
+        { "height": 1, "block": "minecraft:smooth_stone" }
       ]
     }
   }

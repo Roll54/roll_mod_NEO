@@ -56,6 +56,12 @@ public class SetWorldSpawnDimCommand {
         state.spawnDimension = target.dimension();
         state.setDirty();
 
+        // Flush to disk now instead of waiting for the next autosave / clean /stop. The dimension
+        // is marked dirty only once here (unlike StormState, which is re-dirtied every tick and so
+        // gets caught by autosaves), so an ungraceful shutdown before the next autosave window would
+        // otherwise drop it and silently revert spawn to the overworld on the next boot.
+        server.overworld().getDataStorage().save();
+
         source.sendSuccess(
                 () -> Component.translatable("commands.setworldspawn.success", pos.getX(), pos.getY(), pos.getZ(), angle)
                         .append(Component.literal(" in " + target.dimension().location())),
