@@ -1,0 +1,6 @@
+{
+  "chance": 0.5,
+  "child": "roll_mod:sulfur_berry_coffee",
+  "parent1": "roll_mod:coffee",
+  "parent2": "roll_mod:sulfur_berry"
+}

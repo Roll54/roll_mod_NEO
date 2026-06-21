@@ -86,6 +86,31 @@ public class BlockRegistry {
             () -> new SoundPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion(), SoundRegistry.LORP_SUSPICIOUS_VIOLIN)
     );
 
+    public static final DeferredBlock<Block> LAURELIN_PLUSH = BLOCKS.register(
+            "laurelin_plush",
+            () -> new SoundPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion(), SoundRegistry.LORP_SUSPICIOUS_VIOLIN)
+    );
+
+    public static final DeferredBlock<Block> EVORA_PLUSH = BLOCKS.register(
+            "evora_plush",
+            () -> new SoundPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion(), SoundRegistry.LORP_SUSPICIOUS_VIOLIN)
+    );
+
+    public static final DeferredBlock<Block> KIBER_KABACHOK_PLUSH = BLOCKS.register(
+            "kiber_kabachok_plush",
+            () -> new SoundPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion(), SoundRegistry.LORP_SUSPICIOUS_VIOLIN)
+    );
+
+    public static final DeferredBlock<Block> DENCHEE_PLUSH = BLOCKS.register(
+            "denchee_plush",
+            () -> new SoundPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion(), SoundRegistry.LORP_SUSPICIOUS_VIOLIN)
+    );
+
+    public static final DeferredBlock<Block> TENWOC__PLUSH = BLOCKS.register(
+            "tenwoc__plush",
+            () -> new SoundPlushBlock(BlockBehaviour.Properties.of().strength(2.5F).sound(SoundType.WOOL).noOcclusion(), SoundRegistry.LORP_SUSPICIOUS_VIOLIN)
+    );
+
     public static final DeferredBlock<Block> BUKVI_ORE_BLOCK = BLOCKS.register(
             "bukvi_ore_block",
             () -> new RegenBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.AMETHYST), 1)

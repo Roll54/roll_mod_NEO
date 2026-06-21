@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-19T01:24:51.162568573	Item Models: roll_mod
+// 1.21.1	2026-06-20T00:10:28.338479858	Item Models: roll_mod
 5478948ed127b16a29bb07058702c1660666f43c assets/roll_mod/models/crop/cabbage_stage0.json
 b18c6664c22b2a76b367c0229864b02b683f78fe assets/roll_mod/models/crop/cabbage_stage1.json
 8b240f7745d13a6aac70dadeb43a747d4f8abc12 assets/roll_mod/models/crop/cabbage_stage2.json
@@ -7,6 +7,14 @@ b18c6664c22b2a76b367c0229864b02b683f78fe assets/roll_mod/models/crop/cabbage_sta
 fdd344c122b6649f1cb753af8075eac8cdd63135 assets/roll_mod/models/crop/cabbage_stage5.json
 afd3a9bddee7c6d1bad68ef51118e6c53db46e5e assets/roll_mod/models/crop/cabbage_stage6.json
 a566e1f55a43d4d646a40707ef0600ec2e2edf44 assets/roll_mod/models/crop/cabbage_stage7.json
+e261edb63899e71209754df834e15f335523d8c8 assets/roll_mod/models/crop/coffee_stage0.json
+e261edb63899e71209754df834e15f335523d8c8 assets/roll_mod/models/crop/coffee_stage1.json
+f2e2ae0f11753b07288237681e62a5e3b1d8eb3c assets/roll_mod/models/crop/coffee_stage2.json
+30a8811af552e8e26e575ecb5fb324b6ce3faba4 assets/roll_mod/models/crop/coffee_stage3.json
+186dd8d2e9d6e1f7d1e7a3d5d0b3e91d4083abf0 assets/roll_mod/models/crop/coffee_stage4.json
+186dd8d2e9d6e1f7d1e7a3d5d0b3e91d4083abf0 assets/roll_mod/models/crop/coffee_stage5.json
+a057b9a683e0e435774f9f505523a6bc2a1deca8 assets/roll_mod/models/crop/coffee_stage6.json
+c496709688bc201542dac6e79a272f139599dc37 assets/roll_mod/models/crop/coffee_stage7.json
 dad7266db21fe4561532fff8e395202b6b1e5bdc assets/roll_mod/models/crop/green_bell_pepper_stage0.json
 9a67c82bead84600e2944aec56698cbb8b4696dc assets/roll_mod/models/crop/green_bell_pepper_stage1.json
 0688fe572f62abc52fae8e87e49a4e3b737035a4 assets/roll_mod/models/crop/green_bell_pepper_stage2.json
@@ -31,6 +39,14 @@ fef36af36087176ec8ab07afbb1c7265c1c10700 assets/roll_mod/models/crop/latex_dande
 8360e6adffd417863d04edc0e410ee8aef400e93 assets/roll_mod/models/crop/latex_dandelion_stage5.json
 af183cd82ad75e8a82066cde612d1afab8e1f4c0 assets/roll_mod/models/crop/latex_dandelion_stage6.json
 d890f7766eb8d2ae3f4138f63e36657e2f6d2110 assets/roll_mod/models/crop/latex_dandelion_stage7.json
+c0dba27e6b7525c507e23800ba2b70c89ba30790 assets/roll_mod/models/crop/magnetite_spinach_stage0.json
+c0dba27e6b7525c507e23800ba2b70c89ba30790 assets/roll_mod/models/crop/magnetite_spinach_stage1.json
+46e9e21b23e3066640187c3e131d854d051c1c59 assets/roll_mod/models/crop/magnetite_spinach_stage2.json
+46e9e21b23e3066640187c3e131d854d051c1c59 assets/roll_mod/models/crop/magnetite_spinach_stage3.json
+666e0516458334b4ba0e66e026b8e5de3539c054 assets/roll_mod/models/crop/magnetite_spinach_stage4.json
+666e0516458334b4ba0e66e026b8e5de3539c054 assets/roll_mod/models/crop/magnetite_spinach_stage5.json
+3fe2b441863ff3b3127f99d0186dc3fa9d913c14 assets/roll_mod/models/crop/magnetite_spinach_stage6.json
+3fe2b441863ff3b3127f99d0186dc3fa9d913c14 assets/roll_mod/models/crop/magnetite_spinach_stage7.json
 3e9a6c80f907435c684287247ed663c4ae72df83 assets/roll_mod/models/crop/nikelia_stage0.json
 3e9a6c80f907435c684287247ed663c4ae72df83 assets/roll_mod/models/crop/nikelia_stage1.json
 09eaafbaefae230faa474c3b35e07bef7236751c assets/roll_mod/models/crop/nikelia_stage2.json
@@ -130,6 +146,8 @@ e2e7531c3a5382bcda631efef69c53b33af6634d assets/roll_mod/models/item/blue_wafer_
 14792c9933559a656676d37b35f7388222b0c694 assets/roll_mod/models/item/blue_wafer_ram.json
 031550dbef6c921b39d8d000f62eb3f87b2cd2e7 assets/roll_mod/models/item/calcite_dust.json
 a161530180d8bcc170c7c52df9b410a5c9a67954 assets/roll_mod/models/item/chemical_core.json
+5d0930cdd90b9a3b6c70bd45191e78cf51417e2a assets/roll_mod/models/item/coffee_beans.json
+f080cda29135350ab57accf988950dee4c9d5290 assets/roll_mod/models/item/coffee_seeds.json
 a161530180d8bcc170c7c52df9b410a5c9a67954 assets/roll_mod/models/item/copper_gear.json
 d2db77e19e23d37ffa2995b30eab5bf896ddb351 assets/roll_mod/models/item/deepslate_dust.json
 7ee2a1d2c0aa3ca78a155d84a9f174d598f5f728 assets/roll_mod/models/item/diorite_dust.json
@@ -159,6 +177,8 @@ e6e395fc9a92352012af622c0d94224ee61d75ab assets/roll_mod/models/item/iridium_bas
 7e7bc59e667cd2e1f61fd8b4c20b09105e9c79ff assets/roll_mod/models/item/iridium_based_board_assembly.json
 9c1788ee2052d789f49e3a5b5a17a909ac4f6d4f assets/roll_mod/models/item/light_blue_lens.json
 ac841e1420ce1833875e82b2b8df9461450853df assets/roll_mod/models/item/lithium_soap.json
+dfa03c80660fd6f833149a258d4fed7e369e1e29 assets/roll_mod/models/item/magnetite_spinach.json
+992e177d9810c863ce39dc98974488be17d69b5f assets/roll_mod/models/item/magnetite_spinach_seeds.json
 560fa3e9da761af4ab0d7b759868dbe735621f35 assets/roll_mod/models/item/marble_dust.json
 bdc5df451667cdf853b3218925a60a215085b329 assets/roll_mod/models/item/mars_cartridge.json
 ee1bd3d8d6e8ac28f66e1932caf7438ae65158f7 assets/roll_mod/models/item/mars_stone_dust.json
@@ -241,9 +261,11 @@ df011a02c2c0e6c01ef387d5af355343dccaaeb9 assets/roll_mod/models/item/white_lens.
 7c14714755edc0cb7741ad1f71f3c1d4834849f1 assets/roll_mod/models/item/yellow_bell_pepper_seeds.json
 2179734da2719e797078d96a55e5d9df75d03a34 assets/roll_mod/models/item/yellow_lens.json
 3d70ade6a0b3a5d0b68b58a808e3eaf062139bb0 assets/roll_mod/models/seed/cabbage.json
+f080cda29135350ab57accf988950dee4c9d5290 assets/roll_mod/models/seed/coffee.json
 77cf829f7b431f5eb1408ca3f8b4d11504f0712e assets/roll_mod/models/seed/green_bell_pepper.json
 31f18d22b01d6537b0f81c3d29f730cd75bb0c01 assets/roll_mod/models/seed/iceberg_mint.json
 1373bd08ed00632e537375829edd4d8fedf61925 assets/roll_mod/models/seed/latex_dandelion.json
+992e177d9810c863ce39dc98974488be17d69b5f assets/roll_mod/models/seed/magnetite_spinach.json
 65bfd1cb1fbb4fa611a46e208a03aaf9b8e16706 assets/roll_mod/models/seed/nikelia.json
 9f36ce2526c2e4539a2380f50a7da3a3f60e2b9a assets/roll_mod/models/seed/red_bell_pepper.json
 6bb0068da9e2d983f5c7561a67d64d967493c2f0 assets/roll_mod/models/seed/rice.json

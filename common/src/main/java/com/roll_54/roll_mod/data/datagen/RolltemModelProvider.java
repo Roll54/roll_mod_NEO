@@ -229,6 +229,10 @@ public class RolltemModelProvider extends ItemModelProvider {
         seedItemModel(ItemRegistry.HOPS_SEEDS.get());
         seedItemModel(ItemRegistry.RUTILE_BELL_PEPPER.get());
         seedItemModel(ItemRegistry.RUTILE_BELL_PEPPER_SEEDS.get());
+        seedItemModel(ItemRegistry.COFFEE_BEANS.get());
+        seedItemModel(ItemRegistry.COFFEE_SEEDS.get());
+        seedItemModel(ItemRegistry.MAGNETITE_SPINACH.get());
+        seedItemModel(ItemRegistry.MAGNETITE_SPINACH_SEEDS.get());
 
         // generates seed JSON: assets/roll_mod/models/seed/iceberg_mint.json
         // and 8 crop stage JSONs: assets/roll_mod/models/crop/iceberg_mint_stage0.json to _stage7.json
@@ -251,6 +255,9 @@ public class RolltemModelProvider extends ItemModelProvider {
         generateAgricraftPlantModels("tomato", 8, AgricraftCropModel.CROP_HASH);
 
         generateAgricraftPlantModels("rutile_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+
+        generateAgricraftPlantModels("coffee", 6, AgricraftCropModel.CROP_CROSS);
+        generateAgricraftPlantModels("magnetite_spinach", 4, AgricraftCropModel.CROP_CROSS);
 
 
 

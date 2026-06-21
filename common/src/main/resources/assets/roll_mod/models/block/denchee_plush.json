@@ -6,8 +6,8 @@
 		64
 	],
 	"textures": {
-		"1": "roll_mod:block/plushies/lorp_ooo_plush",
-		"particle": "roll_mod:block/plushies/lorp_ooo_plush"
+		"1": "roll_mod:block/plushies/denchee_plush",
+		"particle": "roll_mod:block/plushies/denchee_plush"
 	},
 	"elements": [
 		{

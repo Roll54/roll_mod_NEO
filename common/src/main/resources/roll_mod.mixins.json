@@ -32,7 +32,8 @@
     "antidupe.TripwireBlockMixin",
     "antidupe.TripwireHookBlockMixin",
     "crops.CropBlockEntityMixin",
-    "crops.AgriPlantMixin"
+    "crops.AgriPlantMixin",
+    "crops.RakeItemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

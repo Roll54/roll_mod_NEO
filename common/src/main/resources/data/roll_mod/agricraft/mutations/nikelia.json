@@ -1,0 +1,6 @@
+{
+  "chance": 0.5,
+  "child": "roll_mod:nikelia",
+  "parent1": "roll_mod:stonelia",
+  "parent2": "roll_mod:sulfur_berry"
+}
