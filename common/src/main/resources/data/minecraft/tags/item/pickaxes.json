@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:meteorite_pickaxe",
+    "roll_mod:prospector_pickaxe",
+    "roll_mod:meteorite_metal_prospector_pickaxe"
+  ]
+}
