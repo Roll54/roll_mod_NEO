@@ -836,6 +836,11 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, BlockItem> YAN_PLUSH_ITEM = ITEMS.register("yan_plush", () -> new BlockItem(YAN_PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, BlockItem> LEDOK_PLUSH_ITEM = ITEMS.register("ledok_plush", () -> new BlockItem(LEDOK_PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, BlockItem> LORP_OOO_PLUSH_ITEM = ITEMS.register("lorp_ooo_plush", () -> new BlockItem(LORP_OOO_PLUSH.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> LAURELIN_PLUSH_ITEM = ITEMS.register("laurelin_plush", () -> new BlockItem(LAURELIN_PLUSH.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> EVORA_PLUSH_ITEM = ITEMS.register("evora_plush", () -> new BlockItem(EVORA_PLUSH.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> KIBER_KABACHOK_PLUSH_ITEM = ITEMS.register("kiber_kabachok_plush", () -> new BlockItem(KIBER_KABACHOK_PLUSH.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> DENCHEE_PLUSH_ITEM = ITEMS.register("denchee_plush", () -> new BlockItem(DENCHEE_PLUSH.get(), new Item.Properties()));
+    public static final DeferredHolder<Item, BlockItem> TENWOC_PLUSH_ITEM = ITEMS.register("tenwoc__plush", () -> new BlockItem(TENWOC__PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, StormScannerItem> LV_STORM_SCANNER = ITEMS.register("lv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 1, 0xff1500, 1_000_000));
     public static final DeferredHolder<Item, StormScannerItem> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 2, 0xff1500, 10_000_000));
     public static final DeferredHolder<Item, EnergyBatteryItem> TEST_BATTERY = ITEMS.register("nano_battery", () -> new EnergyBatteryItem(new Item.Properties(), 20_000_000L, 20_000L, 200_000L, 0x00FFFF));
@@ -1311,6 +1316,10 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> HOPS_SEEDS = CROPS.register("hops_seeds", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RUTILE_BELL_PEPPER = CROPS.register("rutile_bell_pepper", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> RUTILE_BELL_PEPPER_SEEDS = CROPS.register("rutile_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> COFFEE_BEANS = CROPS.register("coffee_beans", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> COFFEE_SEEDS = CROPS.register("coffee_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MAGNETITE_SPINACH = CROPS.register("magnetite_spinach", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MAGNETITE_SPINACH_SEEDS = CROPS.register("magnetite_spinach_seeds", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> HERBICIDE_TIER_1 = ITEMS.register(
             "herbicide_tier_1",

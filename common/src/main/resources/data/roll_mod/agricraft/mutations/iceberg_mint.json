@@ -1,0 +1,6 @@
+{
+  "chance": 0.5,
+  "child": "roll_mod:iceberg_mint",
+  "parent1": "roll_mod:cabbage",
+  "parent2": "minecraft:sugar_cane"
+}

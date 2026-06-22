@@ -34,8 +34,24 @@ public abstract class CropBlockEntityMixin implements AgriHerbicide {
     @Shadow
     private AgriGrowthStage weedGrowthStage;
 
+    @Shadow
+    public abstract AgriGrowthStage getGrowthStage();
+
     @Unique
     private int roll_mod$herbicideAmount = 0;
+
+    /**
+     * Null-safe override of AgriCraft's {@code AgriCrop.isFullyGrown()} default
+     * ({@code getGrowthStage().isFinal()}), which NPEs on crops with no growth stage (e.g. bare
+     * sticks). FTB Ultimine's single-crop-harvesting calls this on every crop right-click, so the
+     * unguarded default crashes the {@code ServerboundUseItemOnPacket} handler and aborts the
+     * interaction (crops can't be collected, client gets kicked). An absent growth stage is, by
+     * definition, not fully grown.
+     */
+    public boolean isFullyGrown() {
+        AgriGrowthStage stage = this.getGrowthStage();
+        return stage != null && stage.isFinal();
+    }
 
     @Inject(method = "loadAdditional", at = @At("TAIL"))
     private void roll_mod$clearWeedsWhenTagSaysNo(

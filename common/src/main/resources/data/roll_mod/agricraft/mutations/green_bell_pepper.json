@@ -1,0 +1,6 @@
+{
+  "chance": 0.5,
+  "child": "roll_mod:green_bell_pepper",
+  "parent1": "roll_mod:wild_bell_pepper",
+  "parent2": "minecraft:cactus"
+}

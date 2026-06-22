@@ -1,0 +1,6 @@
+{
+  "chance": 0.5,
+  "child": "roll_mod:stonelia",
+  "parent1": "minecraft:nether_wart",
+  "parent2": "minecraft:melon"
+}

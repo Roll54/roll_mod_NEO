@@ -79,6 +79,21 @@ public class MyConfig extends Config {
         public int TIME_TO_BROADCAST = 12000;
     }
 
+    @Comment("Settings for the /rtp (random teleport) command")
+    public RtpSettings rtp = new RtpSettings();
+
+    public static class RtpSettings extends ConfigSection {
+        @Comment("""
+                Dimensions in which /rtp is allowed (namespaced ids, e.g. "minecraft:overworld").
+                If a player runs /rtp from a dimension that is not in this list, they are first
+                moved to the overworld and the random teleport is performed there instead.
+                Leave the overworld out of the list to effectively disable /rtp everywhere.
+                """)
+        public ArrayList<String> allowedDimensions = new ArrayList<String>(
+                List.of("minecraft:overworld")
+        );
+    }
+
     @Comment("BUKVI for nothing")
     public boolean enabled = true;
 

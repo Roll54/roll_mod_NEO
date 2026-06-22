@@ -1,0 +1,6 @@
+{
+  "chance": 0.5,
+  "child": "roll_mod:latex_dandelion",
+  "parent1": "minecraft:dandelion",
+  "parent2": "minecraft:dandelion"
+}

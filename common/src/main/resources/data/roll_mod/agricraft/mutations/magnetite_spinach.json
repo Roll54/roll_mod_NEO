@@ -1,0 +1,6 @@
+{
+  "chance": 0.5,
+  "child": "roll_mod:magnetite_spinach",
+  "parent1": "roll_mod:iceberg_mint",
+  "parent2": "roll_mod:green_bell_pepper"
+}

@@ -1,12 +1,10 @@
 package com.roll_54.roll_mod_server.registry;
 
 import com.roll_54.roll_mod_server.RollModServer;
-import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod_server.commands.AutoGiveCommands;
 import com.roll_54.roll_mod_server.commands.GitCopyCommand;
 import com.roll_54.roll_mod_server.commands.NetherstormCommand;
 import com.roll_54.roll_mod_server.commands.RegenBlockCommands;
-import com.roll_54.roll_mod_server.commands.SetWorldSpawnDimCommand;
 import com.roll_54.roll_mod_server.minestar.PVPCommand;
 import com.roll_54.roll_mod_server.minestar.ShopReceiveCommand;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -26,7 +24,6 @@ public class CommandRegistry {
         NetherstormCommand.register(dispatcher);
         GitCopyCommand.register(dispatcher);
         PVPCommand.register(dispatcher);
-        SetWorldSpawnDimCommand.register(dispatcher);
 
         // minestar-backed command: only register on a dedicated server, where the minestar mod is present.
         if (FMLEnvironment.dist.isDedicatedServer()) {

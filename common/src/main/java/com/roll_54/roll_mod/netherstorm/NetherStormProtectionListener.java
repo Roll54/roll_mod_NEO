@@ -27,6 +27,10 @@ public final class NetherStormProtectionListener {
 
         if (to != Level.NETHER) return;
 
+        // Only gate Nether access while a storm is actually raging. Once the storm has ended the
+        // Nether is safe again, so unprotected players must be allowed in regardless of their gear.
+        if (!StormHandler.isStormActive()) return;
+
         if (isPlayerProtectedFromStorm(player)) {
             return;
         } else {
