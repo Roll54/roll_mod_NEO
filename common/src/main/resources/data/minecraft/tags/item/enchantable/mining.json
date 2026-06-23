@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "roll_mod:lv_mining_drill",
+    "roll_mod:advanced_lv_mining_drill",
+    "roll_mod:mv_mining_drill",
+    "roll_mod:advanced_mv_mining_drill",
+    "roll_mod:hv_mining_drill",
+    "roll_mod:advanced_hv_mining_drill",
+    "roll_mod:ev_mining_drill",
+    "roll_mod:advanced_ev_mining_drill"
+  ]
+}

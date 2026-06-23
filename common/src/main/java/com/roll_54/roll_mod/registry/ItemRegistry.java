@@ -104,7 +104,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, HazmatHelmetItem> HAZMAT_HELMET = ITEMS.register(
             "hazmat_helmet",
             () -> new HazmatHelmetItem(
-                    new HazmatHelmetItem.Properties().stacksTo(1),
+                    new HazmatHelmetItem.Properties().stacksTo(1).durability(2400),
                     TooltipOptions.nameAndLore(0xe8c52a, 2, 0xc28400)
 
             )
