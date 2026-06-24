@@ -25,6 +25,11 @@ public class RMMAttachment {
     public static final Supplier<AttachmentType<Boolean>> AUTO_GIVE = ATTACHMENT_TYPES.register(
             "auto_give", () -> AttachmentType.builder(() -> true).serialize(Codec.BOOL).copyOnDeath().build()
     );
+
+    // Accumulated radiation dose (0 .. RadiationHandler.MAX_RADIATION). Persists and copies on death.
+    public static final Supplier<AttachmentType<Integer>> RADIATION = ATTACHMENT_TYPES.register(
+            "radiation", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).copyOnDeath().build()
+    );
     /**
      * No serialization (NOT!!!! PERSISTENT)
      private static final Supplier<AttachmentType<SomeCache>> SOME_CACHE = ATTACHMENT_TYPES.register(

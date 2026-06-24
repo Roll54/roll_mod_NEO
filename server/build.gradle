@@ -48,7 +48,7 @@ dependencies {
     implementation "curse.maven:ftb-library-forge-404465:7134093"
 
     implementation files("jars/luckperms-neoforge.jar")
-    implementation files("jars/minestar-neoforge.jar")
+    implementation files("jars/minestar-neoforge-1.1.0-all.jar")
     runtimeOnly files("jars/tab.jar")
 
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {

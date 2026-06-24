@@ -38,6 +38,7 @@ public final class RollMod {
         SoundRegistry.SOUND_EVENTS.register(eventBus);
         ComponentsRegistry.COMPONENTS.register(eventBus);
         RMMAttachment.ATTACHMENT_TYPES.register(eventBus);
+        eventBus.addListener(com.roll_54.roll_mod.radiation.RadiationComponentDefaults::modifyComponents);
         ModConfigs.init();
         container.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, CleanDropConfig.SPEC);
         MenuTypes.register(eventBus);

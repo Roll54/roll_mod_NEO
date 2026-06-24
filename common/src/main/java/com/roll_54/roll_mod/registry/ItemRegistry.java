@@ -104,7 +104,8 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, HazmatHelmetItem> HAZMAT_HELMET = ITEMS.register(
             "hazmat_helmet",
             () -> new HazmatHelmetItem(
-                    new HazmatHelmetItem.Properties().stacksTo(1).durability(2400),
+                    new HazmatHelmetItem.Properties().stacksTo(1).durability(2400)
+                            .component(ComponentsRegistry.RADIATION_RESISTANCE.get(), 0.25f),
                     TooltipOptions.nameAndLore(0xe8c52a, 2, 0xc28400)
 
             )
@@ -115,7 +116,8 @@ public class ItemRegistry {
             "hazmat_chestplate",
             () -> new HazmatChestplateItem(
                     ArmorItem.Type.CHESTPLATE,
-                    new HazmatChestplateItem.Properties().stacksTo(1).durability(2400),
+                    new HazmatChestplateItem.Properties().stacksTo(1).durability(2400)
+                            .component(ComponentsRegistry.RADIATION_RESISTANCE.get(), 0.25f),
                     TooltipOptions.nameAndLore(0xe8c52a, 2, 0xc28400)
             )
     );
@@ -124,7 +126,8 @@ public class ItemRegistry {
             "hazmat_leggings",
             () -> new HazmatLeggingsItem(
                     ArmorItem.Type.LEGGINGS,
-                    new Item.Properties().stacksTo(1).durability(2400),
+                    new Item.Properties().stacksTo(1).durability(2400)
+                            .component(ComponentsRegistry.RADIATION_RESISTANCE.get(), 0.25f),
                     TooltipOptions.nameAndLore(0xe8c52a, 2, 0xc28400)
             )
     );
@@ -134,7 +137,8 @@ public class ItemRegistry {
             () -> new HazmatBootsItem(
                     Holder.direct(ModArmorMaterials.HAZMAT_ARMOR.get()),
                     ArmorItem.Type.BOOTS,
-                    new Item.Properties().stacksTo(1).durability(2400),
+                    new Item.Properties().stacksTo(1).durability(2400)
+                            .component(ComponentsRegistry.RADIATION_RESISTANCE.get(), 0.25f),
                     TooltipOptions.nameAndLore(0xe8c52a, 2, 0xc28400)
             )
     );
