@@ -37,6 +37,9 @@ public class ComponentsRegistry {
     public static final Supplier<DataComponentType<Boolean>> STORM_PROTECTED;
     public static final Supplier<DataComponentType<Integer>> HERBICIDE;
 
+    // Per-piece radiation resistance (0.0 .. 1.0); equipped pieces are summed and capped at 1.0.
+    public static final Supplier<DataComponentType<Float>> RADIATION_RESISTANCE;
+
     // RegenBlock components
     public static final Supplier<DataComponentType<Integer>> REGEN_TIMER;
     public static final Supplier<DataComponentType<String>> REGEN_TEXTURE_PATH;
@@ -74,6 +77,8 @@ public class ComponentsRegistry {
         STORM_PROTECTED = create("storm_protected", Codec.BOOL, ByteBufCodecs.BOOL);
 
         HERBICIDE = create("herbicide", Codec.INT, ByteBufCodecs.INT);
+
+        RADIATION_RESISTANCE = create("radiation_resistance", Codec.FLOAT, ByteBufCodecs.FLOAT);
 
         // RegenBlock components
         REGEN_TIMER = create("regen_timer", Codec.INT, ByteBufCodecs.INT);

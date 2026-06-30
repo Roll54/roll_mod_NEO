@@ -21,4 +21,10 @@ public class TagRegistry {
     public static final TagKey<Item> RAW_ORE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "raw_ore"));
     public static final TagKey<Item> C_DUSTSTAG = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "dusts"));
 
+    // Radioactivity tiers — items with these tags irradiate the holder every tick
+    public static final TagKey<Item> LOW_RADIOACTIVITY = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "low_radioactivity"));
+    public static final TagKey<Item> MEDIUM_RADIOACTIVITY = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "medium_radioactivity"));
+    public static final TagKey<Item> HIGH_RADIOACTIVITY = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "high_radioactivity"));
+    public static final TagKey<Item> EXTREME_RADIOACTIVITY = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "extreme_radioactivity"));
+
 }

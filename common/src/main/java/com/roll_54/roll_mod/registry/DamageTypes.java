@@ -20,4 +20,13 @@ public class DamageTypes {
                 causer.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(SULFUR_DAMAGE_TYPE),
                 causer);
     }
+
+    public static final ResourceKey<DamageType> RADIATION_DAMAGE_TYPE =
+            ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "radiation"));
+
+    public static DamageSource radiationDamageType(Entity causer) {
+        return new DamageSource(
+                causer.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(RADIATION_DAMAGE_TYPE),
+                causer);
+    }
 }

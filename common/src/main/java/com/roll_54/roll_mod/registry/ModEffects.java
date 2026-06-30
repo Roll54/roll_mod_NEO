@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.registry;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.effect.RadiationPoisoningEffect;
 import com.roll_54.roll_mod.effect.SulfurPoisoningEffect;
 import com.roll_54.roll_mod.effect.SulfurResistanceEffect;
 import net.minecraft.world.effect.MobEffect;
@@ -17,6 +18,9 @@ public class ModEffects {
 
     public static final DeferredHolder<MobEffect, MobEffect> SULFUR_RESISTANCE =
             EFFECTS.register("sulfur_resistance", SulfurResistanceEffect::new);
+
+    public static final DeferredHolder<MobEffect, MobEffect> RADIATION_POISONING =
+            EFFECTS.register("radiation_poisoning", RadiationPoisoningEffect::new);
 
     public static void register(IEventBus eventBus) {
         EFFECTS.register(eventBus);

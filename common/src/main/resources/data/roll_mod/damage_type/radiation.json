@@ -1,0 +1,7 @@
+{
+  "message_id": "radiation",
+  "scaling": "never",
+  "exhaustion": 0.0,
+  "effects": "drowning",
+  "death_message_type": "default"
+}
