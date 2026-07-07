@@ -1,6 +1,0 @@
-{
-  "parent": "agricraft:crop/crop_cross",
-  "textures": {
-    "crop": "roll_mod:block/crops/fluorite_pineapple_stage0"
-  }
-}

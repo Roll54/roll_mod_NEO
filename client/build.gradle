@@ -46,6 +46,14 @@ neoForge {
 dependencies {
     implementation project(':common')
 
+    // compileOnly: GuiGraphicsOxygenBarMixin reads the nano suit's oxygen tank for rendering. These
+    // classes are provided at runtime by the loaded mods (common exposes them non-transitively, so
+    // they must be named explicitly here for compilation).
+    compileOnly files("../common/jars/adastra-1.21.1-1.16.6-neoforge.jar")
+    compileOnly files("../common/jars/common-storage-lib-neoforge-1.21.1-0.0.9.jar")
+    compileOnly files("../common/jars/common-storage-lib-resources-neoforge-1.21.1-0.0.9.jar")
+    compileOnly "curse.maven:extended-industrialization-1068418:7722451"
+
     // JEI is client-only.
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")

@@ -259,6 +259,9 @@ public class RolltemModelProvider extends ItemModelProvider {
         generateAgricraftPlantModels("coffee", 6, AgricraftCropModel.CROP_CROSS);
         generateAgricraftPlantModels("magnetite_spinach", 4, AgricraftCropModel.CROP_CROSS);
 
+        generateAgricraftPlantModels("fluorite_pineapple", 5, AgricraftCropModel.CROP_CROSS);
+
+
 
 
     }

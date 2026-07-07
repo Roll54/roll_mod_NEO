@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.data.datagen.ore;
 
+import com.roll_54.roll_mod.data.datagen.SolarPanelLootProvider;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
 import com.roll_54.roll_mod.registry.GeneratedOreRegistry;
 import com.roll_54.roll_mod.registry.ItemRegistry;
@@ -30,7 +31,12 @@ import java.util.stream.Collectors;
 
 public class OreLootTableProvider extends LootTableProvider {
     public OreLootTableProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
-        super(output, Set.of(), List.of(new SubProviderEntry(OreBlockLoot::new, LootContextParamSets.BLOCK)), lookupProvider);
+        super(output, Set.of(), List.of(
+                new SubProviderEntry(OreBlockLoot::new, LootContextParamSets.BLOCK),
+                // Solar panels share this single provider: LootTableProvider.getName() is final,
+                // so a mod can register only one loot provider (see SolarPanelLootProvider).
+                new SubProviderEntry(SolarPanelLootProvider.SolarPanelLoot::new, LootContextParamSets.BLOCK)
+        ), lookupProvider);
     }
 
     private static class OreBlockLoot extends BlockLootSubProvider {

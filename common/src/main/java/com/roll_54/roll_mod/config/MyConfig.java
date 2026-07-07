@@ -6,9 +6,12 @@ import me.fzzyhmstrs.fzzy_config.api.SaveType;
 import me.fzzyhmstrs.fzzy_config.config.Config;
 import me.fzzyhmstrs.fzzy_config.config.ConfigSection;
 import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedIdentifierMap;
+import me.fzzyhmstrs.fzzy_config.validation.collection.ValidatedList;
 import me.fzzyhmstrs.fzzy_config.validation.minecraft.ValidatedIdentifier;
 import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedBoolean;
+import me.fzzyhmstrs.fzzy_config.validation.misc.ValidatedString;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedDouble;
+import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedFloat;
 import me.fzzyhmstrs.fzzy_config.validation.number.ValidatedInt;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -198,18 +201,64 @@ public class MyConfig extends Config {
     }
 
 
+    @Comment("Anvil tweaks: over-enchanting past max level and removing the 40-level 'Too Expensive!' cap.")
+    public AnvilSettings anvil = new AnvilSettings();
+
+    public static class AnvilSettings extends ConfigSection {
+
+        @Comment("""
+                Allow the anvil to combine enchantments past their normal maximum level.
+                e.g. Sharpness V + Sharpness V -> Sharpness VI, and so on.
+                False = vanilla behavior (combined level is clamped to the enchantment max).
+                """)
+        public ValidatedBoolean overEnchant = new ValidatedBoolean(true);
+
+        @Comment("""
+                Remove the vanilla 'Too Expensive!' block at 40 levels so the anvil result is never
+                greyed out for cost alone. Costs at or above the threshold are scaled exponentially
+                instead (see expThreshold / expGrowth), so high-tier work stays possible but expensive.
+                False = vanilla 40-level hard cap.
+                """)
+        public ValidatedBoolean removeLevelCap = new ValidatedBoolean(true);
+
+        @Comment("""
+                Level cost at which exponential scaling starts. Below this the cost is unchanged.
+                Vanilla hard cap is 40.
+                """)
+        public ValidatedInt expThreshold = new ValidatedInt(40, 256, 1);
+
+        @Comment("""
+                Exponential growth factor applied per level above the threshold:
+                    cost = threshold * expGrowth ^ (cost - threshold)
+                1.0 = no extra scaling (cost stays flat past the threshold).
+                1.1 = roughly +10% per level over the threshold (default).
+                """)
+        public ValidatedDouble expGrowth = new ValidatedDouble(1.1, 2.0, 1.0);
+    }
+
+
     public SolarPanelOptions solarPanelOptions = new SolarPanelOptions();
 
-    public class SolarPanelOptions extends ConfigSection {
+    public static class SolarPanelOptions extends ConfigSection {
 
-        public static ValidatedIdentifierMap<Double> dimensionMultipliers =
-                new ValidatedIdentifierMap<Double>(
+        public ValidatedIdentifierMap<Float> dimensionMultipliers =
+                new ValidatedIdentifierMap<Float>(
                         new LinkedHashMap<>(),
                         ValidatedIdentifier.ofRegistryKey(
                                 Registries.DIMENSION
                         ),
-                        new ValidatedDouble(1.0, 100.0, 0.01)
+                        new ValidatedFloat(1.0F, 100.0F, 0.01F)
                 );
+
+        public ValidatedList<ResourceLocation> restrictedDimensions =
+                new ValidatedList<ResourceLocation>(
+                        new ArrayList<>(List.of(
+                                ResourceLocation.fromNamespaceAndPath("minecraft", "the_nether")
+                        )),
+                        ValidatedIdentifier.ofRegistryKey(
+                                Registries.DIMENSION
+                        )
+        );
     }
 
 

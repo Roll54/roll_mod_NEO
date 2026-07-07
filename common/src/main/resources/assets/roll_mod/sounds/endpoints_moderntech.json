@@ -1,0 +1,70 @@
+{
+    "stations": [
+        {
+            "url": "https://icecast-qmusicnl-cdp.triple-it.nl/Qmusic_nl_live_96.mp3",
+            "title": "Qmusic NL",
+            "name": "Qmusic NL",
+            "location": "UNKNOWN"
+        },
+        {
+            "url": "https://ice2.somafm.com/missioncontrol-128-mp3",
+            "title": "Mission Control",
+            "name": "SomaFM Mission Control",
+            "location": "USA"
+        },
+        {
+            "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/ARN_KIIS1011.mp3",
+            "title": "KIIS 101.1",
+            "name": "KIIS 101.1",
+            "location": "USA"
+        },
+        {
+            "url": "https://0n-games.radionetz.de/0n-games.mp3",
+            "title": "0N Games",
+            "name": "0N Radio - Games",
+            "location": "UNKNOWN"
+        },
+        {
+            "url": "https://0n-latin.radionetz.de/0n-latin.mp3",
+            "title": "0N Latin",
+            "name": "0N Radio - Latin",
+            "location": "UNKNOWN"
+        },
+        {
+            "url": "https://0n-radio.radionetz.de/0n-radio.mp3",
+            "title": "0N Radio",
+            "name": "0N Radio",
+            "location": "UNKNOWN"
+        },
+        {
+            "url": "https://stream.antenne1.de/a1stg/livestream2.mp3",
+            "title": "antenne1",
+            "name": "antenne1",
+            "location": "UNKNOWN"
+        },
+        {
+            "url": "https://stream.sunfmua.com/live",
+            "title": "SUN FM Kiyv",
+            "name": "SUN FM",
+            "location": "UNKNOWN"
+        },
+        {
+            "url": "http://onair.lviv.fm:8000/lviv.fm",
+            "title": "Львівська Хвиля",
+            "name": "Львівська Хвиля",
+            "location": "UNKNOWN"
+        },
+        {
+            "url": "https://online.radioroks.ua/RadioROKS_Ballads_HD",
+            "title": "Radio ROKS Рок-Балади",
+            "name": "Radio ROKS Рок-Балади",
+            "location": "UNKNOWN"
+        },
+        {
+            "url": "https://online.hitfm.ua/HitFM_HD",
+            "title": "Хіт FM",
+            "name": "Хіт FM",
+            "location": "UNKNOWN"
+        }
+    ]
+}

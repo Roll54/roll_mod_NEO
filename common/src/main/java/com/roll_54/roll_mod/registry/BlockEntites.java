@@ -4,8 +4,10 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.blocks.entity.*;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
@@ -42,6 +44,11 @@ public class BlockEntites {
     public static final Supplier<BlockEntityType<WeedManagerBlockEntity>> WEED_MANAGER_BE =
             BLOCK_ENTITIES.register("weed_manager_be", () -> BlockEntityType.Builder.of(
                     WeedManagerBlockEntity::new, BlockRegistry.WEED_MANAGER.get()).build(null));
+
+    public static final Supplier<BlockEntityType<RollSolarPanelBlockEntity>> SOLAR_PANEL_BE =
+            BLOCK_ENTITIES.register("solar_panel_be", () -> BlockEntityType.Builder.of(
+                    RollSolarPanelBlockEntity::new,
+                    BlockRegistry.SOLAR_PANELS.stream().map(DeferredBlock::get).toArray(Block[]::new)).build(null));
 
 
     public static void register(IEventBus eventBus){

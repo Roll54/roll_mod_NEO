@@ -1,4 +1,4 @@
-// 1.21.1	2026-06-20T00:10:28.338479858	Item Models: roll_mod
+// 1.21.1	2026-07-05T01:59:42.969546402	Item Models: roll_mod
 5478948ed127b16a29bb07058702c1660666f43c assets/roll_mod/models/crop/cabbage_stage0.json
 b18c6664c22b2a76b367c0229864b02b683f78fe assets/roll_mod/models/crop/cabbage_stage1.json
 8b240f7745d13a6aac70dadeb43a747d4f8abc12 assets/roll_mod/models/crop/cabbage_stage2.json
@@ -15,6 +15,14 @@ f2e2ae0f11753b07288237681e62a5e3b1d8eb3c assets/roll_mod/models/crop/coffee_stag
 186dd8d2e9d6e1f7d1e7a3d5d0b3e91d4083abf0 assets/roll_mod/models/crop/coffee_stage5.json
 a057b9a683e0e435774f9f505523a6bc2a1deca8 assets/roll_mod/models/crop/coffee_stage6.json
 c496709688bc201542dac6e79a272f139599dc37 assets/roll_mod/models/crop/coffee_stage7.json
+379ca1e27c2acd04b7ad3bbf1a7ff7ec47cf9bce assets/roll_mod/models/crop/fluorite_pineapple_stage0.json
+379ca1e27c2acd04b7ad3bbf1a7ff7ec47cf9bce assets/roll_mod/models/crop/fluorite_pineapple_stage1.json
+e52407bd193846293a4a21b990f36afde8b28d97 assets/roll_mod/models/crop/fluorite_pineapple_stage2.json
+e52407bd193846293a4a21b990f36afde8b28d97 assets/roll_mod/models/crop/fluorite_pineapple_stage3.json
+22dbeb4291d4c4e0d29175f22763fd172b922a38 assets/roll_mod/models/crop/fluorite_pineapple_stage4.json
+92aa6d3cbd418077c512822bb3ae21af63691409 assets/roll_mod/models/crop/fluorite_pineapple_stage5.json
+92aa6d3cbd418077c512822bb3ae21af63691409 assets/roll_mod/models/crop/fluorite_pineapple_stage6.json
+6b90735e08ecbdc43a563f24ef59263ca2f93c47 assets/roll_mod/models/crop/fluorite_pineapple_stage7.json
 dad7266db21fe4561532fff8e395202b6b1e5bdc assets/roll_mod/models/crop/green_bell_pepper_stage0.json
 9a67c82bead84600e2944aec56698cbb8b4696dc assets/roll_mod/models/crop/green_bell_pepper_stage1.json
 0688fe572f62abc52fae8e87e49a4e3b737035a4 assets/roll_mod/models/crop/green_bell_pepper_stage2.json
@@ -262,6 +270,7 @@ df011a02c2c0e6c01ef387d5af355343dccaaeb9 assets/roll_mod/models/item/white_lens.
 2179734da2719e797078d96a55e5d9df75d03a34 assets/roll_mod/models/item/yellow_lens.json
 3d70ade6a0b3a5d0b68b58a808e3eaf062139bb0 assets/roll_mod/models/seed/cabbage.json
 f080cda29135350ab57accf988950dee4c9d5290 assets/roll_mod/models/seed/coffee.json
+5742042bcab0ff18d209735018a88362e5083ff0 assets/roll_mod/models/seed/fluorite_pineapple.json
 77cf829f7b431f5eb1408ca3f8b4d11504f0712e assets/roll_mod/models/seed/green_bell_pepper.json
 31f18d22b01d6537b0f81c3d29f730cd75bb0c01 assets/roll_mod/models/seed/iceberg_mint.json
 1373bd08ed00632e537375829edd4d8fedf61925 assets/roll_mod/models/seed/latex_dandelion.json

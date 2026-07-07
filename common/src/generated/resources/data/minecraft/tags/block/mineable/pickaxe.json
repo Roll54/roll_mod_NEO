@@ -1,5 +1,35 @@
 {
   "values": [
+    "roll_mod:crop_manager",
+    "roll_mod:weed_manager",
+    "roll_mod:grinding_wheels",
+    {
+      "id": "mi_tweaks:large_chemical_reactor",
+      "required": false
+    },
+    {
+      "id": "mi_tweaks:maceration_tower",
+      "required": false
+    },
+    {
+      "id": "mi_tweaks:maelstrom",
+      "required": false
+    },
+    "roll_mod:solar_panel_1",
+    "roll_mod:solar_panel_2",
+    "roll_mod:solar_panel_3",
+    "roll_mod:solar_panel_4",
+    "roll_mod:solar_panel_5",
+    "roll_mod:solar_panel_6",
+    "roll_mod:solar_panel_7",
+    "roll_mod:solar_panel_8",
+    "roll_mod:solar_panel_9",
+    "roll_mod:solar_panel_10",
+    "roll_mod:solar_panel_11",
+    "roll_mod:solar_panel_12",
+    "roll_mod:solar_panel_13",
+    "roll_mod:solar_panel_14",
+    "roll_mod:solar_panel_15",
     "roll_mod:netherrack_mica",
     "roll_mod:stone_hematite",
     "roll_mod:deepslate_hematite",

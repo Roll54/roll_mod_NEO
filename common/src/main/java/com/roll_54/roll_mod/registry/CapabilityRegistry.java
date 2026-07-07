@@ -1,8 +1,11 @@
 package com.roll_54.roll_mod.registry;
 
+import aztech.modern_industrialization.api.energy.EnergyApi;
 import com.roll_54.roll_mod.blocks.entity.CropManagerBlockEntity;
+import com.roll_54.roll_mod.blocks.entity.RollSolarPanelBlockEntity;
 import com.roll_54.roll_mod.blocks.entity.WeedManagerBlockEntity;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
+import net.minecraft.core.Direction;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
@@ -57,6 +60,12 @@ public class CapabilityRegistry {
                 Capabilities.ItemHandler.BLOCK,
                 BlockEntites.WEED_MANAGER_BE.get(),
                 (blockEntity, side) -> new SidedInvWrapper((WeedManagerBlockEntity) blockEntity, side)
+        );
+        // Native MI energy source: cables connecting to the panel's bottom face pull from it.
+        event.registerBlockEntity(
+                EnergyApi.SIDED,
+                BlockEntites.SOLAR_PANEL_BE.get(),
+                (blockEntity, side) -> side == Direction.DOWN ? blockEntity.getEnergyOutput() : null
         );
     }
 }

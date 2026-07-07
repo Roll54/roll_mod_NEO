@@ -51,6 +51,10 @@ dependencies {
     implementation files("jars/minestar-neoforge-1.1.0-all.jar")
     runtimeOnly files("jars/tab.jar")
 
+    // compileOnly: needed so GasTankItemMixin can reference StorageIO in its @WrapOperation
+    // handler signature. Provided at runtime by the common_storage_lib mod, so not bundled.
+    compileOnly files("jars/common-storage-lib-neoforge-1.21.1-0.0.9.jar")
+
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
         version {
             strictly "[${mixinextras_version},)"

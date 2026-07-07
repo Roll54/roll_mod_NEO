@@ -1,0 +1,15 @@
+{
+  "acidity": "slightly_acidic",
+  "growth_modifier": 4.0,
+  "humidity": "wet",
+  "mods": [],
+  "nutrients": "high",
+  "variants": [
+    {
+      "block": "farmersdelight:rich_soil_farmland"
+    },
+    {
+      "block": "farmersdelight:rich_soil"
+    }
+  ]
+}

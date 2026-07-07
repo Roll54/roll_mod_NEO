@@ -19,6 +19,7 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class BlockRegistry {
@@ -162,6 +163,31 @@ public class BlockRegistry {
             "grinding_wheels",
             () -> new Block(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.METAL))
     );
+
+
+    public static final List<DeferredBlock<Block>> SOLAR_PANELS = new ArrayList<>();
+
+    static {
+        for (int tier = 1; tier <= 15; tier++) {
+            long production = 1L << tier; // 2^tier: 4 … 32768 EU/t
+            DeferredBlock<Block> panel = BLOCKS.register(
+                    "solar_panel_" + tier,
+                    () -> new RollSolarPanelBlock(BlockBehaviour.Properties.of()
+                            .strength(3.0F, 9.0F)
+                            .sound(SoundType.METAL)
+                            .requiresCorrectToolForDrops(), production));
+            SOLAR_PANELS.add(panel);
+            ITEMS.register("solar_panel_" + tier, () -> new BlockItem(panel.get(), new Item.Properties()) {
+                @Override
+                public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+                    if (getBlock() instanceof RollSolarPanelBlock panelBlock) {
+                        tooltip.add(Component.translatable("tooltip.roll_mod.solar_panel.production", panelBlock.getBaseProduction())
+                                .withStyle(style -> style.withColor(0xFFAA00)));
+                    }
+                }
+            });
+        }
+    }
 
     static {
         ITEMS.register("treated_planks", () -> new BlockItem(TREATED_PLANKS.get(), new Item.Properties()));

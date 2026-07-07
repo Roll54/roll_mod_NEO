@@ -1,0 +1,15 @@
+{
+  "acidity": "slightly_acidic",
+  "growth_modifier": 2.0,
+  "humidity": "wet",
+  "mods": [],
+  "nutrients": "high",
+  "variants": [
+    {
+      "block": "biomeswevegone:lush_dirt"
+    },
+    {
+      "block": "biomeswevegone:lush_farmland"
+    }
+  ]
+}
