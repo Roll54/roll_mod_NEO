@@ -12,6 +12,10 @@ description = '''${mod_description} — dedicated-server features (chat, prime, 
 [[mixins]]
 config = "${mod_id_server}.mixins.json"
 
+# Access widening for the per-world threading coremod (see META-INF/accesstransformer.cfg).
+[[accessTransformers]]
+file = "META-INF/accesstransformer.cfg"
+
 # Requires the common jar — server will not load without it.
 [[dependencies."${mod_id_server}"]]
 modId = "${mod_id}"
