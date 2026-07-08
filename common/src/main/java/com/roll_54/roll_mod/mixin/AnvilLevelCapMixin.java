@@ -53,7 +53,9 @@ public abstract class AnvilLevelCapMixin {
         }
 
         double growth = ModConfigs.MAIN.anvil.expGrowth.get();
-        double scaled = threshold * Math.pow(growth, rawCost - threshold);
+        double scaled =
+                //threshold *
+                        Math.pow(growth, rawCost - threshold);
         return (long) Math.min(scaled, Integer.MAX_VALUE);
     }
 

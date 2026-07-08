@@ -54,6 +54,10 @@ dependencies {
     compileOnly files("../common/jars/common-storage-lib-resources-neoforge-1.21.1-0.0.9.jar")
     compileOnly "curse.maven:extended-industrialization-1068418:7722451"
 
+    // compileOnly: AnvilTooExpensiveLabelMixin reads ModConfigs.MAIN.anvil.removeLevelCap, whose
+    // getter returns through fzzy_config's ValidatedBoolean. Common exposes it non-transitively.
+    compileOnly "me.fzzyhmstrs:fzzy_config:0.7.3+1.21+neoforge"
+
     // JEI is client-only.
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")

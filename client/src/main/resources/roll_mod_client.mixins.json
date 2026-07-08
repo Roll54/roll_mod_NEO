@@ -4,6 +4,7 @@
   "package": "com.roll_54.roll_mod_client.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
+    "AnvilTooExpensiveLabelMixin",
     "GuiGraphicsOxygenBarMixin",
     "ModifyEnergyHudRendererMixin",
     "OverlayScreenNanoMixin",
