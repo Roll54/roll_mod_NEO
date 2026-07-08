@@ -164,7 +164,11 @@ public class GrowthChamberBlockEntity extends BlockEntity implements MenuProvide
     }
 
     private Optional<RecipeHolder<GrowthChamberRecipe>> getCurrentRecipe() {
-        return this.level.getRecipeManager().getRecipeFor(RecipeRegistry.GROWTH_CHAMBER_TYPE.get(), new GrowthChamberRecipeInput(itemHandler.getStackInSlot(INPUT_SLOT)), level);
+        ItemStack input = itemHandler.getStackInSlot(INPUT_SLOT);
+        if (input.isEmpty()) {
+            return Optional.empty();
+        }
+        return this.level.getRecipeManager().getRecipeFor(RecipeRegistry.GROWTH_CHAMBER_TYPE.get(), new GrowthChamberRecipeInput(input), level);
     }
 
 

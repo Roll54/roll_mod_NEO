@@ -38,6 +38,7 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
     private static final long CAPACITY = 100000L;
     private static final long MAX_TRANSFER = 1000L;
     private static final long COST_PER_OPERATION = 500L;
+    private static final int TICK_INTERVAL = 10;
 
     private final EnergyStorage energyStorage = new EnergyStorage((int) CAPACITY, (int) MAX_TRANSFER, (int) MAX_TRANSFER, 0);
     private int tickCounter = 0;
@@ -55,8 +56,8 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
         if (level == null || level.isClientSide) return;
 
         blockEntity.tickCounter++;
-        // Check for crops to remove weeds every 10 ticks
-        if (blockEntity.tickCounter >= 1) {
+        // Check for crops to harvest / de-weed every TICK_INTERVAL ticks
+        if (blockEntity.tickCounter >= TICK_INTERVAL) {
             blockEntity.tickCounter = 0;
             blockEntity.processCropsInRange(level);
         }
@@ -66,6 +67,12 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
      * Detect and process all CropBlockEntity instances in the detection range
      */
     private void processCropsInRange(Level level) {
+        // Idle guard: without energy or any free output slot, neither harvesting nor
+        // de-weeding can happen, so skip the whole area scan.
+        if (!canOperate() || !hasSpace(0, 8)) {
+            return;
+        }
+
         BlockPos center = getBlockPos();
 
         int startX = center.getX() - 5;
@@ -75,10 +82,11 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
         int startY = center.getY();
         int endY = center.getY();
 
+        BlockPos.MutableBlockPos checkPos = new BlockPos.MutableBlockPos();
         for (int x = startX; x <= endX; x++) {
             for (int z = startZ; z <= endZ; z++) {
                 for (int y = startY; y <= endY; y++) {
-                    BlockPos checkPos = new BlockPos(x, y, z);
+                    checkPos.set(x, y, z);
                     AgriApi.getCrop(level, checkPos).ifPresent(crop -> {
                         if (crop.getLevel() == null) return;
 

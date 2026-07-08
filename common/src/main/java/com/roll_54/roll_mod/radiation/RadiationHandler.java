@@ -52,14 +52,24 @@ public class RadiationHandler {
     /** Default resistance for a storm-protective piece that lacks the component (e.g. external armor). */
     private static final float DEFAULT_PIECE_RESISTANCE = 0.25f;
 
-    /** How long applied effects last; refreshed every tick so they persist while the tier holds. */
+    /** How long applied effects last; comfortably exceeds {@link #TICK_INTERVAL} so they persist between runs. */
     private static final int EFFECT_DURATION = 100;
+
+    /**
+     * Only run the radiation pass every N ticks instead of every tick. Per-tick gain/decay is scaled by
+     * this interval so the effective rate is unchanged; must stay well below {@link #EFFECT_DURATION}.
+     */
+    private static final int TICK_INTERVAL = 20;
+    private static int tickCounter = 0;
 
     /** Lower bounds (inclusive) for tiers 1..6. */
     private static final int[] TIER_THRESHOLDS = {50_000, 150_000, 300_000, 500_000, 750_000, 900_000};
 
     @SubscribeEvent
     public static void onServerTick(ServerTickEvent.Post e) {
+        if (++tickCounter < TICK_INTERVAL) return;
+        tickCounter = 0;
+
         for (ServerPlayer player : e.getServer().getPlayerList().getPlayers()) {
             GameType gm = player.gameMode.getGameModeForPlayer();
             if (gm == GameType.CREATIVE || gm == GameType.SPECTATOR) continue;
@@ -75,8 +85,10 @@ public class RadiationHandler {
                 gain = Math.round(gain * (1.0f - resistance));
             }
 
+            // Scale by the interval so accumulating once per TICK_INTERVAL matches per-tick rates.
+            int perTick = gain > 0 ? gain : -DECAY;
             int current = player.getData(RADIATION);
-            int next = Mth.clamp(current + (gain > 0 ? gain : -DECAY), 0, MAX_RADIATION);
+            int next = Mth.clamp(current + perTick * TICK_INTERVAL, 0, MAX_RADIATION);
             if (next != current) {
                 player.setData(RADIATION, next);
             }

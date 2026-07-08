@@ -62,6 +62,11 @@ public class WeedManagerBlockEntity extends BlockEntity implements MenuProvider,
     }
 
     private void processCropsInRange(Level level) {
+        // Idle guard: de-weeding needs energy plus free biomass and crop-drop slots.
+        if (!canOperate() || !hasSpace(9, 10) || !hasSpace(0, 8)) {
+            return;
+        }
+
         BlockPos center = getBlockPos();
 
         int radius = 2; // diameter 4 blocks
@@ -71,9 +76,10 @@ public class WeedManagerBlockEntity extends BlockEntity implements MenuProvider,
         int endZ = center.getZ() + radius;
         int y = center.getY();
 
+        BlockPos.MutableBlockPos checkPos = new BlockPos.MutableBlockPos();
         for (int x = startX; x <= endX; x++) {
             for (int z = startZ; z <= endZ; z++) {
-                BlockPos checkPos = new BlockPos(x, y, z);
+                checkPos.set(x, y, z);
                 AgriApi.getCrop(level, checkPos).ifPresent(crop -> {
                     if (crop.getLevel() == null) return;
 
