@@ -1,5 +1,6 @@
-package com.roll_54.roll_mod_client.client;
+package com.roll_54.roll_mod_client;
 
+import com.agricraft.agricraft.client.gui.MagnifyingGlassOverlay;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod_client.blocks.entity.render.PedestalBlockEntityRenderer;
 import com.roll_54.roll_mod_client.blocks.entity.render.RocketControllerBlockEntityRenderer;
@@ -11,6 +12,7 @@ import com.roll_54.roll_mod_client.client.gecko.GeckoArmorRenderer;
 import com.roll_54.roll_mod_client.client.gecko.HazmatHelmetRenderer;
 import com.roll_54.roll_mod_client.client.gecko.MultiProtectingGraviChestPlateRenderer;
 import com.roll_54.roll_mod_client.client.screen.HudRender;
+import com.roll_54.roll_mod_client.client.skin.CyberwareSkinLayer;
 import com.roll_54.roll_mod_client.gui.screen.CropManagerScreen;
 import com.roll_54.roll_mod_client.gui.screen.GrowthChamberScreen;
 import com.roll_54.roll_mod_client.gui.screen.PedestalScreen;
@@ -26,6 +28,8 @@ import com.roll_54.roll_mod_client.util.RMMItemProperties;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -45,6 +49,7 @@ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.client.GeoRenderProvider;
 
+import java.util.List;
 import java.util.function.Supplier;
 
 @Mod(value = RollModClient.MODID, dist = Dist.CLIENT)
@@ -73,9 +78,18 @@ public final class RollModClient {
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.DENCHEE_PLUSH.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.TENWOC__PLUSH.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.ROCKET_CONTROLLER_BLOCK.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.NETHERITE_FRAME.get(), RenderType.cutout());
 
         event.enqueueWork(RMMItemProperties::addCustomProperties);
         event.enqueueWork(RollModClient::registerArmorRenderers);
+
+        // для кропсів (їбать як складно до мене дійшов цей код...)
+        event.enqueueWork(() -> {
+            MagnifyingGlassOverlay.addAllowingPredicate(player ->
+                    player.
+            boolean hasMeteoriteArm = data.hasSpecificItem(ItemRegistry.BASECYBERWARE_RIGHTARM_METEORITE_METAL.get(), CyberwareSlot.RARM); //todo Їбісь як хочеш, а я спати)
+            );
+        });
     }
 
     /** Wires common GeoItem armor to their client renderers via the common-side registry. */
@@ -113,6 +127,15 @@ public final class RollModClient {
             event.registerLayerDefinition(TinyRocketModel.LAYER_LOCATION, TinyRocketModel::createBodyLayer);
             event.registerLayerDefinition(SmallRocketModel.LAYER_LOCATION, SmallRocketModel::createBodyLayer);
             event.registerLayerDefinition(NormalRocketModel.LAYER_LOCATION, NormalRocketModel::createBodyLayer);
+        }
+
+        @SubscribeEvent
+        public static void addPlayerLayers(EntityRenderersEvent.AddLayers event) {
+            for (PlayerSkin.Model skinModel : List.of(PlayerSkin.Model.WIDE, PlayerSkin.Model.SLIM)) {
+                if (event.getSkin(skinModel) instanceof PlayerRenderer playerRenderer) {
+                    playerRenderer.addLayer(new CyberwareSkinLayer(playerRenderer));
+                }
+            }
         }
 
         @SubscribeEvent

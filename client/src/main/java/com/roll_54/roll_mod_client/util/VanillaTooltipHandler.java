@@ -1,7 +1,6 @@
 package com.roll_54.roll_mod_client.util;
 
-import com.roll_54.roll_mod_client.client.RollModClient;
-import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod_client.RollModClient;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

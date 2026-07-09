@@ -87,3 +87,25 @@ subprojects {
         }
     }
 }
+
+// Launches the server and client dev runs in two separate terminal windows so you can watch both
+// consoles at once. client and server use separate game dirs (client/run, server/run), so they don't
+// clash. Requires a graphical desktop session (uses konsole, falling back to xterm). Once both are up,
+// connect the dev client to the server via Multiplayer -> localhost.
+tasks.register('runBoth') {
+    group = 'roll_mod'
+    description = 'Launch :server:runServer and :client:runClient in two separate terminal windows.'
+    doLast {
+        def root = rootProject.projectDir
+        def gw = new File(root, 'gradlew').absolutePath
+        def hasKonsole = ['sh', '-c', 'command -v konsole'].execute().waitFor() == 0
+        def spawn = { String title, String taskPath ->
+            def cmd = hasKonsole
+                    ? ['konsole', '--hold', '-p', "tabtitle=$title", '--workdir', root.toString(), '-e', gw, taskPath]
+                    : ['xterm', '-title', title, '-hold', '-e', gw, taskPath]
+            new ProcessBuilder(cmd).directory(root).start()
+        }
+        spawn('roll_mod server', ':server:runServer')
+        spawn('roll_mod client', ':client:runClient')
+    }
+}

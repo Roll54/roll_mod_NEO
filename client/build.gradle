@@ -52,6 +52,11 @@ dependencies {
     compileOnly files("../common/jars/adastra-1.21.1-1.16.6-neoforge.jar")
     compileOnly files("../common/jars/common-storage-lib-neoforge-1.21.1-0.0.9.jar")
     compileOnly files("../common/jars/common-storage-lib-resources-neoforge-1.21.1-0.0.9.jar")
+
+    // compileOnly: CyberwareSkinLayer reads createcybernetics' synced PlayerCyberwareData to draw
+    // roll_mod cyberware overlays on the player. Common depends on this jar non-transitively (as
+    // implementation), so it must be named explicitly here for compilation; loaded at runtime.
+    compileOnly files("../common/jars/createcybernetics-0.4.2b-neoforge-1.21.1.jar")
     compileOnly "curse.maven:extended-industrialization-1068418:7722451"
 
     // compileOnly: AnvilTooExpensiveLabelMixin reads ModConfigs.MAIN.anvil.removeLevelCap, whose

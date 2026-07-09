@@ -1,7 +1,6 @@
 package com.roll_54.roll_mod_client.client;
 
-import com.roll_54.roll_mod_client.client.RollModClient;
-import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod_client.RollModClient;
 import com.roll_54.roll_mod.network.packet.armor.MultiProtectingGraviChestItemPacket;
 import com.roll_54.roll_mod_client.registry.KeyMappingRegistry;
 import net.minecraft.world.entity.EquipmentSlot;

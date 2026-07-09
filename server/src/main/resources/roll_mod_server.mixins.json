@@ -4,6 +4,8 @@
   "package": "com.roll_54.roll_mod_server.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "crash.MinecraftServerCrashGuardMixin",
+    "minestar.MinestarConfigValidateMixin",
     "prime.LivingEntityMixin",
     "prime.MixinLivingEntityPrimeFeature",
     "prime.MixinServerPlayerEntityPrimeFeature",

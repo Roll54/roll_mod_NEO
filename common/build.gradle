@@ -46,6 +46,14 @@ dependencies {
     compileOnly files("jars/common-storage-lib-data-neoforge-1.21.1-0.0.9.jar")
     compileOnly files("jars/common-storage-lib-lookup-neoforge-1.21.1-0.0.9.jar")
 
+    // Runtime-only libraries required by ad_astra / agricraft (declared above). They must be present
+    // at runtime or the dev client/server crash with "Mod ad_astra requires resourcefullib/...".
+    // runtimeOnly keeps them off the compile classpath and out of any published jar; the client and
+    // server dev runs inherit them through `implementation project(':common')`.
+    runtimeOnly files("jars/common-storage-lib-neoforge-1.21.1-0.0.9.jar")
+    runtimeOnly files("../run/mods/resourcefulconfig-neoforge-1.21-3.0.11.jar")
+    runtimeOnly files("../run/mods/resourcefullib-neoforge-1.21-3.0.12.jar")
+
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
         version {
             strictly "[${mixinextras_version},)"
@@ -64,6 +72,9 @@ dependencies {
     implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
 
     implementation "curse.maven:architectury-api-419699:5786327"
+
+    implementation files("jars/createcybernetics-0.4.2b-neoforge-1.21.1.jar")
+
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

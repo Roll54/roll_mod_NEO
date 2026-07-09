@@ -1,4 +1,4 @@
-// 1.21.1	2026-07-05T02:01:53.052935456	Loot Tables
+// 1.21.1	2026-07-08T22:50:26.392777997	Loot Tables
 88edd2181043eb8cd3d0be4b34113b03129dc4a1 data/roll_mod/loot_table/blocks/deepslate_bauxite.json
 bc0d194871f15df0c8fc81a6417ef3cda6349411 data/roll_mod/loot_table/blocks/deepslate_bort.json
 6a5e9e98bce1bd9f4ed4fb2caad46696091b177d data/roll_mod/loot_table/blocks/deepslate_cassiterite_sand.json
@@ -84,7 +84,7 @@ f91d33c3d058ae636cf8b254d20d9ea77e4bd72b data/roll_mod/loot_table/blocks/netherr
 09c4075747d173d906da392ac46d003d0dc0f59d data/roll_mod/loot_table/blocks/netherrack_topaz.json
 980a49305cd788792cab9a1af986e041a60405b0 data/roll_mod/loot_table/blocks/netherrack_trona.json
 3325839e713bcb3a99ed8da6877bb2bb2f80476f data/roll_mod/loot_table/blocks/netherrack_wulfenite.json
-ef6d8cf962188036f3c05a94d47f922ec4434ad3 data/roll_mod/loot_table/blocks/solar_panel_1.json
+882ca7dcc3c952224f6d53ca5840c02ded25727d data/roll_mod/loot_table/blocks/solar_panel_1.json
 84eaaa28164aed8d53db7059892a4acd10225bd7 data/roll_mod/loot_table/blocks/solar_panel_10.json
 dc967ee8cbda58b8836c724513dd5a477489f87f data/roll_mod/loot_table/blocks/solar_panel_11.json
 7032835e0a1975f899d7b6dd0069c532b3897d95 data/roll_mod/loot_table/blocks/solar_panel_12.json

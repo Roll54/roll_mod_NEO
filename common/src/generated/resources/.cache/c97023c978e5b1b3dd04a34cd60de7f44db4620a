@@ -1,4 +1,4 @@
-// 1.21.1	2026-07-05T01:59:42.969546402	Item Models: roll_mod
+// 1.21.1	2026-07-08T22:50:26.384948521	Item Models: roll_mod
 5478948ed127b16a29bb07058702c1660666f43c assets/roll_mod/models/crop/cabbage_stage0.json
 b18c6664c22b2a76b367c0229864b02b683f78fe assets/roll_mod/models/crop/cabbage_stage1.json
 8b240f7745d13a6aac70dadeb43a747d4f8abc12 assets/roll_mod/models/crop/cabbage_stage2.json
@@ -185,6 +185,7 @@ e6e395fc9a92352012af622c0d94224ee61d75ab assets/roll_mod/models/item/iridium_bas
 7e7bc59e667cd2e1f61fd8b4c20b09105e9c79ff assets/roll_mod/models/item/iridium_based_board_assembly.json
 9c1788ee2052d789f49e3a5b5a17a909ac4f6d4f assets/roll_mod/models/item/light_blue_lens.json
 ac841e1420ce1833875e82b2b8df9461450853df assets/roll_mod/models/item/lithium_soap.json
+149c5bbd64e6e26e4cf1918cf1001984d1d0ce26 assets/roll_mod/models/item/lungsupgrade_sulfur_resistance.json
 dfa03c80660fd6f833149a258d4fed7e369e1e29 assets/roll_mod/models/item/magnetite_spinach.json
 992e177d9810c863ce39dc98974488be17d69b5f assets/roll_mod/models/item/magnetite_spinach_seeds.json
 560fa3e9da761af4ab0d7b759868dbe735621f35 assets/roll_mod/models/item/marble_dust.json

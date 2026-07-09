@@ -164,6 +164,11 @@ public class BlockRegistry {
             () -> new Block(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.METAL))
     );
 
+    public static final DeferredBlock<Block> NETHERITE_FRAME = BLOCKS.register(
+            "netherite_frame",
+            () -> new Block(BlockBehaviour.Properties.of().strength(4.0F).sound(SoundType.METAL).noOcclusion())
+    );
+
 
     public static final List<DeferredBlock<Block>> SOLAR_PANELS = new ArrayList<>();
 
@@ -196,6 +201,7 @@ public class BlockRegistry {
         ITEMS.register("research_workbench", () -> new BlockItem(RESEARCH_WORKBENCH.get(), new Item.Properties()));
         ITEMS.register("rocket_controller", () -> new BlockItem(ROCKET_CONTROLLER_BLOCK.get(), new Item.Properties()));
         ITEMS.register("bukvi_ore_block", () -> new BlockItem(BUKVI_ORE_BLOCK.get(), new Item.Properties())
+
         {
             @Override
             public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
@@ -211,6 +217,7 @@ public class BlockRegistry {
         );
         ITEMS.register("weed_manager", () -> new BlockItem(WEED_MANAGER.get(), new Item.Properties())
         );
+        ITEMS.register("netherite_frame", () -> new BlockItem(NETHERITE_FRAME.get(), new Item.Properties()));
     }
 
     public static void register(IEventBus eventBus) {

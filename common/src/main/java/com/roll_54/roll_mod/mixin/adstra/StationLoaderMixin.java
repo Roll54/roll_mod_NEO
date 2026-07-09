@@ -18,7 +18,7 @@ public abstract class StationLoaderMixin {
     // We replace that web call with our own station list bundled inside the mod jar, so no
     // network request happens and StationLoader#init parses our {"stations":[...]} instead.
     @Unique
-    private static final String STATIONS_RESOURCE = "/assets/roll_mod/sounds/endpoints_moderntech.json";
+    private static final String STATIONS_RESOURCE = "/assets/roll_mod/sounds/endpoints_radio_moderntech.json";
 
     @Redirect(
             method = "init",

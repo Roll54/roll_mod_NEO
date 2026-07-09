@@ -1,5 +1,7 @@
 package com.roll_54.roll_mod.registry;
 
+import com.perigrine3.createcybernetics.api.CyberwareSlot;
+import com.perigrine3.createcybernetics.item.cyberware.CyberarmItem;
 import com.roll_54.roll_mod.items.armor.HazmatBootsItem;
 import com.roll_54.roll_mod.items.armor.HazmatChestplateItem;
 import com.roll_54.roll_mod.items.armor.HazmatLeggingsItem;
@@ -10,11 +12,13 @@ import com.roll_54.roll_mod.items.armor.geckolib.ClownHatArmorItem;
 import com.roll_54.roll_mod.items.armor.geckolib.ExampleArmorItem;
 import com.roll_54.roll_mod.items.armor.geckolib.HazmatHelmetItem;
 import com.roll_54.roll_mod.items.armor.geckolib.MultiProtectingGraviChestItem;
+import com.roll_54.roll_mod.items.cyberware.SulfurResistantLungsItem;
 import com.roll_54.roll_mod.items.electricItems.*;
 import com.roll_54.roll_mod.items.spaceModule.DimensionCartridgeCItem;
 import com.roll_54.roll_mod.items.spaceModule.RocketItem;
 import com.roll_54.roll_mod.util.TooltipOptions;
 import com.roll_54.roll_mod.util.TooltipManager;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -30,6 +34,7 @@ import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemLore;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.List;
@@ -1380,6 +1385,50 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> NYLON_STRING = ITEMS.register("nylon_string", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> NYLON_FABRIC = ITEMS.register("nylon_fabric", () -> new Item(new Item.Properties()));
 
+    public static final DeferredHolder<Item, CyberarmItem> BASECYBERWARE_RIGHTARM_METEORITE_METAL = ITEMS.register("basecyberware_rightarm_meteorite_metal",
+            () -> new CyberarmItem(new Item.Properties().stacksTo(1), 5, CyberwareSlot.RARM) {
+                @Override
+                public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    if (Screen.hasShiftDown()) {
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_rightarm.tooltip1"));
+                    } else {
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.hold_shift_down"));
+                    }
+                    super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+                }
+            });
+
+    public static final DeferredHolder<Item, CyberarmItem> BASECYBERWARE_LEFTARM_METEORITE_METAL = ITEMS.register("basecyberware_leftarm_meteorite_metal",
+            () -> new CyberarmItem(new Item.Properties().stacksTo(1), 5, CyberwareSlot.LARM) {
+                @Override
+                public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    if (Screen.hasShiftDown()) {
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_leftarm.tooltip1"));
+                    } else {
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.hold_shift_down"));
+                    }
+                    super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+                }
+            });
+
+    public static final DeferredHolder<Item, SulfurResistantLungsItem> LUNGSUPGRADE_SULFUR_RESISTANCE = ITEMS.register("lungsupgrade_sulfur_resistance",
+            () -> new SulfurResistantLungsItem(new Item.Properties().stacksTo(1), 5) {
+                @Override
+                public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    if (Screen.hasShiftDown()) {
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_leftarm.tooltip1"));
+                    } else {
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.hold_shift_down"));
+                    }
+                    super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+                }
+            });
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);
