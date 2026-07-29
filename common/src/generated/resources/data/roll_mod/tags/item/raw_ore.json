@@ -315,6 +315,26 @@
     {
       "id": "roll_mod:raw_borax",
       "required": false
+    },
+    {
+      "id": "roll_mod:raw_sunnarium_orthosilicate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_sunnarium_sulfophosphoorthosilicate",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_fluosunnarite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_rheniite",
+      "required": false
+    },
+    {
+      "id": "roll_mod:raw_antimony",
+      "required": false
     }
   ]
 }

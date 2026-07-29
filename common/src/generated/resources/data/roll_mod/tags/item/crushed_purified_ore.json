@@ -315,6 +315,26 @@
     {
       "id": "roll_mod:purified_borax_ore",
       "required": false
+    },
+    {
+      "id": "roll_mod:purified_sunnarium_orthosilicate_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_sunnarium_sulfophosphoorthosilicate_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_fluosunnarite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_rheniite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:purified_antimony_ore",
+      "required": false
     }
   ]
 }

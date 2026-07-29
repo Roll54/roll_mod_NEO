@@ -27,15 +27,29 @@ public final class CyberwareOverlays {
     private static final ResourceLocation METEORITE_LEFTARM_WIDE = limb("meteorite_metal_leftarm_wide");
     private static final ResourceLocation METEORITE_LEFTARM_SLIM = limb("meteorite_metal_leftarm_slim");
 
+    private static final ResourceLocation METEORITE_RIGHTLEG = limb("meteorite_metal_rightleg");
+    private static final ResourceLocation METEORITE_LEFTLEG = limb("meteorite_metal_leftleg");
+
     static {
         register(new CyberwareOverlay(
                 ItemRegistry.BASECYBERWARE_RIGHTARM_METEORITE_METAL,
                 CyberwareSlot.RARM, BodyRegion.RIGHT_ARM,
                 METEORITE_RIGHTARM_WIDE, METEORITE_RIGHTARM_SLIM));
+
         register(new CyberwareOverlay(
                 ItemRegistry.BASECYBERWARE_LEFTARM_METEORITE_METAL,
                 CyberwareSlot.LARM, BodyRegion.LEFT_ARM,
                 METEORITE_LEFTARM_WIDE, METEORITE_LEFTARM_SLIM));
+
+        register(new CyberwareOverlay(
+                ItemRegistry.BASECYBERWARE_LEFTLEG_METEORITE_METAL,
+                CyberwareSlot.LLEG, BodyRegion.LEFT_LEG,
+                METEORITE_LEFTLEG, METEORITE_LEFTLEG));
+
+        register(new CyberwareOverlay(
+                ItemRegistry.BASECYBERWARE_RIGHTLEG_METEORITE_METAL,
+                CyberwareSlot.RLEG, BodyRegion.RIGHT_LEG,
+                METEORITE_RIGHTLEG, METEORITE_RIGHTLEG));
     }
 
     public static void register(CyberwareOverlay overlay) {

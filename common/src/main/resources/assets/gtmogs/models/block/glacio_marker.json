@@ -1,0 +1,13 @@
+{
+  "parent": "minecraft:block/cube",
+  "gui_light": "front",
+  "textures": {
+    "down": "gtmogs:block/glacio/down",
+    "east": "gtmogs:block/glacio/side",
+    "north": "gtmogs:block/glacio/side",
+    "particle": "#north",
+    "south": "gtmogs:block/glacio/side",
+    "up": "gtmogs:block/glacio/up",
+    "west": "gtmogs:block/glacio/side"
+  }
+}

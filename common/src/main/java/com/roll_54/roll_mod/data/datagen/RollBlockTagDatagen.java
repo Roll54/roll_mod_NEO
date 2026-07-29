@@ -65,6 +65,16 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
                             commonOreBlocks.add(block);
                         });
             }
+
+            String rawBlockId = "raw_" + def.id() + "_block";
+            GeneratedOreRegistry.BLOCKS.getEntries().stream()
+                    .filter(holder -> holder.getId().getPath().equals(rawBlockId))
+                    .findFirst()
+                    .ifPresent(blockHolder -> {
+                        var block = blockHolder.get();
+                        pickaxeTag.add(block);
+                        needsStoneTag.add(block);
+                    });
         }
     }
 }

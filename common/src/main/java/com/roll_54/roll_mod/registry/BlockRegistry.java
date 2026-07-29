@@ -194,14 +194,33 @@ public class BlockRegistry {
         }
     }
 
+    public static final DeferredBlock<Block> HUERI_PLUSH = BLOCKS.register(
+            "hueri_plush",
+            () -> new FacingPlushBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.WOOL).noCollission())
+    );
+
+
+
     static {
         ITEMS.register("treated_planks", () -> new BlockItem(TREATED_PLANKS.get(), new Item.Properties()));
         ITEMS.register("treated_log", () -> new BlockItem(TREATED_LOG.get(), new Item.Properties()));
         ITEMS.register("lapotronic_laser_block", () -> new BlockItem(LAPOTRONIC_LASER_BLOCK.get(), new Item.Properties()));
         ITEMS.register("research_workbench", () -> new BlockItem(RESEARCH_WORKBENCH.get(), new Item.Properties()));
         ITEMS.register("rocket_controller", () -> new BlockItem(ROCKET_CONTROLLER_BLOCK.get(), new Item.Properties()));
-        ITEMS.register("bukvi_ore_block", () -> new BlockItem(BUKVI_ORE_BLOCK.get(), new Item.Properties())
+        ITEMS.register("hueri_plush", () -> new BlockItem(HUERI_PLUSH.get(), new Item.Properties())
+                {
+                    @Override
+                    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+                        tooltip.add(Component.translatable("tooltip.roll_mod.hueri_plush.line1")
+                                .withStyle(style -> style.withColor(0xFDF55F)));
 
+                        tooltip.add(Component.translatable("tooltip.roll_mod.hueri_plush.line2"));
+                    }
+                }
+        );
+
+
+        ITEMS.register("bukvi_ore_block", () -> new BlockItem(BUKVI_ORE_BLOCK.get(), new Item.Properties())
         {
             @Override
             public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {

@@ -1,6 +1,13 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
+  "gui_light": "front",
   "textures": {
-    "all": "gtmogs:block/mars"
+    "down": "gtmogs:block/mars/down",
+    "east": "gtmogs:block/mars/side",
+    "north": "gtmogs:block/mars/side",
+    "particle": "#north",
+    "south": "gtmogs:block/mars/side",
+    "up": "gtmogs:block/mars/up",
+    "west": "gtmogs:block/mars/side"
   }
 }

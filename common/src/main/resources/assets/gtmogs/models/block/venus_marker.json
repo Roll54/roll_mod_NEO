@@ -1,6 +1,13 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
+  "gui_light": "front",
   "textures": {
-    "all": "gtmogs:block/venus"
+    "down": "gtmogs:block/venus/down",
+    "east": "gtmogs:block/venus/side",
+    "north": "gtmogs:block/venus/side",
+    "particle": "#north",
+    "south": "gtmogs:block/venus/side",
+    "up": "gtmogs:block/venus/up",
+    "west": "gtmogs:block/venus/side"
   }
 }

@@ -1,4 +1,5 @@
-// 1.21.1	2026-07-05T01:59:42.965498015	Tags for minecraft:item mod id roll_mod
+// 1.21.1	2026-07-09T23:51:57.017464382	Tags for minecraft:item mod id roll_mod
+86c027ee359f63ead5663d6ec9769fc4251b4cab data/c/tags/item/antimony.json
 1510cca7a87081ff56ab1224106ebe72251f0764 data/c/tags/item/apatite.json
 d977069cd601e10a74b7fabeeaf84b966aceac80 data/c/tags/item/azure_silver.json
 fdb333448df326bc3711788a50414e8068ea602f data/c/tags/item/bauxite.json
@@ -19,7 +20,8 @@ af883f41d4d897cea9a715a32475265d2e07e371 data/c/tags/item/chromite.json
 1dae1abef2d93c7d2b8e04275f1e07c724ff25b8 data/c/tags/item/coal.json
 f9f23421a69df5e0111a66feeeb47ea37ec2f151 data/c/tags/item/crimson_iron.json
 6ce9d5abad3216285e678eeb0cca6f543e579b2f data/c/tags/item/diamond.json
-8f0fae710641127cc3c436342cacd36afb72fd48 data/c/tags/item/dusts.json
+c9c63abd0b46c8c85f360f4584a688a3706971fb data/c/tags/item/dusts.json
+646d091f16e97ffc728a269505b8c61786bf3376 data/c/tags/item/dusts/antimony.json
 b2f21709b5c2682a02f51cbd5589c3745715d555 data/c/tags/item/dusts/apatite.json
 51946932b23ff3dc69f191e9f4f3097e165834ae data/c/tags/item/dusts/azure_silver.json
 c5ec1457de7245f4f721129b2dbd5ca7d26c6915 data/c/tags/item/dusts/bauxite.json
@@ -42,6 +44,7 @@ e13867b795c0bcb72e8d515a232d1d0d48c1ebd9 data/c/tags/item/dusts/coal.json
 1149276b6baa4521a4fa42998b7b06c9a01393ba data/c/tags/item/dusts/diamond.json
 72b46063b6223d5e3a143d5a90909806081adc63 data/c/tags/item/dusts/emerald.json
 c2e5ae812b9e41f35848f4be41886cfeceb7fc74 data/c/tags/item/dusts/fluorite.json
+8ca3144959affe41817fafff8c60acc03c931310 data/c/tags/item/dusts/fluosunnarite.json
 3c8683067252cfb3a3d3a221169ac65c8d069daa data/c/tags/item/dusts/galena.json
 a970176da19f9029475148145967dc85975aea9a data/c/tags/item/dusts/garnierite.json
 631e968c209e55ffc5585e11c8d4ba4e1202cff0 data/c/tags/item/dusts/goethite.json
@@ -74,6 +77,7 @@ ab1ec09d26a136673dd5c42c93810c9ad6465c09 data/c/tags/item/dusts/pyrite.json
 faf7f008b5bfe745ee3472776f79a4be34b38e04 data/c/tags/item/dusts/pyrope.json
 ca8851c19530df6e8f7207628fb786fc36fc16b3 data/c/tags/item/dusts/quartz.json
 8e0755cc1676d15a0633f4e73921d7bd4c46f808 data/c/tags/item/dusts/redstone.json
+9c4262d83c4694d3119e32d4e980dad542a40e46 data/c/tags/item/dusts/rheniite.json
 5a43fed6b822d2cf4acf3b6012f7722ec46e1e48 data/c/tags/item/dusts/rhodochrosite.json
 ce0271219f6bd1b6eb9e31ab3cae4e81f5db48be data/c/tags/item/dusts/rock_salt.json
 1dba45d557bd4faee450a21bfcf9a3ba715df53d data/c/tags/item/dusts/ruby.json
@@ -89,6 +93,8 @@ ce0271219f6bd1b6eb9e31ab3cae4e81f5db48be data/c/tags/item/dusts/rock_salt.json
 62df73cacc41875a738a5cbca786c852e1324ff0 data/c/tags/item/dusts/stannite.json
 9bda1e34af364faa8bd69f7dd8902ef69b032e38 data/c/tags/item/dusts/stibnite.json
 823781db7209924174fddae76f92c16049ea6e86 data/c/tags/item/dusts/sulfur.json
+da5897cefb54914cefc37c485437634a256c8d3b data/c/tags/item/dusts/sunnarium_orthosilicate.json
+a64f60e252836cc9b1cc27d9539f800325c45b6c data/c/tags/item/dusts/sunnarium_sulfophosphoorthosilicate.json
 1bfc379952ab86f10b1b7c2f85e9beb17664c85e data/c/tags/item/dusts/tantalite.json
 492ee2399fe63b34d1be1d7b0d2a6b9751a23990 data/c/tags/item/dusts/tetrahedrite.json
 7c9a302e1e6056f9b5521be5186ef51b507a1ac9 data/c/tags/item/dusts/thorium.json
@@ -101,6 +107,7 @@ ba60f2ed4f41fc9cf192a97b3903a13f03628e2e data/c/tags/item/dusts/tungstate.json
 de426f36f28b91aa49c8fdec26ecf7313593ea6d data/c/tags/item/dusts/yellow_limonite.json
 c463f80d10346529e2950c47fe7165bdbe63a565 data/c/tags/item/emerald.json
 f5db5585049ab4f78fa6d41445843a9c2f858231 data/c/tags/item/fluorite.json
+3dca6886edd7bd60fb120b8d91806eb265e9882c data/c/tags/item/fluosunnarite.json
 1091fe5c6cdfe8d0e58c5fc0ff3f0b079e65bc94 data/c/tags/item/galena.json
 058dc0142f45482d74ab0d9b2c4402d4e6c5fc7d data/c/tags/item/garnierite.json
 de1800c18802eeb507a57df0b25b14f799fb46c5 data/c/tags/item/goethite.json
@@ -123,6 +130,7 @@ b09b90cab7d548eab2d5f99904deb8bb7e90f4aa data/c/tags/item/mica.json
 644fa2366a5a4db49b4f991e90fa68f69ca84954 data/c/tags/item/monazite.json
 19e2b90e0332c28bca4cd4fd70e30142882f60da data/c/tags/item/nickel.json
 191122ff650c5eb9747b4a20b7104ebdf3e6f6d8 data/c/tags/item/olivine.json
+4b3746656f7f9f91d0080041ecb397fb9ddd15a5 data/c/tags/item/ores/antimony.json
 740409513b1c1f3021a977f70dd4dfc986b62ea6 data/c/tags/item/ores/apatite.json
 539f1ee9330999333d6776025fb1d598cda96be9 data/c/tags/item/ores/azure_silver.json
 cd9681845622905a2e67db3a1e7c502cb5e8d7c4 data/c/tags/item/ores/bauxite.json
@@ -145,6 +153,7 @@ e485aee25cfe2f4ded68259c2c80956ffe14511f data/c/tags/item/ores/crimson_iron.json
 94a279922688fe153dd05907ffb44330000ed78d data/c/tags/item/ores/diamond.json
 bc7ea9195bc7006bd478e577c4d3959eaa65118e data/c/tags/item/ores/emerald.json
 e299ae12d9e0074a39e4f28a59b164739fb63328 data/c/tags/item/ores/fluorite.json
+10c02a9d4df4bd3a3b7947d944eaa02874a8e247 data/c/tags/item/ores/fluosunnarite.json
 0a5316f423c6e42afb5908a061211b558ce3b3a7 data/c/tags/item/ores/galena.json
 246e35010044ed0cf757159cc70661481e909629 data/c/tags/item/ores/garnierite.json
 2f3a1b9ef35bd5f321b5d18a5fc76f1d6e1c478f data/c/tags/item/ores/goethite.json
@@ -177,6 +186,7 @@ a0c1d4d2362a9288eb429ebc5aaee17ce2887a63 data/c/tags/item/ores/powellite.json
 12c04afe3c5487bc5eff319a0f3a64665fd003fb data/c/tags/item/ores/pyrope.json
 e0961874cc627960c6ed3352ce4b93032fd9bbfc data/c/tags/item/ores/quartz.json
 ee882f839d8f38e7ac085d12b249feb69e22f9b7 data/c/tags/item/ores/redstone.json
+51e7bdf56efb18739fe31278f16c597aa1323494 data/c/tags/item/ores/rheniite.json
 e41eec767f6c3fc75d796134f6e3e77bd9d118d7 data/c/tags/item/ores/rhodochrosite.json
 54f1ff634982501fde1779e175b6173b23e1cf42 data/c/tags/item/ores/rock_salt.json
 57e3adb08bfc199f820057acdde3f9e9ec1dce5f data/c/tags/item/ores/ruby.json
@@ -192,6 +202,8 @@ e6b5ee307dd2285ec55abb180ffa0f70ea718767 data/c/tags/item/ores/sphalerite.json
 2329e69aaedb06a9ded06f31e5558ef792d16007 data/c/tags/item/ores/stannite.json
 0a18c61caf87fe3a79f2194da67a691f29fa0d40 data/c/tags/item/ores/stibnite.json
 03a6012bb699926f911a2357240bce6bd0a7438f data/c/tags/item/ores/sulfur.json
+7ca105b9a9124f6ddf0b9a7ef12eecea72b3a8d5 data/c/tags/item/ores/sunnarium_orthosilicate.json
+34f69660246243c156442c8dc8852bc7bb96c016 data/c/tags/item/ores/sunnarium_sulfophosphoorthosilicate.json
 3152e32d30fb40a662952b68259cf61b95c4040c data/c/tags/item/ores/tantalite.json
 46e9fc7455d4b603747c6e5b64be813ab4684b14 data/c/tags/item/ores/tetrahedrite.json
 ed5f5ac7994d789ceeb6a19ed9e9e1d6b1cefbc8 data/c/tags/item/ores/thorium.json
@@ -212,6 +224,7 @@ f18f2b4cdc0532dd7dfad4f7421415238688a7ce data/c/tags/item/pyrochlore.json
 fa9b261d2818e481884e4ecb98e8ad2883d20ed7 data/c/tags/item/pyrope.json
 add517bd6a0c5487e65a0dfcfcaf5788b1ffe0eb data/c/tags/item/quartz.json
 639600ff7753a9750dccb154d202f1bbb1daf057 data/c/tags/item/redstone.json
+36e0c7b1bc1deb4805d8c4dd0a4abab29e7a49b2 data/c/tags/item/rheniite.json
 87a2c4038f26540e43f3cfcd386884279ba8152e data/c/tags/item/rhodochrosite.json
 4b4f261747645cf3ca56b6a8df46b3481a7d3bbd data/c/tags/item/rock_salt.json
 37db6f3f6e3aac1aa5da0413c4d991f43085bc11 data/c/tags/item/ruby.json
@@ -227,6 +240,8 @@ bd80ca1ffb18e453faaaf955972bf35805136295 data/c/tags/item/sphalerite.json
 a75d27b91ca96f865656ace2bb78976c9add64c6 data/c/tags/item/stannite.json
 5bb2092c92dff6849b314d126e2bfb7e220ae0a2 data/c/tags/item/stibnite.json
 9b8b5b148dde45fe797ab883a3cad92132435da1 data/c/tags/item/sulfur.json
+a32b618b8ca4d7b9142049ea669f91e9280fd29d data/c/tags/item/sunnarium_orthosilicate.json
+9baaa141bbe0afa0683bd3181de725e9276bdc63 data/c/tags/item/sunnarium_sulfophosphoorthosilicate.json
 1c072c6f0c1aeb705af3973df751bd63ad0df054 data/c/tags/item/tantalite.json
 b18a2e81cdf2a87030c51492a2ff5454b00c4aff data/c/tags/item/tetrahedrite.json
 34e0b8fce8832aa32ed729b139e7fe971d377802 data/c/tags/item/thorium.json
@@ -237,10 +252,10 @@ b18a2e81cdf2a87030c51492a2ff5454b00c4aff data/c/tags/item/tetrahedrite.json
 adb6abd4ddefae925c77930041c5ac138075f8d9 data/c/tags/item/vanadium_magnetite.json
 b0de1913ac41bde85735fd89cbd8d43c453fd0f6 data/c/tags/item/wulfenite.json
 1fe53e0dd980f569e4202845252202f3aac61320 data/c/tags/item/yellow_limonite.json
-f0cc27128e0bfd5dc98b6d836cc8905ce3e315ba data/roll_mod/tags/item/crushed_ore.json
-12ae271c3a821ad291ba0fc891794ca54f8db787 data/roll_mod/tags/item/crushed_purified_ore.json
-45699b063b46eaee3d4b3ec4297d4ff5d7d8cd8d data/roll_mod/tags/item/crushed_refined_ore.json
-dd3ccaf6108afffdc516fd3494d1754879180dcc data/roll_mod/tags/item/dust_impure_ore.json
-8f0fae710641127cc3c436342cacd36afb72fd48 data/roll_mod/tags/item/dust_ore.json
-3d018c970d4290fb972d072a9647ead9cc648029 data/roll_mod/tags/item/dust_pure_ore.json
-b198a25a94477d1d246c63c82a664dacc052b07e data/roll_mod/tags/item/raw_ore.json
+3c03c3d97d67ae56d67516f8365780c7cf3f2318 data/roll_mod/tags/item/crushed_ore.json
+56423593e1bd412425bc62abf7f7989f04399fa5 data/roll_mod/tags/item/crushed_purified_ore.json
+093486c4a1ec4c30a83b5746950fa3f68249b0ef data/roll_mod/tags/item/crushed_refined_ore.json
+ba933123377e4728d3875822ab7345d7ac5bb9e0 data/roll_mod/tags/item/dust_impure_ore.json
+c9c63abd0b46c8c85f360f4584a688a3706971fb data/roll_mod/tags/item/dust_ore.json
+ad83e0a4f45319c40dbbdd21c350baa6e013c5d3 data/roll_mod/tags/item/dust_pure_ore.json
+3099482a5fe6235cdcde127a54aa39179a4cd292 data/roll_mod/tags/item/raw_ore.json

@@ -1,6 +1,9 @@
 package com.roll_54.roll_mod_client;
 
 import com.agricraft.agricraft.client.gui.MagnifyingGlassOverlay;
+import com.perigrine3.createcybernetics.api.CyberwareSlot;
+import com.perigrine3.createcybernetics.common.capabilities.ModAttachments;
+import com.perigrine3.createcybernetics.common.capabilities.PlayerCyberwareData;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod_client.blocks.entity.render.PedestalBlockEntityRenderer;
 import com.roll_54.roll_mod_client.blocks.entity.render.RocketControllerBlockEntityRenderer;
@@ -79,17 +82,27 @@ public final class RollModClient {
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.TENWOC__PLUSH.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.ROCKET_CONTROLLER_BLOCK.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.NETHERITE_FRAME.get(), RenderType.cutout());
+        ItemBlockRenderTypes.setRenderLayer(BlockRegistry.HUERI_PLUSH.get(), RenderType.cutout());
 
         event.enqueueWork(RMMItemProperties::addCustomProperties);
         event.enqueueWork(RollModClient::registerArmorRenderers);
 
         // для кропсів (їбать як складно до мене дійшов цей код...)
         event.enqueueWork(() -> {
-            MagnifyingGlassOverlay.addAllowingPredicate(player ->
-                    player.
-            boolean hasMeteoriteArm = data.hasSpecificItem(ItemRegistry.BASECYBERWARE_RIGHTARM_METEORITE_METAL.get(), CyberwareSlot.RARM); //todo Їбісь як хочеш, а я спати)
-            );
+            MagnifyingGlassOverlay.addAllowingPredicate(player -> {
+                PlayerCyberwareData data = player.getData(ModAttachments.CYBERWARE);
+
+                return data != null
+                        && data.hasSpecificItem(
+                        ItemRegistry.CROP_ANALYZER_LENSE.get(),
+                        CyberwareSlot.EYES)
+                        || data.hasSpecificItem(
+                        ItemRegistry.CROP_ANALYZER_MODULE.get(),
+                        CyberwareSlot.EYES);
+            });
         });
+
+
     }
 
     /** Wires common GeoItem armor to their client renderers via the common-side registry. */

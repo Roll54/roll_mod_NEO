@@ -66,6 +66,23 @@ dependencies {
     api("net.kyori:adventure-text-minimessage:4.17.0")
     shadow("net.kyori:adventure-text-serializer-gson:4.17.0")
     api("net.kyori:adventure-text-serializer-gson:4.17.0")
+
+    implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
+
+    implementation files("jars/Multiblocked2-1.21-1.21.1-21.0.10.jar")
+
+}
+
+// The Adventure/MiniMessage libraries are only bundled into the PRODUCTION shadowJar (via the
+// `shadow` configuration, relocated to com.prostomaslo.libs.net.kyori). They are therefore absent
+// from the dev run's game classpath, so code that touches MiniMessage (e.g. PvpManager on player
+// join) crashes with NoClassDefFoundError. Add them, unrelocated (matching the un-relocated
+// references in the dev classes), to each run's additional runtime classpath. This affects dev runs
+// only and does not change the shadowJar (which uses just the `shadow` configuration).
+['server', 'gameTestServer'].each { runName ->
+    def runCfg = neoForge.runs.getByName(runName).additionalRuntimeClasspathConfiguration
+    dependencies.add(runCfg.name, "net.kyori:adventure-text-minimessage:4.17.0")
+    dependencies.add(runCfg.name, "net.kyori:adventure-text-serializer-gson:4.17.0")
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

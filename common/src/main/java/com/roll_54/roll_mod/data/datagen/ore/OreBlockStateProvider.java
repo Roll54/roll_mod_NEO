@@ -26,6 +26,15 @@ public class OreBlockStateProvider extends BlockStateProvider {
                             simpleBlockWithItem(blockHolder.get(), cubeAll(blockHolder.get()));
                         });
             }
+
+            String rawBlockId = "raw_" + def.id() + "_block";
+            GeneratedOreRegistry.BLOCKS.getEntries().stream()
+                    .filter(holder -> holder.getId().getPath().equals(rawBlockId))
+                    .findFirst()
+                    .ifPresent(blockHolder -> {
+                        models().existingFileHelper.trackGenerated(modLoc("block/" + rawBlockId), PackType.CLIENT_RESOURCES, ".png", "textures");
+                        simpleBlockWithItem(blockHolder.get(), cubeAll(blockHolder.get()));
+                    });
         }
     }
 }

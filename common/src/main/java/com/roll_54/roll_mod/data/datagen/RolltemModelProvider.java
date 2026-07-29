@@ -188,7 +188,40 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.NYLON_FABRIC.get());
         basicItem(ItemRegistry.NYLON_STRING.get());
 
-        basicItem(ItemRegistry.LUNGSUPGRADE_SULFUR_RESISTANCE.get());
+
+        getBuilder(ItemRegistry.CROP_ANALYZER_LENSE.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/eyeupgrades_crop_analyzer_lense"));
+        getBuilder(ItemRegistry.CROP_ANALYZER_MODULE.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/eyeupgrades_crop_analyzer_module"));
+
+        getBuilder(ItemRegistry.LUNGSUPGRADE_SULFUR_RESISTANCE.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/lungsupgrade_sulfur_resistance"));
+
+        getBuilder(ItemRegistry.BASECYBERWARE_LEFTLEG_METEORITE_METAL.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/basecyberware_leftleg_meteorite_metal"));
+        getBuilder(ItemRegistry.BASECYBERWARE_RIGHTLEG_METEORITE_METAL.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/basecyberware_rightleg_meteorite_metal"));
+        getBuilder(ItemRegistry.BASECYBERWARE_RIGHTARM_METEORITE_METAL.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/basecyberware_rightarm_meteorite_metal"));
+        getBuilder(ItemRegistry.BASECYBERWARE_LEFTARM_METEORITE_METAL.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/basecyberware_leftarm_meteorite_metal"));
+
+
+        basicItem(ItemRegistry.FLUORITE_PINEAPPLE_SLICE.get());
+        basicItem(ItemRegistry.FLUORITE_PINEAPPLE_PIZZA_SLICE.get());
+        basicItem(ItemRegistry.BELL_PEPPER_SLICE_RUTILE.get());
+        basicItem(ItemRegistry.ROASTED_BELL_PEPPER_RUTILE.get());
+        basicItem(ItemRegistry.STUFFED_BELL_PEPPER_RUTILE.get());
+        basicItem(ItemRegistry.MOJITO.get());
+        basicItem(ItemRegistry.XP_BURGER.get());
+        basicItem(ItemRegistry.GOLDEN_XP_BURGER.get());
 
 
         // TEXTURES ARE NOT NEDEED FOR THESE ITEMS, THEY ARE DEV ONES.
@@ -264,6 +297,11 @@ public class RolltemModelProvider extends ItemModelProvider {
 
         generateAgricraftPlantModels("fluorite_pineapple", 5, AgricraftCropModel.CROP_CROSS);
 
+        // Hops uses hand-authored two-texture tall-crop stage models (models/crop/hops_stage*),
+        // so it is NOT run through generateAgricraftPlantModels. It still needs its AgriCraft
+        // seed model though, otherwise the seed renders as a missing texture.
+        generateSeedModel("hops");
+
 
 
 
@@ -278,15 +316,26 @@ public class RolltemModelProvider extends ItemModelProvider {
         return (ItemModelBuilder)((ItemModelBuilder)((ItemModelBuilder)this.getBuilder(item.toString())).parent(new ModelFile.UncheckedModelFile("item/generated"))).texture("layer0", ResourceLocation.fromNamespaceAndPath(item.getNamespace(), "item/crop_textures/" + item.getPath()));
     }
 
+    /**
+     * Generates only the AgriCraft seed model (models/seed/&lt;plantName&gt;.json).
+     * AgriCraft renders seeds via its own {@code <namespace>:seed/<plant>} model (not the
+     * registered item model), so every plant needs this. Use this directly for plants whose
+     * crop-stage models are authored by hand (e.g. tall/two-texture crops like hops) and thus
+     * skip {@link #generateAgricraftPlantModels}.
+     */
+    public void generateSeedModel(String plantName) {
+        this.getBuilder("seed/" + plantName)
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/crop_textures/" + plantName + "_seeds"));
+    }
+
     public void generateAgricraftPlantModels(String plantName, int numTextures, AgricraftCropModel cropModel) {
         if (numTextures < 1 || numTextures > 8) {
             throw new IllegalArgumentException("numTextures must be between 1 and 8 inclusive");
         }
 
         // 1. Generate the seed model (e.g. models/seed/iceberg_mint.json)
-        this.getBuilder("seed/" + plantName)
-                .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/crop_textures/" + plantName + "_seeds"));
+        generateSeedModel(plantName);
 
         // 2. Generate 8 crop stages (0 through 7)
         for (int stage = 0; stage < 8; stage++) {

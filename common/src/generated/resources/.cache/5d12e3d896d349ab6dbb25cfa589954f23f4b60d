@@ -1,4 +1,4 @@
-// 1.21.1	2026-07-05T02:01:53.055025287	Tags for minecraft:block mod id roll_mod
-c39efdd17f4a9cca37c22bdfbb18aab9711a872f data/c/tags/block/ores.json
-204dabaaa99a5c35d1edebfeaac473a0e7daf499 data/minecraft/tags/block/mineable/pickaxe.json
-c39efdd17f4a9cca37c22bdfbb18aab9711a872f data/minecraft/tags/block/needs_stone_tool.json
+// 1.21.1	2026-07-11T21:13:57.38971615	Tags for minecraft:block mod id roll_mod
+b6f9e096400a1faab440c3033bc269d90a0de016 data/c/tags/block/ores.json
+ac2eb6a26052a8a52c002b1bd8d2b3b3b903c882 data/minecraft/tags/block/mineable/pickaxe.json
+9ec4ad80babf1bd5e9ab4a9637e6d3f6e783dcc0 data/minecraft/tags/block/needs_stone_tool.json

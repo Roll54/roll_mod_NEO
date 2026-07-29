@@ -71,7 +71,6 @@ public final class OreTextureTemplates {
         IRON("iron"),
         OSMIUM("osmium"),
         QUARTZ("quartz"),
-        TIN("tin"),
         URANIUM("uranium"),
         ZINC("zinc"),
         CRYSTAL("crystal"),
@@ -86,6 +85,28 @@ public final class OreTextureTemplates {
                     .filter(v -> v.file.equals(name))
                     .findFirst()
                     .orElseThrow(() -> new IllegalArgumentException("Unknown item base: " + name));
+        }
+    }
+
+    /** Pre-made raw storage-block textures. Unlike ore blocks these can't be composited, so the
+     *  texture is picked from this fixed pool and recoloured per-ore via the definition's hex tint. */
+    public enum RawBlockBase {
+        CALORITE("calorite_block"),
+        COPPER("copper_block"),
+        DESH("desh_block"),
+        GOLD("gold_block"),
+        IRON("iron_block"),
+        OSTRUM("ostrum_block");
+
+        private final String file;
+        RawBlockBase(String file) { this.file = file; }
+        public Path resolve(Path dir) { return dir.resolve(file + ".png"); }
+        public String id() { return file; }
+        public static RawBlockBase from(String name) {
+            return Arrays.stream(values())
+                    .filter(v -> v.file.equals(name))
+                    .findFirst()
+                    .orElseThrow(() -> new IllegalArgumentException("Unknown raw block base: " + name));
         }
     }
 

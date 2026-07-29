@@ -1,7 +1,9 @@
 package com.roll_54.roll_mod.registry;
 
 import com.perigrine3.createcybernetics.api.CyberwareSlot;
-import com.perigrine3.createcybernetics.item.cyberware.CyberarmItem;
+import com.perigrine3.createcybernetics.item.cyberware.arm.CyberarmItem;
+import com.perigrine3.createcybernetics.item.cyberware.leg.CyberlegItem;
+import com.perigrine3.createcybernetics.util.CyberwareAttributeHelper;
 import com.roll_54.roll_mod.items.armor.HazmatBootsItem;
 import com.roll_54.roll_mod.items.armor.HazmatChestplateItem;
 import com.roll_54.roll_mod.items.armor.HazmatLeggingsItem;
@@ -12,12 +14,15 @@ import com.roll_54.roll_mod.items.armor.geckolib.ClownHatArmorItem;
 import com.roll_54.roll_mod.items.armor.geckolib.ExampleArmorItem;
 import com.roll_54.roll_mod.items.armor.geckolib.HazmatHelmetItem;
 import com.roll_54.roll_mod.items.armor.geckolib.MultiProtectingGraviChestItem;
+import com.roll_54.roll_mod.items.cyberware.CropLenseItem;
+import com.roll_54.roll_mod.items.cyberware.CropModuleItem;
 import com.roll_54.roll_mod.items.cyberware.SulfurResistantLungsItem;
 import com.roll_54.roll_mod.items.electricItems.*;
 import com.roll_54.roll_mod.items.spaceModule.DimensionCartridgeCItem;
 import com.roll_54.roll_mod.items.spaceModule.RocketItem;
 import com.roll_54.roll_mod.util.TooltipOptions;
 import com.roll_54.roll_mod.util.TooltipManager;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -29,6 +34,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemLore;
@@ -687,6 +695,110 @@ public class ItemRegistry {
             ))
     );
 
+    // 🍍 Скибка фторитового ананаса
+    public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE_SLICE = ITEMS.register(
+            "fluorite_pineapple_slice",
+            () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .nutrition(3)
+                            .saturationModifier(0.3f)
+                            .fast()
+                            .build()
+            ))
+    );
+
+    // 🍕 Скибка піци з фторитовим ананасом
+    public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE_PIZZA_SLICE = ITEMS.register(
+            "fluorite_pineapple_pizza_slice",
+            () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .nutrition(8)
+                            .saturationModifier(0.8f)
+                            .effect(() -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 1200, 0), 1.0f)
+                            .build()
+            ))
+    );
+
+    // 🫑 Скибка рутилового перцю
+    public static final DeferredHolder<Item, Item> BELL_PEPPER_SLICE_RUTILE = ITEMS.register(
+            "bell_pepper_slice_rutile",
+            () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .nutrition(2)
+                            .saturationModifier(0.3f)
+                            .fast()
+                            .build()
+            ))
+    );
+
+    // 🫑 Запечений рутиловий перець
+    public static final DeferredHolder<Item, Item> ROASTED_BELL_PEPPER_RUTILE = ITEMS.register(
+            "roasted_bell_pepper_rutile",
+            () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .nutrition(6)
+                            .saturationModifier(0.7f)
+                            .build()
+            ))
+    );
+
+    // 🫑 Фарширований рутиловий перець
+    public static final DeferredHolder<Item, Item> STUFFED_BELL_PEPPER_RUTILE = ITEMS.register(
+            "stuffed_bell_pepper_rutile",
+            () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .nutrition(9)
+                            .saturationModifier(0.9f)
+                            .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_BOOST, 1200, 0), 1.0f)
+                            .build()
+            ))
+    );
+
+    // 🍹 Мохіто
+    public static final DeferredHolder<Item, Item> MOJITO = ITEMS.register(
+            "mojito",
+            () -> new Item(new Item.Properties()
+                    .stacksTo(16)
+                    .food(new FoodProperties.Builder()
+                            .nutrition(4)
+                            .saturationModifier(0.3f)
+                            .alwaysEdible()
+                            .effect(() -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 1800, 0), 1.0f)
+                            .effect(() -> new MobEffectInstance(MobEffects.DIG_SPEED, 1800, 0), 1.0f)
+                            .build())
+            )
+    );
+
+    // 🍔 XP-бургер (дає досвід при поїданні)
+    public static final DeferredHolder<Item, Item> XP_BURGER = ITEMS.register(
+            "xp_burger",
+            () -> new XpFoodItem(new Item.Properties()
+                    .food(new FoodProperties.Builder()
+                            .nutrition(8)
+                            .saturationModifier(0.8f)
+                            .build()),
+                    50
+            )
+    );
+
+    // 🍔 Золотий XP-бургер (багато досвіду + ефекти)
+    public static final DeferredHolder<Item, Item> GOLDEN_XP_BURGER = ITEMS.register(
+            "golden_xp_burger",
+            () -> new XpFoodItem(new Item.Properties()
+                    .stacksTo(16)
+                    .component(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, true)
+                    .component(DataComponents.RARITY, Rarity.RARE)
+                    .food(new FoodProperties.Builder()
+                            .nutrition(12)
+                            .saturationModifier(1.2f)
+                            .alwaysEdible()
+                            .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 1), 1.0f)
+                            .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 2400, 1), 1.0f)
+                            .build()),
+                    250
+            )
+    );
+
 
     // «Кінець» (синя назва)
     public static final DeferredHolder<Item, Item> NONUB = registerTooltip(
@@ -1305,6 +1417,10 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> BASALT_DUST = ITEMS.register("basalt_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> TUFF_DUST = ITEMS.register("tuff_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SULFUR_SALTPETER_MIXTURE = ITEMS.register("sulfur_saltpeter_mixture", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> ZINC_SULFUR_MIXTURE = ITEMS.register("zinc_sulfur_mixture", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> UNACTIVATED_ZINC_SULFIDE_POWDER = ITEMS.register("unactivated_zinc_sulfide_powder", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> LUMINESCENT_MIXTURE = ITEMS.register("luminescent_mixture", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> SYNTHETIC_GLOWSTONE_DUST = ITEMS.register("synthetic_glowstone_dust", () -> new Item(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> ICEBERG_MINT_SEEDS = CROPS.register("iceberg_mint_seeds", () -> new Item(new Item.Properties()));
 
@@ -1319,11 +1435,21 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> GREEN_BELL_PEPPER_SEEDS = CROPS.register("green_bell_pepper_seeds", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SULFUR_BERRY_COFFEE_BEANS = CROPS.register("sulfur_berry_coffee_beans", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SULFUR_BERRY_COFFEE_SEEDS = CROPS.register("sulfur_berry_coffee_seeds", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE = CROPS.register("fluorite_pineapple", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE = CROPS.register("fluorite_pineapple", () -> new Item(new Item.Properties().food(
+            new FoodProperties.Builder()
+                    .nutrition(4)
+                    .saturationModifier(0.4f)
+                    .build()
+    )));
     public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE_SEEDS = CROPS.register("fluorite_pineapple_seeds", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> HOPS_LEAF = CROPS.register("hops_leaf", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> HOPS_SEEDS = CROPS.register("hops_seeds", () -> new Item(new Item.Properties()));
-    public static final DeferredHolder<Item, Item> RUTILE_BELL_PEPPER = CROPS.register("rutile_bell_pepper", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> RUTILE_BELL_PEPPER = CROPS.register("rutile_bell_pepper", () -> new Item(new Item.Properties().food(
+            new FoodProperties.Builder()
+                    .nutrition(4)
+                    .saturationModifier(0.4f)
+                    .build()
+    )));
     public static final DeferredHolder<Item, Item> RUTILE_BELL_PEPPER_SEEDS = CROPS.register("rutile_bell_pepper_seeds", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> COFFEE_BEANS = CROPS.register("coffee_beans", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> COFFEE_SEEDS = CROPS.register("coffee_seeds", () -> new Item(new Item.Properties()));
@@ -1385,50 +1511,254 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> NYLON_STRING = ITEMS.register("nylon_string", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> NYLON_FABRIC = ITEMS.register("nylon_fabric", () -> new Item(new Item.Properties()));
 
+    /** Armor granted by each meteorite metal cyberlimb (full set of 4 = +32). Shown in each tooltip. */
+    private static final int METEORITE_LIMB_ARMOR = 8;
+
     public static final DeferredHolder<Item, CyberarmItem> BASECYBERWARE_RIGHTARM_METEORITE_METAL = ITEMS.register("basecyberware_rightarm_meteorite_metal",
-            () -> new CyberarmItem(new Item.Properties().stacksTo(1), 5, CyberwareSlot.RARM) {
+            () -> new CyberarmItem(new Item.Properties().stacksTo(1).component(
+                    DataComponents.CUSTOM_NAME,
+                    Component.translatable(
+                                    "item.roll_mod.basecyberware_rightarm_meteorite_metal"
+                            )
+                            .withStyle(style ->
+                                    style.withColor(0x3B2AB8)
+                                            .withItalic(false)
+                            )
+            ), 5, CyberwareSlot.RARM) {
                 @Override
                 public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
                     if (Screen.hasShiftDown()) {
-                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
-                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_rightarm.tooltip1"));
+                        tooltipComponents.add(Component.translatable("tooltip.roll_mod.basecyberware_meteorite_metal.desc").withStyle(ChatFormatting.GRAY));
                     } else {
-                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
                         tooltipComponents.add(Component.translatable("tooltip.createcybernetics.hold_shift_down"));
                     }
                     super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+                }
+
+                @Override
+                public void onInstalled(LivingEntity entity) {
+                    CyberwareAttributeHelper.applyModifier(entity, "basecyberware_rightarm_meteorite_metal");
+                }
+                @Override
+                public void onRemoved(LivingEntity entity) {
+                    CyberwareAttributeHelper.removeModifier(entity, "basecyberware_rightarm_meteorite_metal");
+                }
+
+                static {
+                    CyberwareAttributeHelper.registerModifierDynamicAttribute(
+                            "basecyberware_rightarm_meteorite_metal",
+                            Attributes.ARMOR.unwrapKey().orElseThrow().location(),
+                            ResourceLocation.fromNamespaceAndPath("roll_mod", "basecyberware_rightarm_meteorite_metal_armor"),
+                            METEORITE_LIMB_ARMOR,
+                            AttributeModifier.Operation.ADD_VALUE);
                 }
             });
 
     public static final DeferredHolder<Item, CyberarmItem> BASECYBERWARE_LEFTARM_METEORITE_METAL = ITEMS.register("basecyberware_leftarm_meteorite_metal",
-            () -> new CyberarmItem(new Item.Properties().stacksTo(1), 5, CyberwareSlot.LARM) {
+            () -> new CyberarmItem(new Item.Properties().stacksTo(1).component(
+                    DataComponents.CUSTOM_NAME,
+                    Component.translatable(
+                                    "item.roll_mod.basecyberware_leftarm_meteorite_metal"
+                            )
+                            .withStyle(style ->
+                                    style.withColor(0x3B2AB8)
+                                            .withItalic(false)
+                            )
+            ), 5, CyberwareSlot.LARM) {
                 @Override
                 public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
                     if (Screen.hasShiftDown()) {
-                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
-                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_leftarm.tooltip1"));
+                        tooltipComponents.add(Component.translatable("tooltip.roll_mod.basecyberware_meteorite_metal.desc").withStyle(ChatFormatting.GRAY));
                     } else {
-                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.hold_shift_down"));
+                    }
+                    super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+                }
+
+                @Override
+                public void onInstalled(LivingEntity entity) {
+                    CyberwareAttributeHelper.applyModifier(entity, "basecyberware_leftarm_meteorite_metal");
+                }
+                @Override
+                public void onRemoved(LivingEntity entity) {
+                    CyberwareAttributeHelper.removeModifier(entity, "basecyberware_leftarm_meteorite_metal");
+                }
+
+
+
+                static {
+                    CyberwareAttributeHelper.registerModifierDynamicAttribute(
+                            "basecyberware_leftarm_meteorite_metal",
+                            Attributes.ARMOR.unwrapKey().orElseThrow().location(),
+                            ResourceLocation.fromNamespaceAndPath("roll_mod", "basecyberware_leftarm_meteorite_metal_armor"),
+                            METEORITE_LIMB_ARMOR,
+                            AttributeModifier.Operation.ADD_VALUE);
+                }
+            });
+
+    public static final DeferredHolder<Item, CyberlegItem> BASECYBERWARE_RIGHTLEG_METEORITE_METAL = ITEMS.register("basecyberware_rightleg_meteorite_metal",
+            () -> new CyberlegItem(new Item.Properties().stacksTo(1).component(
+                    DataComponents.CUSTOM_NAME,
+                    Component.translatable(
+                                    "item.roll_mod.basecyberware_rightleg_meteorite_metal"
+                            )
+                            .withStyle(style ->
+                                    style.withColor(0x3B2AB8)
+                                            .withItalic(false)
+                            )
+            ), 5, CyberwareSlot.RLEG) {
+                @Override
+                public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
+                    if (Screen.hasShiftDown()) {
+                        tooltipComponents.add(Component.translatable("tooltip.roll_mod.basecyberware_meteorite_metal.desc").withStyle(ChatFormatting.GRAY));
+                    } else {
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.hold_shift_down"));
+                    }
+                    super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+                }
+
+                @Override
+                public void onInstalled(LivingEntity entity) {
+                    CyberwareAttributeHelper.applyModifier(entity, "basecyberware_rightleg_meteorite_metal");
+                }
+                @Override
+                public void onRemoved(LivingEntity entity) {
+                    CyberwareAttributeHelper.removeModifier(entity, "basecyberware_rightleg_meteorite_metal");
+                }
+
+
+
+
+                static {
+                    CyberwareAttributeHelper.registerModifierDynamicAttribute(
+                            "basecyberware_rightleg_meteorite_metal",
+                            Attributes.ARMOR.unwrapKey().orElseThrow().location(),
+                            ResourceLocation.fromNamespaceAndPath("roll_mod", "basecyberware_rightleg_meteorite_metal_armor"),
+                            METEORITE_LIMB_ARMOR,
+                            AttributeModifier.Operation.ADD_VALUE);
+                }
+            });
+    public static final DeferredHolder<Item, CyberlegItem> BASECYBERWARE_LEFTLEG_METEORITE_METAL = ITEMS.register("basecyberware_leftleg_meteorite_metal",
+            () -> new CyberlegItem(new Item.Properties().stacksTo(1).component(
+                    DataComponents.CUSTOM_NAME,
+                    Component.translatable(
+                                    "item.roll_mod.basecyberware_leftleg_meteorite_metal"
+                            )
+                            .withStyle(style ->
+                                    style.withColor(0x3B2AB8)
+                                            .withItalic(false)
+                            )
+            ), 5, CyberwareSlot.LLEG) {
+                @Override
+                public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
+                    if (Screen.hasShiftDown()) {
+                        tooltipComponents.add(Component.translatable("tooltip.roll_mod.basecyberware_meteorite_metal.desc").withStyle(ChatFormatting.GRAY));
+                    } else {
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.hold_shift_down"));
+                    }
+                    super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+                }
+
+                @Override
+                public void onInstalled(LivingEntity entity) {
+                    CyberwareAttributeHelper.applyModifier(entity, "basecyberware_leftleg_meteorite_metal");
+                }
+                @Override
+                public void onRemoved(LivingEntity entity) {
+                    CyberwareAttributeHelper.removeModifier(entity, "basecyberware_leftleg_meteorite_metal");
+                }
+
+                static {
+                    CyberwareAttributeHelper.registerModifierDynamicAttribute(
+                            "basecyberware_leftleg_meteorite_metal",
+                            Attributes.ARMOR.unwrapKey().orElseThrow().location(),
+                            ResourceLocation.fromNamespaceAndPath("roll_mod", "basecyberware_leftleg_meteorite_metal_armor"),
+                            METEORITE_LIMB_ARMOR,
+                            AttributeModifier.Operation.ADD_VALUE);
+                }
+            });
+
+    public static final DeferredHolder<Item, SulfurResistantLungsItem> LUNGSUPGRADE_SULFUR_RESISTANCE =
+            ITEMS.register("lungsupgrade_sulfur_resistance",
+                    () -> new SulfurResistantLungsItem(new Item.Properties().stacksTo(1), 5) {
+                        @Override
+                        public void appendHoverText(
+                                ItemStack stack,
+                                Item.TooltipContext context,
+                                List<Component> tooltipComponents,
+                                TooltipFlag tooltipFlag
+                        ) {
+                            tooltipComponents.add(Component.translatable(
+                                    "tooltip.createcybernetics.basecyberware_tooltip"
+                            ));
+
+                            if (Screen.hasShiftDown()) {
+                                tooltipComponents.add(Component.translatable(
+                                        "tooltip.roll_mod.lungsupgrade_sulfur_resistance.desc.1"
+                                ).withStyle(ChatFormatting.GRAY));
+
+                                tooltipComponents.add(Component.translatable(
+                                        "tooltip.createcybernetics.humanity",
+                                        getHumanityCost()
+                                ).withStyle(ChatFormatting.GOLD));
+
+                                tooltipComponents.add(Component.translatable(
+                                        "tooltip.roll_mod.lungsupgrade_sulfur_resistance.desc.2"
+                                ).withStyle(ChatFormatting.RED));
+
+
+                            } else {
+                                tooltipComponents.add(Component.translatable(
+                                        "tooltip.createcybernetics.hold_shift_down"
+                                ));
+                            }
+
+                            super.appendHoverText(
+                                    stack,
+                                    context,
+                                    tooltipComponents,
+                                    tooltipFlag
+                            );
+                        }
+                    });
+
+    public static final DeferredHolder<Item, CropModuleItem> CROP_ANALYZER_MODULE = ITEMS.register("crop_analyzer_module",
+            () -> new CropModuleItem(new Item.Properties().stacksTo(1)) {
+                @Override
+                public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    tooltipComponents.add(Component.translatable("tooltip.createcybernetics.eyeupgrades_tooltip"));
+                    if (Screen.hasShiftDown()) {
+                        tooltipComponents.add(Component.translatable("tooltip.roll_mod.crop_analyzer.desc").withStyle(ChatFormatting.GRAY));
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.humanity", getHumanityCost()).withStyle(ChatFormatting.GOLD));
+                        tooltipComponents.add(Component.translatable("tooltip.roll_mod.crop_analyzer.energy", 5).withStyle(ChatFormatting.RED));
+                    } else {
                         tooltipComponents.add(Component.translatable("tooltip.createcybernetics.hold_shift_down"));
                     }
                     super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
                 }
             });
 
-    public static final DeferredHolder<Item, SulfurResistantLungsItem> LUNGSUPGRADE_SULFUR_RESISTANCE = ITEMS.register("lungsupgrade_sulfur_resistance",
-            () -> new SulfurResistantLungsItem(new Item.Properties().stacksTo(1), 5) {
+    public static final DeferredHolder<Item, CropLenseItem> CROP_ANALYZER_LENSE = ITEMS.register("crop_analyzer_lense",
+            () -> new CropLenseItem(new Item.Properties().stacksTo(1)) {
                 @Override
-                public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    tooltipComponents.add(Component.translatable("tooltip.createcybernetics.eyeupgrades_tooltip"));
                     if (Screen.hasShiftDown()) {
-                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
-                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_leftarm.tooltip1"));
+                        tooltipComponents.add(Component.translatable("tooltip.roll_mod.crop_analyzer.desc").withStyle(ChatFormatting.GRAY));
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.humanity", getHumanityCost()).withStyle(ChatFormatting.GOLD));
+                        tooltipComponents.add(Component.translatable("tooltip.roll_mod.crop_analyzer.energy", 10).withStyle(ChatFormatting.RED));
                     } else {
-                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.basecyberware_tooltip"));
                         tooltipComponents.add(Component.translatable("tooltip.createcybernetics.hold_shift_down"));
                     }
                     super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
                 }
             });
+
+
 
     public static void register(IEventBus modBus) {
         ITEMS.register(modBus);

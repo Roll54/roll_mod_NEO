@@ -33,6 +33,8 @@ public class RollDataGenerators {
 
         generator.addProvider(event.includeServer(), new OreLootTableProvider(packOutput, lookupProvider));
 
+        generator.addProvider(event.includeServer(), new OreRecipeProvider(packOutput, lookupProvider));
+
         generator.addProvider(event.includeServer(), new RollDatapackProvider(packOutput, lookupProvider));
 
 

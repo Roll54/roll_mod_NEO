@@ -31,6 +31,7 @@ public class OreTextureProvider implements DataProvider {
     private final Path templatesRoot;
     private final Path blockSubLayersDir;
     private final Path blockOverlaysDir;
+    private final Path blockRawDir;
     private final Path itemBasesDir;
     private final Path itemLayersDir;
 
@@ -39,6 +40,7 @@ public class OreTextureProvider implements DataProvider {
         this.templatesRoot = locateTemplatesRoot();
         this.blockSubLayersDir = templatesRoot.resolve(Path.of("blocks", "sub_layers"));
         this.blockOverlaysDir = templatesRoot.resolve(Path.of("blocks", "overlays"));
+        this.blockRawDir = templatesRoot.resolve(Path.of("blocks", "raw"));
         this.itemBasesDir = templatesRoot.resolve(Path.of("items", "bases"));
         this.itemLayersDir = templatesRoot.resolve(Path.of("items", "layers"));
     }
@@ -102,6 +104,15 @@ public class OreTextureProvider implements DataProvider {
             String blockId = base.id() + "_" + def.id();
             createBlockTexture(cache, base, overlay, def.id(), def.hexColor(), blockTexOut, blockId);
         }
+        // Raw storage block: recolour a pool texture with the ore's tint (block can't be composited).
+        createRawBlockTexture(cache, def, blockTexOut);
+    }
+
+    private void createRawBlockTexture(CachedOutput cache, OreDefinition def, Path blockTexOut) throws IOException {
+        BufferedImage base = readPng(def.rawBlock().resolve(blockRawDir));
+        BufferedImage result = applyColorMultiply(base, def.hexColor());
+        Path out = blockTexOut.resolve("raw_" + def.id() + "_block.png");
+        savePng(cache, result, out);
     }
 
     private void createCrushed(CachedOutput cache, OreDefinition def, Path itemTexOut) throws IOException {

@@ -37,6 +37,7 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
     private final int MINING_RADIUS;
     private final int DEPTH;
 
+
     public EnergyDrillItem(Tier tier, Properties properties, long item_capacity, int depth, int mining_radius, int block_cost ) {
 
         super(tier, BlockTags.MINEABLE_WITH_PICKAXE, properties.stacksTo(1));

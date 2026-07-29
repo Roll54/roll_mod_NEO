@@ -12,13 +12,15 @@
   "block.gtmogs.mars_marker": "Марс",
   "block.gtmogs.venus_marker": "Венера",
   "block.gtmogs.mercury_marker": "Меркурій",
+  "block.gtmogs.glacio_marker": "Ґласіо",
+  "block.gtmogs.mining_overworld_marker": "Видобувальний світ",
 
-  "ore_vein.gtmogs.stellaris/mars/tantalite": "Танталіт",
+  "ore_vein.gtmogs.ad_astra/mars/tantalite": "Танталіт",
 
-  "ore_vein.gtmogs.stellaris/moon/ilmenite": "Ільменіт",
-  "ore_vein.gtmogs.stellaris/moon/pyrochlore": "Пірохлор",
-  "ore_vein.gtmogs.stellaris/moon/rutile": "Рутил",
-  "ore_vein.gtmogs.stellaris/moon/vanadium_magnetite": "Ванадієвий магнетит",
+  "ore_vein.gtmogs.ad_astra/moon/ilmenite": "Ільменіт",
+  "ore_vein.gtmogs.ad_astra/moon/pyrochlore": "Пірохлор",
+  "ore_vein.gtmogs.ad_astra/moon/rutile": "Рутил",
+  "ore_vein.gtmogs.ad_astra/moon/vanadium_magnetite": "Ванадієвий магнетит",
 
   "ore_vein.gtmogs.vanilla/end/chromite": "Хроміт",
   "ore_vein.gtmogs.vanilla/end/pyrolusite": "Піролюзит",

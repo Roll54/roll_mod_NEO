@@ -43,6 +43,22 @@ public final class GitScriptUpdater {
 
     private GitScriptUpdater() {}
 
+    /**
+     * What to do about {@code /reload} after the scripts have been copied.
+     * <ul>
+     *   <li>{@link Kind#IMMEDIATE} — reload right away, no warning (the old {@code --force}).</li>
+     *   <li>{@link Kind#SCHEDULED} — reload after {@code delaySeconds}, warning players first.</li>
+     *   <li>{@link Kind#NONE} — copy only, never reload; the player reloads manually.</li>
+     * </ul>
+     */
+    public record ReloadMode(Kind kind, int delaySeconds) {
+        public enum Kind { IMMEDIATE, SCHEDULED, NONE }
+
+        public static ReloadMode immediate() { return new ReloadMode(Kind.IMMEDIATE, 0); }
+        public static ReloadMode scheduled(int delaySeconds) { return new ReloadMode(Kind.SCHEDULED, delaySeconds); }
+        public static ReloadMode none() { return new ReloadMode(Kind.NONE, 0); }
+    }
+
     /** Prevents two updates from running at the same time. */
     private static final AtomicBoolean BUSY = new AtomicBoolean(false);
 
@@ -62,11 +78,10 @@ public final class GitScriptUpdater {
      * Kicks off an update. Returns {@code false} immediately if an update is already in
      * progress, otherwise {@code true} and the work proceeds asynchronously.
      *
-     * @param force when {@code true}, run {@code /reload} immediately after the copy with no
-     *              grace period or warning title; when {@code false}, schedule the reload
-     *              after the configured delay and warn players beforehand.
+     * @param reload what to do about {@code /reload} once the copy finishes — reload now,
+     *               reload after a delay (warning players), or not at all.
      */
-    public static boolean run(MinecraftServer server, ServerPlayer initiator, boolean force) {
+    public static boolean run(MinecraftServer server, ServerPlayer initiator, ReloadMode reload) {
         if (!BUSY.compareAndSet(false, true)) {
             return false;
         }
@@ -104,11 +119,18 @@ public final class GitScriptUpdater {
                                     Component.translatable("message.roll_mod.git.copied")
                                             .withStyle(ChatFormatting.GREEN));
 
-                            if (force) {
-                                // Already on the server thread — reload right away, no warning.
-                                performReload(server);
-                            } else {
-                                scheduleReload(server, cfg);
+                            switch (reload.kind()) {
+                                case IMMEDIATE ->
+                                        // Already on the server thread — reload right away, no warning.
+                                        performReload(server);
+                                case SCHEDULED -> scheduleReload(server, reload.delaySeconds());
+                                case NONE -> {
+                                    // Scripts copied but no reload requested — tell the player to reload manually.
+                                    initiator.sendSystemMessage(
+                                            Component.translatable("message.roll_mod.git.copied_no_reload")
+                                                    .withStyle(ChatFormatting.GREEN));
+                                    BUSY.set(false);
+                                }
                             }
                         } catch (IOException e) {
                             RollMod.LOGGER.error("[git_copy] file swap failed", e);
@@ -264,8 +286,9 @@ public final class GitScriptUpdater {
     // Warning + reload scheduling
     // ------------------------------------------------------------------
 
-    private static void scheduleReload(MinecraftServer server, MyConfig.GitUpdater cfg) {
-        int reloadDelay = Math.max(1, cfg.reloadDelaySeconds);
+    private static void scheduleReload(MinecraftServer server, int reloadDelaySeconds) {
+        MyConfig.GitUpdater cfg = MyConfig.INSTANCE.gitUpdater;
+        int reloadDelay = Math.max(1, reloadDelaySeconds);
         int warnBefore = Math.max(0, Math.min(cfg.warnBeforeReloadSeconds, reloadDelay - 1));
         int warnAt = reloadDelay - warnBefore;
 
@@ -289,6 +312,11 @@ public final class GitScriptUpdater {
         } finally {
             BUSY.set(false);
         }
+    }
+
+    /** Broadcasts only the red reload-warning title/subtitle to all players — no copy, no reload. */
+    public static void broadcastReloadWarning(MinecraftServer server) {
+        broadcastWarning(server);
     }
 
     private static void broadcastWarning(MinecraftServer server) {

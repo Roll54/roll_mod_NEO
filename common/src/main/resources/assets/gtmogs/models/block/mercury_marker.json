@@ -1,6 +1,13 @@
 {
-  "parent": "minecraft:block/cube_all",
+  "parent": "minecraft:block/cube",
+  "gui_light": "front",
   "textures": {
-    "all": "gtmogs:block/mercury"
+    "down": "gtmogs:block/mercury/down",
+    "east": "gtmogs:block/mercury/side",
+    "north": "gtmogs:block/mercury/side",
+    "particle": "#north",
+    "south": "gtmogs:block/mercury/side",
+    "up": "gtmogs:block/mercury/up",
+    "west": "gtmogs:block/mercury/side"
   }
 }

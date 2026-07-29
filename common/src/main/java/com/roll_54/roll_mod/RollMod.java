@@ -1,5 +1,7 @@
 package com.roll_54.roll_mod;
 
+import com.roll_54.roll_mod.compat.MBD2.RollMBD2Plugin;
+import com.roll_54.roll_mod.compat.MBD2.recipe.ExampleLavaRecipe;
 import com.roll_54.roll_mod.data.RMMAttachment;
 import com.roll_54.roll_mod.minestar.CleanDropConfig;
 import com.roll_54.roll_mod.registry.ComponentsRegistry;
@@ -35,6 +37,8 @@ public final class RollMod {
         ModEffects.register(eventBus);
         ModArmorMaterials.register(eventBus);
         eventBus.addListener(this::onCommonSetup);
+        RollMBD2Plugin.registerTraitTypes();
+        eventBus.register(new ExampleLavaRecipe());
         SoundRegistry.SOUND_EVENTS.register(eventBus);
         ComponentsRegistry.COMPONENTS.register(eventBus);
         RMMAttachment.ATTACHMENT_TYPES.register(eventBus);

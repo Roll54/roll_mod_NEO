@@ -315,6 +315,26 @@
     {
       "id": "roll_mod:pure_borax_dust",
       "required": false
+    },
+    {
+      "id": "roll_mod:pure_sunnarium_orthosilicate_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_sunnarium_sulfophosphoorthosilicate_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_fluosunnarite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_rheniite_dust",
+      "required": false
+    },
+    {
+      "id": "roll_mod:pure_antimony_dust",
+      "required": false
     }
   ]
 }

@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.data.datagen.ore;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockOverlay;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.ItemBase;
+import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.RawBlockBase;
 
 import java.util.List;
 
@@ -15,7 +16,8 @@ public record OreDefinition(
         int minExperience,
         int maxExperience,
         String enUsName,
-        String ukUaName
+        String ukUaName,
+        RawBlockBase rawBlock
 ) {
     public OreDefinition {
 

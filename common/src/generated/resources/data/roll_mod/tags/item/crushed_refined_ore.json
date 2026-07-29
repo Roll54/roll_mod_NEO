@@ -315,6 +315,26 @@
     {
       "id": "roll_mod:refined_borax_ore",
       "required": false
+    },
+    {
+      "id": "roll_mod:refined_sunnarium_orthosilicate_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_sunnarium_sulfophosphoorthosilicate_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_fluosunnarite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_rheniite_ore",
+      "required": false
+    },
+    {
+      "id": "roll_mod:refined_antimony_ore",
+      "required": false
     }
   ]
 }

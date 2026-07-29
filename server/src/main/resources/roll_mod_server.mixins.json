@@ -9,7 +9,9 @@
     "prime.LivingEntityMixin",
     "prime.MixinLivingEntityPrimeFeature",
     "prime.MixinServerPlayerEntityPrimeFeature",
-    "spawn.SpawnPointMixin"
+    "spawn.SpawnPointMixin",
+    "patch.SpawnerBlockEntityMixin",
+    "patch.BaseSpawnerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -24,6 +24,9 @@ public class GeneratedOreRegistry {
     private static final BlockBehaviour.Properties ORE_PROPERTIES =
             BlockBehaviour.Properties.of().strength(3.0F, 3.0F).requiresCorrectToolForDrops().sound(SoundType.STONE);
 
+    private static final BlockBehaviour.Properties RAW_BLOCK_PROPERTIES =
+            BlockBehaviour.Properties.of().strength(5.0F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL);
+
     public static void register(IEventBus eventBus) {
         for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
             registerOreSet(def);
@@ -40,6 +43,9 @@ public class GeneratedOreRegistry {
             String blockId = base.id() + "_" + oreName;
             registerBlockWithItem(blockId, () -> new DropExperienceBlock(UniformInt.of(def.minExperience(), def.maxExperience()), ORE_PROPERTIES));
         }
+
+        // Register raw storage block (texture chosen from the raw pool, tinted per-ore)
+        registerBlockWithItem("raw_" + oreName + "_block", () -> new Block(RAW_BLOCK_PROPERTIES));
 
         // Register associated items
         registerSimpleItem("raw_" + oreName);

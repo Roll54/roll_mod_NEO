@@ -57,6 +57,13 @@ public class OreLootTableProvider extends LootTableProvider {
                     .collect(Collectors.toMap(entry -> entry.getId().getPath(), DeferredHolder::get));
 
             for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
+                // Raw storage block simply drops itself.
+                String rawBlockName = "raw_" + def.id() + "_block";
+                Block rawBlock = blocks.get(rawBlockName);
+                if (rawBlock != null) {
+                    this.dropSelf(rawBlock);
+                }
+
                 // Determine Raw Item
                 String rawItemName = "raw_" + def.id();
                 Item rawItem = items.get(rawItemName);

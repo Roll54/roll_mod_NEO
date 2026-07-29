@@ -56,7 +56,7 @@ dependencies {
     // compileOnly: CyberwareSkinLayer reads createcybernetics' synced PlayerCyberwareData to draw
     // roll_mod cyberware overlays on the player. Common depends on this jar non-transitively (as
     // implementation), so it must be named explicitly here for compilation; loaded at runtime.
-    compileOnly files("../common/jars/createcybernetics-0.4.2b-neoforge-1.21.1.jar")
+    compileOnly files("../common/jars/createcybernetics-0.4.8b-neoforge-1.21.1-PLAYTEST-PRERELEASE-4.jar")
     compileOnly "curse.maven:extended-industrialization-1068418:7722451"
 
     // compileOnly: AnvilTooExpensiveLabelMixin reads ModConfigs.MAIN.anvil.removeLevelCap, whose
@@ -70,6 +70,8 @@ dependencies {
     // AgriCraft (a common-module api dependency) requires resourcefulconfig at runtime.
     // The data run doesn't read run/mods, so put it on the dev-run classpath for datagen.
     runtimeOnly files("../run/mods/resourcefulconfig-neoforge-1.21-3.0.11.jar")
+
+
 
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
         version {

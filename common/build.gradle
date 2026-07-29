@@ -66,6 +66,7 @@ dependencies {
     implementation "curse.maven:mi-tweaks-1068413:7722383"
     implementation "curse.maven:extended-industrialization-1068418:7722451"
     implementation "curse.maven:crafttweaker-239197:6929483"
+    implementation "curse.maven:ftb-library-forge-404465:7134093"
 
     api jarJar("dev.technici4n:GrandPower:${project.grandpower_version}")
 
@@ -73,9 +74,14 @@ dependencies {
 
     implementation "curse.maven:architectury-api-419699:5786327"
 
-    implementation files("jars/createcybernetics-0.4.2b-neoforge-1.21.1.jar")
+    implementation files("jars/createcybernetics-0.4.8b-neoforge-1.21.1-PLAYTEST-PRERELEASE-4.jar")
+
+    implementation files("jars/Multiblocked2-1.21-1.21.1-21.0.10.jar")
 
 }
+
+
+
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [minecraft_version      : minecraft_version,
