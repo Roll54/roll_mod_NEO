@@ -46,7 +46,8 @@ public final class OreTextureTemplates {
         REDSTONE("redstone"),
         TIN("tin"),
         URANIUM("uranium"),
-        ZINC("zinc");
+        ZINC("zinc"),
+        FINE_CRYSTALS("fine_crystals");
 
         private final String file;
         BlockOverlay(String file) { this.file = file; }
@@ -74,7 +75,9 @@ public final class OreTextureTemplates {
         URANIUM("uranium"),
         ZINC("zinc"),
         CRYSTAL("crystal"),
-        SALT_CRYSTAL("salt_crystal");
+        SALT_CRYSTAL("salt_crystal"),
+        BISMUTH_ITEM("bismuth_item"),
+        PSEUDO_DUST("pseudo_dust");
 
         private final String file;
         ItemBase(String file) { this.file = file; }
