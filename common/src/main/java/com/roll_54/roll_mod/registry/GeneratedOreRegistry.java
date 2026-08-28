@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.registry;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.blocks.OreSampleBlock;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinition;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
@@ -11,6 +12,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.DropExperienceBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.material.PushReaction;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -27,6 +29,11 @@ public class GeneratedOreRegistry {
     private static final BlockBehaviour.Properties RAW_BLOCK_PROPERTIES =
             BlockBehaviour.Properties.of().strength(5.0F, 6.0F).requiresCorrectToolForDrops().sound(SoundType.METAL);
 
+    /** Ore samples are thin decorative outcrops: walkable (no collision) and quick to mine. */
+    private static final BlockBehaviour.Properties ORE_SAMPLE_PROPERTIES =
+            BlockBehaviour.Properties.of().strength(1.0F, 1.0F).requiresCorrectToolForDrops().sound(SoundType.STONE)
+                    .noCollission().noOcclusion().pushReaction(PushReaction.DESTROY);
+
     public static void register(IEventBus eventBus) {
         for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
             registerOreSet(def);
@@ -38,10 +45,11 @@ public class GeneratedOreRegistry {
     private static void registerOreSet(OreDefinition def) {
         String oreName = def.id();
 
-        // Register ore blocks for each base
+        // Register ore blocks for each base, plus the matching surface sample
         for (BlockSubLayer base : def.bases()) {
             String blockId = base.id() + "_" + oreName;
             registerBlockWithItem(blockId, () -> new DropExperienceBlock(UniformInt.of(def.minExperience(), def.maxExperience()), ORE_PROPERTIES));
+            registerBlockWithItem(oreSampleId(base, oreName), () -> new OreSampleBlock(ORE_SAMPLE_PROPERTIES));
         }
 
         // Register raw storage block (texture chosen from the raw pool, tinted per-ore)
@@ -55,6 +63,11 @@ public class GeneratedOreRegistry {
         registerSimpleItem("purified_" + oreName + "_ore");
         registerSimpleItem("pure_" + oreName + "_dust");
         registerSimpleItem("impure_" + oreName + "_dust");
+    }
+
+    /** Registry path of the ore sample belonging to the {@code <base>_<ore>} ore block. */
+    public static String oreSampleId(BlockSubLayer base, String oreName) {
+        return base.id() + "_" + oreName + "_ore_sample";
     }
 
     private static <T extends Block> DeferredHolder<Block, T> registerBlockWithItem(String name, Supplier<T> blockSupplier) {

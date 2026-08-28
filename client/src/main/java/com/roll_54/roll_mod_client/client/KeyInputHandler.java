@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod_client.client;
 
 import com.roll_54.roll_mod_client.RollModClient;
+import com.roll_54.roll_mod.network.packet.OpenDailyTasksPacket;
 import com.roll_54.roll_mod.network.packet.armor.MultiProtectingGraviChestItemPacket;
 import com.roll_54.roll_mod_client.registry.KeyMappingRegistry;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -36,6 +37,10 @@ public class KeyInputHandler {
                     2,
                     toggleState(2)
             ));
+        }
+        if (KeyMappingRegistry.DAILY_TASKS.get().consumeClick()) {
+            // The daily-tasks screen is a LdLib2 container UI, so the server has to open it.
+            PacketDistributor.sendToServer(new OpenDailyTasksPacket());
         }
     }
     private static final boolean[] stateStatus = {false, false, false};

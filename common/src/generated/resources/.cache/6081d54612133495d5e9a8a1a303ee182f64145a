@@ -1,4 +1,4 @@
-// 1.21.1	2026-07-09T23:51:57.019725475	PY Ore Item Models: roll_mod
+// 1.21.1	2026-08-24T19:44:38.607072651	PY Ore Item Models: roll_mod
 a16d63dd8f8468b1930a03b6eccb1cf4cea58cdd assets/roll_mod/models/item/antimony_dust.json
 e5913c0d90983a94ed5fdf49a57e25c7c6338e0f assets/roll_mod/models/item/apatite_dust.json
 89596af5768a5c05af97b032241c9a390df146df assets/roll_mod/models/item/azure_silver_dust.json
@@ -57,6 +57,7 @@ a438a6e9b3ddcf438db9747f6b5b5868b0035603 assets/roll_mod/models/item/crushed_lea
 9f8a11fa39a593b954c6cb754431e1cb2f22333e assets/roll_mod/models/item/crushed_lepidolite_ore.json
 2b3fc6861ef436751f2dcc7c167b72b7d142a972 assets/roll_mod/models/item/crushed_lignite_coal_ore.json
 8a8f15a491206da1e551d042c0e56962393aa932 assets/roll_mod/models/item/crushed_lithium_ore.json
+8ce27059527473d211504ad2dc23fb8dde265185 assets/roll_mod/models/item/crushed_livingstonite_ore.json
 71ec948146c53ab23e94f7cd6066909315cc398b assets/roll_mod/models/item/crushed_magnetite_ore.json
 952eab0052a8d6f030ff73ff162860fe1d8845d3 assets/roll_mod/models/item/crushed_malachite_ore.json
 0b293afe26970cef5019094f1132ecbe1414d0ee assets/roll_mod/models/item/crushed_mica_ore.json
@@ -152,6 +153,7 @@ cf60791276447095b46ebb8f65052daa12841864 assets/roll_mod/models/item/impure_lead
 51b1699b78c0848353ccbe4e2696ef90802c3a27 assets/roll_mod/models/item/impure_lepidolite_dust.json
 c8b2b8bae250dd1fdc7924f20339e5eca1e179bf assets/roll_mod/models/item/impure_lignite_coal_dust.json
 10c3c9cad450f80d8f643a3b78802dc306f2463c assets/roll_mod/models/item/impure_lithium_dust.json
+86cc4f936c4a04d03955de41ed95f2b0bcf615c9 assets/roll_mod/models/item/impure_livingstonite_dust.json
 94112c700c38743f1e947410bb5281a07e73a0d3 assets/roll_mod/models/item/impure_magnetite_dust.json
 7c4eb4a1265d7675117f82236a80a273131ae27d assets/roll_mod/models/item/impure_malachite_dust.json
 5d74666a3c69e8c08bf041c53d6ed31218e94f5d assets/roll_mod/models/item/impure_mica_dust.json
@@ -205,6 +207,7 @@ f7325606220ebfd9dbee559036eb6b1cdb312470 assets/roll_mod/models/item/impure_uran
 8b3c17efeed5a06f03c10b1d3a40c3cfd15564d6 assets/roll_mod/models/item/lepidolite_dust.json
 90662af8ad8dfbf7e8e9b48f33fd174b510715e7 assets/roll_mod/models/item/lignite_coal_dust.json
 07ed517b7d4930b96e6e715af5fdd8149e023c2a assets/roll_mod/models/item/lithium_dust.json
+25a4f17d1cd5e43bffda17e00bd9d4d95ef92559 assets/roll_mod/models/item/livingstonite_dust.json
 126255e3d17031b462a5fa83ff14158728395d5e assets/roll_mod/models/item/magnetite_dust.json
 7dc6319fcc99d721030c48404e0e065dbe643f6d assets/roll_mod/models/item/malachite_dust.json
 8bfe1a8925ef30be1ba5407ffc002113a8a4d3f8 assets/roll_mod/models/item/mica_dust.json
@@ -255,6 +258,7 @@ db539336a2a26cb99294eadbe9449758a14cb0dd assets/roll_mod/models/item/pure_lazuri
 92d908cdc8cde5f8a64e5f9f7a845fc6917d819a assets/roll_mod/models/item/pure_lepidolite_dust.json
 f92be73426daa7dc121380e8b404e474332d0380 assets/roll_mod/models/item/pure_lignite_coal_dust.json
 f55d633ec0b150965038752b281d0de6e79313c8 assets/roll_mod/models/item/pure_lithium_dust.json
+4399f5f5038e666dda14481e3e4a6308e96860e2 assets/roll_mod/models/item/pure_livingstonite_dust.json
 0472dd06f4f5f6461fa085cbe61c293c048ac003 assets/roll_mod/models/item/pure_magnetite_dust.json
 33785b625c384ff6c940733e5a31ff80a2fa7214 assets/roll_mod/models/item/pure_malachite_dust.json
 3eb38d5fceace977b537b847496d5389365072b0 assets/roll_mod/models/item/pure_mica_dust.json
@@ -339,6 +343,7 @@ faab828a815221b2650c1588b27f94a93ab1ec28 assets/roll_mod/models/item/purified_la
 907e00bcd92fe2e4adfb6d56333aee08e07b73e3 assets/roll_mod/models/item/purified_lepidolite_ore.json
 799bac5c8f753975bc1080f688a0bd7c6ae8d160 assets/roll_mod/models/item/purified_lignite_coal_ore.json
 df33459350cbe210e51bc6f2df49117671567c54 assets/roll_mod/models/item/purified_lithium_ore.json
+13bdb64a5edbf0abeec442a004b1b89beb3ceb72 assets/roll_mod/models/item/purified_livingstonite_ore.json
 74df1e45fdf2259240eb214b5f518ca43186f069 assets/roll_mod/models/item/purified_magnetite_ore.json
 518d734f216b3afa19100cd3fa6b9c4c22a04346 assets/roll_mod/models/item/purified_malachite_ore.json
 df358db2588c2245e4d22c6f17d9fe101b6d76a9 assets/roll_mod/models/item/purified_mica_ore.json
@@ -428,6 +433,7 @@ b0fa6f695377b41a5bbd3da5e118fa5a4c02c332 assets/roll_mod/models/item/raw_lapis_l
 80ba864fae9f4835ae227bff984cbbfc297c7a9c assets/roll_mod/models/item/raw_lepidolite.json
 4a855734b1c1f33e0095fe22a768fead93386e3d assets/roll_mod/models/item/raw_lignite_coal.json
 077a5fd05b0c7a6dd83e118e9f3535706f61b083 assets/roll_mod/models/item/raw_lithium.json
+6124616ee80d567c381292f27e8155fbc9bd123c assets/roll_mod/models/item/raw_livingstonite.json
 c8326d06d5bd5732a057ae84ba6a2f4d58ea8996 assets/roll_mod/models/item/raw_magnetite.json
 68dbe5d19a73d868c1bd9a184d67c28b0f400dc0 assets/roll_mod/models/item/raw_malachite.json
 c86999c0a068a1d5222fd91ea13c54f6ea8471d6 assets/roll_mod/models/item/raw_mica.json
@@ -513,6 +519,7 @@ c65f212c6d72abffbad41bb71b786517b33387b2 assets/roll_mod/models/item/refined_lea
 1811612b54fabc3b337dbdbc21d0f7464769cbd8 assets/roll_mod/models/item/refined_lepidolite_ore.json
 7c2cc0ea427edadb5dd913a2ce7d56d190cacc44 assets/roll_mod/models/item/refined_lignite_coal_ore.json
 83eefbf1379ecdb5927524589536d028378cde60 assets/roll_mod/models/item/refined_lithium_ore.json
+20c2b5d5ded56b30896b3a9f3836d6bc718f0a80 assets/roll_mod/models/item/refined_livingstonite_ore.json
 6ab1915bae37a56bf2d940841515425f48251ab2 assets/roll_mod/models/item/refined_magnetite_ore.json
 1c59569a7ac4acc84387aae881288b553dcfb82b assets/roll_mod/models/item/refined_malachite_ore.json
 7fba9f8c1f81f219113d0b3799709ec5194f3048 assets/roll_mod/models/item/refined_mica_ore.json

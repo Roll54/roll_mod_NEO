@@ -68,6 +68,11 @@ dependencies {
     implementation "curse.maven:crafttweaker-239197:6929483"
     implementation "curse.maven:ftb-library-forge-404465:7134093"
 
+    // compileOnly: the daily-tasks system reads FTB party membership through
+    // com.roll_54.roll_mod.compat.ftb.FTBTeamsFacadeImpl, which is only ever class-loaded when
+    // ftbteams is present. Keeping it off the runtime classpath keeps the dependency soft.
+    compileOnly "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
+
     api jarJar("dev.technici4n:GrandPower:${project.grandpower_version}")
 
     implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
@@ -76,7 +81,7 @@ dependencies {
 
     implementation files("jars/createcybernetics-0.4.8b-neoforge-1.21.1-PLAYTEST-PRERELEASE-4.jar")
 
-    implementation files("jars/Multiblocked2-1.21-1.21.1-21.0.10.jar")
+    implementation files("jars/Multiblocked2-1.21-1.21.1-21.0.11.jar")
 
 }
 

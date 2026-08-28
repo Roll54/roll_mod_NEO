@@ -45,6 +45,10 @@ public class BlockEntites {
             BLOCK_ENTITIES.register("weed_manager_be", () -> BlockEntityType.Builder.of(
                     WeedManagerBlockEntity::new, BlockRegistry.WEED_MANAGER.get()).build(null));
 
+    public static final Supplier<BlockEntityType<HueriStatueBlockEntity>> HUERI_STATUE_BE =
+            BLOCK_ENTITIES.register("hueri_statue_be", () -> BlockEntityType.Builder.of(
+                    HueriStatueBlockEntity::new, BlockRegistry.HUERI_STATUE.get()).build(null));
+
     public static final Supplier<BlockEntityType<RollSolarPanelBlockEntity>> SOLAR_PANEL_BE =
             BLOCK_ENTITIES.register("solar_panel_be", () -> BlockEntityType.Builder.of(
                     RollSolarPanelBlockEntity::new,

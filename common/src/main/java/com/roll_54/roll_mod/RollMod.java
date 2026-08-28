@@ -2,7 +2,10 @@ package com.roll_54.roll_mod;
 
 import com.roll_54.roll_mod.compat.MBD2.RollMBD2Plugin;
 import com.roll_54.roll_mod.compat.MBD2.recipe.ExampleLavaRecipe;
+import com.lowdragmc.lowdraglib2.gui.factory.PlayerUIMenuType;
 import com.roll_54.roll_mod.data.RMMAttachment;
+import com.roll_54.roll_mod.minestar.dailytasks.DailyTaskRegistry;
+import com.roll_54.roll_mod.minestar.dailytasks.gui.DailyTasksUI;
 import com.roll_54.roll_mod.minestar.CleanDropConfig;
 import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.items.armor.ModArmorMaterials;
@@ -54,6 +57,14 @@ public final class RollMod {
 
     private void onCommonSetup(final FMLCommonSetupEvent event) {
         // Тут можна ініціалізувати інтеграції/дані, якщо потрібно.
+        event.enqueueWork(() -> {
+            // Both of these must happen on both dists. The registry has to match on client and
+            // server because the daily-tasks screen syncs task positions in it, and the client
+            // builds the same UI to receive its sync values.
+            DailyTaskRegistry.bootstrap();
+            PlayerUIMenuType.register(DailyTasksUI.UI_ID,
+                    player -> (PlayerUIMenuType.PlayerUIHolder) DailyTasksUI::createUI);
+        });
         LOGGER.info("[{}] common setup", MODID);
     }
 }

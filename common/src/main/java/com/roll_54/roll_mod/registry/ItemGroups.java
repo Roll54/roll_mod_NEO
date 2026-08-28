@@ -50,6 +50,23 @@ public final class ItemGroups {
                         add(out, ItemRegistry.METEORITE_SHOVEL);
                         add(out, ItemRegistry.METEORITE_HOE);
                         add(out, ItemRegistry.METEORITE_METAL_PROSPECTOR_PICKAXE);
+
+                        // Bronze-GEAR
+                        add(out, ItemRegistry.BLACK_BRONZE_SWORD);
+                        add(out, ItemRegistry.BLACK_BRONZE_PICKAXE);
+                        add(out, ItemRegistry.BLACK_BRONZE_AXE);
+                        add(out, ItemRegistry.BLACK_BRONZE_SHOVEL);
+                        add(out, ItemRegistry.BLACK_BRONZE_HOE);
+                        add(out, ItemRegistry.BISMUTH_BRONZE_SWORD);
+                        add(out, ItemRegistry.BISMUTH_BRONZE_PICKAXE);
+                        add(out, ItemRegistry.BISMUTH_BRONZE_AXE);
+                        add(out, ItemRegistry.BISMUTH_BRONZE_SHOVEL);
+                        add(out, ItemRegistry.BISMUTH_BRONZE_HOE);
+                        add(out, ItemRegistry.BLACK_STEEL_SWORD);
+                        add(out, ItemRegistry.BLACK_STEEL_PICKAXE);
+                        add(out, ItemRegistry.BLACK_STEEL_AXE);
+                        add(out, ItemRegistry.BLACK_STEEL_SHOVEL);
+                        add(out, ItemRegistry.BLACK_STEEL_HOE);
                         // Scanners
                         add(out, ItemRegistry.LV_STORM_SCANNER);
 

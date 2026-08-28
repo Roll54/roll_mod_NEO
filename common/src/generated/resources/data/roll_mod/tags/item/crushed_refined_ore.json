@@ -335,6 +335,10 @@
     {
       "id": "roll_mod:refined_antimony_ore",
       "required": false
+    },
+    {
+      "id": "roll_mod:refined_livingstonite_ore",
+      "required": false
     }
   ]
 }

@@ -60,6 +60,11 @@ subprojects {
             url = "https://maven.blamejared.com/"
         }
         maven {
+            name = "FTB"
+            url = "https://maven.ftb.dev/releases/"
+            content { includeGroup "dev.ftb.mods" } // FTB Teams
+        }
+        maven {
             name = "ModMaven"
             url = "https://modmaven.dev"
         }

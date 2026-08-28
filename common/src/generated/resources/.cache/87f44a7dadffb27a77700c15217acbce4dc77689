@@ -1,4 +1,4 @@
-// 1.21.1	2026-07-09T23:51:57.017464382	Tags for minecraft:item mod id roll_mod
+// 1.21.1	2026-08-24T19:44:38.602877829	Tags for minecraft:item mod id roll_mod
 86c027ee359f63ead5663d6ec9769fc4251b4cab data/c/tags/item/antimony.json
 1510cca7a87081ff56ab1224106ebe72251f0764 data/c/tags/item/apatite.json
 d977069cd601e10a74b7fabeeaf84b966aceac80 data/c/tags/item/azure_silver.json
@@ -20,7 +20,7 @@ af883f41d4d897cea9a715a32475265d2e07e371 data/c/tags/item/chromite.json
 1dae1abef2d93c7d2b8e04275f1e07c724ff25b8 data/c/tags/item/coal.json
 f9f23421a69df5e0111a66feeeb47ea37ec2f151 data/c/tags/item/crimson_iron.json
 6ce9d5abad3216285e678eeb0cca6f543e579b2f data/c/tags/item/diamond.json
-c9c63abd0b46c8c85f360f4584a688a3706971fb data/c/tags/item/dusts.json
+4ec8ff6047b8bce226c36496ebae83603f90e347 data/c/tags/item/dusts.json
 646d091f16e97ffc728a269505b8c61786bf3376 data/c/tags/item/dusts/antimony.json
 b2f21709b5c2682a02f51cbd5589c3745715d555 data/c/tags/item/dusts/apatite.json
 51946932b23ff3dc69f191e9f4f3097e165834ae data/c/tags/item/dusts/azure_silver.json
@@ -59,6 +59,7 @@ f727a68d8296cb5bef26323b74834f4be641747d data/c/tags/item/dusts/lapis_lazuli.jso
 90915e5ac221a0d709975226183c5637eb4987fa data/c/tags/item/dusts/lepidolite.json
 44263ba26266a9735a2462d949b5f95d1bb45ba4 data/c/tags/item/dusts/lignite_coal.json
 1374875a4d0bde6074144dd516030000ac4b8dee data/c/tags/item/dusts/lithium.json
+801472ed433200064f1a76520809864c4203ebdb data/c/tags/item/dusts/livingstonite.json
 8f0796143a8782b77e17d2d8e1bae153fba25947 data/c/tags/item/dusts/magnetite.json
 7b6d9724acf31625da45530b41689e0b639508f4 data/c/tags/item/dusts/malachite.json
 3ba78edb990896eb1581d6fc96f5017b29af5b46 data/c/tags/item/dusts/mica.json
@@ -122,6 +123,7 @@ b9dd54f0104b34b20becc47f2bc7d59e41a706d4 data/c/tags/item/lapis_lazuli.json
 03b63b325cf01e18300ca0389ec84493c9088484 data/c/tags/item/lepidolite.json
 039624377e1c1bb669e89b1ba5e03cb982ca6882 data/c/tags/item/lignite_coal.json
 cab040ec3ae2cd568c479b1db8862ccf8a6cb13e data/c/tags/item/lithium.json
+46336e2b9fba2b303151d61054e38111ce29dea3 data/c/tags/item/livingstonite.json
 25de4fbefdf3a39622b4c62eefdc2270b8c07f22 data/c/tags/item/magnetite.json
 196146c97e0e54756bc5fa8d5135f6d67427d233 data/c/tags/item/malachite.json
 b09b90cab7d548eab2d5f99904deb8bb7e90f4aa data/c/tags/item/mica.json
@@ -168,6 +170,7 @@ b0bf7779250617e1d6a97e262695ae3fd328a741 data/c/tags/item/ores/lead.json
 7fcce649e5246d645d23612e942808b4a1e00403 data/c/tags/item/ores/lepidolite.json
 e3b21b5ecc01bbf12f4155011785e44d463a2e49 data/c/tags/item/ores/lignite_coal.json
 c00fbad807858581a7bdbfb0895cf5df25a0aa7b data/c/tags/item/ores/lithium.json
+adf60c100d5c83e6a5c93f2111de78b73d925b18 data/c/tags/item/ores/livingstonite.json
 dd61ae41cefe7314087c821633dd9cb50991c1cf data/c/tags/item/ores/magnetite.json
 108ca0a95cdba866909621ee4a5270b24b4b4f4f data/c/tags/item/ores/malachite.json
 fda0b3b5e7fbe246f795606a108c92f583716e1d data/c/tags/item/ores/mica.json
@@ -252,10 +255,10 @@ b18a2e81cdf2a87030c51492a2ff5454b00c4aff data/c/tags/item/tetrahedrite.json
 adb6abd4ddefae925c77930041c5ac138075f8d9 data/c/tags/item/vanadium_magnetite.json
 b0de1913ac41bde85735fd89cbd8d43c453fd0f6 data/c/tags/item/wulfenite.json
 1fe53e0dd980f569e4202845252202f3aac61320 data/c/tags/item/yellow_limonite.json
-3c03c3d97d67ae56d67516f8365780c7cf3f2318 data/roll_mod/tags/item/crushed_ore.json
-56423593e1bd412425bc62abf7f7989f04399fa5 data/roll_mod/tags/item/crushed_purified_ore.json
-093486c4a1ec4c30a83b5746950fa3f68249b0ef data/roll_mod/tags/item/crushed_refined_ore.json
-ba933123377e4728d3875822ab7345d7ac5bb9e0 data/roll_mod/tags/item/dust_impure_ore.json
-c9c63abd0b46c8c85f360f4584a688a3706971fb data/roll_mod/tags/item/dust_ore.json
-ad83e0a4f45319c40dbbdd21c350baa6e013c5d3 data/roll_mod/tags/item/dust_pure_ore.json
-3099482a5fe6235cdcde127a54aa39179a4cd292 data/roll_mod/tags/item/raw_ore.json
+807c2b6e9d9dfca9ed957d8e034224060efac20b data/roll_mod/tags/item/crushed_ore.json
+4d3fe20de99df7f75f3269ed5066581ecca8eae6 data/roll_mod/tags/item/crushed_purified_ore.json
+fd210a44e07704fd959b87d215f76275ea787748 data/roll_mod/tags/item/crushed_refined_ore.json
+51d1f145c63c62a8ed1c6cb208c7c966e74f2ace data/roll_mod/tags/item/dust_impure_ore.json
+4ec8ff6047b8bce226c36496ebae83603f90e347 data/roll_mod/tags/item/dust_ore.json
+12007465d255a17e3dbb8b670247dffc5ce1cf27 data/roll_mod/tags/item/dust_pure_ore.json
+68cf39c5e8e73aae8f635aea485dc9a7f10b49d2 data/roll_mod/tags/item/raw_ore.json

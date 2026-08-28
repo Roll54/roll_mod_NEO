@@ -1,5 +1,8 @@
 package com.roll_54.roll_mod.mixin.adstra;
 
+import com.llamalad7.mixinextras.injector.ModifyReturnValue;
+import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.registry.AttributeRegistry;
 import earth.terrarium.adastra.api.systems.OxygenApi;
 import earth.terrarium.adastra.common.registry.ModDataManagers;
 import earth.terrarium.adastra.common.tags.ModFluidTags;
@@ -11,18 +14,24 @@ import earth.terrarium.common_storage_lib.fluid.util.FluidProvider;
 import earth.terrarium.common_storage_lib.resources.fluid.FluidResource;
 import earth.terrarium.common_storage_lib.resources.fluid.util.FluidAmounts;
 import earth.terrarium.common_storage_lib.storage.base.CommonStorage;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.swedz.extended_industrialization.item.nanosuit.NanoSuitArmorItem;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import static com.roll_54.roll_mod.netherstorm.StormHandler.isPlayerProtectedFromStormWithOutArmor;
+
 
 /**
  * Grafts Ad Astra's oxygen-tank behaviour onto Extended Industrialization's nano suit chest piece.
@@ -70,7 +79,7 @@ public abstract class NanoArmorMixin implements FluidProvider.Item {
             return;
         }
 
-        entity.setTicksFrozen(0);
+        entity.setTicksFrozen(0); // ставить заморожений оверлей на 0.
         if (entity.tickCount % 12 == 0 && roll_mod$hasOxygen(stack)) {
             if (!OxygenApi.API.hasOxygen(entity)) {
                 roll_mod$consumeOxygen(stack, 1L);
@@ -79,6 +88,10 @@ public abstract class NanoArmorMixin implements FluidProvider.Item {
             if (entity.isEyeInFluid(FluidTags.WATER)) {
                 roll_mod$consumeOxygen(stack, 1L);
                 entity.setAirSupply(Math.min(entity.getMaxAirSupply(), entity.getAirSupply() + 40));
+            }
+
+            if (!isPlayerProtectedFromStormWithOutArmor((ServerPlayer) entity)){
+                roll_mod$consumeOxygen(stack, 3L);
             }
         }
     }
@@ -95,5 +108,30 @@ public abstract class NanoArmorMixin implements FluidProvider.Item {
         if (container != null) {
             container.extract(container.getResource(0), FluidAmounts.toPlatformAmount(amount), false);
         }
+    }
+
+    @ModifyReturnValue(method = "getModifiedDefaultAttributeModifiers", at = @At("RETURN"))
+    private ItemAttributeModifiers roll_mod$addSulfurArmorAttribute(
+            ItemAttributeModifiers original,
+            ItemStack stack,
+            ItemAttributeModifiers modifiers
+    ) {
+        if (((ArmorItem) (Object) this).getEquipmentSlot() != EquipmentSlot.CHEST) {
+            return original;
+        }
+        if (roll_mod$hasOxygenAtLeast(stack, 100L)) {
+            return original.withModifierAdded(
+                    AttributeRegistry.SULFUR_ARMOR,
+                    new AttributeModifier(RollMod.id("nano_chestplate_sulfur_armor"), 16.0, AttributeModifier.Operation.ADD_VALUE),
+                    EquipmentSlotGroup.CHEST
+            );
+        }
+        return original;
+    }
+
+    @Unique
+    private boolean roll_mod$hasOxygenAtLeast(ItemStack stack, long amount) {
+        CommonStorage<FluidResource> container = new ModifyOnlyContext(stack).find(FluidApi.ITEM);
+        return container != null && container.getAmount(0) >= FluidAmounts.toPlatformAmount(amount);
     }
 }

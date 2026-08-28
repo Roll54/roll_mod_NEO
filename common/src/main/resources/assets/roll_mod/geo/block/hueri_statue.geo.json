@@ -1,0 +1,169 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.hueri_statue",
+				"texture_width": 128,
+				"texture_height": 128,
+				"visible_bounds_width": 3,
+				"visible_bounds_height": 3.5,
+				"visible_bounds_offset": [0, 1.25, 0]
+			},
+			"bones": [
+				{
+					"name": "Hueri",
+					"pivot": [0, 19, 2]
+				},
+				{
+					"name": "Waist",
+					"parent": "Hueri",
+					"pivot": [0, 19, 2]
+				},
+				{
+					"name": "Head",
+					"parent": "Waist",
+					"pivot": [0, 31, 2],
+					"rotation": [5, 0, 0],
+					"cubes": [
+						{
+							"origin": [-4, 31, -2],
+							"size": [8, 8, 8],
+							"uv": [0, 64]
+						},
+						{
+							"origin": [-4, 31, -2],
+							"size": [8, 8, 8],
+							"inflate": 0.5,
+							"uv": [32, 64]
+						}
+					]
+				},
+				{
+					"name": "Body",
+					"parent": "Waist",
+					"pivot": [0, 31, 2],
+					"cubes": [
+						{
+							"origin": [-4, 19, 0],
+							"size": [8, 12, 4],
+							"uv": [16, 80]
+						},
+						{
+							"origin": [-4, 19, 0],
+							"size": [8, 12, 4],
+							"inflate": 0.25,
+							"uv": [24, 96]
+						}
+					]
+				},
+				{
+					"name": "Right Arm",
+					"parent": "Waist",
+					"pivot": [-5, 28, 2],
+					"rotation": [-20, 0, -20],
+					"cubes": [
+						{
+							"origin": [-8, 18, 0],
+							"size": [4, 12, 4],
+							"uv": [0, 80]
+						},
+						{
+							"origin": [-8, 18, 0],
+							"size": [4, 12, 4],
+							"inflate": 0.25,
+							"uv": [39, 96]
+						}
+					]
+				},
+				{
+					"name": "Left Arm",
+					"parent": "Waist",
+					"pivot": [5, 28, 2],
+					"rotation": [-15, 0, 15],
+					"cubes": [
+						{
+							"origin": [4, 18, 0],
+							"size": [4, 12, 4],
+							"uv": [32, 112]
+						},
+						{
+							"origin": [4, 18, 0],
+							"size": [4, 12, 4],
+							"inflate": 0.25,
+							"uv": [50, 112]
+						}
+					]
+				},
+				{
+					"name": "Right Leg",
+					"parent": "Hueri",
+					"pivot": [-3.09509, 17.79756, -1.48989],
+					"rotation": [-89.10905, 17.96492, 7.4274],
+					"cubes": [
+						{
+							"origin": [-5.09509, 11.79756, -3.48989],
+							"size": [4, 12, 4],
+							"uv": [0, 80]
+						},
+						{
+							"origin": [-5.09509, 11.79756, -3.48989],
+							"size": [4, 12, 4],
+							"inflate": 0.25,
+							"uv": [0, 96]
+						}
+					]
+				},
+				{
+					"name": "Left Leg",
+					"parent": "Hueri",
+					"pivot": [3.08691, 17.01526, -2.45841],
+					"rotation": [-87.45376, -4.88119, -11.08482],
+					"cubes": [
+						{
+							"origin": [1.08691, 11.01526, -5.48341],
+							"size": [4, 12, 4],
+							"pivot": [1.18691, 11.01526, -3.48341],
+							"rotation": [-2.5, 0, 0],
+							"uv": [16, 112]
+						},
+						{
+							"origin": [1.08691, 11.01526, -5.18341],
+							"size": [4, 12, 4],
+							"inflate": 0.25,
+							"uv": [0, 112]
+						}
+					]
+				},
+				{
+					"name": "block",
+					"pivot": [0, 0, 0],
+					"cubes": [
+						{
+							"origin": [-8, 12, -8],
+							"size": [16, 4, 16],
+							"uv": [0, 0]
+						},
+						{
+							"origin": [-8, 0, -8],
+							"size": [16, 4, 16],
+							"uv": [0, 20]
+						},
+						{
+							"origin": [-7, 5, -7],
+							"size": [14, 6, 2],
+							"pivot": [0, 7.5, -6],
+							"rotation": [-12.5, 0, 0],
+							"uv": [48, 56]
+						},
+						{
+							"origin": [-6, 4, -6],
+							"size": [12, 8, 12],
+							"uv": [0, 40]
+						}
+					]
+				}
+			]
+		}
+	]
+}

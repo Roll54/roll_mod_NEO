@@ -123,6 +123,31 @@ public class OreLootTableProvider extends LootTableProvider {
 
                         this.add(block, builder);
                     }
+
+                    // Ore sample: silk touch keeps the block, otherwise it yields 1-2 raw material.
+                    Block sampleBlock = blocks.get(GeneratedOreRegistry.oreSampleId(base, def.id()));
+                    if (sampleBlock != null) {
+                        LootTable.Builder sampleBuilder = LootTable.lootTable().withPool(
+                                LootPool.lootPool()
+                                        .setRolls(UniformGenerator.between(1.0F, 1.0F))
+                                        .add(LootItem.lootTableItem(sampleBlock)
+                                                .when(this.hasSilkTouch())
+                                        )
+                        );
+
+                        if (rawItem != null) {
+                            sampleBuilder.withPool(
+                                    LootPool.lootPool()
+                                            .setRolls(UniformGenerator.between(1.0F, 1.0F))
+                                            .add(LootItem.lootTableItem(rawItem)
+                                                    .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 2.0F)))
+                                                    .when(this.doesNotHaveSilkTouch())
+                                            )
+                            );
+                        }
+
+                        this.add(sampleBlock, sampleBuilder);
+                    }
                 }
             }
         }

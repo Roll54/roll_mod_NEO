@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "roll_mod:meteorite_axe"
+    "roll_mod:meteorite_axe",
+    "roll_mod:black_bronze_axe",
+    "roll_mod:bismuth_bronze_axe",
+    "roll_mod:black_steel_axe"
   ]
 }

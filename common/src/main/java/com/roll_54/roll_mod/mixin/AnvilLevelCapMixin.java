@@ -42,20 +42,22 @@ public abstract class AnvilLevelCapMixin {
                     target = "Lnet/minecraft/util/Mth;clamp(JJJ)J"
             )
     )
+
     private long roll_mod$scaleCostExponentially(long rawCost) {
         if (!ModConfigs.MAIN.anvil.removeLevelCap.get()) {
             return rawCost;
         }
 
         int threshold = ModConfigs.MAIN.anvil.expThreshold.get();
+
         if (rawCost < threshold) {
             return rawCost;
         }
 
         double growth = ModConfigs.MAIN.anvil.expGrowth.get();
-        double scaled =
-                //threshold *
-                        Math.pow(growth, rawCost - threshold);
+
+        double scaled = threshold * Math.pow(growth, rawCost - threshold);
+
         return (long) Math.min(scaled, Integer.MAX_VALUE);
     }
 

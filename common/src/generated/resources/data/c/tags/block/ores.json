@@ -16,6 +16,7 @@
     "roll_mod:stone_pentlandite",
     "roll_mod:stone_chalcopyrite",
     "roll_mod:netherrack_chalcopyrite",
+    "roll_mod:venus_chalcopyrite",
     "roll_mod:netherrack_certus_quartz",
     "roll_mod:mercury_certus_quartz",
     "roll_mod:moon_pyrochlore",
@@ -102,7 +103,9 @@
     "roll_mod:end_pitchblende",
     "roll_mod:stone_cassiterite",
     "roll_mod:end_rhodochrosite",
+    "roll_mod:venus_rhodochrosite",
     "roll_mod:stone_lead",
+    "roll_mod:venus_lead",
     "roll_mod:end_olivine",
     "roll_mod:netherrack_trona",
     "roll_mod:netherrack_bismuth",
@@ -131,6 +134,7 @@
     "roll_mod:venus_fluosunnarite",
     "roll_mod:mercury_rheniite",
     "roll_mod:venus_rheniite",
-    "roll_mod:mercury_antimony"
+    "roll_mod:mercury_antimony",
+    "roll_mod:venus_livingstonite"
   ]
 }

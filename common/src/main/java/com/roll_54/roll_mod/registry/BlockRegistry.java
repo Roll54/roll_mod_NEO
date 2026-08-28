@@ -194,9 +194,17 @@ public class BlockRegistry {
         }
     }
 
+    public static final DeferredBlock<Block> HUERI_STATUE = BLOCKS.register(
+            "hueri_statue",
+            () -> new HueriStatueBlock(BlockBehaviour.Properties.of()
+                    .strength(2.0F)
+                    .sound(SoundType.METAL)
+                    .noOcclusion())
+    );
+
     public static final DeferredBlock<Block> HUERI_PLUSH = BLOCKS.register(
             "hueri_plush",
-            () -> new FacingPlushBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.WOOL).noCollission())
+            () -> new FacingPlushBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.WOOL).noCollission().noOcclusion())
     );
 
 
@@ -237,6 +245,7 @@ public class BlockRegistry {
         ITEMS.register("weed_manager", () -> new BlockItem(WEED_MANAGER.get(), new Item.Properties())
         );
         ITEMS.register("netherite_frame", () -> new BlockItem(NETHERITE_FRAME.get(), new Item.Properties()));
+        ITEMS.register("hueri_statue", () -> new BlockItem(HUERI_STATUE.get(), new Item.Properties()));
     }
 
     public static void register(IEventBus eventBus) {

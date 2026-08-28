@@ -43,6 +43,7 @@ def sprite2frames(filename):
         for i in range(0, num_frames):
             frame = sprite.crop((0, width*i, width, width*(i+1)))
             frame = frame.resize((TARGET_SIZE, TARGET_SIZE), Image.NEAREST)
+            frame = frame.convert('RGBA')
             frames.append(frame)
         return frames, num_frames
 

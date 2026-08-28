@@ -1,6 +1,9 @@
 package com.roll_54.roll_mod.network;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
+import com.roll_54.roll_mod.network.packet.DailyTaskToastPacket;
+import com.roll_54.roll_mod.network.packet.OpenDailyTasksPacket;
 import com.roll_54.roll_mod.network.packet.PacketLaunchRocket;
 import com.roll_54.roll_mod.network.packet.armor.MultiProtectingGraviChestItemPacket;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -22,6 +25,21 @@ public class NetworkHandler {
                 MultiProtectingGraviChestItemPacket.TYPE,
                 MultiProtectingGraviChestItemPacket.STREAM_CODEC,
                 MultiProtectingGraviChestItemPacket::handle
+        );
+        registrar.playToServer(
+                OpenDailyTasksPacket.TYPE,
+                OpenDailyTasksPacket.STREAM_CODEC,
+                OpenDailyTasksPacket::handle
+        );
+        registrar.playToServer(
+                ClaimDailyTaskPacket.TYPE,
+                ClaimDailyTaskPacket.STREAM_CODEC,
+                ClaimDailyTaskPacket::handle
+        );
+        registrar.playToClient(
+                DailyTaskToastPacket.TYPE,
+                DailyTaskToastPacket.STREAM_CODEC,
+                DailyTaskToastPacket::handle
         );
     }
 }

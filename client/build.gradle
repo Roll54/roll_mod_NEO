@@ -73,6 +73,10 @@ dependencies {
 
 
 
+    // Soft dependency of :common's daily-tasks system; present at dev runtime so party
+    // scaling can actually be tested. Not on any compile classpath here.
+    runtimeOnly "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
+
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
         version {
             strictly "[${mixinextras_version},)"

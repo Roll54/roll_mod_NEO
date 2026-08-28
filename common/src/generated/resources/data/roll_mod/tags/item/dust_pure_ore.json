@@ -335,6 +335,10 @@
     {
       "id": "roll_mod:pure_antimony_dust",
       "required": false
+    },
+    {
+      "id": "roll_mod:pure_livingstonite_dust",
+      "required": false
     }
   ]
 }

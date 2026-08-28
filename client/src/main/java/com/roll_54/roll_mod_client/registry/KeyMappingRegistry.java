@@ -25,4 +25,11 @@ public class KeyMappingRegistry {
             "key.categories.roll_mod"
     ));
 
+    /** Opens the daily-tasks screen. F4 is unbound in vanilla (F3+F4 is a separate chord). */
+    public static final Lazy<KeyMapping> DAILY_TASKS = Lazy.of(() -> new KeyMapping(
+            "key.roll_mod.daily_tasks",
+            GLFW.GLFW_KEY_F4,
+            "key.categories.roll_mod"
+    ));
+
 }

@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "roll_mod:meteorite_sword"
+    "roll_mod:meteorite_sword",
+    "roll_mod:black_bronze_sword",
+    "roll_mod:bismuth_bronze_sword",
+    "roll_mod:black_steel_sword"
   ]
 }

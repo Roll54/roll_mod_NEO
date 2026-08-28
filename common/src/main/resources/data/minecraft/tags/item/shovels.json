@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "roll_mod:meteorite_shovel"
+    "roll_mod:meteorite_shovel",
+    "roll_mod:black_bronze_shovel",
+    "roll_mod:bismuth_bronze_shovel",
+    "roll_mod:black_steel_shovel"
   ]
 }

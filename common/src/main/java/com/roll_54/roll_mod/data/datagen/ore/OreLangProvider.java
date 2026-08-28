@@ -81,6 +81,12 @@ public class OreLangProvider extends LanguageProvider {
                 String blockKey = "block.roll_mod." + baseId + "_" + def.id();
 
                 add(blockKey, String.format("%s (%s)", oreName, baseName));
+
+                String sampleKey = "block.roll_mod." + baseId + "_" + def.id() + "_ore_sample";
+
+                add(sampleKey, isEnglish
+                        ? String.format("%s (Ore sample)", oreName)
+                        : String.format("%s (Зразок)", oreName));
             }
         }
 

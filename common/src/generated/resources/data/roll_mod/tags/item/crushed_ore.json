@@ -335,6 +335,10 @@
     {
       "id": "roll_mod:crushed_antimony_ore",
       "required": false
+    },
+    {
+      "id": "roll_mod:crushed_livingstonite_ore",
+      "required": false
     }
   ]
 }

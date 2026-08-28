@@ -64,6 +64,20 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
 
                             commonOreBlocks.add(block);
                         });
+
+                // Samples are mined like their ore block, but aren't ore blocks themselves.
+                String sampleId = GeneratedOreRegistry.oreSampleId(base, def.id());
+
+                GeneratedOreRegistry.BLOCKS.getEntries().stream()
+                        .filter(holder -> holder.getId().getPath().equals(sampleId))
+                        .findFirst()
+                        .ifPresent(blockHolder -> {
+
+                            var block = blockHolder.get();
+
+                            pickaxeTag.add(block);
+                            needsStoneTag.add(block);
+                        });
             }
 
             String rawBlockId = "raw_" + def.id() + "_block";

@@ -106,6 +106,21 @@ public class StormHandler {
         return protection;
     }
 
+    public static boolean isPlayerProtectedFromStormWithOutArmor(ServerPlayer player){
+        boolean protection = false;
+        var gamemode = player.gameMode.getGameModeForPlayer();
+
+        if (
+                gamemode == GameType.CREATIVE ||
+                        gamemode == GameType.SPECTATOR ||
+                        player.hasEffect(ModEffects.SULFUR_RESISTANCE) ||
+                        player.getData(STORM_PROTECTED)
+        )
+            protection = true;
+
+        return protection;
+    }
+
     private static void applyStormInNether(MinecraftServer server) {
 
         ServerLevel nether = server.getLevel(Level.NETHER);

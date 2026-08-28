@@ -11,9 +11,11 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.ServerChatEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.List;
 import java.util.Locale;
@@ -27,12 +29,29 @@ public class ChatHandler {
     private static final double LOCAL_RADIUS = 50.0;
     private static final double LOCAL_RADIUS_SQUARED = LOCAL_RADIUS * LOCAL_RADIUS;
 
-    @SubscribeEvent
+    /**
+     * Routes chat into the local radius or the global channel.
+     *
+     * <p>Global messages never cancel the event, so every other {@link ServerChatEvent} listener
+     * still receives them; the duplicate vanilla broadcast is dropped afterwards by
+     * {@code PlayerListChatMixin} through {@link ChatDelivery}. Local messages cancel the event
+     * instead — they are meant to stay inside {@value #LOCAL_RADIUS} blocks, so listeners that
+     * would forward them further must not see them at all.
+     *
+     * <p>Runs at {@link EventPriority#LOWEST}: a mod that wants to cancel the message gets to
+     * do so before anything is sent, and the text is read from {@link ServerChatEvent#getMessage()}
+     * so edits made by earlier listeners are honoured.
+     */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onServerChat(ServerChatEvent event) {
         try {
 
             ServerPlayer sender = event.getPlayer();
-            String rawMessage = event.getRawText().trim();
+            String rawMessage = event.getMessage().getString().trim();
+
+            if (rawMessage.isEmpty()) {
+                rawMessage = event.getRawText().trim();
+            }
 
             if (rawMessage.isEmpty()) {
                 return;
@@ -43,7 +62,6 @@ public class ChatHandler {
                     .orElse(false);
 
             if(isMuted) {
-                event.setCanceled(true);
                 Component messageMute;
                 messageMute = Adventure.miniMessage(
                         """
@@ -53,15 +71,25 @@ public class ChatHandler {
 
                 sender.sendSystemMessage(messageMute);
 
+                // Nothing was sent to anyone, and vanilla must not send it either.
+                ChatDelivery.markHandled(sender);
+
                 return;
             }
 
-            event.setCanceled(true);
-
             if (rawMessage.charAt(0) == GLOBAL_PREFIX) {
-                handleGlobalChat(sender, rawMessage);
-            } else {
-                handleLocalChat(sender, rawMessage);
+                // Marked only once delivery succeeded: if routing bailed out, the message still
+                // goes through the untouched vanilla broadcast instead of disappearing.
+                if (handleGlobalChat(sender, rawMessage)) {
+                    ChatDelivery.markHandled(sender);
+                }
+            } else if (handleLocalChat(sender, rawMessage)) {
+                // Local chat is confined to the radius, so the event is cancelled outright:
+                // that stops the vanilla broadcast and keeps the message away from listeners
+                // that would relay it server-wide (chat bridges and the like). No
+                // ChatDelivery mark here — cancelling already prevents the broadcast, and a
+                // leftover mark would swallow this player's next message.
+                event.setCanceled(true);
             }
 
         } catch (Exception e) {
@@ -69,19 +97,25 @@ public class ChatHandler {
         }
     }
 
-    private static void handleGlobalChat(ServerPlayer sender, String rawMessage) {
+    @SubscribeEvent
+    public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        ChatDelivery.forget(event.getEntity().getUUID());
+    }
+
+    /** {@return whether the message was delivered here, so vanilla must not broadcast it} */
+    private static boolean handleGlobalChat(ServerPlayer sender, String rawMessage) {
         String content = rawMessage.substring(1).trim();
         MinecraftServer server = sender.getServer();
 
         if (server == null) {
             RollMod.LOGGER.error("Could not handle global chat: Server instance was null for player {}.", sender.getGameProfile().getName());
-            return;
+            return false;
         }
 
         if (content.isEmpty()) {
             sender.sendSystemMessage(Component.literal("Порожнє глобальне повідомлення.").withStyle(ChatFormatting.RED));
             logGlobal(sender, content, List.of());
-            return;
+            return true;
         }
 
         Component messageComponent = Component.literal("")
@@ -95,14 +129,16 @@ public class ChatHandler {
         recipients.forEach(player -> player.sendSystemMessage(messageComponent));
 
         logGlobal(sender, content, recipients);
+        return true;
     }
 
-    private static void handleLocalChat(ServerPlayer sender, String content) {
+    /** {@return whether the message was delivered here, so vanilla must not broadcast it} */
+    private static boolean handleLocalChat(ServerPlayer sender, String content) {
         MinecraftServer server = sender.getServer();
 
         if (server == null) {
             RollMod.LOGGER.error("Could not handle local chat: Server instance was null for player {}.", sender.getGameProfile().getName());
-            return;
+            return false;
         }
 
         List<ServerPlayer> nearbyPlayers = server.getPlayerList().getPlayers().stream()
@@ -121,7 +157,7 @@ public class ChatHandler {
             sender.sendSystemMessage(noFoundNearbyPlayers);
 
             logLocalNobody(sender, content);
-            return;
+            return true;
         }
 
         Component messageComponent = Component.literal("")
@@ -134,6 +170,7 @@ public class ChatHandler {
         nearbyPlayers.forEach(player -> player.sendSystemMessage(messageComponent));
 
         logLocal(sender, content, nearbyPlayers);
+        return true;
     }
 
 

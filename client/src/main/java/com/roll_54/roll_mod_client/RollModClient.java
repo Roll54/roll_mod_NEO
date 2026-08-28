@@ -11,6 +11,7 @@ import com.roll_54.roll_mod_client.blocks.entity.render.model.rocket.normal.Norm
 import com.roll_54.roll_mod_client.blocks.entity.render.model.rocket.small.SmallRocketModel;
 import com.roll_54.roll_mod_client.blocks.entity.render.model.rocket.tiny.TinyRocketModel;
 import com.roll_54.roll_mod_client.client.gecko.ClownHatRenderer;
+import com.roll_54.roll_mod_client.client.gecko.block.HueriStatueRenderer;
 import com.roll_54.roll_mod_client.client.gecko.GeckoArmorRenderer;
 import com.roll_54.roll_mod_client.client.gecko.HazmatHelmetRenderer;
 import com.roll_54.roll_mod_client.client.gecko.MultiProtectingGraviChestPlateRenderer;
@@ -133,6 +134,7 @@ public final class RollModClient {
         public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(BlockEntites.PEDESTAL_BE.get(), PedestalBlockEntityRenderer::new);
             event.registerBlockEntityRenderer(BlockEntites.ROCKET_CONTROLLER_BE.get(), RocketControllerBlockEntityRenderer::new);
+            event.registerBlockEntityRenderer(BlockEntites.HUERI_STATUE_BE.get(), HueriStatueRenderer::new);
         }
 
         @SubscribeEvent
@@ -165,6 +167,7 @@ public final class RollModClient {
             event.register(KeyMappingRegistry.CHESTPLATE_TOGGLE_ONE.get());
             event.register(KeyMappingRegistry.CHESTPLATE_TOGGLE_TWO.get());
             event.register(KeyMappingRegistry.CHESTPLATE_TOGGLE_THREE.get());
+            event.register(KeyMappingRegistry.DAILY_TASKS.get());
         }
 
         @SubscribeEvent

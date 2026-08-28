@@ -55,6 +55,10 @@ dependencies {
     // handler signature. Provided at runtime by the common_storage_lib mod, so not bundled.
     compileOnly files("jars/common-storage-lib-neoforge-1.21.1-0.0.9.jar")
 
+    // Soft dependency of :common's daily-tasks system; present at dev runtime so party
+    // scaling can actually be tested. Not on any compile classpath here.
+    runtimeOnly "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
+
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
         version {
             strictly "[${mixinextras_version},)"

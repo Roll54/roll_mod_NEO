@@ -40,6 +40,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemLore;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
@@ -250,6 +251,184 @@ public class ItemRegistry {
                     ModToolTiers.METEORITE_METAL, 2f, -1.0f,
                     new Item.Properties(),
                     TooltipOptions.nameAndLore(0x3B2AB8, 1, 0x005ACF)
+            )
+    );
+
+
+    // Bronze-GEAR
+    // Durability comes from the tier: TieredItem re-applies Tier#getUses over anything set here.
+    private static final int BLACK_BRONZE_COLOR = 0x9B4F98;
+    private static final int BISMUTH_BRONZE_COLOR = 0xC08A4A;
+
+    /** Fortune I on the digging tools, Looting I on the ones that are swung at mobs. */
+    private static final InnateEnchantments BLACK_BRONZE_FORTUNE =
+            InnateEnchantments.of(Enchantments.FORTUNE, 1);
+    private static final InnateEnchantments BLACK_BRONZE_LOOTING =
+            InnateEnchantments.of(Enchantments.LOOTING, 1);
+
+    /** Efficiency II + Unbreaking I while mining, Sharpness II + Unbreaking I while fighting. */
+    private static final InnateEnchantments BISMUTH_BRONZE_MINING =
+            InnateEnchantments.of(Enchantments.EFFICIENCY, 2, Enchantments.UNBREAKING, 1);
+    private static final InnateEnchantments BISMUTH_BRONZE_COMBAT =
+            InnateEnchantments.of(Enchantments.SHARPNESS, 2, Enchantments.UNBREAKING, 1);
+
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_SWORD = ITEMS.register(
+            "black_bronze_sword",
+            () -> new InnateEnchantedTools.InnateSwordItem(
+                    ModToolTiers.BLACK_BRONZE, 3f, -2.4f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_BRONZE_COLOR),
+                    BLACK_BRONZE_LOOTING
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_PICKAXE = ITEMS.register(
+            "black_bronze_pickaxe",
+            () -> new InnateEnchantedTools.InnatePickaxeItem(
+                    ModToolTiers.BLACK_BRONZE, 1f, -2.8f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_BRONZE_COLOR),
+                    BLACK_BRONZE_FORTUNE
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_AXE = ITEMS.register(
+            "black_bronze_axe",
+            () -> new InnateEnchantedTools.InnateAxeItem(
+                    ModToolTiers.BLACK_BRONZE, 6f, -3.1f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_BRONZE_COLOR),
+                    BLACK_BRONZE_LOOTING
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_SHOVEL = ITEMS.register(
+            "black_bronze_shovel",
+            () -> new InnateEnchantedTools.InnateShovelItem(
+                    ModToolTiers.BLACK_BRONZE, 1.5f, -3.0f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_BRONZE_COLOR),
+                    BLACK_BRONZE_FORTUNE
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_HOE = ITEMS.register(
+            "black_bronze_hoe",
+            () -> new InnateEnchantedTools.InnateHoeItem(
+                    ModToolTiers.BLACK_BRONZE, -2f, -1.0f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_BRONZE_COLOR),
+                    BLACK_BRONZE_FORTUNE
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_SWORD = ITEMS.register(
+            "bismuth_bronze_sword",
+            () -> new InnateEnchantedTools.InnateSwordItem(
+                    ModToolTiers.BISMUTH_BRONZE, 3f, -2.4f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BISMUTH_BRONZE_COLOR),
+                    BISMUTH_BRONZE_COMBAT
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_PICKAXE = ITEMS.register(
+            "bismuth_bronze_pickaxe",
+            () -> new InnateEnchantedTools.InnatePickaxeItem(
+                    ModToolTiers.BISMUTH_BRONZE, 1f, -2.8f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BISMUTH_BRONZE_COLOR),
+                    BISMUTH_BRONZE_MINING
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_AXE = ITEMS.register(
+            "bismuth_bronze_axe",
+            () -> new InnateEnchantedTools.InnateAxeItem(
+                    ModToolTiers.BISMUTH_BRONZE, 6f, -3.1f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BISMUTH_BRONZE_COLOR),
+                    BISMUTH_BRONZE_COMBAT
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_SHOVEL = ITEMS.register(
+            "bismuth_bronze_shovel",
+            () -> new InnateEnchantedTools.InnateShovelItem(
+                    ModToolTiers.BISMUTH_BRONZE, 1.5f, -3.0f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BISMUTH_BRONZE_COLOR),
+                    BISMUTH_BRONZE_MINING
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_HOE = ITEMS.register(
+            "bismuth_bronze_hoe",
+            () -> new InnateEnchantedTools.InnateHoeItem(
+                    ModToolTiers.BISMUTH_BRONZE, -2f, -1.0f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BISMUTH_BRONZE_COLOR),
+                    BISMUTH_BRONZE_MINING
+            )
+    );
+
+    private static final int BLACK_STEEL_COLOR = 0x8C8C90;
+
+    /** Efficiency IV while mining, Sharpness III + Efficiency III on the axe, Sharpness IV on the sword. */
+    private static final InnateEnchantments BLACK_STEEL_MINING =
+            InnateEnchantments.of(Enchantments.EFFICIENCY, 4);
+    private static final InnateEnchantments BLACK_STEEL_AXE_ENCHANTS =
+            InnateEnchantments.of(Enchantments.SHARPNESS, 3, Enchantments.EFFICIENCY, 3);
+    private static final InnateEnchantments BLACK_STEEL_SWORD_ENCHANTS =
+            InnateEnchantments.of(Enchantments.SHARPNESS, 4);
+
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_SWORD = ITEMS.register(
+            "black_steel_sword",
+            () -> new InnateEnchantedTools.InnateSwordItem(
+                    ModToolTiers.BLACK_STEEL, 3f, -2.4f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_STEEL_COLOR),
+                    BLACK_STEEL_SWORD_ENCHANTS
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_PICKAXE = ITEMS.register(
+            "black_steel_pickaxe",
+            () -> new InnateEnchantedTools.InnatePickaxeItem(
+                    ModToolTiers.BLACK_STEEL, 1f, -2.8f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_STEEL_COLOR),
+                    BLACK_STEEL_MINING
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_AXE = ITEMS.register(
+            "black_steel_axe",
+            () -> new InnateEnchantedTools.InnateAxeItem(
+                    ModToolTiers.BLACK_STEEL, 5f, -3.0f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_STEEL_COLOR),
+                    BLACK_STEEL_AXE_ENCHANTS
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_SHOVEL = ITEMS.register(
+            "black_steel_shovel",
+            () -> new InnateEnchantedTools.InnateShovelItem(
+                    ModToolTiers.BLACK_STEEL, 1.5f, -3.0f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_STEEL_COLOR),
+                    BLACK_STEEL_MINING
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_HOE = ITEMS.register(
+            "black_steel_hoe",
+            () -> new InnateEnchantedTools.InnateHoeItem(
+                    ModToolTiers.BLACK_STEEL, -3f, 0.0f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_STEEL_COLOR),
+                    BLACK_STEEL_MINING
             )
     );
 
@@ -731,6 +910,17 @@ public class ItemRegistry {
             ))
     );
 
+    // 🫑 Запечена скибка рутилового перця
+    public static final DeferredHolder<Item, Item> ROASTED_BELL_PEPPER_RUTILE_SLICE = ITEMS.register(
+            "roasted_bell_pepper_rutile_slice",
+            () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .nutrition(2)
+                            .saturationModifier(0.5f)
+                            .build()
+            ))
+    );
+
     // 🫑 Запечений рутиловий перець
     public static final DeferredHolder<Item, Item> ROASTED_BELL_PEPPER_RUTILE = ITEMS.register(
             "roasted_bell_pepper_rutile",
@@ -1172,6 +1362,19 @@ public class ItemRegistry {
                             9,
                             4,
                             12000
+                    )
+            );
+
+
+    public static final DeferredHolder<Item, EnergyDrillItem> IV_ELECTRIC_PICKAXE = // IV БУР
+            ITEMS.register("iv_electric_pickaxe",
+                    () -> new EnergyDrillItem(
+                            ModToolTiers.METEORITE_METAL,
+                            new Item.Properties(),
+                            1_000_000_000_000L,
+                            11,
+                            5,
+                            36000
                     )
             );
 
@@ -1758,6 +1961,14 @@ public class ItemRegistry {
                 }
             });
 
+    public static final DeferredHolder<Item, Item> LETTER_OO = registerTooltip("letter_oo", TooltipOptions.nameAndGlow(0x0186FF));
+    public static final DeferredHolder<Item, Item> LETTER_N = registerTooltip("letter_n", TooltipOptions.nameAndGlow(0x0186FF));
+    public static final DeferredHolder<Item, Item> LETTER_B = registerTooltip("letter_b", TooltipOptions.nameAndGlow(0x0186FF));
+
+
+
+    public static final DeferredHolder<Item, Item> BISMUTH_LITHIUM_BATTERY = registerTooltip("bismuth_lithium_battery", TooltipOptions.name(0x0186FF));
+    public static final DeferredHolder<Item, Item> LITHIUM_SULFATE_DUST = registerTooltip("lithium_sulfate_dust", TooltipOptions.name(0x0186FF));
 
 
     public static void register(IEventBus modBus) {

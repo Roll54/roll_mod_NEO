@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "roll_mod:meteorite_hoe"
+    "roll_mod:meteorite_hoe",
+    "roll_mod:black_bronze_hoe",
+    "roll_mod:bismuth_bronze_hoe",
+    "roll_mod:black_steel_hoe"
   ]
 }

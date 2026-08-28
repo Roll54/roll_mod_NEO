@@ -1,0 +1,43 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "roll_mod:hazmat_helmet",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "roll_mod:hazmat_chestplate",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "roll_mod:hazmat_leggings",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "roll_mod:hazmat_boots",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "roll_mod:lv_storm_scanner",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "modern_industrialization:energy": 1000000
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
