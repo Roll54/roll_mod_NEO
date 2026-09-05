@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.util;
 
+import com.roll_54.roll_mod.items.BlockogrizItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.*;
 
@@ -82,6 +83,47 @@ public class TooltipManager {
 
         @Override public Component getName(ItemStack stack) { return colorName(super.getName(stack), opts); }
         @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+            addLore(stack, opts, tooltip, flag);
+        }
+    }
+
+    // ---------------- BLOCKOGRIZ / PAXEL ----------------
+    public static class TooltipBlockogrizItem extends BlockogrizItem {
+        private final TooltipOptions opts;
+
+        public TooltipBlockogrizItem(
+                Tier tier,
+                float attackDamage,
+                float attackSpeed,
+                Properties props,
+                TooltipOptions opts
+        ) {
+            super(
+                    tier,
+                    props.attributes(
+                            DiggerItem.createAttributes(
+                                    tier,
+                                    attackDamage,
+                                    attackSpeed
+                            )
+                    )
+            );
+
+            this.opts = opts == null ? TooltipOptions.NONE : opts;
+        }
+
+        @Override
+        public Component getName(ItemStack stack) {
+            return colorName(super.getName(stack), opts);
+        }
+
+        @Override
+        public void appendHoverText(
+                ItemStack stack,
+                TooltipContext context,
+                List<Component> tooltip,
+                TooltipFlag flag
+        ) {
             addLore(stack, opts, tooltip, flag);
         }
     }

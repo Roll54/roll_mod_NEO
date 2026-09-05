@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.items;
 
+import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.data.ModTags;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.tags.BlockTags;
@@ -25,22 +26,36 @@ public class ModToolTiers {
      */
     public static final Tier BLACK_BRONZE = new SimpleTier(
             BlockTags.INCORRECT_FOR_IRON_TOOL,
-            350, 6.5f, 2.5f, 18,
+            550, 6.5f, 2.5f, 18,
             () -> Ingredient.of(ingotTag("black_bronze"))
     );
 
     public static final Tier BISMUTH_BRONZE = new SimpleTier(
             BlockTags.INCORRECT_FOR_IRON_TOOL,
-            300, 6.0f, 2.0f, 16,
+            400, 6.0f, 2.0f, 16,
             () -> Ingredient.of(ingotTag("bismuth_bronze"))
     );
 
     /** Diamond's mining level and speed, on a much shorter-lived head. */
     public static final Tier BLACK_STEEL = new SimpleTier(
             BlockTags.INCORRECT_FOR_DIAMOND_TOOL,
-            1000, 8.0f, 3.0f, 10,
+            1500, 8.0f, 3.0f, 10,
             () -> Ingredient.of(ingotTag("black_steel"))
     );
+
+    public static final Tier DIAMOND_ALLOY = new SimpleTier(
+            BlockTags.INCORRECT_FOR_DIAMOND_TOOL,
+            3000, 8.0f, 2.5f, 10,
+            () -> Ingredient.of(ItemRegistry.DIAMOND_ALLOY_INGOT.get())
+    );
+
+
+    public static final Tier STEEL = new SimpleTier(
+            BlockTags.INCORRECT_FOR_DIAMOND_TOOL,
+            2000, 8.0f, 2.5f, 10,
+            () -> Ingredient.of(ingotTag("steel"))
+    );
+
 
     private static TagKey<Item> ingotTag(String material) {
         return ItemTags.create(ResourceLocation.fromNamespaceAndPath("c", "ingots/" + material));

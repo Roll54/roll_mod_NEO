@@ -12,7 +12,7 @@ public final class OreDefinitions {
 
     public static final List<OreDefinition> ORE_DEFINITIONS = List.of(
             new OreDefinition("mica", "#6fb82a", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.COPPER, ItemBase.COPPER, 10, 20, "Mica", "Слюда", RawBlockBase.IRON),
-            new OreDefinition("hematite", "#d1553f", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE, BlockSubLayer.NETHERRACK, BlockSubLayer.MOON), BlockOverlay.REDSTONE, ItemBase.IRON, 12, 25, "Hematite", "Гематит", RawBlockBase.COPPER),
+            new OreDefinition("hematite", "#d1553f", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE, BlockSubLayer.NETHERRACK, BlockSubLayer.MOON, BlockSubLayer.MARS), BlockOverlay.REDSTONE, ItemBase.IRON, 12, 25, "Hematite", "Гематит", RawBlockBase.COPPER),
             new OreDefinition("yellow_limonite", "#a38933", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE), BlockOverlay.GOLD, ItemBase.IRON, 10, 22, "Yellow Limonite", "Жовтий лімоніт", RawBlockBase.GOLD),
             new OreDefinition("biotite", "#582c8a", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.LAPIS, ItemBase.GOLD, 18, 35, "Biotite", "Біотит", RawBlockBase.DESH),
             new OreDefinition("magnetite", "#211f21", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE, BlockSubLayer.MOON, BlockSubLayer.END), BlockOverlay.IRON, ItemBase.IRON, 14, 28, "Magnetite", "Магнетит", RawBlockBase.OSTRUM),
@@ -55,7 +55,7 @@ public final class OreDefinitions {
             new OreDefinition("powellite", "#b7a54d", List.of(BlockSubLayer.MERCURY), BlockOverlay.GOLD, ItemBase.GOLD, 14, 29, "Powellite", "Повеліт", RawBlockBase.CALORITE), //
             new OreDefinition("molybdenum", "#5c6470", List.of(BlockSubLayer.MARS), BlockOverlay.IRON, ItemBase.GOLD, 16, 33, "Molybdenum", "Молібден", RawBlockBase.IRON),
             new OreDefinition("gold", "#e6c44a", List.of(BlockSubLayer.STONE, BlockSubLayer.NETHERRACK, BlockSubLayer.END), BlockOverlay.GOLD, ItemBase.GOLD, 15, 35, "Gold", "Золото", RawBlockBase.COPPER),
-            new OreDefinition("goethite", "#4e3f29", List.of(BlockSubLayer.DEEPSLATE), BlockOverlay.IRON, ItemBase.IRON, 13, 27, "Goethite", "Гетит", RawBlockBase.GOLD),
+            new OreDefinition("goethite", "#4e3f29", List.of(BlockSubLayer.DEEPSLATE, BlockSubLayer.MARS), BlockOverlay.IRON, ItemBase.IRON, 13, 27, "Goethite", "Гетит", RawBlockBase.GOLD),
             new OreDefinition("vanadium_magnetite", "#ee5308", List.of(BlockSubLayer.MOON), BlockOverlay.OSMIUM, ItemBase.IRON, 18, 37, "Vanadium Magnetite", "Ванадій-магнетит", RawBlockBase.DESH),
             new OreDefinition("rutile", "#aa4b24", List.of(BlockSubLayer.MOON), BlockOverlay.GOLD, ItemBase.GOLD, 17, 34, "Rutile", "Рутил", RawBlockBase.OSTRUM),
             new OreDefinition("silver", "#d5e0f0", List.of(BlockSubLayer.STONE), BlockOverlay.IRON, ItemBase.ZINC, 14, 29, "Silver", "Срібло", RawBlockBase.CALORITE),

@@ -37,8 +37,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Translates NeoForge game events into {@link DailyTaskManager#progress} calls, and drives the
- * 06:00 roll off the server tick.
+ * Translates NeoForge game events into {@link DailyTaskManager#progress} calls, rolls a player's
+ * group on login, and drives the 06:00 day turnover off the server tick.
  */
 @EventBusSubscriber(modid = RollMod.MODID)
 public final class DailyTaskEvents {
@@ -54,7 +54,7 @@ public final class DailyTaskEvents {
 
     private DailyTaskEvents() {}
 
-    /* --------------------------------------------- the 06:00 roll --------------------------------------------- */
+    /* ------------------------------------------ the 06:00 turnover -------------------------------------------- */
 
     @SubscribeEvent
     public static void onServerStarted(ServerStartedEvent event) {
@@ -71,6 +71,19 @@ public final class DailyTaskEvents {
         resolvePendingClips(server);
         if (server.getTickCount() % SAMPLE_INTERVAL_TICKS == 0) {
             sampleStats(server);
+        }
+    }
+
+    /**
+     * The "first join of the day" trigger: a player logging in is what normally draws their group's
+     * set. Not load-bearing on its own — every other entry point rolls lazily too — but it means the
+     * screen and the announcements are right from the moment they arrive, rather than after their
+     * first swing.
+     */
+    @SubscribeEvent
+    public static void onLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            DailyTaskManager.rollGroupIfNeeded(player);
         }
     }
 

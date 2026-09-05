@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.minestar.dailytasks;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskQuota;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -48,7 +49,7 @@ public final class DailyTasksCommand {
                                                 EntityArgument.getPlayers(ctx, "targets")))))
                         .then(Commands.literal("progress")
                                 .then(Commands.argument("index", IntegerArgumentType.integer(
-                                                0, DailyTasksState.TASK_COUNT - 1))
+                                                0, DailyTasksState.MAX_TASK_COUNT - 1))
                                         .then(Commands.argument("amount",
                                                         IntegerArgumentType.integer(1))
                                                 .executes(ctx -> progress(ctx.getSource(),
@@ -65,24 +66,41 @@ public final class DailyTasksCommand {
                         .formatted(group.id(), group.memberCount(), group.memberCount() + 1,
                                 formatDuration(DailyTaskManager.secondsUntilNextRoll()))), false);
 
-        for (int i = 0; i < DailyTasksState.TASK_COUNT; i++) {
+        // Walks the cap, not the quota: a slot past what this group drew has no view at all, so
+        // the listing is as long as the group's own set rather than always MAX_TASK_COUNT lines.
+        int listed = 0;
+        for (int i = 0; i < DailyTasksState.MAX_TASK_COUNT; i++) {
             DailyTaskManager.TaskView v = DailyTaskManager.view(player, i);
+            if (v == null) continue;
+            listed++;
             final int index = i;
-            source.sendSuccess(() -> v == null
-                    ? Component.literal("  [%d] <not rolled>".formatted(index))
-                    : Component.literal("  [%d] %s  %d/%d%s%s".formatted(
-                            index, v.task().id(), v.progress(), v.required(),
-                            v.completed() ? "  DONE" : "",
-                            v.claimed() ? "  CLAIMED" : "")), false);
+            source.sendSuccess(() -> Component.literal("  [%d] %s  %d/%d%s%s".formatted(
+                    index, v.task().id(), v.progress(), v.required(),
+                    v.completed() ? "  DONE" : "",
+                    v.claimed() ? "  CLAIMED" : "")), false);
         }
+        if (listed == 0) {
+            source.sendSuccess(() -> Component.literal("  <not rolled>"), false);
+        }
+
+        DailyTaskManager.BonusView bonus = DailyTaskManager.bonusView(player);
+        source.sendSuccess(() -> bonus == null
+                ? Component.literal("  bonus: <none>")
+                : Component.literal("  bonus: %s  %d/%d%s".formatted(
+                        bonus.reward().id(), bonus.completed(), bonus.total(),
+                        bonus.claimed() ? "  CLAIMED" : "")), false);
         return 1;
     }
 
-    /** Server-wide: a brand new default set, everybody's progress gone. */
+    /**
+     * Server-wide: every group is cleared, so each draws its own brand new set (and bonus reward)
+     * the next time it is touched. There is no shared server set to reroll any more.
+     */
     private static int rerollAll(CommandSourceStack source) {
         DailyTaskManager.forceRoll(source.getServer());
         source.sendSuccess(() -> Component.literal(
-                "Rerolled the server's daily tasks; all progress cleared."), true);
+                "Cleared every group; each will draw a new set of daily tasks. All progress cleared."),
+                true);
         return 1;
     }
 
@@ -97,7 +115,8 @@ public final class DailyTasksCommand {
             List<String> tasks = DailyTaskManager.rerollFor(target);
             if (tasks == null) {
                 source.sendFailure(Component.literal(
-                        "No daily tasks have been rolled yet; run /rollmod dailytasks reroll first."));
+                        "Could not draw a set — fewer than %d daily tasks are registered."
+                                .formatted(DailyTaskQuota.forPlayer(target))));
                 return 0;
             }
             rerolled++;
@@ -117,7 +136,8 @@ public final class DailyTasksCommand {
         for (ServerPlayer target : targets) {
             if (!DailyTaskManager.resetFor(target)) {
                 source.sendFailure(Component.literal(
-                        "No daily tasks have been rolled yet; run /rollmod dailytasks reroll first."));
+                        "Could not draw a set — fewer than %d daily tasks are registered."
+                                .formatted(DailyTaskQuota.forPlayer(target))));
                 return 0;
             }
             reset++;

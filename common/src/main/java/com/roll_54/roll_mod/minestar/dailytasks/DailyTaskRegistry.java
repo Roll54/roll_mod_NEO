@@ -2,13 +2,10 @@ package com.roll_54.roll_mod.minestar.dailytasks;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.dailytasks.api.AutoDailyTask;
+import com.roll_54.roll_mod.minestar.dailytasks.api.AutoScanner;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTask;
-import net.neoforged.fml.ModList;
-import net.neoforged.neoforgespi.language.ModFileScanData;
-import org.objectweb.asm.Type;
 
 import javax.annotation.Nullable;
-import java.lang.annotation.ElementType;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -20,7 +17,8 @@ import java.util.Map;
  *
  * <p>{@link #bootstrap()} scans all loaded mod files for {@link AutoDailyTask} and instantiates
  * what it finds — so a new task is one annotated class and nothing else, and another mod can
- * contribute tasks without this one knowing about it.
+ * contribute tasks without this one knowing about it. The scan itself lives in {@link AutoScanner},
+ * shared with {@link DailyRewardRegistry}.
  *
  * <p>The registry is built identically on the client and the server. That is load-bearing: the
  * daily-tasks screen syncs only a task's <em>index</em> in {@link #all()}, and the client resolves
@@ -39,17 +37,7 @@ public final class DailyTaskRegistry {
     public static synchronized void bootstrap() {
         if (!tasks.isEmpty()) return;
 
-        List<DailyTask> found = new ArrayList<>();
-        Type annotation = Type.getType(AutoDailyTask.class);
-
-        for (ModFileScanData scan : ModList.get().getAllScanData()) {
-            for (ModFileScanData.AnnotationData data : scan.getAnnotations()) {
-                if (!annotation.equals(data.annotationType()) || data.targetType() != ElementType.TYPE) {
-                    continue;
-                }
-                instantiate(data.memberName()).ifPresent(found::add);
-            }
-        }
+        List<DailyTask> found = AutoScanner.scan(AutoDailyTask.class, DailyTask.class);
 
         // Deterministic order: the roll seeds off it, and the GUI syncs positions in this list.
         found.sort(Comparator.comparing(DailyTask::id));
@@ -81,22 +69,6 @@ public final class DailyTaskRegistry {
         // Map.copyOf does not keep insertion order.
         RollMod.LOGGER.info("[DailyTasks] Registered {} task(s) in index order: {}",
                 tasks.size(), tasks.stream().map(DailyTask::id).toList());
-    }
-
-    private static java.util.Optional<DailyTask> instantiate(String className) {
-        try {
-            Class<?> clazz = Class.forName(className, false, DailyTaskRegistry.class.getClassLoader());
-            if (!DailyTask.class.isAssignableFrom(clazz)) {
-                RollMod.LOGGER.error("[DailyTasks] {} is annotated @AutoDailyTask but does not implement DailyTask.",
-                        className);
-                return java.util.Optional.empty();
-            }
-            return java.util.Optional.of((DailyTask) clazz.getDeclaredConstructor().newInstance());
-        } catch (Throwable t) {
-            RollMod.LOGGER.error("[DailyTasks] Could not create task {} — it needs a public no-arg constructor.",
-                    className, t);
-            return java.util.Optional.empty();
-        }
     }
 
     /** Every registered task, in a stable order shared by client and server. */

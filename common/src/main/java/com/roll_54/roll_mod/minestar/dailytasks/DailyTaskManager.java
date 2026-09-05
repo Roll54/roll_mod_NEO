@@ -1,8 +1,10 @@
 package com.roll_54.roll_mod.minestar.dailytasks;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.minestar.dailytasks.api.DailyReward;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTask;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskHook;
+import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskQuota;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,9 +23,9 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import static com.roll_54.roll_mod.minestar.dailytasks.DailyTasksState.TASK_COUNT;
+import static com.roll_54.roll_mod.minestar.dailytasks.DailyTasksState.MAX_TASK_COUNT;
 
-/** Server-side core of the daily-task system: the 06:00 roll, progress accounting and claiming. */
+/** Server-side core of the daily-task system: the per-group roll, progress accounting and claiming. */
 public final class DailyTaskManager {
 
     /** Tasks roll over at 06:00 in the server machine's own time zone. */
@@ -64,86 +66,154 @@ public final class DailyTaskManager {
 
     /* -------------------------------------------------- roll -------------------------------------------------- */
 
-    /** Rolls a new set if the day has turned over (or if the state has never been rolled). */
+    /**
+     * Day-turnover bookkeeping. Assigns nothing — each group draws its own set the first time it is
+     * touched on a new day, which for a player is normally their first login (see
+     * {@code DailyTaskEvents.onLoggedIn}). All this does is notice the boundary and drop the
+     * previous day's groups, which nothing else clears any more.
+     */
     public static void rollIfNeeded(MinecraftServer server) {
         DailyTasksState state = state(server);
         long period = currentPeriodDay();
-        if (state.periodDay == period && state.taskIds.size() == TASK_COUNT) {
-            return;
-        }
-        roll(server, state, period, new Random(seedFor(server, period)));
+        if (state.periodDay == period) return;
+
+        state.periodDay = period;
+        state.pruneStaleGroups(period);
+        state.setDirty();
+        RollMod.LOGGER.info("[DailyTasks] Daily period is now {}; stale groups pruned.", period);
     }
 
-    /** Rolls a fresh, deliberately different set right now (the {@code reroll} command). */
+    /**
+     * Wipes every group, so each one draws a brand new set (and a new bonus reward) the next time
+     * it is touched. Backs the no-argument {@code reroll} command.
+     */
     public static void forceRoll(MinecraftServer server) {
         DailyTasksState state = state(server);
-        roll(server, state, currentPeriodDay(), new Random());
+        state.groups.clear();
+        state.periodDay = currentPeriodDay();
+        state.setDirty();
+        RollMod.LOGGER.info("[DailyTasks] Cleared every group; all will reroll on next touch.");
     }
 
-    private static long seedFor(MinecraftServer server, long period) {
-        // Deterministic per world and per day, so a mid-day restart re-derives the same set
-        // instead of quietly rerolling it.
-        return server.overworld().getSeed() ^ (period * 0x9E3779B97F4A7C15L);
-    }
+    /**
+     * Draws this group's tasks and bonus reward if it has not been rolled for {@code period} yet,
+     * and wipes whatever the previous day left behind.
+     *
+     * <p>The seed mixes the world, the group and the day, so a mid-day restart re-derives exactly
+     * the same set for each group rather than quietly rerolling it.
+     *
+     * @return the group's state, or {@code null} if no task could be drawn at all
+     */
+    @Nullable
+    private static DailyTasksState.GroupState rollGroupIfNeeded(
+            MinecraftServer server, DailyTasksState state,
+            DailyTaskGroups.TaskGroup group, long period) {
 
-    private static void roll(MinecraftServer server, DailyTasksState state, long period, Random rng) {
-        state.periodDay = period;
-        state.taskIds.clear();
-        state.taskIds.addAll(pick(rng));
-        // Clearing every group drops their per-group sets too, so everyone re-seeds from the new
-        // default — an admin reroll never outlives the day it was made on.
-        state.resetProgress();
+        DailyTasksState.GroupState gs = state.group(group.id());
+        // A set already drawn for today stands even if a member's quota has since changed:
+        // redrawing mid-period would wipe progress the whole party shares.
+        if (gs.periodDay == period && !gs.taskIds.isEmpty()) {
+            return gs;
+        }
+
+        int quota = DailyTaskQuota.forGroup(server, group);
+        Random rng = new Random(seedFor(server, group.id(), period));
+        List<String> picked = pick(rng, quota);
+        if (picked.size() < quota) {
+            // Fewer tasks are registered than the group is owed; there is nothing to show.
+            return null;
+        }
+
+        gs.periodDay = period;
+        gs.taskIds.clear();
+        gs.taskIds.addAll(picked);
+        gs.rewardId = pickReward(rng);
+        gs.clearProgress();
         state.setDirty();
 
-        RollMod.LOGGER.info("[DailyTasks] Rolled tasks for period {}: {}", period, state.taskIds);
+        RollMod.LOGGER.info("[DailyTasks] Rolled group {} for period {}: {} (bonus: {})",
+                group.id(), period, gs.taskIds, gs.rewardId.isEmpty() ? "<none>" : gs.rewardId);
+        return gs;
     }
 
-    /** Draws {@link DailyTasksState#TASK_COUNT} task ids, preferring one per hook. */
-    private static List<String> pick(Random rng) {
+    /** Public entry point for the login hook: make sure this player's group is on today's set. */
+    public static void rollGroupIfNeeded(ServerPlayer player) {
+        MinecraftServer server = player.getServer();
+        if (server == null) return;
+        rollGroupIfNeeded(server, state(server), DailyTaskGroups.of(player), currentPeriodDay());
+    }
+
+    private static long seedFor(MinecraftServer server, UUID groupId, long period) {
+        return server.overworld().getSeed()
+                ^ (groupId.getMostSignificantBits() * 0x9E3779B97F4A7C15L)
+                ^ (groupId.getLeastSignificantBits() * 0xC2B2AE3D27D4EB4FL)
+                ^ (period * 0xBF58476D1CE4E5B9L);
+    }
+
+    /** Draws {@code count} task ids, preferring one per hook. */
+    private static List<String> pick(Random rng, int count) {
         List<DailyTask> shuffled = new ArrayList<>(DailyTaskRegistry.all());
         Collections.shuffle(shuffled, rng);
 
-        // Prefer four different hooks so a day never turns into "kill four things".
-        List<DailyTask> picked = new ArrayList<>(TASK_COUNT);
+        // Prefer a different hook per task so a day never turns into "kill four things".
+        List<DailyTask> picked = new ArrayList<>(count);
         EnumSet<DailyTaskHook> usedHooks = EnumSet.noneOf(DailyTaskHook.class);
         for (DailyTask task : shuffled) {
-            if (picked.size() == TASK_COUNT) break;
+            if (picked.size() == count) break;
             if (usedHooks.add(task.hook())) picked.add(task);
         }
-        // Only reachable if the registry holds fewer than TASK_COUNT distinct hooks.
+        // Only reachable if the registry holds fewer than {@code count} distinct hooks.
         for (DailyTask task : shuffled) {
-            if (picked.size() == TASK_COUNT) break;
+            if (picked.size() == count) break;
             if (!picked.contains(task)) picked.add(task);
         }
 
         return picked.stream().map(DailyTask::id).toList();
     }
 
+    /**
+     * Draws the day's bonus reward, honouring {@link DailyReward#weight()}. Returns an empty string
+     * when no reward is registered, which the GUI shows as an empty panel.
+     */
+    private static String pickReward(Random rng) {
+        List<DailyReward> rewards = DailyRewardRegistry.all();
+        if (rewards.isEmpty()) return "";
+
+        int total = 0;
+        for (DailyReward reward : rewards) {
+            total += reward.weight(); // the registry has already rejected non-positive weights
+        }
+
+        int roll = rng.nextInt(total);
+        for (DailyReward reward : rewards) {
+            roll -= reward.weight();
+            if (roll < 0) return reward.id();
+        }
+        return rewards.getLast().id(); // unreachable; the loop above always lands
+    }
+
     /* ------------------------------------------------- groups ------------------------------------------------- */
 
     /**
-     * This group's state, with its task set seeded from the day's default the first time it is
-     * touched. Returns {@code null} before the first roll, or if the group's set is somehow the
-     * wrong size — callers treat that as "nothing to show".
+     * This group's state for <em>today</em>, rolling it first if the day has turned over. Returns
+     * {@code null} only when nothing can be drawn — too few tasks registered.
+     *
+     * <p>Every entry point below goes through this, which is what actually guarantees a player
+     * never acts on a stale day: the login hook only makes the roll happen promptly.
      */
     @Nullable
-    private static DailyTasksState.GroupState seeded(DailyTasksState state, UUID groupId) {
-        if (state.taskIds.size() < TASK_COUNT) return null;
-
-        DailyTasksState.GroupState gs = state.group(groupId);
-        if (gs.taskIds.isEmpty()) {
-            gs.taskIds.addAll(state.taskIds);
-            state.setDirty();
-        }
-        return gs.taskIds.size() >= TASK_COUNT ? gs : null;
+    private static DailyTasksState.GroupState current(MinecraftServer server, DailyTasksState state,
+                                                      DailyTaskGroups.TaskGroup group) {
+        return rollGroupIfNeeded(server, state, group, currentPeriodDay());
     }
 
     /**
-     * Gives one player's group a fresh set of tasks and wipes its progress, leaving the rest of the
-     * server untouched. Note the unit is the <em>group</em>: rerolling someone in an FTB party
-     * rerolls the whole party, because they share one set of tasks and one progress record.
+     * Gives one player's group a fresh set of tasks and a fresh bonus reward, wiping its progress
+     * and leaving the rest of the server untouched. Note the unit is the <em>group</em>: rerolling
+     * someone in an FTB party rerolls the whole party, because they share one set of tasks and one
+     * progress record.
      *
-     * @return the ids drawn, or {@code null} if no daily set has been rolled yet
+     * @return the ids drawn, or {@code null} if nothing could be drawn
      */
     @Nullable
     public static List<String> rerollFor(ServerPlayer player) {
@@ -151,31 +221,37 @@ public final class DailyTaskManager {
         if (server == null) return null;
 
         DailyTasksState state = state(server);
-        if (state.taskIds.size() < TASK_COUNT) return null;
+        Random rng = new Random();
+        int quota = DailyTaskQuota.forPlayer(player);
+        List<String> picked = pick(rng, quota);
+        if (picked.size() < quota) return null;
 
         DailyTasksState.GroupState gs = state.group(DailyTaskGroups.of(player).id());
+        gs.periodDay = currentPeriodDay();
         gs.taskIds.clear();
-        gs.taskIds.addAll(pick(new Random()));
+        gs.taskIds.addAll(picked);
+        gs.rewardId = pickReward(rng);
         gs.clearProgress();
         state.setDirty();
 
-        RollMod.LOGGER.info("[DailyTasks] Rerolled tasks for {}'s group: {}",
-                player.getGameProfile().getName(), gs.taskIds);
+        RollMod.LOGGER.info("[DailyTasks] Rerolled tasks for {}'s group: {} (bonus: {})",
+                player.getGameProfile().getName(), gs.taskIds,
+                gs.rewardId.isEmpty() ? "<none>" : gs.rewardId);
         return List.copyOf(gs.taskIds);
     }
 
     /**
-     * Wipes one group's progress and claims while keeping its current tasks. Same group caveat as
-     * {@link #rerollFor}.
+     * Wipes one group's progress and claims while keeping its current tasks and reward. Same group
+     * caveat as {@link #rerollFor}.
      *
-     * @return {@code false} if no daily set has been rolled yet
+     * @return {@code false} if nothing has been drawn for this group
      */
     public static boolean resetFor(ServerPlayer player) {
         MinecraftServer server = player.getServer();
         if (server == null) return false;
 
         DailyTasksState state = state(server);
-        DailyTasksState.GroupState gs = seeded(state, DailyTaskGroups.of(player).id());
+        DailyTasksState.GroupState gs = current(server, state, DailyTaskGroups.of(player));
         if (gs == null) return false;
 
         gs.clearProgress();
@@ -202,12 +278,12 @@ public final class DailyTaskManager {
 
         DailyTasksState state = state(server);
         DailyTaskGroups.TaskGroup group = DailyTaskGroups.of(player);
-        DailyTasksState.GroupState gs = seeded(state, group.id());
+        DailyTasksState.GroupState gs = current(server, state, group);
         if (gs == null) return;
 
         boolean dirty = false;
 
-        for (int i = 0; i < TASK_COUNT; i++) {
+        for (int i = 0; i < gs.taskCount(); i++) {
             DailyTask task = DailyTaskRegistry.byId(gs.taskIds.get(i));
             if (task == null || task.hook() != hook || gs.completed[i] || !task.matches(subject)) {
                 continue;
@@ -244,11 +320,12 @@ public final class DailyTaskManager {
 
     public static ClaimResult claim(ServerPlayer player, int index) {
         MinecraftServer server = player.getServer();
-        if (server == null || index < 0 || index >= TASK_COUNT) return ClaimResult.UNAVAILABLE;
+        if (server == null || index < 0 || index >= MAX_TASK_COUNT) return ClaimResult.UNAVAILABLE;
 
         DailyTasksState state = state(server);
-        DailyTasksState.GroupState gs = seeded(state, DailyTaskGroups.of(player).id());
-        if (gs == null) return ClaimResult.UNAVAILABLE;
+        DailyTasksState.GroupState gs = current(server, state, DailyTaskGroups.of(player));
+        // A group holding fewer tasks than the cap leaves the trailing slots empty.
+        if (gs == null || index >= gs.taskCount()) return ClaimResult.UNAVAILABLE;
 
         DailyTask task = DailyTaskRegistry.byId(gs.taskIds.get(index));
         if (task == null) return ClaimResult.UNAVAILABLE;
@@ -258,6 +335,31 @@ public final class DailyTaskManager {
 
         state.setDirty();
         task.grantReward(player);
+        return ClaimResult.OK;
+    }
+
+    /**
+     * Takes the all-complete bonus. Re-validates everything, so a spoofed packet from a player who
+     * has not finished the board — or who has already collected — is simply rejected.
+     */
+    public static ClaimResult claimBonus(ServerPlayer player) {
+        MinecraftServer server = player.getServer();
+        if (server == null) return ClaimResult.UNAVAILABLE;
+
+        DailyTasksState state = state(server);
+        DailyTasksState.GroupState gs = current(server, state, DailyTaskGroups.of(player));
+        if (gs == null) return ClaimResult.UNAVAILABLE;
+
+        DailyReward reward = DailyRewardRegistry.byId(gs.rewardId);
+        if (reward == null) return ClaimResult.UNAVAILABLE;
+
+        if (gs.completedCount() < gs.taskCount()) return ClaimResult.NOT_COMPLETED;
+        if (!gs.rewardClaimedBy.add(player.getUUID())) return ClaimResult.ALREADY_CLAIMED;
+
+        state.setDirty();
+        reward.grant(player);
+        RollMod.LOGGER.info("[DailyTasks] {} collected the daily bonus '{}'.",
+                player.getGameProfile().getName(), reward.id());
         return ClaimResult.OK;
     }
 
@@ -272,19 +374,23 @@ public final class DailyTaskManager {
     public record TaskView(DailyTask task, int progress, int required, boolean completed,
                            boolean claimed) {}
 
+    /** A snapshot of the all-complete bonus panel as it should appear to {@code player}. */
+    public record BonusView(DailyReward reward, int completed, int total, boolean claimed) {}
+
     /**
-     * The row at {@code index} for this player, or {@code null} before the first roll. Called both
-     * by the GUI's server-side data bindings and by the debug command.
+     * The row at {@code index} for this player, or {@code null} when nothing has been drawn. Called
+     * both by the GUI's server-side data bindings and by the debug command.
      */
     @Nullable
     public static TaskView view(ServerPlayer player, int index) {
         MinecraftServer server = player.getServer();
-        if (server == null || index < 0 || index >= TASK_COUNT) return null;
+        if (server == null || index < 0 || index >= MAX_TASK_COUNT) return null;
 
         DailyTasksState state = state(server);
         DailyTaskGroups.TaskGroup group = DailyTaskGroups.of(player);
-        DailyTasksState.GroupState gs = seeded(state, group.id());
-        if (gs == null) return null;
+        DailyTasksState.GroupState gs = current(server, state, group);
+        // Null for a slot past this group's quota — the screen hides those rows.
+        if (gs == null || index >= gs.taskCount()) return null;
 
         DailyTask task = DailyTaskRegistry.byId(gs.taskIds.get(index));
         if (task == null) return null;
@@ -293,15 +399,32 @@ public final class DailyTaskManager {
                 gs.completed[index], gs.claimedBy.get(index).contains(player.getUUID()));
     }
 
+    /** The bonus panel for this player, or {@code null} when no reward is drawn or registered. */
+    @Nullable
+    public static BonusView bonusView(ServerPlayer player) {
+        MinecraftServer server = player.getServer();
+        if (server == null) return null;
+
+        DailyTasksState state = state(server);
+        DailyTasksState.GroupState gs = current(server, state, DailyTaskGroups.of(player));
+        if (gs == null) return null;
+
+        DailyReward reward = DailyRewardRegistry.byId(gs.rewardId);
+        if (reward == null) return null;
+
+        return new BonusView(reward, gs.completedCount(), gs.taskCount(),
+                gs.rewardClaimedBy.contains(player.getUUID()));
+    }
+
     /** Debug helper behind {@code /rollmod dailytasks progress}. */
     public static void addRawProgress(ServerPlayer player, int index, int amount) {
         MinecraftServer server = player.getServer();
-        if (server == null || index < 0 || index >= TASK_COUNT) return;
+        if (server == null || index < 0 || index >= MAX_TASK_COUNT) return;
 
         DailyTasksState state = state(server);
         DailyTaskGroups.TaskGroup group = DailyTaskGroups.of(player);
-        DailyTasksState.GroupState gs = seeded(state, group.id());
-        if (gs == null) return;
+        DailyTasksState.GroupState gs = current(server, state, group);
+        if (gs == null || index >= gs.taskCount()) return;
 
         DailyTask task = DailyTaskRegistry.byId(gs.taskIds.get(index));
         if (task == null) return;

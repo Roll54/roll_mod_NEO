@@ -1,4 +1,4 @@
-// 1.21.1	2026-08-24T19:44:38.610948198	Loot Tables
+// 1.21.1	2026-09-05T09:41:31.785713269	Loot Tables
 88edd2181043eb8cd3d0be4b34113b03129dc4a1 data/roll_mod/loot_table/blocks/deepslate_bauxite.json
 afeecd1bdd8282aeef423a74387b9a03a65c2b76 data/roll_mod/loot_table/blocks/deepslate_bauxite_ore_sample.json
 bc0d194871f15df0c8fc81a6417ef3cda6349411 data/roll_mod/loot_table/blocks/deepslate_bort.json
@@ -73,6 +73,10 @@ b62576181a6c175b5da435e341e18cc030148ba1 data/roll_mod/loot_table/blocks/end_sod
 b5e8280aafff60fac124d3ba0a4ab353e3aa9ed6 data/roll_mod/loot_table/blocks/end_uraninite_ore_sample.json
 d6e82fdd79540a3c54470d8dcf1e3b400f454d66 data/roll_mod/loot_table/blocks/mars_bornite.json
 bb65ca42971101b395f747083fba1dc7104a4096 data/roll_mod/loot_table/blocks/mars_bornite_ore_sample.json
+bb3075cb4cf01c71dccde7b888d388c315a27023 data/roll_mod/loot_table/blocks/mars_goethite.json
+ae32960c2e9161b49d0831d1762229f8cafd9953 data/roll_mod/loot_table/blocks/mars_goethite_ore_sample.json
+e0e8a8e31df41df58c45d7216b6f798f38601c03 data/roll_mod/loot_table/blocks/mars_hematite.json
+49430b5d04a114326c4a5712eddded906c928234 data/roll_mod/loot_table/blocks/mars_hematite_ore_sample.json
 2ddd9285cfe6c7f42b58b55277c7e14efeba8fb3 data/roll_mod/loot_table/blocks/mars_iridium.json
 9ecca7c4d20d20e7d56b2b0fc0a25e1f3fb6850b data/roll_mod/loot_table/blocks/mars_iridium_ore_sample.json
 03ae4f4f5f82b9e4304889a4acec3d80c05d3134 data/roll_mod/loot_table/blocks/mars_molybdenum.json

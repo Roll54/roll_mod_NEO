@@ -49,6 +49,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.List;
 import java.util.function.Supplier;
 
+import static com.roll_54.roll_mod.items.ModToolTiers.*;
 import static com.roll_54.roll_mod.registry.BlockRegistry.*;
 
 @SuppressWarnings("unused")
@@ -71,9 +72,20 @@ public class ItemRegistry {
     private static final int LIGHT_PURPLE = 0xFF55FF; // §d
     private static final int RED = 0xFF5555;        // §c
     private static final int BLUE = 0x5555FF;       // §9
+    private static final int LIGHT_GRAY = 0xAAAAAA;       // §7
+    private static final int DARK_GRAY = 0x555555;       // §8
+    private static final int SILVER_GRAY = 0x333333;       // my own
+
     private static final int GREEN = 0x55FF55;
     private static final int LIGHT_GREN = 0x73ff85;
     private static final int WHITE = 0xFFFFFF;
+    private static final int BLACK_BRONZE_COLOR = 0x9B4F98; //my own
+    private static final int BISMUTH_BRONZE_COLOR = 0xC08A4A;//my own
+    private static final int MALACHITE_GREEEN = 0x1a9e74;//my own
+    private static final int METEORITE_DARK_BLUE = 0x3B2AB8;//my own
+    private static final int METEORITE_LIGHT_BLUE = 0x005acf;//my own
+    private static final int BLACK_STEEL_COLOR = 0x8C8C90; //my own
+
 
 
     public static final DeferredRegister<Item> ITEMS = DeferredRegister.create(Registries.ITEM, RollMod.MODID);
@@ -110,9 +122,164 @@ public class ItemRegistry {
     );
     public static final DeferredHolder<Item, Item> METEORITE_METAL_INGOT = registerTooltip(
             "meteorite_metal_ingot",
-            new TooltipOptions(2, 0x3B2AB8, 0x005acf, false)
+            new TooltipOptions(1, METEORITE_DARK_BLUE, METEORITE_LIGHT_BLUE, false)
     );
 
+    public static final DeferredHolder<Item, Item> METEORITE_METAL_PLATE = registerTooltip(
+            "meteorite_metal_plate",
+            new Item.Properties(), TooltipOptions.name(METEORITE_DARK_BLUE)
+    );
+
+    public static final DeferredHolder<Item, Item> METEORITE_METAL_ROD = registerTooltip(
+            "meteorite_metal_rod",
+            new Item.Properties(), TooltipOptions.name(METEORITE_DARK_BLUE)
+    );
+
+    public static final DeferredHolder<Item, Item> METEORITE_METAL_LARGE_PLATE = registerTooltip(
+            "meteorite_metal_large_plate",
+            new Item.Properties(), TooltipOptions.name(METEORITE_DARK_BLUE)
+    );
+
+    public static final DeferredHolder<Item, BlockogrizItem> DIAMOND_BLOCKOGRIZ =
+            ITEMS.register(
+                    "diamond_blockogriz",
+                    () -> new TooltipManager.TooltipBlockogrizItem(
+                            DIAMOND_ALLOY,
+                            5.0F,
+                            -2.8F,
+                            new Item.Properties(),
+                            TooltipOptions.nameAndLore(MALACHITE_GREEEN, 2, AQUA)
+                    )
+            );
+
+    public static final DeferredHolder<Item, BlockogrizItem> METEORITE_METAL_BLOCKOGRIZ =
+            ITEMS.register(
+                    "meteorite_metal_blockogriz",
+                    () -> new TooltipManager.TooltipBlockogrizItem(
+                            METEORITE_METAL,
+                            15.0F,
+                            -2.8F,
+                            new Item.Properties(),
+                            TooltipOptions.nameAndLore(METEORITE_DARK_BLUE, 2, METEORITE_LIGHT_BLUE)
+                    )
+            );
+
+    public static final DeferredHolder<Item, BlockogrizItem> IRON_BLOCKOGRIZ =
+            ITEMS.register(
+                    "iron_blockogriz",
+                    () -> new TooltipManager.TooltipBlockogrizItem(
+                            METEORITE_METAL,
+                            15.0F,
+                            -2.8F,
+                            new Item.Properties(),
+                            TooltipOptions.nameAndLore(WHITE, 1,LIGHT_GRAY)
+                    )
+            );
+
+    public static final DeferredHolder<Item, BlockogrizItem> STEEL_BLOCKOGRIZ =
+            ITEMS.register(
+                    "steel_blockogriz",
+                    () -> new TooltipManager.TooltipBlockogrizItem(
+                            STEEL,
+                            8.0F,
+                            -2.8F,
+                            new Item.Properties(),
+                            TooltipOptions.nameAndLore(BLACK_STEEL_COLOR, 1,LIGHT_GRAY)
+                    )
+            );
+
+    public static final DeferredHolder<Item, BlockogrizItem> NETHERITE_BLOCKOGRIZ =
+            ITEMS.register(
+                    "netherite_blockogriz",
+                    () -> new TooltipManager.TooltipBlockogrizItem(
+                            STEEL,
+                            10.0F,
+                            -2.8F,
+                            new Item.Properties(),
+                            TooltipOptions.nameAndLore(WHITE, 1,LIGHT_GRAY)
+                    )
+            );
+
+    public static final DeferredHolder<Item, BlockogrizItem> BLACK_STEEL_BLOCKOGRIZ =
+            ITEMS.register(
+                    "black_steel_blockogriz",
+                    () -> new TooltipManager.TooltipBlockogrizItem(
+                            BLACK_STEEL,
+                            12.0F,
+                            -2.8F,
+                            new Item.Properties(),
+                            TooltipOptions.nameAndLore(BLACK_STEEL_COLOR, 1,LIGHT_GRAY)
+                    )
+            );
+
+    public static final DeferredHolder<Item, BlockogrizItem> BISMUTH_BRONZE_BLOCKOGRIZ =
+            ITEMS.register(
+                    "bismuth_bronze_blockogriz",
+                    () -> new TooltipManager.TooltipBlockogrizItem(
+                            BISMUTH_BRONZE,
+                            12.0F,
+                            -2.8F,
+                            new Item.Properties(),
+                            TooltipOptions.nameAndLore(BISMUTH_BRONZE_COLOR, 1,LIGHT_GRAY)
+                    )
+            );
+
+    public static final DeferredHolder<Item, BlockogrizItem> BLACK_BRONZE_BLOCKOGRIZ =
+            ITEMS.register(
+                    "black_bronze_blockogriz",
+                    () -> new TooltipManager.TooltipBlockogrizItem(
+                            BLACK_BRONZE,
+                            12.0F,
+                            -2.8F,
+                            new Item.Properties(),
+                            TooltipOptions.nameAndLore(BLACK_BRONZE_COLOR, 1,LIGHT_GRAY)
+                    )
+            );
+
+    public static final DeferredHolder<Item, Item> STEEL_SWORD = ITEMS.register(
+            "steel_sword",
+            () -> new TooltipManager.TooltipSwordItem(
+                    ModToolTiers.STEEL, 3, -2.4f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_STEEL_COLOR)
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> STEEL_PICKAXE = ITEMS.register(
+            "steel_pickaxe",
+            () -> new TooltipManager.TooltipPickaxeItem(
+                    ModToolTiers.STEEL, 1f, -2.8f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_STEEL_COLOR)
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> STEEL_AXE = ITEMS.register(
+            "steel_axe",
+            () -> new TooltipManager.TooltipAxeItem(
+                    ModToolTiers.STEEL, 6.0f, -3.1f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_STEEL_COLOR)
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> STEEL_SHOVEL = ITEMS.register(
+            "steel_shovel",
+            () -> new TooltipManager.TooltipShovelItem(
+                    ModToolTiers.STEEL, 1.5f, -3.0f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_STEEL_COLOR)
+            )
+    );
+
+    public static final DeferredHolder<Item, Item> STEEL_HOE = ITEMS.register(
+            "steel_hoe",
+            () -> new TooltipManager.TooltipHoeItem(
+                    ModToolTiers.STEEL, -2, -1.0f,
+                    new Item.Properties(),
+                    TooltipOptions.name(BLACK_STEEL_COLOR)
+            )
+    );
 
     // БРОНІКИ!!!
     public static final DeferredHolder<Item, HazmatHelmetItem> HAZMAT_HELMET = ITEMS.register(
@@ -165,8 +332,8 @@ public class ItemRegistry {
                     new Item.Properties().stacksTo(1).durability(3400)
             )
                     .tooltipLines(2)
-                    .nameColor(0x3B2AB8)  // глибокий синій
-                    .loreColor(0x005acf)  // світло-біло-блакитний
+                    .nameColor(METEORITE_DARK_BLUE)  // глибокий синій
+                    .loreColor(METEORITE_LIGHT_BLUE)  // світло-біло-блакитний
                     .build()
     );
 
@@ -178,8 +345,8 @@ public class ItemRegistry {
                     new Item.Properties().stacksTo(1).durability(3400)
             )
                     .tooltipLines(2)
-                    .nameColor(0x3B2AB8)
-                    .loreColor(0x005acf)
+                    .nameColor(METEORITE_DARK_BLUE)
+                    .loreColor(METEORITE_LIGHT_BLUE)
                     .build()
     );
 
@@ -191,8 +358,8 @@ public class ItemRegistry {
                     new Item.Properties().stacksTo(1).durability(3400)
             )
                     .tooltipLines(2)
-                    .nameColor(0x3B2AB8)
-                    .loreColor(0x005acf)
+                    .nameColor(METEORITE_DARK_BLUE)
+                    .loreColor(METEORITE_LIGHT_BLUE)
                     .build()
     );
 
@@ -204,8 +371,8 @@ public class ItemRegistry {
                     new Item.Properties().stacksTo(1).durability(3400)
             )
                     .tooltipLines(2)
-                    .nameColor(0x3B2AB8)
-                    .loreColor(0x005acf)
+                    .nameColor(METEORITE_DARK_BLUE)
+                    .loreColor(METEORITE_LIGHT_BLUE)
                     .build()
     );
 
@@ -214,7 +381,7 @@ public class ItemRegistry {
             () -> new TooltipManager.TooltipSwordItem(
                     ModToolTiers.METEORITE_METAL, 12f, -2.4f,
                     new Item.Properties().durability(3400),
-                    TooltipOptions.nameAndLore(0x3B2AB8, 1, 0x005ACF)
+                    TooltipOptions.nameAndLore(METEORITE_DARK_BLUE, 1, METEORITE_LIGHT_BLUE)
             )
     );
 
@@ -223,7 +390,7 @@ public class ItemRegistry {
             () -> new TooltipManager.TooltipPickaxeItem(
                     ModToolTiers.METEORITE_METAL, 6f, -2.8f,
                     new Item.Properties(),
-                    TooltipOptions.nameAndLore(0x3B2AB8, 1, 0x005ACF)
+                    TooltipOptions.nameAndLore(METEORITE_DARK_BLUE, 1, METEORITE_LIGHT_BLUE)
             )
     );
 
@@ -232,7 +399,7 @@ public class ItemRegistry {
             () -> new TooltipManager.TooltipAxeItem(
                     ModToolTiers.METEORITE_METAL, 11f, -3.0f,
                     new Item.Properties(),
-                    TooltipOptions.nameAndLore(0x3B2AB8, 1, 0x005ACF)
+                    TooltipOptions.nameAndLore(METEORITE_DARK_BLUE, 1, METEORITE_LIGHT_BLUE)
             )
     );
 
@@ -241,7 +408,7 @@ public class ItemRegistry {
             () -> new TooltipManager.TooltipShovelItem(
                     ModToolTiers.METEORITE_METAL, 5f, -3.0f,
                     new Item.Properties(),
-                    TooltipOptions.nameAndLore(0x3B2AB8, 1, 0x005ACF)
+                    TooltipOptions.nameAndLore(METEORITE_DARK_BLUE, 1, METEORITE_LIGHT_BLUE)
             )
     );
 
@@ -250,15 +417,29 @@ public class ItemRegistry {
             () -> new TooltipManager.TooltipHoeItem(
                     ModToolTiers.METEORITE_METAL, 2f, -1.0f,
                     new Item.Properties(),
-                    TooltipOptions.nameAndLore(0x3B2AB8, 1, 0x005ACF)
+                    TooltipOptions.nameAndLore(METEORITE_DARK_BLUE, 1, METEORITE_LIGHT_BLUE)
             )
     );
 
+    public static final DeferredHolder<Item, Item> DIAMOND_ALLOY_DUST = registerTooltip(
+            "diamond_alloy_dust",
+            new Item.Properties(), TooltipOptions.name(MALACHITE_GREEEN)
+    );
 
-    // Bronze-GEAR
-    // Durability comes from the tier: TieredItem re-applies Tier#getUses over anything set here.
-    private static final int BLACK_BRONZE_COLOR = 0x9B4F98;
-    private static final int BISMUTH_BRONZE_COLOR = 0xC08A4A;
+    public static final DeferredHolder<Item, Item> DIAMOND_ALLOY_INGOT = registerTooltip(
+            "diamond_alloy_ingot",
+            new TooltipOptions(1, MALACHITE_GREEEN, AQUA, false)
+    );
+
+    public static final DeferredHolder<Item, Item> DIAMOND_ALLOY_PLATE = registerTooltip(
+            "diamond_alloy_plate",
+            new Item.Properties(), TooltipOptions.name(MALACHITE_GREEEN)
+    );
+
+
+
+
+
 
     /** Fortune I on the digging tools, Looting I on the ones that are swung at mobs. */
     private static final InnateEnchantments BLACK_BRONZE_FORTUNE =
@@ -372,7 +553,6 @@ public class ItemRegistry {
             )
     );
 
-    private static final int BLACK_STEEL_COLOR = 0x8C8C90;
 
     /** Efficiency IV while mining, Sharpness III + Efficiency III on the axe, Sharpness IV on the sword. */
     private static final InnateEnchantments BLACK_STEEL_MINING =
@@ -1401,7 +1581,7 @@ public class ItemRegistry {
                                                             "item.roll_mod.meteorite_metal_prospector_pickaxe"
                                                     )
                                                     .withStyle(style ->
-                                                            style.withColor(0x3B2AB8)
+                                                            style.withColor(METEORITE_DARK_BLUE)
                                                                     .withItalic(false)
                                                     )
                                     )
@@ -1444,7 +1624,7 @@ public class ItemRegistry {
                                                                             "tooltip.roll_mod.meteorite_metal_nano_saber"
                                                                     )
                                                                     .withStyle(style ->
-                                                                            style.withColor(0x005ACF)
+                                                                            style.withColor(METEORITE_LIGHT_BLUE)
                                                                                     .withItalic(false)
                                                                     )
 
@@ -1457,7 +1637,7 @@ public class ItemRegistry {
                                                             "item.roll_mod.meteorite_metal_nano_saber"
                                                     )
                                                     .withStyle(style ->
-                                                            style.withColor(0x3B2AB8)
+                                                            style.withColor(METEORITE_DARK_BLUE)
                                                                     .withItalic(false)
                                                     )
                                     ),
@@ -1724,7 +1904,7 @@ public class ItemRegistry {
                                     "item.roll_mod.basecyberware_rightarm_meteorite_metal"
                             )
                             .withStyle(style ->
-                                    style.withColor(0x3B2AB8)
+                                    style.withColor(METEORITE_DARK_BLUE)
                                             .withItalic(false)
                             )
             ), 5, CyberwareSlot.RARM) {
@@ -1765,7 +1945,7 @@ public class ItemRegistry {
                                     "item.roll_mod.basecyberware_leftarm_meteorite_metal"
                             )
                             .withStyle(style ->
-                                    style.withColor(0x3B2AB8)
+                                    style.withColor(METEORITE_DARK_BLUE)
                                             .withItalic(false)
                             )
             ), 5, CyberwareSlot.LARM) {
@@ -1808,7 +1988,7 @@ public class ItemRegistry {
                                     "item.roll_mod.basecyberware_rightleg_meteorite_metal"
                             )
                             .withStyle(style ->
-                                    style.withColor(0x3B2AB8)
+                                    style.withColor(METEORITE_DARK_BLUE)
                                             .withItalic(false)
                             )
             ), 5, CyberwareSlot.RLEG) {
@@ -1851,7 +2031,7 @@ public class ItemRegistry {
                                     "item.roll_mod.basecyberware_leftleg_meteorite_metal"
                             )
                             .withStyle(style ->
-                                    style.withColor(0x3B2AB8)
+                                    style.withColor(METEORITE_DARK_BLUE)
                                             .withItalic(false)
                             )
             ), 5, CyberwareSlot.LLEG) {
@@ -1967,8 +2147,8 @@ public class ItemRegistry {
 
 
 
-    public static final DeferredHolder<Item, Item> BISMUTH_LITHIUM_BATTERY = registerTooltip("bismuth_lithium_battery", TooltipOptions.name(0x0186FF));
-    public static final DeferredHolder<Item, Item> LITHIUM_SULFATE_DUST = registerTooltip("lithium_sulfate_dust", TooltipOptions.name(0x0186FF));
+    public static final DeferredHolder<Item, Item> BISMUTH_LITHIUM_BATTERY = registerSimple("bismuth_lithium_battery", new Item.Properties() );
+    public static final DeferredHolder<Item, Item> LITHIUM_SULFATE_DUST = registerSimple("lithium_sulfate_dust", new Item.Properties() );
 
 
     public static void register(IEventBus modBus) {

@@ -72,6 +72,27 @@ versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
+# Modern Industrialization is optional only in the loader's eyes -- what matters here is the
+# ordering. MI registers its casings and machines in its own constructor, so this mod has to be
+# constructed after it for MachineModelRegistry to resolve a casing by name.
+[[dependencies."${mod_id}"]]
+modId = "modern_industrialization"
+type = "optional"
+versionRange = "${mi_version_range}"
+ordering = "AFTER"
+side = "BOTH"
+
+# ordering. Tesseract runs its MI hook listeners one mod at a time -- every phase of a listener
+# before the next mod's listener -- sorted by mod load order. MachineRegistry#recipeTypes reads
+# recipe types that Extended Industrialization registers from its own listener, so this mod has to
+# come after it or those lookups resolve to nothing.
+[[dependencies."${mod_id}"]]
+modId = "extended_industrialization"
+type = "optional"
+versionRange = "[0,)"
+ordering = "AFTER"
+side = "BOTH"
+
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
 # stop your mod loading on the server for example.

@@ -1,4 +1,4 @@
-// 1.21.1	2026-08-24T19:51:12.284944361	PY Ore Texture Generator
+// 1.21.1	2026-09-05T09:41:31.789576371	PY Ore Texture Generator
 1b31e2d7a94a182f3d0c0d554eb68c8886be6303 assets/roll_mod/textures/block/deepslate_bauxite.png
 757703300195972937c41f768553fd2c4cf5947c assets/roll_mod/textures/block/deepslate_bort.png
 299bf94d600c1abeee7154517714b85d50de75e3 assets/roll_mod/textures/block/deepslate_cassiterite_sand.png
@@ -36,6 +36,8 @@ f9629666c699a9488847be4c9261dc07f7799d14 assets/roll_mod/textures/block/end_thor
 5850446b748dba710bffcaeb551bd04fb355e057 assets/roll_mod/textures/block/end_tungstate.png
 1fab6305764af7b4d33bc15b52a28de10fa8e341 assets/roll_mod/textures/block/end_uraninite.png
 e816a5ea32cf3c6c957ce23001dd99a5f5b09c36 assets/roll_mod/textures/block/mars_bornite.png
+f3a5d9be68f273be229848a3b189342b617f32d9 assets/roll_mod/textures/block/mars_goethite.png
+123b2acda3b3f8bc3dba72c665adfc90e1fdedd1 assets/roll_mod/textures/block/mars_hematite.png
 b88aeffd69da43de43b4b1a1e1e9c34e7e818643 assets/roll_mod/textures/block/mars_iridium.png
 8bbbf85218a220cfc30289d3aa8a367b841f106c assets/roll_mod/textures/block/mars_molybdenum.png
 68f42877acc47dafe8da3e6dabdbd5b3111f6927 assets/roll_mod/textures/block/mars_pyrolusite.png

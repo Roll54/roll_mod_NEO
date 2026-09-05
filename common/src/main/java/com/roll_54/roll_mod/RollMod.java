@@ -4,9 +4,11 @@ import com.roll_54.roll_mod.compat.MBD2.RollMBD2Plugin;
 import com.roll_54.roll_mod.compat.MBD2.recipe.ExampleLavaRecipe;
 import com.lowdragmc.lowdraglib2.gui.factory.PlayerUIMenuType;
 import com.roll_54.roll_mod.data.RMMAttachment;
+import com.roll_54.roll_mod.minestar.dailytasks.DailyRewardRegistry;
 import com.roll_54.roll_mod.minestar.dailytasks.DailyTaskRegistry;
 import com.roll_54.roll_mod.minestar.dailytasks.gui.DailyTasksUI;
 import com.roll_54.roll_mod.minestar.CleanDropConfig;
+import com.roll_54.roll_mod.registry.MachineModelRegistry;
 import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.items.armor.ModArmorMaterials;
 import com.roll_54.roll_mod.registry.*;
@@ -40,7 +42,9 @@ public final class RollMod {
         ModEffects.register(eventBus);
         ModArmorMaterials.register(eventBus);
         eventBus.addListener(this::onCommonSetup);
-        RollMBD2Plugin.registerTraitTypes();
+        //RollMBD2Plugin.registerTraitTypes();
+        // Before AddPackFindersEvent, which is when MI's runtime datagen reads the models.
+        MachineModelRegistry.register();
         eventBus.register(new ExampleLavaRecipe());
         SoundRegistry.SOUND_EVENTS.register(eventBus);
         ComponentsRegistry.COMPONENTS.register(eventBus);
@@ -62,6 +66,7 @@ public final class RollMod {
             // server because the daily-tasks screen syncs task positions in it, and the client
             // builds the same UI to receive its sync values.
             DailyTaskRegistry.bootstrap();
+            DailyRewardRegistry.bootstrap();
             PlayerUIMenuType.register(DailyTasksUI.UI_ID,
                     player -> (PlayerUIMenuType.PlayerUIHolder) DailyTasksUI::createUI);
         });

@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.data.datagen;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -218,10 +219,39 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.FLUORITE_PINEAPPLE_PIZZA_SLICE.get());
         basicItem(ItemRegistry.BELL_PEPPER_SLICE_RUTILE.get());
         basicItem(ItemRegistry.ROASTED_BELL_PEPPER_RUTILE.get());
+        basicItem(ItemRegistry.ROASTED_BELL_PEPPER_RUTILE_SLICE.get());
         basicItem(ItemRegistry.STUFFED_BELL_PEPPER_RUTILE.get());
         basicItem(ItemRegistry.MOJITO.get());
         basicItem(ItemRegistry.XP_BURGER.get());
         basicItem(ItemRegistry.GOLDEN_XP_BURGER.get());
+
+
+        basicItem(ItemRegistry.DIAMOND_ALLOY_INGOT.get());
+        basicItem(ItemRegistry.DIAMOND_ALLOY_PLATE.get());
+        basicItem(ItemRegistry.DIAMOND_ALLOY_DUST.get());
+
+        rollToolItemModel(ItemRegistry.STEEL_SWORD.get());
+        rollToolItemModel(ItemRegistry.STEEL_AXE.get());
+        rollToolItemModel(ItemRegistry.STEEL_PICKAXE.get());
+        rollToolItemModel(ItemRegistry.STEEL_SHOVEL.get());
+        rollToolItemModel(ItemRegistry.STEEL_HOE.get());
+
+
+
+
+        basicItem(ItemRegistry.METEORITE_METAL_LARGE_PLATE.get());
+        basicItem(ItemRegistry.METEORITE_METAL_ROD.get());
+        basicItem(ItemRegistry.METEORITE_METAL_PLATE.get());
+
+        rollToolItemModel(ItemRegistry.STEEL_BLOCKOGRIZ.get());
+        rollToolItemModel(ItemRegistry.DIAMOND_BLOCKOGRIZ.get());
+        rollToolItemModel(ItemRegistry.IRON_BLOCKOGRIZ.get());
+        rollToolItemModel(ItemRegistry.NETHERITE_BLOCKOGRIZ.get());
+        rollToolItemModel(ItemRegistry.BLACK_BRONZE_BLOCKOGRIZ.get());
+        rollToolItemModel(ItemRegistry.BLACK_STEEL_BLOCKOGRIZ.get());
+        rollToolItemModel(ItemRegistry.BISMUTH_BRONZE_BLOCKOGRIZ.get());
+        rollToolItemModel(ItemRegistry.METEORITE_METAL_BLOCKOGRIZ.get());
+
 
 
         // TEXTURES ARE NOT NEDEED FOR THESE ITEMS, THEY ARE DEV ONES.
@@ -347,6 +377,16 @@ public class RolltemModelProvider extends ItemModelProvider {
                     .parent(new ModelFile.UncheckedModelFile("agricraft:crop/" + cropModel.modelId()))
                     .texture("crop", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "block/crops/" + plantName + "_stage" + textureIndex));
         }
+    }
+
+    private ItemModelBuilder rollToolItemModel(Item item) {
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
+
+        return withExistingParent(itemId.getPath(), mcLoc("item/handheld"))
+                .texture(
+                        "layer0",
+                        modLoc("item/tool/normal/" + itemId.getPath())
+                );
     }
 
 

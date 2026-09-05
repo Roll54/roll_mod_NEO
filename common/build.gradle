@@ -33,8 +33,6 @@ dependencies {
 
     implementation "curse.maven:rhino-416294:7104526"
     implementation "curse.maven:guideme-1173950:6812025"
-    implementation files("jars/silent-gear-1.21.1-neoforge-4.0.28.1.jar")
-    implementation files("jars/silent-lib-1.21.1-neoforge-10.5.1.jar")
     implementation files("jars/adastra-1.21.1-1.16.6-neoforge.jar")
 
     // compileOnly: NanoArmorMixin implements FluidProvider from common_storage_lib.
@@ -99,7 +97,8 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
                              mod_license            : mod_license,
                              mod_version            : mod_version,
                              mod_authors            : mod_authors,
-                             mod_description        : mod_description]
+                             mod_description        : mod_description,
+                             mi_version_range       : modern_industrialization_version_range]
     inputs.properties replaceProperties
     expand replaceProperties
     from "src/main/templates"

@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.network;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.network.packet.ClaimDailyBonusPacket;
 import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
 import com.roll_54.roll_mod.network.packet.DailyTaskToastPacket;
 import com.roll_54.roll_mod.network.packet.OpenDailyTasksPacket;
@@ -35,6 +36,11 @@ public class NetworkHandler {
                 ClaimDailyTaskPacket.TYPE,
                 ClaimDailyTaskPacket.STREAM_CODEC,
                 ClaimDailyTaskPacket::handle
+        );
+        registrar.playToServer(
+                ClaimDailyBonusPacket.TYPE,
+                ClaimDailyBonusPacket.STREAM_CODEC,
+                ClaimDailyBonusPacket::handle
         );
         registrar.playToClient(
                 DailyTaskToastPacket.TYPE,

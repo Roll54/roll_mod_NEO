@@ -1355,6 +1355,17 @@
   "tooltip.roll_mod.crop_analyzer.desc": "Now magnifying glass inside your body",
   "tooltip.roll_mod.crop_analyzer.energy": "Costs %s Energy",
 
+  "message.roll_mod.daily_task.completed": "%s completed the daily task %s",
+  "gui.roll_mod.daily_tasks.bonus": "Bonus",
+  "gui.roll_mod.daily_tasks.bonus.collect": "Collect",
+  "gui.roll_mod.daily_tasks.bonus.collected": "Collected",
+  "gui.roll_mod.daily_tasks.bonus.locked": "Locked",
+  "dailyreward.roll_mod.diamonds.title": "Diamond Cache",
+  "dailyreward.roll_mod.diamonds.desc": "8 diamonds, straight to your inventory",
+  "dailyreward.roll_mod.starcoins.title": "Starcoins",
+  "dailyreward.roll_mod.starcoins.desc": "250 Starcoins paid into your account",
+  "dailyreward.roll_mod.vitality.title": "Vitality",
+  "dailyreward.roll_mod.vitality.desc": "+4 hearts for the next 6 hours",
   "key.roll_mod.daily_tasks": "Daily Tasks",
   "gui.roll_mod.daily_tasks.title": "Daily Tasks",
   "gui.roll_mod.daily_tasks.resets_in": "resets in %s",
@@ -1391,5 +1402,27 @@
   "dailytask.roll_mod.playtime.title": "Clocking In",
   "dailytask.roll_mod.playtime.desc": "Play for %s minutes",
   "dailytask.roll_mod.walk_distance.title": "Wanderer",
-  "dailytask.roll_mod.walk_distance.desc": "Walk %s blocks in any direction"
+  "dailytask.roll_mod.walk_distance.desc": "Walk %s blocks in any direction",
+
+  "loreitem.roll_mod.diamond_blockogriz.tooltip_line1": "Ordinary diamonds will not work here.",
+  "loreitem.roll_mod.diamond_blockogriz.tooltip_line2": "Combines a pickaxe, axe, and shovel",
+  "loreitem.roll_mod.meteorite_metal_blockogriz.tooltip_line1": "This metal was made for this!",
+  "loreitem.roll_mod.meteorite_metal_blockogriz.tooltip_line2": "Combines a pickaxe, axe, and shovel",
+  "loreitem.roll_mod.iron_blockogriz.tooltip_line1": "Combines a pickaxe, axe, and shovel",
+  "loreitem.roll_mod.steel_blockogriz.tooltip_line1": "Combines a pickaxe, axe, and shovel",
+  "loreitem.roll_mod.netherite_blockogriz.tooltip_line1": "Combines a pickaxe, axe, and shovel",
+  "loreitem.roll_mod.black_steel_blockogriz.tooltip_line1": "Combines a pickaxe, axe, and shovel",
+  "loreitem.roll_mod.bismuth_bronze_blockogriz.tooltip_line1": "Combines a pickaxe, axe, and shovel",
+  "loreitem.roll_mod.black_bronze_blockogriz.tooltip_line1": "Combines a pickaxe, axe, and shovel",
+
+  "item.roll_mod.diamond_blockogriz": "Diamond Blockogriz",
+  "item.roll_mod.meteorite_metal_blockogriz": "Meteorite Metal Blockogriz",
+  "item.roll_mod.iron_blockogriz": "Iron Blockogriz",
+  "item.roll_mod.steel_blockogriz": "Steel Blockogriz",
+  "item.roll_mod.netherite_blockogriz": "Netherite Blockogriz",
+  "item.roll_mod.black_steel_blockogriz": "Black Steel Blockogriz",
+  "item.roll_mod.bismuth_bronze_blockogriz": "Bismuth Bronze Blockogriz",
+  "item.roll_mod.black_bronze_blockogriz": "Black Bronze Blockogriz"
+
+
 }

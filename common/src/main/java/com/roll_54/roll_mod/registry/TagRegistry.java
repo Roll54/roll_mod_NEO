@@ -8,6 +8,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 public class TagRegistry {
+    //or parse, I don't care much....
+
     public static final TagKey<Item> ROCKET_ITEM = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "rocket_item"));
     public static final TagKey<Item> ROCKET_FUEL = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "rocket_fuel"));
     public static final TagKey<Block> ORE_BLOCKS  = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("c", "ores"));
@@ -26,5 +28,9 @@ public class TagRegistry {
     public static final TagKey<Item> MEDIUM_RADIOACTIVITY = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "medium_radioactivity"));
     public static final TagKey<Item> HIGH_RADIOACTIVITY = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "high_radioactivity"));
     public static final TagKey<Item> EXTREME_RADIOACTIVITY = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "extreme_radioactivity"));
+
+
+    //for blockogriz
+    public static final TagKey<Block> MINEABLE_WITH_PAXEL = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("cucumber", "mineable/paxel"));
 
 }
