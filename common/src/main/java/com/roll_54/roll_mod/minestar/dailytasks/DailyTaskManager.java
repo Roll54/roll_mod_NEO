@@ -5,6 +5,7 @@ import com.roll_54.roll_mod.minestar.dailytasks.api.DailyReward;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTask;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskHook;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskQuota;
+import com.roll_54.roll_mod.minestar.dailytasks.api.TaskReward;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -86,9 +87,14 @@ public final class DailyTaskManager {
     /**
      * Wipes every group, so each one draws a brand new set (and a new bonus reward) the next time
      * it is touched. Backs the no-argument {@code reroll} command.
+     *
+     * <p>Clearing alone is not enough: the draw is seeded by world, group and day, so a cleared
+     * group would draw exactly what it just lost. Bumping {@link DailyTasksState#rerollSalt} moves
+     * the seed.
      */
     public static void forceRoll(MinecraftServer server) {
         DailyTasksState state = state(server);
+        state.rerollSalt++;
         state.groups.clear();
         state.periodDay = currentPeriodDay();
         state.setDirty();
@@ -117,7 +123,8 @@ public final class DailyTaskManager {
         }
 
         int quota = DailyTaskQuota.forGroup(server, group);
-        Random rng = new Random(seedFor(server, group.id(), period));
+        // Row rewards (rewardsFor) deliberately leave the salt out, so a reroll keeps what each row pays.
+        Random rng = new Random(seedFor(server, group.id(), period) ^ (state.rerollSalt * REROLL_SALT));
         List<String> picked = pick(rng, quota);
         if (picked.size() < quota) {
             // Fewer tasks are registered than the group is owed; there is nothing to show.
@@ -148,6 +155,33 @@ public final class DailyTaskManager {
                 ^ (groupId.getMostSignificantBits() * 0x9E3779B97F4A7C15L)
                 ^ (groupId.getLeastSignificantBits() * 0xC2B2AE3D27D4EB4FL)
                 ^ (period * 0xBF58476D1CE4E5B9L);
+    }
+
+    /**
+     * Separates the reward draw from the task draw, which share {@link #seedFor}'s seed. Any odd
+     * constant does; this one is a 64-bit prime-ish mix so neighbouring row indices land far apart.
+     */
+    private static final long REWARD_SALT = 0x8AA1F0F1B3D9C7E5L;
+
+    /** Spreads {@link DailyTasksState#rerollSalt} across the seed, so reroll N and N+1 draw unrelated sets. */
+    private static final long REROLL_SALT = 0x94D049BB133111EBL;
+
+    /**
+     * What the row at {@code index} pays, on top of {@link TaskRewardPool#STARCOINS}.
+     *
+     * <p>Derived rather than stored: the seed is the day's, the group's and the row's, so every
+     * read — the screen, the tooltip, the payout — agrees, and a restart re-derives the same draw.
+     * Keying on the row index rather than the task means a {@code reroll} changes the tasks while
+     * each slot keeps the rewards it was advertising.
+     *
+     * <p>The one thing that does move it is editing {@link TaskRewardPool} itself, which restates a
+     * board mid-day. That self-corrects at the next 06:00 roll.
+     */
+    public static List<TaskReward> rewardsFor(MinecraftServer server,
+                                              DailyTaskGroups.TaskGroup group, int index) {
+        Random rng = new Random(seedFor(server, group.id(), currentPeriodDay())
+                + index * REWARD_SALT);
+        return TaskRewardPool.draw(rng, TaskRewardPool.NUM_PER_TASK);
     }
 
     /** Draws {@code count} task ids, preferring one per hook. */
@@ -303,15 +337,20 @@ public final class DailyTaskManager {
     }
 
     /**
-     * The scaled requirement: {@code base * (members + 1)}. A player in no party counts as one
-     * member, so they see {@code base * 2}; a party of three sees {@code base * 4}.
+     * The scaled requirement. A player on their own — including the only member of their own party
+     * — is asked for {@code base} exactly; from two members up the bar is {@code base * (members +
+     * 1)}, so a pair sees {@code base * 3} and a party of three {@code base * 4}. A task that
+     * declines to scale (see {@link DailyTask#scalesWithTeam()}) always asks for {@code base}.
      *
      * <p>Computed on read rather than frozen at roll time, so it tracks a party that grows or
      * shrinks during the day. Completion is sticky (see {@link DailyTasksState.GroupState}), so a
-     * task that is already done never reverts when the bar moves up.
+     * task that is already done never reverts when the bar moves up — and a bar that moves down,
+     * as it does when a party breaks up, simply completes a task whose progress is already past it.
      */
     public static int requiredAmount(DailyTask task, DailyTaskGroups.TaskGroup group) {
-        return task.baseAmount() * (group.memberCount() + 1);
+        int members = group.memberCount();
+        if (!task.scalesWithTeam() || members <= 1) return task.baseAmount();
+        return task.baseAmount() * (members + 1);
     }
 
     /* ------------------------------------------------- claiming ----------------------------------------------- */
@@ -323,7 +362,8 @@ public final class DailyTaskManager {
         if (server == null || index < 0 || index >= MAX_TASK_COUNT) return ClaimResult.UNAVAILABLE;
 
         DailyTasksState state = state(server);
-        DailyTasksState.GroupState gs = current(server, state, DailyTaskGroups.of(player));
+        DailyTaskGroups.TaskGroup group = DailyTaskGroups.of(player);
+        DailyTasksState.GroupState gs = current(server, state, group);
         // A group holding fewer tasks than the cap leaves the trailing slots empty.
         if (gs == null || index >= gs.taskCount()) return ClaimResult.UNAVAILABLE;
 
@@ -334,7 +374,12 @@ public final class DailyTaskManager {
         if (!gs.claimedBy.get(index).add(player.getUUID())) return ClaimResult.ALREADY_CLAIMED;
 
         state.setDirty();
-        task.grantReward(player);
+        // The same draw the row has been advertising all day, plus the flat currency payout. Paid
+        // per player, not per group: progress is shared, the reward is not.
+        for (TaskReward reward : rewardsFor(server, group, index)) {
+            reward.grant(player);
+        }
+        TaskRewardPool.STARCOINS.grant(player);
         return ClaimResult.OK;
     }
 
@@ -370,9 +415,14 @@ public final class DailyTaskManager {
         return DailyTasksState.get(overworld);
     }
 
-    /** A snapshot of one task row as it should appear to {@code player}. */
+    /**
+     * A snapshot of one task row as it should appear to {@code player}.
+     *
+     * @param rewards what claiming it pays, less the flat {@link TaskRewardPool#STARCOINS} every
+     *                task adds — the screen appends that itself rather than syncing a constant
+     */
     public record TaskView(DailyTask task, int progress, int required, boolean completed,
-                           boolean claimed) {}
+                           boolean claimed, List<TaskReward> rewards) {}
 
     /** A snapshot of the all-complete bonus panel as it should appear to {@code player}. */
     public record BonusView(DailyReward reward, int completed, int total, boolean claimed) {}
@@ -396,7 +446,8 @@ public final class DailyTaskManager {
         if (task == null) return null;
 
         return new TaskView(task, gs.progress[index], requiredAmount(task, group),
-                gs.completed[index], gs.claimedBy.get(index).contains(player.getUUID()));
+                gs.completed[index], gs.claimedBy.get(index).contains(player.getUUID()),
+                rewardsFor(server, group, index));
     }
 
     /** The bonus panel for this player, or {@code null} when no reward is drawn or registered. */
@@ -416,7 +467,7 @@ public final class DailyTaskManager {
                 gs.rewardClaimedBy.contains(player.getUUID()));
     }
 
-    /** Debug helper behind {@code /rollmod dailytasks progress}. */
+    /** Debug helper behind {@code /rollmod admin dailytasks progress}. */
     public static void addRawProgress(ServerPlayer player, int index, int amount) {
         MinecraftServer server = player.getServer();
         if (server == null || index < 0 || index >= MAX_TASK_COUNT) return;

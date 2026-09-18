@@ -1,7 +1,8 @@
 package com.roll_54.roll_mod_client.client;
 
 import com.roll_54.roll_mod_client.RollModClient;
-import com.roll_54.roll_mod.network.packet.OpenDailyTasksPacket;
+import com.roll_54.roll_mod.minestar.hub.gui.HubUI;
+import com.roll_54.roll_mod.network.packet.OpenHubPacket;
 import com.roll_54.roll_mod.network.packet.armor.MultiProtectingGraviChestItemPacket;
 import com.roll_54.roll_mod_client.registry.KeyMappingRegistry;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -38,9 +39,10 @@ public class KeyInputHandler {
                     toggleState(2)
             ));
         }
-        if (KeyMappingRegistry.DAILY_TASKS.get().consumeClick()) {
-            // The daily-tasks screen is a LdLib2 container UI, so the server has to open it.
-            PacketDistributor.sendToServer(new OpenDailyTasksPacket());
+        if (KeyMappingRegistry.HUB.get().consumeClick()) {
+            // The hub is a LdLib2 container UI, so the server has to open it — and the tab has to
+            // travel with the request, because only the client knows which one the hub was left on.
+            PacketDistributor.sendToServer(new OpenHubPacket(HubUI.lastTab()));
         }
     }
     private static final boolean[] stateStatus = {false, false, false};

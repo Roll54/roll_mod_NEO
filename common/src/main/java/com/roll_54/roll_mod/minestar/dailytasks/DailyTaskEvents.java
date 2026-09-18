@@ -4,9 +4,12 @@ import com.agricraft.agricraft.api.AgriApi;
 import com.agricraft.agricraft.api.crop.AgriCrop;
 import com.agricraft.agricraft.common.registry.ModItems;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.data.RMMAttachment;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskHook;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -16,6 +19,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -30,6 +35,7 @@ import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,7 +52,7 @@ public final class DailyTaskEvents {
     /** The day only turns over once, so checking the clock once a second is plenty. */
     private static final int ROLL_CHECK_INTERVAL_TICKS = 20;
 
-    /** Playtime and distance are read from vanilla statistics; once a second is fine-grained enough. */
+    /** Playtime, distance and raids are read from vanilla statistics; once a second is fine-grained enough. */
     private static final int SAMPLE_INTERVAL_TICKS = 20;
 
     private static final int TICKS_PER_MINUTE = 20 * 60;
@@ -125,12 +131,60 @@ public final class DailyTaskEvents {
         DailyTaskManager.progress(player, DailyTaskHook.CRAFT, crafted, crafted.getCount());
     }
 
+    /*
+     * SMELT and the cooking pot's COOK are not counted from player take-out events: those only fire
+     * when a player pulls output by hand, so a hopper-fed furnace or a pot left to cook would never
+     * count. AbstractFurnaceBlockEntityMixin and CookingPotBlockEntityMixin count each result as it is
+     * produced instead, for the block's owner — set by the two listeners below.
+     */
+
+    /**
+     * Farmer's Delight's cooking pot, matched by id so this class never loads an FD type. Absent the
+     * mod, no block entity has this id and the check is simply never true.
+     */
+    private static final ResourceLocation COOKING_POT = ResourceLocation.fromNamespaceAndPath("farmersdelight", "cooking_pot");
+
     @SubscribeEvent
-    public static void onItemSmelted(PlayerEvent.ItemSmeltedEvent event) {
-        ServerPlayer player = serverPlayer(event.getEntity() instanceof Player p ? p : null);
+    public static void onBlockPlaced(BlockEvent.EntityPlaceEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            claimStation(event.getLevel().getBlockEntity(event.getPos()), player);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onStationOpened(PlayerInteractEvent.RightClickBlock event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
         if (player == null) return;
-        ItemStack smelted = event.getSmelting();
-        DailyTaskManager.progress(player, DailyTaskHook.SMELT, smelted, smelted.getCount());
+        claimStation(event.getLevel().getBlockEntity(event.getPos()), player);
+    }
+
+    private static boolean isStation(BlockEntity blockEntity) {
+        return blockEntity instanceof AbstractFurnaceBlockEntity
+                || COOKING_POT.equals(BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(blockEntity.getType()));
+    }
+
+    /** The last player to place or open a furnace or cooking pot is the one it works for. */
+    private static void claimStation(@Nullable BlockEntity blockEntity, ServerPlayer player) {
+        if (blockEntity == null || !isStation(blockEntity)) return;
+        if (player.getUUID().equals(blockEntity.getData(RMMAttachment.STATION_OWNER))) return;
+        blockEntity.setData(RMMAttachment.STATION_OWNER, player.getUUID());
+        blockEntity.setChanged();
+    }
+
+    /**
+     * Credits {@code result} to the player a furnace or cooking pot works for. Called from the
+     * production mixins; does nothing for a block nobody has claimed, or whose owner is offline.
+     */
+    public static void progressForOwner(BlockEntity station, DailyTaskHook hook, ItemStack result) {
+        Level level = station.getLevel();
+        if (level == null || level.getServer() == null || result.isEmpty()) return;
+
+        UUID owner = station.getData(RMMAttachment.STATION_OWNER);
+        if (RMMAttachment.NO_OWNER.equals(owner)) return;
+        ServerPlayer player = level.getServer().getPlayerList().getPlayer(owner);
+        if (player == null) return;
+
+        DailyTaskManager.progress(player, hook, result, result.getCount());
     }
 
     /* ---------------------------------------------- FISH / BREED / EAT ---------------------------------------- */
@@ -235,7 +289,7 @@ public final class DailyTaskEvents {
         PENDING_CLIPS.clear();
     }
 
-    /* ------------------------------------------ PLAYTIME / DISTANCE ------------------------------------------- */
+    /* --------------------------------------- PLAYTIME / DISTANCE / RAID --------------------------------------- */
 
     /**
      * Last-seen vanilla statistics for one player, plus the sub-unit remainder.
@@ -247,6 +301,8 @@ public final class DailyTaskEvents {
     private static final class Sample {
         int lastPlayTicks = -1;
         int lastDistanceCm = -1;
+        int lastRaidWins;
+        int lastJumps;
         int carryTicks;
         int carryCm;
     }
@@ -261,6 +317,10 @@ public final class DailyTaskEvents {
             int distanceCm = player.getStats().getValue(Stats.CUSTOM, Stats.WALK_ONE_CM)
                     + player.getStats().getValue(Stats.CUSTOM, Stats.SPRINT_ONE_CM)
                     + player.getStats().getValue(Stats.CUSTOM, Stats.CROUCH_ONE_CM);
+            // Vanilla awards this on raid victory, to each player the raid counted as a hero of
+            // the village -- so the delta is "raids this player helped win since the last sample".
+            int raidWins = player.getStats().getValue(Stats.CUSTOM, Stats.RAID_WIN);
+            int jumps = player.getStats().getValue(Stats.CUSTOM, Stats.JUMP);
 
             // The first sample after login only establishes a baseline. Math.max guards the case
             // where a statistic is reset underneath us.
@@ -279,10 +339,23 @@ public final class DailyTaskEvents {
                     sample.carryCm -= blocks * CM_PER_BLOCK;
                     DailyTaskManager.progress(player, DailyTaskHook.DISTANCE, player, blocks);
                 }
+
+                // Already a whole count, so no carry: a raid is either won or it is not.
+                int raids = Math.max(0, raidWins - sample.lastRaidWins);
+                if (raids > 0) {
+                    DailyTaskManager.progress(player, DailyTaskHook.RAID, player, raids);
+                }
+
+                int jumped = Math.max(0, jumps - sample.lastJumps);
+                if (jumped > 0) {
+                    DailyTaskManager.progress(player, DailyTaskHook.JUMP, player, jumped);
+                }
             }
 
             sample.lastPlayTicks = playTicks;
             sample.lastDistanceCm = distanceCm;
+            sample.lastRaidWins = raidWins;
+            sample.lastJumps = jumps;
         }
     }
 

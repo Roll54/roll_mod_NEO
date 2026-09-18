@@ -4,6 +4,7 @@
   "package": "com.roll_54.roll_mod.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AbstractFurnaceBlockEntityMixin",
     "AnvilLevelCapMixin",
     "AnvilOverEnchantMixin",
     "ArmorReductionMixin",
@@ -18,6 +19,7 @@
     "NanoSuitGravichestplateAbilityMixin",
     "PhantomSpawnerMixin",
     "PlayerAdvancementsMixin",
+    "ShearsItemMixin",
     "SingleBlockCraftingMachinesMixin",
     "adstra.StationLoaderMixin",
     "antidupe.BaseRailBlockMixin",
@@ -39,7 +41,9 @@
     "antidupe.TripwireHookBlockMixin",
     "crops.CropBlockEntityMixin",
     "crops.AgriPlantMixin",
-    "crops.RakeItemMixin"
+    "crops.RakeItemMixin",
+    "crops.AgriSeedItemMixin",
+    "MutiblockMachinesMixin"
   ],
   "injectors": {
     "defaultRequire": 1

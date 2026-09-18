@@ -1,0 +1,17 @@
+{
+  "lines": [
+    { "text": "&fA fresh set of small jobs every day. They are the steadiest way to earn Starcoins without relying on trade or luck." },
+    { "type": "space" },
+    { "text": "&e&lHow it works" },
+    { "text": "&7Tasks roll over at &f06:00&7 server time. The countdown at the top right of this section tells you exactly how long the current set has left.", "indent": 6 },
+    { "text": "&7Progress is tracked automatically as you play &8- there is nothing to start and nothing to hand in. Mine the blocks, kill the mobs, craft the items, and the bar fills.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lClaiming" },
+    { "text": "&7A finished task has to be &fclaimed&7 before it pays out. Unclaimed rewards are &clost&7 when the day rolls over, so claim before 06:00.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lIf a task looks impossible" },
+    { "text": "&7Tasks are drawn to suit roughly where you are in the pack. If one asks for something you genuinely cannot reach yet, leave it &8- an unfinished task costs you nothing, and tomorrow brings a different set.", "indent": 6 },
+    { "type": "rule" },
+    { "text": "&8The reset hour is shared with warp visitor counts, so \"today\" means the same thing everywhere in the hub.", "center": true }
+  ]
+}

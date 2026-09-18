@@ -1,0 +1,24 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "pattern": [
+        "GGG",
+        "G G",
+        "MRM"
+    ],
+    "key": {
+        "G": {
+            "tag": "c:glass_panes"
+        },
+        "R": {
+            "item": "minecraft:redstone"
+        },
+        "M": {
+            "tag": "planks"
+        }
+    },
+    "result": {
+        "count": 1,
+        "id": "roll_mod:display_block"
+    }
+}

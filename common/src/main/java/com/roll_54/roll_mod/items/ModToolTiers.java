@@ -15,7 +15,7 @@ import net.neoforged.neoforge.common.SimpleTier;
 public class ModToolTiers {
     public static final Tier METEORITE_METAL = new SimpleTier(
             ModTags.Blocks.INCORRECT_METEORITE_METAL_TOOL,
-            2400, 10f, 5f, 30,
+            2400, 16f, 5f, 30,
             () -> Ingredient.of(ItemRegistry.METEORITE_METAL_INGOT.get())
     );
 
@@ -39,20 +39,20 @@ public class ModToolTiers {
     /** Diamond's mining level and speed, on a much shorter-lived head. */
     public static final Tier BLACK_STEEL = new SimpleTier(
             BlockTags.INCORRECT_FOR_DIAMOND_TOOL,
-            1500, 8.0f, 3.0f, 10,
+            1500, 7.5f, 3.0f, 10,
             () -> Ingredient.of(ingotTag("black_steel"))
     );
 
     public static final Tier DIAMOND_ALLOY = new SimpleTier(
             BlockTags.INCORRECT_FOR_DIAMOND_TOOL,
-            3000, 8.0f, 2.5f, 10,
+            3000, 8.0f, 0F, 10,
             () -> Ingredient.of(ItemRegistry.DIAMOND_ALLOY_INGOT.get())
     );
 
 
     public static final Tier STEEL = new SimpleTier(
             BlockTags.INCORRECT_FOR_DIAMOND_TOOL,
-            2000, 8.0f, 2.5f, 10,
+            2000, 7.0f, 2.0f, 10,
             () -> Ingredient.of(ingotTag("steel"))
     );
 

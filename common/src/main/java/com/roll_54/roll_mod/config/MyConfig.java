@@ -201,17 +201,19 @@ public class MyConfig extends Config {
     }
 
 
-    @Comment("Anvil tweaks: over-enchanting past max level and removing the 40-level 'Too Expensive!' cap.")
+    @Comment("Anvil tweaks: removing the 40-level 'Too Expensive!' cap.")
     public AnvilSettings anvil = new AnvilSettings();
 
     public static class AnvilSettings extends ConfigSection {
 
-        @Comment("""
-                Allow the anvil to combine enchantments past their normal maximum level.
-                e.g. Sharpness V + Sharpness V -> Sharpness VI, and so on.
-                False = vanilla behavior (combined level is clamped to the enchantment max).
-                """)
-        public ValidatedBoolean overEnchant = new ValidatedBoolean(true);
+        // Over-enchanting was cut from the mod. Commented out rather than deleted so it can be
+        // restored alongside the injector in AnvilOverEnchantMixin, which is its only reader.
+//        @Comment("""
+//                Allow the anvil to combine enchantments past their normal maximum level.
+//                e.g. Sharpness V + Sharpness V -> Sharpness VI, and so on.
+//                False = vanilla behavior (combined level is clamped to the enchantment max).
+//                """)
+//        public ValidatedBoolean overEnchant = new ValidatedBoolean(true);
 
         @Comment("""
                 Remove the vanilla 'Too Expensive!' block at 40 levels so the anvil result is never

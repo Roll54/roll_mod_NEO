@@ -1,0 +1,32 @@
+{
+  "version": 0,
+  "sql": {
+    "jdbcUrl": "jdbc:mysql://localhost:3306/mc_currency",
+    "dbUser": "mc_user",
+    "dbPassword": "test_password_for_db"
+  },
+  "client": {
+    "gradientStartColor": {
+      "r": 167,
+      "g": 94,
+      "b": 139
+    },
+    "gradientEndColor": {
+      "r": 22,
+      "g": 0,
+      "b": 110
+    },
+    "showPlaytimeRewards": true
+  },
+  "playtime": {
+    "enabled": true,
+    "currencyType": "main",
+    "persistentIntervalMinutes": 15,
+    "persistentReward": 15,
+    "sessionIntervalMinutes": 60,
+    "sessionReward": 120
+  },
+  "plot": {
+    "logActions": false
+  }
+}

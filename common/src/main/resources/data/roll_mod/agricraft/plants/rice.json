@@ -2,7 +2,7 @@
   "clip_products": [
     {
       "chance": 1,
-      "item": "rusticdelight:bell_pepper_green",
+      "item": "farmersdelight:rice_panicle",
       "max": 4,
       "min": 1,
       "required": true
@@ -16,7 +16,7 @@
   "products": [
     {
       "chance": 1,
-      "item": "rusticdelight:bell_pepper_green",
+      "item": "farmersdelight:rice_panicle",
       "max": 4,
       "min": 1,
       "required": true

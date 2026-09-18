@@ -1,0 +1,20 @@
+{
+  "lines": [
+    { "text": "&fYour own private teleport points, and the ones friends have shared with you. Unlike warps, a home is not public and is never listed to anyone you did not invite." },
+    { "type": "space" },
+    { "text": "&e&lMaking a home" },
+    { "text": "&7Created where you are standing, so stand where you want to arrive. How many you may keep depends on your rank.", "indent": 6 },
+    { "text": "&7Names accept colour codes &8- &f&&a&7 for green, &f&&c&7 for red, &f&&l&7 for bold. Type &f&&&&&7 if you want a literal ampersand. You still reach the home by typing its plain name, so &f/home base&7 finds one called &a&&abase&7.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lSharing" },
+    { "text": "&7Invite a player by name and they get to accept or decline. Once they accept, the home shows up in their &fShared with you&7 list and they can travel to it.", "indent": 6 },
+    { "text": "&7One home may have &f3&7 invites waiting at a time. Answered invites free the slot again, so accepting or declining is what lets you send the next one &8- players you have already shared with do not count.", "indent": 6 },
+    { "text": "&7Sharing lets someone &farrive&7. It does not give them the right to build there or take anything &8- protect the area with a plot if that matters.", "indent": 6 },
+    { "text": "&7You can withdraw access at any time, and anyone you shared with can leave on their own.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lInvites" },
+    { "text": "&7Invites waiting on your answer sit at the top of the list. They stay there until you accept or decline.", "indent": 6 },
+    { "type": "rule" },
+    { "text": "&8Deleting a home removes it for everyone you shared it with, too.", "center": true }
+  ]
+}

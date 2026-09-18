@@ -1,0 +1,17 @@
+{
+  "lines": [
+    { "text": "&fLand you own. A plot is a claimed area that other players cannot build in, break in, or take from." },
+    { "type": "space" },
+    { "text": "&e&lThe map" },
+    { "text": "&7The picture is the plot area seen from above, one pixel to one block. Click a plot to select it &8- the panel on the right tells you whether it is free, what it costs, and who owns it if anyone does.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lBuying" },
+    { "text": "&7Select a free plot and confirm. The price is taken in Starcoins straight away and the land is yours from that moment.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lSelling back" },
+    { "text": "&7You can sell a plot you own back to the server. &cThis asks for confirmation because it cannot be undone&7 &8- and anything you leave built on it is no longer protected once it is sold.", "indent": 6 },
+    { "text": "&7Clear out what you want to keep &fbefore&7 selling.", "indent": 6 },
+    { "type": "rule" },
+    { "text": "&8Building outside a plot is allowed, but nothing out there is protected.", "center": true }
+  ]
+}

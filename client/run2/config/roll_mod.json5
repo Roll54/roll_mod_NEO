@@ -1,0 +1,142 @@
+{
+	// Don't change this! Version used to track needed updates.
+	"version": 0,
+	"gitUpdater": {
+		// Nicknames allowed to run '/rollmod admin git_copy'. Case-insensitive. Console and command blocks can never run it.
+		"allowedPlayers": [
+			"roll_54"
+		],
+		// GitHub repository owner.
+		"repoOwner": "Roll54",
+		// GitHub repository name.
+		"repoName": "crafts-for-modern",
+		// Branch to pull from.
+		"branch": "main",
+		// Folder inside the repository to copy into kubejs/server_scripts.
+		"sourceFolder": "server_scripts",
+		// Seconds to wait after the copy completes before running /reload.
+		"reloadDelaySeconds": 300,
+		// Seconds before the reload to show players the red warning title.
+		"warnBeforeReloadSeconds": 60
+	},
+	"messages": {
+		// A list of translation keys to broadcast to all players every 30 minutes.
+		"broadcastMessages": [
+			"message.roll_mod.broadcast.drink_stretch",
+			"message.roll_mod.broadcast.stand_breathe",
+			"message.roll_mod.broadcast.tea_break",
+			"message.roll_mod.broadcast.open_questbook",
+			"message.roll_mod.broadcast.stuck_questbook",
+			"message.roll_mod.broadcast.overwhelmed_questbook",
+			"message.roll_mod.broadcast.uranium_puree",
+			"message.roll_mod.broadcast.titanium_gum",
+			"message.roll_mod.broadcast.multiblock_check",
+			"message.roll_mod.broadcast.emc2",
+			"message.roll_mod.broadcast.first_join",
+			"message.roll_mod.broadcast.plutonium_candy",
+			"message.roll_mod.broadcast.golden_baton",
+			"message.roll_mod.broadcast.sulfur_jam",
+			"message.roll_mod.broadcast.sulfur_pie",
+			"message.roll_mod.broadcast.golden_potato_porridge",
+			"message.roll_mod.broadcast.creosote_plate"
+		],
+		// Period of time that need to broadcast a message
+		"TIME_TO_BROADCAST": 12000
+	},
+	// Settings for the /rtp (random teleport) command
+	"rtp": {
+		/* Dimensions in which /rtp is allowed (namespaced ids, e.g. "minecraft:overworld").
+		   If a player runs /rtp from a dimension that is not in this list, they are first
+		   moved to the overworld and the random teleport is performed there instead.
+		   Leave the overworld out of the list to effectively disable /rtp everywhere.
+		*/
+		"allowedDimensions": [
+			"minecraft:overworld"
+		]
+	},
+	// BUKVI for nothing
+	"enabled": true,
+	// BUKVI for nothing
+	"multiplier": 1.0,
+	"options": {
+		"itemWeights": { }
+	},
+	// Item that gives every next field
+	"autogiveItem": "minecraft:stone",
+	// Period of time that need to give a book, or whatever
+	"TIME_TO_GIVE": 12000,
+	"pvp": {
+		/* Enables ModernTech's custom armor formula.
+		   True = use custom diminishing-return formula up to 75%.
+		   False = vanilla armor behavior.
+		*/
+		"enabled": true,
+		/* Armor value at which diminishing returns begin.
+		   Vanilla armor values: diamond ~20, netherite ~20, leather ~7.
+		*/
+		"softCap": 10,
+		/* Maximum possible damage reduction.
+		   0.75 = 75% reduction (default). Vanilla max is 80%.
+		   Cannot exceed 0.90 because of balance reasons.
+		*/
+		"maxReduction": 0.75,
+		/* Exponential curve steepness.
+		   Larger values = faster diminishing returns.
+		   Default = 0.05 (safe, balanced, similar to MMO behavior).
+		*/
+		"reductionCurve": 0.05
+	},
+	// Settings for Nether Storm behaviour
+	"storm": {
+		/* Minimum delay before storm starts again (in Minecraft hours).
+		   1 hour = 72000 ticks.
+		*/
+		"minStormDelayHours": 1.0,
+		/* Maximum delay before storm starts again (in Minecraft hours).
+		   Storm delay will be randomly selected between min and max.
+		*/
+		"maxStormDelayHours": 12.0,
+		/* Minimum duration of the storm (in Minecraft hours).
+		   1 hour = 72000 ticks.
+		*/
+		"minStormDurationHours": 1.0,
+		/* Maximum duration of the storm (in Minecraft hours).
+		   Storm duration will be chosen randomly between min and max.
+		*/
+		"maxStormDurationHours": 6.0,
+		// straight forward explanation
+		"BerriesExplodeDuringStorm": true,
+		// HP multiplier
+		"MOB_HP_BUFF": 2.5
+	},
+	// Anvil tweaks: over-enchanting past max level and removing the 40-level 'Too Expensive!' cap.
+	"anvil": {
+		/* Allow the anvil to combine enchantments past their normal maximum level.
+		   e.g. Sharpness V + Sharpness V -> Sharpness VI, and so on.
+		   False = vanilla behavior (combined level is clamped to the enchantment max).
+		*/
+		"overEnchant": true,
+		/* Remove the vanilla 'Too Expensive!' block at 40 levels so the anvil result is never
+		   greyed out for cost alone. Costs at or above the threshold are scaled exponentially
+		   instead (see expThreshold / expGrowth), so high-tier work stays possible but expensive.
+		   False = vanilla 40-level hard cap.
+		*/
+		"removeLevelCap": true,
+		/* Level cost at which exponential scaling starts. Below this the cost is unchanged.
+		   Vanilla hard cap is 40.
+		*/
+		"expThreshold": 40,
+		/* Exponential growth factor applied per level above the threshold:
+		       cost = threshold * expGrowth ^ (cost - threshold)
+		   1.0 = no extra scaling (cost stays flat past the threshold).
+		   1.1 = roughly +10% per level over the threshold (default).
+		*/
+		"expGrowth": 1.1
+	},
+	"solarPanelOptions": {
+		"dimensionMultipliers": { },
+		"restrictedDimensions": [
+			"minecraft:the_nether"
+		]
+	}
+}

@@ -4,6 +4,7 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.dailytasks.api.AutoDailyTask;
 import com.roll_54.roll_mod.minestar.dailytasks.api.AutoScanner;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTask;
+import net.neoforged.fml.ModList;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -46,6 +47,12 @@ public final class DailyTaskRegistry {
         Map<String, Integer> indices = new LinkedHashMap<>();
         List<DailyTask> accepted = new ArrayList<>();
         for (DailyTask task : found) {
+            String requiredMod = task.requiredMod();
+            if (requiredMod != null && !ModList.get().isLoaded(requiredMod)) {
+                RollMod.LOGGER.info("[DailyTasks] Task '{}' needs '{}', which is not loaded; skipping it.",
+                        task.id(), requiredMod);
+                continue;
+            }
             if (ids.putIfAbsent(task.id(), task) != null) {
                 RollMod.LOGGER.error("[DailyTasks] Duplicate task id '{}' from {}; ignoring the later one.",
                         task.id(), task.getClass().getName());

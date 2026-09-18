@@ -29,6 +29,18 @@ neoForge {
             programArgument '--username'
             programArgument 'TestPlayer'
         }
+        // A second client, for everything that needs two players on the dev server at once: seeing
+        // someone else's warp and paying its price, buying another player's auction listing, and
+        // party-scaled daily tasks. Its own game directory, because two clients sharing one would
+        // race on options.txt, the log and the screenshot folder.
+        client2 {
+            client()
+            loadedMods = [mods."${mod_id}", mods."${mod_id_client}"]
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+            gameDirectory = file('run2')
+            programArgument '--username'
+            programArgument 'TestPlayer2'
+        }
         data {
             data()
             loadedMods = [mods."${mod_id}", mods."${mod_id_client}"]
@@ -106,3 +118,16 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
 
 sourceSets.main.resources.srcDir generateModMetadata
 neoForge.ideSyncTask generateModMetadata
+
+// The economy's SQL stack is compileOnly in :common and shaded into the :server jar, so it is on no
+// classpath the dev client can see — and a singleplayer world runs an integrated server that opens
+// the currency database. Add it to the run only; the shipped client jar deliberately has no driver.
+['client', 'client2', 'data'].each { runName ->
+    def runCfg = neoForge.runs.getByName(runName).additionalRuntimeClasspathConfiguration
+    dbLibs.each { dependencies.add(runCfg.name, it) }
+    // Open Parties and Claims backs plot ownership and :common only compiles against it, so the run
+    // needs its own copy or PlotService throws NoClassDefFoundError the first time plots are opened.
+    // The Xaero maps are its usual companions and make the plot map worth looking at.
+    dependencies.add(runCfg.name, files("../common/jars/open-parties-and-claims-neoforge-1.21.1-0.27.5.jar"))
+    dependencies.add(runCfg.name, files("../common/jars/xaerominimap-neoforge-1.21.1-26.1.0.jar"))
+    dependencies.add(runCfg.name, files("../common/jars/xaeroworldmap-neoforge-1.21.1-1.41.2.jar"))}

@@ -6,9 +6,13 @@
   "client": [
     "AnvilTooExpensiveLabelMixin",
     "GuiGraphicsOxygenBarMixin",
+    "MIKeybindsToggle3x3Mixin",
+    "MoneyShovingMixin",
     "ModifyEnergyHudRendererMixin",
     "OverlayScreenNanoMixin",
-    "crops.CropRequirementCategoryRecipeMixin"
+    "crops.CropRequirementCategoryRecipeMixin",
+    "skin.ItemRendererSkinMixin",
+    "skin.GeoArmorSkinMixin"
   ],
   "injectors": {
     "defaultRequire": 1

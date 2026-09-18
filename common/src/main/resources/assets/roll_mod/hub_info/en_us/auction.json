@@ -1,0 +1,17 @@
+{
+  "lines": [
+    { "text": "&fThe server-wide market. Anything you list here is visible to every player online, which makes it the best place to move something quickly." },
+    { "type": "space" },
+    { "text": "&e&lBuying" },
+    { "text": "&7Browse the list, pick a listing, and buy it. The price is in Starcoins and is paid the moment you confirm. What you bought goes to your &fcollection&7, not straight into your inventory.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lSelling" },
+    { "text": "&7Press &fCreate&7 to open the listing form. Your inventory appears while the form is open so you can pick the item to sell, then set your asking price.", "indent": 6 },
+    { "text": "&7Price it against what is already listed. A listing well above the going rate simply sits there.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lCollection" },
+    { "text": "&7Where your purchases arrive and where an expired or cancelled listing returns to. &cCheck it&7 &8- items wait for you there and are not delivered on their own.", "indent": 6 },
+    { "type": "rule" },
+    { "text": "&8Selling to a specific player instead? A vending block does that, and does not take a listing slot.", "center": true }
+  ]
+}

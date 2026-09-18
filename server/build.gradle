@@ -44,8 +44,8 @@ neoForge {
 dependencies {
     implementation project(':common')
 
-    implementation "curse.maven:ftb-essentials-410811:6979622"
-    implementation "curse.maven:ftb-library-forge-404465:7134093"
+//    implementation "curse.maven:ftb-essentials-410811:${ftb_essentials_file}"
+//    implementation "curse.maven:ftb-library-forge-404465:${ftb_library_file}"
 
     implementation files("jars/luckperms-neoforge.jar")
     implementation files("jars/minestar-neoforge-1.1.0-all.jar")
@@ -57,7 +57,9 @@ dependencies {
 
     // Soft dependency of :common's daily-tasks system; present at dev runtime so party
     // scaling can actually be tested. Not on any compile classpath here.
-    runtimeOnly "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
+    implementation "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
+    // ChatHandler reads FTBEPlayerData for the mute/nickname state it prints.
+    implementation "dev.ftb.mods:ftb-essentials-neoforge:${ftb_essentials_version}"
 
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
         version {
@@ -70,6 +72,10 @@ dependencies {
     api("net.kyori:adventure-text-minimessage:4.17.0")
     shadow("net.kyori:adventure-text-serializer-gson:4.17.0")
     api("net.kyori:adventure-text-serializer-gson:4.17.0")
+
+    // No dbLibs here. The currency code lives in :common and so does the bundle now — this module
+    // does not name a single class from that stack. Shading them here shipped a copy relocated to
+    // com.roll_54.roll_mod.shadow.*, which :common's already-compiled bytecode could never resolve.
 
     implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
 
@@ -87,6 +93,12 @@ dependencies {
     def runCfg = neoForge.runs.getByName(runName).additionalRuntimeClasspathConfiguration
     dependencies.add(runCfg.name, "net.kyori:adventure-text-minimessage:4.17.0")
     dependencies.add(runCfg.name, "net.kyori:adventure-text-serializer-gson:4.17.0")
+    // Same reasoning for the economy's SQL stack: shaded into the production jar, so absent from
+    // the dev run unless it is added here. Without it DatabaseManager fails on ServerStarting.
+    dbLibs.each { dependencies.add(runCfg.name, it) }
+    // Open Parties and Claims owns plot claims, and :common only compiles against it. The server is
+    // where PlotService actually runs, so without this every plot command throws.
+    dependencies.add(runCfg.name, files("../common/jars/open-parties-and-claims-neoforge-1.21.1-0.27.5.jar"))
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
@@ -113,7 +125,17 @@ neoForge.ideSyncTask generateModMetadata
 
 tasks.shadowJar {
     configurations = [project.configurations.getByName("shadow")]
+    // JDBC drivers and Flyway both resolve through META-INF/services, so the entries have to be
+    // merged rather than let one bundled jar's copy win.
     mergeServiceFiles()
     relocate("net.kyori", "com.prostomaslo.libs.net.kyori")
     relocate("com.google.gson", "com.prostomaslo.libs.com.google.gson")
+
+    // The SQL stack is no longer shaded here at all, so it needs no relocations — see the
+    // dependencies block. Relocating it was what broke it: shadow rewrites references only in the
+    // classes it packages, and the code that names these packages is in a different jar.
+    //
+    // NeoForge provides SLF4J. Bundling the transitive copy the remaining shaded libraries drag in
+    // makes org.slf4j.helpers a split package, exported by both this mod and the real module.
+    exclude 'org/slf4j/**'
 }

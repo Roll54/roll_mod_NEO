@@ -2,7 +2,6 @@ package com.roll_54.roll_mod.minestar.dailytasks.api;
 
 import com.roll_54.roll_mod.RollMod;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
 
 /**
@@ -24,10 +23,19 @@ public interface DailyTask {
     DailyTaskHook hook();
 
     /**
-     * The requirement for a player in no party. The number actually shown is this scaled by team
-     * size — see {@code DailyTaskManager.requiredAmount}.
+     * The requirement for a player on their own, which is exactly what such a player is shown. A
+     * party of two or more is asked for more — see {@code DailyTaskManager.requiredAmount}.
      */
     int baseAmount();
+
+    /**
+     * Whether {@link #baseAmount()} is multiplied up for a party. A task whose unit is one large
+     * undertaking — a raid — returns {@code false} and asks the same of a party of six as of a
+     * player alone; progress is shared, so the party finishes it together.
+     */
+    default boolean scalesWithTeam() {
+        return true;
+    }
 
     /**
      * Whether this occurrence counts. {@code subject}'s runtime type is fixed by {@link #hook()};
@@ -68,21 +76,20 @@ public interface DailyTask {
     DailyTaskIcon icon();
 
     /**
-     * Pays out to one player who claimed this task. Progress is shared across a party, but the
-     * reward is per player, so this runs once per member who presses Claim.
-     *
-     * <p>The default is the placeholder payout; override it to give something task-specific.
-     */
-    default void grantReward(ServerPlayer player) {
-        DailyTaskRewards.give(player, DailyTaskRewards.placeholder());
-    }
-
-    /**
      * Relative likelihood of being drawn in the daily roll, against other tasks of a different
      * hook. Must be positive; the default weights every task equally.
      */
     default int weight() {
         return 1;
+    }
+
+    /**
+     * A mod this task only makes sense with, e.g. {@code "farmersdelight"}; the registry leaves the
+     * task out when that mod is not loaded. {@code null}, the default, means always available.
+     */
+    @javax.annotation.Nullable
+    default String requiredMod() {
+        return null;
     }
 
     /** Convenience for {@link #icon()}'s toast stack. */

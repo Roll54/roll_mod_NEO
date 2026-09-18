@@ -38,6 +38,16 @@ description = '''${mod_description}'''
 [[mixins]]
 config = "${mod_id}.mixins.json"
 
+# Kept apart from the config above because ftbteams is a soft dependency: this one is
+# required = false, so if the mod is absent its target class is missing, the mixin is skipped, and
+# nothing crashes. The config above is required = true and would take the game down instead.
+[[mixins]]
+config = "${mod_id}.ftbteams.mixins.json"
+
+# Same soft shape for Farmer's Delight: the daily-task cooking hooks target its classes.
+[[mixins]]
+config = "${mod_id}.farmersdelight.mixins.json"
+
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg
 #[[accessTransformers]]
@@ -91,6 +101,15 @@ modId = "extended_industrialization"
 type = "optional"
 versionRange = "[0,)"
 ordering = "AFTER"
+side = "BOTH"
+
+# Farmer's Delight adds the daily cooking tasks. Optional; the range is where the mixin targets were
+# checked (CookingPotResultSlot, CookingPotBlock.useItemOn, SkilletItem's finishUsingItem lambda).
+[[dependencies."${mod_id}"]]
+modId = "farmersdelight"
+type = "optional"
+versionRange = "[1.3.2,)"
+ordering = "NONE"
 side = "BOTH"
 
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares

@@ -33,3 +33,14 @@ type = "required"
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "CLIENT"
+
+# The client mixin config is required = true and one of its mixins targets GeckoLib
+# (skin.GeoArmorSkinMixin, which makes cosmetic helmet skins render on any helmet). Without GeckoLib
+# present that mixin's target class is missing and the game would fail to start with a mixin error
+# rather than a readable dependency message, so state the dependency outright.
+[[dependencies."${mod_id_client}"]]
+modId = "geckolib"
+type = "required"
+versionRange = "[4.8,)"
+ordering = "BEFORE"
+side = "CLIENT"

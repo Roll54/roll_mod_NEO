@@ -24,7 +24,7 @@ public class OreLangProvider extends LanguageProvider {
             String crushedSuffix;
             String refinedSuffix;
             String purifiedSuffix;
-            String dustSuffix = isEnglish ? " (Dust)" : " (пил)";
+            String dustSuffix = isEnglish ? " (Dust)" : " (Пил)";
             String dustPureSuffix = isEnglish ? " (Pure Dust)" : " (Очищений пил)";
             String rawBlockSuffix = isEnglish ? " (Raw Block)" : " (Необроблений блок)";
             String dustImpureSuffix;
@@ -36,12 +36,11 @@ public class OreLangProvider extends LanguageProvider {
                 purifiedSuffix = " (Purified Ore)";
                 dustImpureSuffix = " (Impure Dust)";
             } else {
-                // Ukrainian masculine/feminine variants depending on name ending
-                rawSuffix = " (необроблена копалина)";
-                crushedSuffix = " (дроблена копалина)";
-                refinedSuffix = " (рафінована копалина)";
-                purifiedSuffix = " (очищена копалина)";
-                dustImpureSuffix =  " (неочищена копалина)";
+                rawSuffix = " (Необроблений)";
+                crushedSuffix = " (Дроблений)";
+                refinedSuffix = " (Рафінований)";
+                purifiedSuffix = " (Очищений)";
+                dustImpureSuffix =  " (Неочищений)";
             }
 
             add("item.roll_mod.raw_" + def.id(), oreName + rawSuffix);

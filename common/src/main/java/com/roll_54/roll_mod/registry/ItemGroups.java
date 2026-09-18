@@ -52,6 +52,22 @@ public final class ItemGroups {
                         add(out, ItemRegistry.METEORITE_METAL_PROSPECTOR_PICKAXE);
 
                         // Bronze-GEAR
+                        add(out, ItemRegistry.BISMUTH_BRONZE_HELMET);
+                        add(out, ItemRegistry.BISMUTH_BRONZE_CHESTPLATE);
+                        add(out, ItemRegistry.BISMUTH_BRONZE_LEGGINGS);
+                        add(out, ItemRegistry.BISMUTH_BRONZE_BOOTS);
+                        add(out, ItemRegistry.BLACK_BRONZE_HELMET);
+                        add(out, ItemRegistry.BLACK_BRONZE_CHESTPLATE);
+                        add(out, ItemRegistry.BLACK_BRONZE_LEGGINGS);
+                        add(out, ItemRegistry.BLACK_BRONZE_BOOTS);
+                        add(out, ItemRegistry.STEEL_HELMET);
+                        add(out, ItemRegistry.STEEL_CHESTPLATE);
+                        add(out, ItemRegistry.STEEL_LEGGINGS);
+                        add(out, ItemRegistry.STEEL_BOOTS);
+                        add(out, ItemRegistry.BLACK_STEEL_HELMET);
+                        add(out, ItemRegistry.BLACK_STEEL_CHESTPLATE);
+                        add(out, ItemRegistry.BLACK_STEEL_LEGGINGS);
+                        add(out, ItemRegistry.BLACK_STEEL_BOOTS);
                         add(out, ItemRegistry.BLACK_BRONZE_SWORD);
                         add(out, ItemRegistry.BLACK_BRONZE_PICKAXE);
                         add(out, ItemRegistry.BLACK_BRONZE_AXE);
@@ -222,6 +238,8 @@ public final class ItemGroups {
                             full.set(MIComponents.ENERGY.get(), 100_000_000_000L);
                             out.accept(full);
                         }
+                        add(out, ItemRegistry.NETHERITE_STEAM_MINING_DRILL);
+
                         add(out, ItemRegistry.SKIN_APPLICATOR);
 
                         // Research Workbench

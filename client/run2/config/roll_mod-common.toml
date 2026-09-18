@@ -1,0 +1,10 @@
+	["CLEAN MINER SHIT"."Radius clean drops"]
+		# Default: 10.0
+		# Range: 10.0 ~ 20.0
+		radius_clean = 10.0
+		# Default: 45
+		# Range: 40 ~ 100
+		"min items for clean" = 45
+
+	["CLEAN MINER SHIT"."Clean items in tag's format"]
+		tags = ["minecraft:cobblestone", "minecraft:deepslate"]

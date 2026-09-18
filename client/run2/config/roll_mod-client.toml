@@ -1,0 +1,25 @@
+#Animation mode for vending block items.
+#
+#'SERVER_DEFAULT' uses the server-side setting, which is 'ROTATION' unless changed by admins.
+#
+#Allowed Values: SERVER_DEFAULT, STILL, BOBBING, ROTATION, BOBBING_ROTATION, FACING_PLAYER
+clientAnimationMode = "SERVER_DEFAULT"
+#Position of the 'scroll' tooltip in the vendor block GUI.
+#
+#'TOP' shows it at the top of the GUI,
+#'ITEM_TOOLTIP' adds the scroll tooltip to the item tooltip.
+#
+#Allowed Values: ITEM_TOOLTIP, TOP
+scrolltipPosition = "TOP"
+
+[ownerNotifications]
+	#Whether to receive messages when players purchase items from your vending blocks
+	purchaseMessages = true
+	#Whether to receive messages when players take free items from your vending blocks
+	giveawayMessages = true
+	#Whether to receive messages when players donate items to your vending blocks
+	donationMessages = true
+	#Whether to receive messages when your vending blocks run out of stock
+	outOfStockMessages = true
+	#Whether to receive messages when your vending blocks' storage becomes full
+	fullStorageMessages = true

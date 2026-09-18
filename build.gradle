@@ -14,6 +14,38 @@ subprojects {
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
+    // The SQL stack behind the economy's currency balances. :common compiles against it and bundles
+    // it (see common/build.gradle), and the dev runs put it on their run classpaths — so the one
+    // list lives here rather than being repeated across the build scripts.
+    //
+    // The transitive dependencies are spelled out rather than left to Gradle, because jar-in-jar
+    // embeds only what is named: a transitive resolved on the compile classpath is present at build
+    // time and simply absent at runtime. geantyref is the one that bites — jdbi3-core reaches for it
+    // the first time it resolves a generic type, so leaving it implicit turns every currency lookup
+    // into a NoClassDefFoundError that no compile and no dev run would ever show you.
+    //
+    // slf4j-api, gson and protobuf-java are deliberately NOT here. Two modules may not export the
+    // same package to a third, and the module graph is resolved before the game starts, so getting
+    // this wrong is not a crash later — it is a server that never boots. The game already exports
+    // slf4j and gson; protobuf is shaded flat into grieflogger's own jar. mysql-connector-j declares
+    // protobuf, but only its X DevAPI (mysqlx://) ever touches it — this connects over the classic
+    // protocol with a jdbc:mysql:// url, so the driver never loads a byte of it.
+    ext.dbLibs = [
+            "com.zaxxer:HikariCP:5.1.0",
+            "com.mysql:mysql-connector-j:8.3.0",
+            "com.h2database:h2:2.2.224",
+            "org.flywaydb:flyway-core:10.8.1",
+            "org.flywaydb:flyway-mysql:10.8.1",
+            "org.jdbi:jdbi3-core:3.45.1",
+            "org.jdbi:jdbi3-sqlobject:3.45.1",
+            // transitive, named so jar-in-jar actually ships them
+            "io.leangen.geantyref:geantyref:1.3.15",          // jdbi3-core, generic type resolution
+            "com.fasterxml.jackson.core:jackson-core:2.15.2", // flyway-core
+            "com.fasterxml.jackson.core:jackson-databind:2.15.2",
+            "com.fasterxml.jackson.core:jackson-annotations:2.15.2",
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-toml:2.15.2"
+    ]
+
     repositories {
         mavenLocal()
         mavenCentral()
@@ -31,6 +63,7 @@ subprojects {
             url "https://maven.shedaniel.me"
             content {
                 includeGroup "me.shedaniel.cloth" // Cloth Config
+                includeGroup "me.shedaniel"       // Roughly Enough Items
                 includeGroup "dev.architectury"   // Architectury
             }
         }
@@ -62,7 +95,7 @@ subprojects {
         maven {
             name = "FTB"
             url = "https://maven.ftb.dev/releases/"
-            content { includeGroup "dev.ftb.mods" } // FTB Teams
+            content { includeGroup "dev.ftb.mods" } // FTB Teams, Quests, Library
         }
         maven {
             name = "ModMaven"

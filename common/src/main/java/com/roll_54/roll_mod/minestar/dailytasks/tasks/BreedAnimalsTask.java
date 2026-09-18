@@ -26,7 +26,7 @@ public final class BreedAnimalsTask implements DailyTask {
 
     @Override
     public int baseAmount() {
-        return 6;
+        return 30;
     }
 
     @Override

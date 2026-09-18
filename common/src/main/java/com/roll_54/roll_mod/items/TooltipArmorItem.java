@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.items;
 
+import com.roll_54.roll_mod.items.armor.geckolib.GeoArmorRendererRegistry;
 import com.roll_54.roll_mod.util.TooltipManager;
 import com.roll_54.roll_mod.util.TooltipOptions;
 import net.minecraft.core.Holder;
@@ -9,10 +10,32 @@ import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 
-import java.util.List;
+import software.bernie.geckolib.animatable.GeoItem;
+import software.bernie.geckolib.animatable.client.GeoRenderProvider;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class TooltipArmorItem extends ArmorItem {
+import java.util.List;
+import java.util.function.Consumer;
+
+/**
+ * The mod's general-purpose armour item.
+ *
+ * <p>It implements {@link GeoItem} without animating anything of its own, so that a subclass with a
+ * geo model of its own — {@code HazmatHelmetItem} — inherits the plumbing. Nothing changes for a
+ * piece that has no provider registered: {@link GeoArmorRendererRegistry#apply} is a no-op then, and
+ * vanilla renders it.
+ *
+ * <p>This is <em>not</em> what makes a helmet eligible for a cosmetic skin, though it used to be.
+ * Skins are applied in {@code GeoArmorSkinMixin}, at GeckoLib's own call site, and reach every helmet
+ * in the game whether or not it is a {@code GeoItem}. Do not re-add a blanket registration loop for
+ * the mod's helmets on the strength of this interface.
+ */
+public class TooltipArmorItem extends ArmorItem implements GeoItem {
     private final TooltipOptions opts;
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public TooltipArmorItem(Holder<ArmorMaterial> material, Type type, Properties props, TooltipOptions opts) {
         super(material, type, props);
@@ -33,6 +56,21 @@ public class TooltipArmorItem extends ArmorItem {
     @Override
     public boolean isFoil(ItemStack stack) {
         return opts != null && opts.glow();
+    }
+
+    @Override
+    public void createGeoRenderer(Consumer<GeoRenderProvider> consumer) {
+        GeoArmorRendererRegistry.apply(this, consumer);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        // Skins supply their own models, not animations; the base armour has none.
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 
     // ---------------- BUILDER ----------------

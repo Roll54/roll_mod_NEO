@@ -1,0 +1,13 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.roll_54.roll_mod.compat.farmersdelight.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "CookingPotBlockEntityMixin",
+    "SkilletItemMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

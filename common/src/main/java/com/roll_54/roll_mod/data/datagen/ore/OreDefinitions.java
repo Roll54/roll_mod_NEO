@@ -94,7 +94,7 @@ public final class OreDefinitions {
             new OreDefinition("sunnarium_sulfophosphoorthosilicate", "#d86f2f", List.of(BlockSubLayer.VENUS), BlockOverlay.FINE_CRYSTALS, ItemBase.BISMUTH_ITEM, 15, 30, "Sunnarium Sulfophosphoorthosilicate", "Сульфофосфоортосилікат санарію", RawBlockBase.GOLD),
             new OreDefinition("fluosunnarite", "#7be7d8", List.of(BlockSubLayer.MERCURY, BlockSubLayer.VENUS), BlockOverlay.FINE_CRYSTALS, ItemBase.BISMUTH_ITEM, 10, 24, "Fluosunnarite", "Флюосанарит", RawBlockBase.DESH),
             new OreDefinition("rheniite", "#f2094b", List.of(BlockSubLayer.MERCURY, BlockSubLayer.VENUS), BlockOverlay.COPPER, ItemBase.IRIDIUM, 10, 24, "Rheniite", "Реніїт", RawBlockBase.OSTRUM),
-            new OreDefinition("antimony", "#d5e0f0", List.of(BlockSubLayer.MERCURY), BlockOverlay.IRON, ItemBase.ZINC, 14, 29, "Antimony", "Стибій", RawBlockBase.CALORITE),
+            new OreDefinition("antimony", "#d5e0f0", List.of(BlockSubLayer.MERCURY), BlockOverlay.IRON, ItemBase.ZINC, 14, 29, "Antimony", "Самородний стибій", RawBlockBase.CALORITE),
             new OreDefinition("livingstonite", "#8a2942", List.of(BlockSubLayer.VENUS), BlockOverlay.URANIUM, ItemBase.CRYSTAL, 18, 36, "Livingstonite", "Лівінгстоніт", RawBlockBase.COPPER)
     );
 }

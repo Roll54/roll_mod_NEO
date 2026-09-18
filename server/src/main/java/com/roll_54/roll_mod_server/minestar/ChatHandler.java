@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class ChatHandler {
 
     private static final char GLOBAL_PREFIX = '!';
-    private static final double LOCAL_RADIUS = 50.0;
+    private static final double LOCAL_RADIUS = 100.0;
     private static final double LOCAL_RADIUS_SQUARED = LOCAL_RADIUS * LOCAL_RADIUS;
 
     /**
@@ -83,7 +83,7 @@ public class ChatHandler {
                 if (handleGlobalChat(sender, rawMessage)) {
                     ChatDelivery.markHandled(sender);
                 }
-            } else if (handleLocalChat(sender, rawMessage)) {
+            } else if (handleLocalChat(sender, rawMessage, event )) {
                 // Local chat is confined to the radius, so the event is cancelled outright:
                 // that stops the vanilla broadcast and keeps the message away from listeners
                 // that would relay it server-wide (chat bridges and the like). No
@@ -133,7 +133,7 @@ public class ChatHandler {
     }
 
     /** {@return whether the message was delivered here, so vanilla must not broadcast it} */
-    private static boolean handleLocalChat(ServerPlayer sender, String content) {
+    private static boolean handleLocalChat(ServerPlayer sender, String content, ServerChatEvent event ) {
         MinecraftServer server = sender.getServer();
 
         if (server == null) {
@@ -157,7 +157,9 @@ public class ChatHandler {
             sender.sendSystemMessage(noFoundNearbyPlayers);
 
             logLocalNobody(sender, content);
+            event.setCanceled(true);
             return true;
+
         }
 
         Component messageComponent = Component.literal("")

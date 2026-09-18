@@ -1,0 +1,7 @@
+{
+	"parent": "roll_mod:block/vending_block",
+	"textures": {
+		"1": "block/spruce_planks",
+		"particle": "block/spruce_planks"
+	}
+}

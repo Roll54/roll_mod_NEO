@@ -22,11 +22,17 @@ import net.neoforged.neoforge.common.ItemAbility;
 import javax.annotation.Nullable;
 import java.util.Optional;
 
-public class BlockogrizItem extends DiggerItem {
+public class BlockogrizItem extends DiggerItem{
 
     public BlockogrizItem(Tier tier, Properties properties) {
         super(tier, TagRegistry.MINEABLE_WITH_PAXEL, properties);
     }
+
+    @Override
+    public int getMaxDamage(ItemStack stack) {
+        return getTier().getUses() * 3;
+    }
+
 
     @Override
     public boolean canPerformAction(ItemStack stack, ItemAbility ability) {

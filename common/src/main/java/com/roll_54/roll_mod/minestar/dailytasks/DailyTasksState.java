@@ -48,6 +48,13 @@ public class DailyTasksState extends SavedData {
      */
     public long periodDay = Long.MIN_VALUE;
 
+    /**
+     * Bumped by every server-wide reroll and mixed into each group's draw seed. Without it a group
+     * cleared by the reroll re-derives the very same set from world, group and day — the reroll
+     * would change nothing. Saved, so a restart still re-derives the rerolled set.
+     */
+    public long rerollSalt;
+
     public final Map<UUID, GroupState> groups = new HashMap<>();
 
     /** One group's task set, bonus reward and progress for the day it was rolled on. */
@@ -132,6 +139,7 @@ public class DailyTasksState extends SavedData {
     public static DailyTasksState load(CompoundTag tag, HolderLookup.Provider provider) {
         DailyTasksState s = new DailyTasksState();
         s.periodDay = tag.contains("periodDay") ? tag.getLong("periodDay") : Long.MIN_VALUE;
+        s.rerollSalt = tag.getLong("rerollSalt");
 
         ListTag groups = tag.getList("groups", Tag.TAG_COMPOUND);
         for (int i = 0; i < groups.size(); i++) {
@@ -178,6 +186,7 @@ public class DailyTasksState extends SavedData {
     @Override
     public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
         tag.putLong("periodDay", periodDay);
+        tag.putLong("rerollSalt", rerollSalt);
 
         ListTag groupList = new ListTag();
         groups.forEach((id, state) -> {

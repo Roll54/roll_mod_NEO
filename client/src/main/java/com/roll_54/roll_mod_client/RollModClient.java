@@ -23,6 +23,7 @@ import com.roll_54.roll_mod_client.gui.screen.PedestalScreen;
 import com.roll_54.roll_mod_client.gui.screen.ResearchWorkbenchScreen;
 import com.roll_54.roll_mod_client.gui.screen.RocketControllerScreen;
 import com.roll_54.roll_mod.items.armor.geckolib.GeoArmorRendererRegistry;
+import com.roll_54.roll_mod_client.client.skin.item.HelmetSkinRenderers;
 import com.roll_54.roll_mod.registry.BlockEntites;
 import com.roll_54.roll_mod.registry.BlockRegistry;
 import com.roll_54.roll_mod.registry.ItemRegistry;
@@ -106,7 +107,15 @@ public final class RollModClient {
 
     }
 
-    /** Wires common GeoItem armor to their client renderers via the common-side registry. */
+    /**
+     * Wires the four armour pieces that have a GeckoLib model of their own to their renderers.
+     *
+     * <p>Cosmetic skins are deliberately absent here. They used to be applied inside each provider,
+     * which meant a skin could only ever appear on an item the mod itself had registered — and
+     * GeckoLib only consults a provider for a {@code GeoItem} in the first place, so a vanilla helmet
+     * never reached it. {@code GeoArmorSkinMixin} now applies skins for every helmet in the game at
+     * GeckoLib's own call site, which is both broader and one place instead of N.
+     */
     private static void registerArmorRenderers() {
         registerArmor(ItemRegistry.EXAMPLE_ARMOR_HELMET.get(), GeckoArmorRenderer::new);
         registerArmor(ItemRegistry.CLOWN_HAT.get(), ClownHatRenderer::new);
@@ -146,6 +155,12 @@ public final class RollModClient {
 
         @SubscribeEvent
         public static void addPlayerLayers(EntityRenderersEvent.AddLayers event) {
+            // Fires whenever the EntityModelSet is rebuilt, which is exactly when a cached skin
+            // renderer's baked ModelParts go stale — GeoArmorRenderer bakes PLAYER_INNER_ARMOR in its
+            // constructor, so a renderer cached across a resource reload would draw against the
+            // previous model set.
+            HelmetSkinRenderers.clear();
+
             for (PlayerSkin.Model skinModel : List.of(PlayerSkin.Model.WIDE, PlayerSkin.Model.SLIM)) {
                 if (event.getSkin(skinModel) instanceof PlayerRenderer playerRenderer) {
                     playerRenderer.addLayer(new CyberwareSkinLayer(playerRenderer));
@@ -167,7 +182,7 @@ public final class RollModClient {
             event.register(KeyMappingRegistry.CHESTPLATE_TOGGLE_ONE.get());
             event.register(KeyMappingRegistry.CHESTPLATE_TOGGLE_TWO.get());
             event.register(KeyMappingRegistry.CHESTPLATE_TOGGLE_THREE.get());
-            event.register(KeyMappingRegistry.DAILY_TASKS.get());
+            event.register(KeyMappingRegistry.HUB.get());
         }
 
         @SubscribeEvent

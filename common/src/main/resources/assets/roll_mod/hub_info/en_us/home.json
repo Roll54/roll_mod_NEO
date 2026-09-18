@@ -1,0 +1,22 @@
+{
+  "lines": [
+    { "text": "&fThis is your page. It gathers what the server knows about you in one place, so you do not have to go looking for any of it." },
+    { "type": "space" },
+    { "text": "&e&lYour figure" },
+    { "text": "&7On the left is you, wearing exactly what you are wearing right now. Change armour or swap what is in your hand and it updates immediately.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lRank" },
+    { "text": "&7Your standing on the server. Ranks come from staff, and some of them raise limits elsewhere &8- a prime rank allows more warps and more homes than the default.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lStarcoins" },
+    { "text": "&7The server currency. You earn it from daily tasks, quest rewards and by selling to other players through the Auction House or a vending block. You spend it on plots, on paid warps, and on anything another player is selling.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lQuests" },
+    { "text": "&7How far through the quest book you are. The number counts required quests only &8- hover the line to see how many optional ones you have also finished.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lTier" },
+    { "text": "&7Your progression tier, which rises as you complete quests. Tiers gate parts of the pack, so this is the number to watch if something is not available to you yet.", "indent": 6 },
+    { "type": "rule" },
+    { "text": "&8Every figure here updates while the hub is open. Nothing needs reopening.", "center": true }
+  ]
+}

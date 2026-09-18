@@ -17,7 +17,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 /**
- * {@code /rollmod dailytasks …} — operator tooling for the daily-task system.
+ * {@code /rollmod admin dailytasks …} — operator tooling for the daily-task system.
  *
  * <p>Registered here in {@code common} rather than in the server module's {@code CommandRegistry}
  * so it also exists in the dev client run, where the daily tasks actually need testing.
@@ -34,8 +34,11 @@ public final class DailyTasksCommand {
 
     private static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("rollmod")
-                .then(Commands.literal("admin"))
+                .then(Commands.literal("admin")
                 .then(Commands.literal("dailytasks")
+                        // Gate on "dailytasks", not "admin": several classes register "rollmod admin",
+                        // and Brigadier keeps only the first-registered node's requirement when it
+                        // merges them. Nobody else registers this node, so this gate always holds.
                         .requires(src -> src.hasPermission(2))
                         .then(Commands.literal("info").executes(ctx -> info(ctx.getSource())))
                         .then(Commands.literal("reroll")
@@ -54,7 +57,7 @@ public final class DailyTasksCommand {
                                                         IntegerArgumentType.integer(1))
                                                 .executes(ctx -> progress(ctx.getSource(),
                                                         IntegerArgumentType.getInteger(ctx, "index"),
-                                                        IntegerArgumentType.getInteger(ctx, "amount"))))))));
+                                                        IntegerArgumentType.getInteger(ctx, "amount")))))))));
     }
 
     private static int info(CommandSourceStack source) throws com.mojang.brigadier.exceptions.CommandSyntaxException {

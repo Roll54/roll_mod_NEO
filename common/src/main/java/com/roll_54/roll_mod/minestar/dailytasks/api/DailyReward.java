@@ -41,6 +41,10 @@ public interface DailyReward {
      * <p>Resolved entirely on the client from its own copy of {@link
      * com.roll_54.roll_mod.minestar.dailytasks.DailyRewardRegistry}, so nothing here crosses the
      * wire.
+     *
+     * <p>A payout that rolls its amount cannot show a count, so it shows its range instead:
+     * {@link RewardRange#icon()} captions the item with e.g. {@code "1-4"}, from the same two
+     * numbers the roll uses.
      */
     default List<DailyTaskIcon> icons() {
         return List.of(icon());

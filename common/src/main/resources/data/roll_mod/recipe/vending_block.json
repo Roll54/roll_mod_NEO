@@ -1,0 +1,27 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "category": "equipment",
+    "pattern": [
+        "GGG",
+        "GEG",
+        "MRM"
+    ],
+    "key": {
+        "G": {
+            "tag": "c:glass_panes"
+        },
+        "E": {
+            "item": "minecraft:emerald"
+        },
+        "R": {
+            "item": "minecraft:redstone"
+        },
+        "M": {
+            "tag": "planks"
+        }
+    },
+    "result": {
+        "count": 1,
+        "id": "roll_mod:vending_block"
+    }
+}

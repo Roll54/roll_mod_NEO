@@ -14,6 +14,7 @@ import com.roll_54.roll_mod.items.armor.geckolib.ClownHatArmorItem;
 import com.roll_54.roll_mod.items.armor.geckolib.ExampleArmorItem;
 import com.roll_54.roll_mod.items.armor.geckolib.HazmatHelmetItem;
 import com.roll_54.roll_mod.items.armor.geckolib.MultiProtectingGraviChestItem;
+import com.roll_54.roll_mod.items.armor.geckolib.SkinAnchorItem;
 import com.roll_54.roll_mod.items.cyberware.CropLenseItem;
 import com.roll_54.roll_mod.items.cyberware.CropModuleItem;
 import com.roll_54.roll_mod.items.cyberware.SulfurResistantLungsItem;
@@ -51,6 +52,8 @@ import java.util.function.Supplier;
 
 import static com.roll_54.roll_mod.items.ModToolTiers.*;
 import static com.roll_54.roll_mod.registry.BlockRegistry.*;
+import static net.minecraft.world.item.Tiers.IRON;
+import static net.minecraft.world.item.Tiers.NETHERITE;
 
 @SuppressWarnings("unused")
 public class ItemRegistry {
@@ -108,6 +111,25 @@ public class ItemRegistry {
         return ITEMS.register(name, () -> new TooltipManager.TooltipItem(props, opts));
     }
 
+    /**
+     * One piece of a tool-tier armour set. Durability comes from the vanilla per-slot bases times
+     * {@code durabilityMultiplier}, the same way vanilla materials scale, since 1.21.1 ArmorMaterial
+     * no longer carries durability itself.
+     */
+    private static DeferredHolder<Item, Item> registerTierArmor(String name,
+                                                                DeferredHolder<ArmorMaterial, ArmorMaterial> material,
+                                                                ArmorItem.Type type,
+                                                                int durabilityMultiplier,
+                                                                int nameColor) {
+        return ITEMS.register(name, () -> new TooltipArmorItem.Builder(
+                Holder.direct(material.get()),
+                type,
+                new Item.Properties().stacksTo(1).durability(type.getDurability(durabilityMultiplier))
+        )
+                .nameColor(nameColor)
+                .build());
+    }
+
 
     public static final DeferredHolder<Item, Item> COPPER_GEAR = registerSimple("copper_gear");
     public static final DeferredHolder<Item, Item> CHEMICAL_CORE = registerSimple("chemical_core", new Item.Properties().stacksTo(16));
@@ -145,7 +167,7 @@ public class ItemRegistry {
                     "diamond_blockogriz",
                     () -> new TooltipManager.TooltipBlockogrizItem(
                             DIAMOND_ALLOY,
-                            5.0F,
+                            15.0F,
                             -2.8F,
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(MALACHITE_GREEEN, 2, AQUA)
@@ -168,8 +190,8 @@ public class ItemRegistry {
             ITEMS.register(
                     "iron_blockogriz",
                     () -> new TooltipManager.TooltipBlockogrizItem(
-                            METEORITE_METAL,
-                            15.0F,
+                            IRON,
+                            6.0F,
                             -2.8F,
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(WHITE, 1,LIGHT_GRAY)
@@ -181,7 +203,7 @@ public class ItemRegistry {
                     "steel_blockogriz",
                     () -> new TooltipManager.TooltipBlockogrizItem(
                             STEEL,
-                            8.0F,
+                            11.0F,
                             -2.8F,
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(BLACK_STEEL_COLOR, 1,LIGHT_GRAY)
@@ -192,8 +214,8 @@ public class ItemRegistry {
             ITEMS.register(
                     "netherite_blockogriz",
                     () -> new TooltipManager.TooltipBlockogrizItem(
-                            STEEL,
-                            10.0F,
+                            NETHERITE,
+                            12.5F,
                             -2.8F,
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(WHITE, 1,LIGHT_GRAY)
@@ -205,7 +227,7 @@ public class ItemRegistry {
                     "black_steel_blockogriz",
                     () -> new TooltipManager.TooltipBlockogrizItem(
                             BLACK_STEEL,
-                            12.0F,
+                            11.5F,
                             -2.8F,
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(BLACK_STEEL_COLOR, 1,LIGHT_GRAY)
@@ -217,7 +239,7 @@ public class ItemRegistry {
                     "bismuth_bronze_blockogriz",
                     () -> new TooltipManager.TooltipBlockogrizItem(
                             BISMUTH_BRONZE,
-                            12.0F,
+                            9.0F,
                             -2.8F,
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(BISMUTH_BRONZE_COLOR, 1,LIGHT_GRAY)
@@ -229,7 +251,7 @@ public class ItemRegistry {
                     "black_bronze_blockogriz",
                     () -> new TooltipManager.TooltipBlockogrizItem(
                             BLACK_BRONZE,
-                            12.0F,
+                            9.0F,
                             -2.8F,
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(BLACK_BRONZE_COLOR, 1,LIGHT_GRAY)
@@ -420,6 +442,44 @@ public class ItemRegistry {
                     TooltipOptions.nameAndLore(METEORITE_DARK_BLUE, 1, METEORITE_LIGHT_BLUE)
             )
     );
+
+    // Armour sets matching the tool tiers in ModToolTiers: the same material that makes better tools
+    // makes better armour. Durability multipliers track each tier's tool durability.
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_HELMET = registerTierArmor(
+            "bismuth_bronze_helmet", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.HELMET, 12, BISMUTH_BRONZE_COLOR);
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_CHESTPLATE = registerTierArmor(
+            "bismuth_bronze_chestplate", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.CHESTPLATE, 12, BISMUTH_BRONZE_COLOR);
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_LEGGINGS = registerTierArmor(
+            "bismuth_bronze_leggings", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.LEGGINGS, 12, BISMUTH_BRONZE_COLOR);
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_BOOTS = registerTierArmor(
+            "bismuth_bronze_boots", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.BOOTS, 12, BISMUTH_BRONZE_COLOR);
+
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_HELMET = registerTierArmor(
+            "black_bronze_helmet", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.HELMET, 16, BLACK_BRONZE_COLOR);
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_CHESTPLATE = registerTierArmor(
+            "black_bronze_chestplate", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.CHESTPLATE, 16, BLACK_BRONZE_COLOR);
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_LEGGINGS = registerTierArmor(
+            "black_bronze_leggings", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.LEGGINGS, 16, BLACK_BRONZE_COLOR);
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_BOOTS = registerTierArmor(
+            "black_bronze_boots", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.BOOTS, 16, BLACK_BRONZE_COLOR);
+
+    public static final DeferredHolder<Item, Item> STEEL_HELMET = registerTierArmor(
+            "steel_helmet", ModArmorMaterials.STEEL_ARMOR, ArmorItem.Type.HELMET, 26, BLACK_STEEL_COLOR);
+    public static final DeferredHolder<Item, Item> STEEL_CHESTPLATE = registerTierArmor(
+            "steel_chestplate", ModArmorMaterials.STEEL_ARMOR, ArmorItem.Type.CHESTPLATE, 26, BLACK_STEEL_COLOR);
+    public static final DeferredHolder<Item, Item> STEEL_LEGGINGS = registerTierArmor(
+            "steel_leggings", ModArmorMaterials.STEEL_ARMOR, ArmorItem.Type.LEGGINGS, 26, BLACK_STEEL_COLOR);
+    public static final DeferredHolder<Item, Item> STEEL_BOOTS = registerTierArmor(
+            "steel_boots", ModArmorMaterials.STEEL_ARMOR, ArmorItem.Type.BOOTS, 26, BLACK_STEEL_COLOR);
+
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_HELMET = registerTierArmor(
+            "black_steel_helmet", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.HELMET, 22, BLACK_STEEL_COLOR);
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_CHESTPLATE = registerTierArmor(
+            "black_steel_chestplate", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.CHESTPLATE, 22, BLACK_STEEL_COLOR);
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_LEGGINGS = registerTierArmor(
+            "black_steel_leggings", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.LEGGINGS, 22, BLACK_STEEL_COLOR);
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_BOOTS = registerTierArmor(
+            "black_steel_boots", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.BOOTS, 22, BLACK_STEEL_COLOR);
 
     public static final DeferredHolder<Item, Item> DIAMOND_ALLOY_DUST = registerTooltip(
             "diamond_alloy_dust",
@@ -1558,6 +1618,16 @@ public class ItemRegistry {
                     )
             );
 
+    /**
+     * MI's steam mining drill in a netherite frame: fireproof, and {@value
+     * com.roll_54.roll_mod.items.NetheriteSteamDrillItem#SPEED_BONUS_PERCENT}% faster to mine with.
+     * Everything else about it — water, fuel, 3x3, silk touch — is MI's.
+     */
+    public static final DeferredHolder<Item, NetheriteSteamDrillItem> NETHERITE_STEAM_MINING_DRILL =
+            ITEMS.register("netherite_steam_mining_drill",
+                    () -> new NetheriteSteamDrillItem(new Item.Properties())
+            );
+
     public static final DeferredHolder<Item, ProspectorPickItem> PROSPECTOR_PICK_ITEM =
             ITEMS.register("prospector_pickaxe",
                     () -> new ProspectorPickItem(
@@ -1783,6 +1853,14 @@ public class ItemRegistry {
 
     public static final DeferredHolder<Item, MultiProtectingGraviChestItem> MULTI_PROTECTING_GRAVI_CHESTPLATE =
             ITEMS.register("multi_protecting_gravi_chestplate", () -> new MultiProtectingGraviChestItem(ModArmorMaterials.METEORITE_ARMOR, new Item.Properties()));
+
+    /**
+     * Not a real item — the animatable a cosmetic helmet skin renders as. See {@link SkinAnchorItem}
+     * for why it has to be registered rather than constructed on demand. Deliberately absent from
+     * every creative tab: {@code ItemGroups} lists its contents explicitly, so omission is enough.
+     */
+    public static final DeferredHolder<Item, SkinAnchorItem> SKIN_ANCHOR =
+            ITEMS.register("skin_anchor", () -> new SkinAnchorItem(new Item.Properties().stacksTo(1)));
 
 
     public static final DeferredHolder<Item, Item> PRIMITIVE_BATTERY = ITEMS.register("primitive_battery", () -> new Item(new Item.Properties()));

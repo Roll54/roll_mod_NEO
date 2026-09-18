@@ -30,6 +30,19 @@ public class TagRegistry {
     public static final TagKey<Item> EXTREME_RADIOACTIVITY = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "extreme_radioactivity"));
 
 
+    // Which cosmetic skin slot an item occupies. These tags are consulted first by SkinCategory#of;
+    // anything they do not mention falls back to an instanceof + ItemAbility probe, so a sword from
+    // a mod nobody tagged is still skinnable. Tags stay the authority because EnergySwordItem and
+    // ComponentEnergyDrill both extend plain Item and answer no ItemAbility — neither half of the
+    // probe can see them. Being datapack JSON, they also let a server retag items live via /reload.
+    public static final TagKey<Item> SKIN_SLOT_SWORD = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "skin_slot/sword"));
+    public static final TagKey<Item> SKIN_SLOT_AXE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "skin_slot/axe"));
+    public static final TagKey<Item> SKIN_SLOT_PICKAXE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "skin_slot/pickaxe"));
+    public static final TagKey<Item> SKIN_SLOT_HELMET = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "skin_slot/helmet"));
+
+    /** Items that may never carry a cosmetic skin. Beats every slot tag and the type probe both. */
+    public static final TagKey<Item> SKIN_BLACKLIST = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "skin_blacklist"));
+
     //for blockogriz
     public static final TagKey<Block> MINEABLE_WITH_PAXEL = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("cucumber", "mineable/paxel"));
 

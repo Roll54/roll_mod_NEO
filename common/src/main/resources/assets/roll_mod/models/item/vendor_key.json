@@ -1,0 +1,28 @@
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "roll_mod:item/vendor_key"
+    },
+    "display": {
+        "firstperson_righthand": {
+            "rotation": [ 128, 0, 0 ],
+            "translation": [ 0, 1, 0 ],
+            "scale": [ 0.4, 0.4, 0.4 ]
+        },
+        "firstperson_lefthand": {
+            "rotation": [ 128, 0, 0 ],
+            "translation": [ 0, 1, 0 ],
+            "scale": [ 0.4, 0.4, 0.4 ]
+        },
+        "thirdperson_righthand": {
+            "rotation": [ 180, 0, 0 ],
+            "translation": [ 0, 1, 0 ],
+            "scale": [ 0.4, 0.4, 0.4 ]
+        },
+        "thirdperson_lefthand": {
+            "rotation": [ 180, 0, 0 ],
+            "translation": [ 0, 1, 0 ],
+            "scale": [ 0.4, 0.4, 0.4 ]
+        }
+    }
+}

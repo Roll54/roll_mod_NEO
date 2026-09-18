@@ -1,27 +1,35 @@
 package com.roll_54.roll_mod.minestar.dailytasks.rewards;
 
+import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.dailytasks.api.AutoDailyReward;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyReward;
+import com.roll_54.roll_mod.economy.api.CurrencyService;
+import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon;
-import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskRewards;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Items;
 
 /**
- * A payout the mod cannot express in items: it hands the work to another mod's command.
+ * Server currency, paid straight into the player's balance.
  *
- * <p>This is the reason rewards are pluggable at all — server currency, ranks, permissions and
- * anything else that already has a command can be paid out without this mod taking a dependency on
- * it. Nothing here needs the target mod to be loaded at compile time; if the command does not exist
- * the failure is logged and the claim still completes.
+ * <p>This used to run {@code eco give} against another mod, because the economy was a separate mod
+ * this one could not depend on. Now that it lives here it is a direct {@link CurrencyService} call —
+ * no command parsing, no permission-level-4 console source, and a failure that can actually be
+ * reported. The deposit is asynchronous, so the balance lands shortly after the claim returns.
  */
 @AutoDailyReward
 public final class StarcoinsReward implements DailyReward {
 
-    private static final DailyTaskIcon ICON = DailyTaskIcon.of(Items.GOLD_NUGGET);
+    /**
+     * The same star the per-task strip uses for starcoins, so the currency looks the same wherever
+     * it turns up. A PNG icon needs an item to stand in on the advancement toast, which can only
+     * draw a stack.
+     */
+    private static final DailyTaskIcon ICON =
+            DailyTaskIcon.of(RollMod.id("textures/item/lp.png"), Items.GOLD_NUGGET);
 
-    /** {@code %player%} is substituted by {@link DailyTaskRewards#runCommand}. */
-    private static final String COMMAND = "eco give %player% 250";
+    private static final CurrencyType TYPE = CurrencyType.MAIN;
+    private static final long AMOUNT = 250;
 
     @Override
     public String id() {
@@ -34,13 +42,7 @@ public final class StarcoinsReward implements DailyReward {
     }
 
     @Override
-    public int weight() {
-        // Currency is the most broadly useful payout, so it comes up more often than the others.
-        return 2;
-    }
-
-    @Override
     public void grant(ServerPlayer player) {
-        DailyTaskRewards.runCommand(player, COMMAND);
+        CurrencyService.deposit(player, TYPE, AMOUNT, player.server);
     }
 }

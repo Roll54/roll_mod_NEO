@@ -1,0 +1,33 @@
+{
+  "lines": [
+    { "text": "&fPublic destinations other players have made and shared. Shops, farms, event grounds and anything else worth showing off." },
+    { "type": "space" },
+    { "text": "&e&lTravelling" },
+    { "text": "&7Pick a warp and press Teleport. On a player-made warp there is a short countdown before it fires, and &cmoving cancels it&7 &8- stand still until you arrive.", "indent": 6 },
+    { "text": "&7&lOfficial&7 warps skip the wait and travel &binstantly&7 &8- nothing to stand still for.", "indent": 6 },
+    { "text": "&7Some warps charge a fee, paid to the owner on arrival. You are never charged if the teleport fails, and you always travel to your own warps for free.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lThe status badges" },
+    { "text": "&7Every warp opens its row with a badge saying where it stands. Hover one to read it.", "indent": 6 },
+    { "text": "&b&lOfficial &8- &7made by staff. Events, hubs and shops. These are always at the top of the list.", "indent": 6 },
+    { "text": "&a&lApproved &8- &7a moderator has been there and vouched for it.", "indent": 6 },
+    { "text": "&e&lAwaiting review &8- &7nobody has checked it yet. This is normal for a new warp and it is fine to visit, but nobody has vouched for where it drops you. Look before you step.", "indent": 6 },
+    { "text": "&c&lRejected &8- &7blocked by staff. Only the owner can still travel there.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lThe order of the list" },
+    { "text": "&7Official warps first, then the rest by how many different players visited them today. The busiest player-made warps rise to the top on their own.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lMaking your own" },
+    { "text": "&7A warp is created where you are standing, so stand where you want visitors to arrive &8- not in the wall behind it. How many you may keep depends on your rank.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lRules" },
+    { "text": "&f&l[1.6.2] &7Warps offering free services that hand out items are not allowed, with the exception of public mob farms.", "indent": 6 },
+    { "text": "&8Punishment: &6Medium severity", "indent": 12 },
+    { "text": "&f&l[2.8] &7Warps and shops may be advertised no more than once every 10 minutes.", "indent": 6 },
+    { "text": "&8Punishment: &eLight severity", "indent": 12 },
+    { "text": "&f&l[6.1] &7A claim counts as shop territory if it holds a public warp belonging to one of its members and at least one vending machine or public service (XP grinders, mechanisms, chargers and the like). Setting a public warp for players who are not members of the claim is forbidden.", "indent": 6 },
+    { "text": "&8Punishment: &cSevere", "indent": 12 },
+    { "type": "rule" },
+    { "text": "&8Somewhere you should not be? Report it with &f/rollmod reportWarp <name>&8.", "center": true }
+  ]
+}
