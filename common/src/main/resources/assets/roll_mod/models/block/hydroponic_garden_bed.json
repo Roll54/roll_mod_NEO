@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "roll_mod:block/hydroponic_garden_bed_top",
+    "side": "roll_mod:block/hydroponic_garden_bed_side",
+    "bottom": "roll_mod:block/hydroponic_garden_bed_bottom"
+  }
+}

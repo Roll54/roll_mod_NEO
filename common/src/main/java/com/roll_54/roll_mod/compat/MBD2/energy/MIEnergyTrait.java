@@ -10,7 +10,7 @@ import com.lowdragmc.mbd2.api.capability.recipe.IRecipeHandlerTrait;
 import com.lowdragmc.mbd2.api.recipe.MBDRecipe;
 import com.lowdragmc.mbd2.common.capability.recipe.ForgeEnergyRecipeCapability;
 import com.lowdragmc.mbd2.common.machine.MBDMachine;
-import com.lowdragmc.mbd2.common.trait.AutoIO;
+import com.lowdragmc.mbd2.common.runtime.RuntimeAutoIO;
 import com.lowdragmc.mbd2.common.trait.IAutoIOTrait;
 import com.lowdragmc.mbd2.common.trait.RecipeHandlerTrait;
 import com.lowdragmc.mbd2.common.trait.SimpleCapabilityTrait;
@@ -41,8 +41,19 @@ public class MIEnergyTrait extends SimpleCapabilityTrait<MIEnergyStorage, Direct
     private final MIEnergyRecipeHandler recipeHandler = new MIEnergyRecipeHandler();
     private final Map<BlockPos, EnumMap<Direction, BlockCapabilityCache<MIEnergyStorage, Direction>>> nearbyCache = new HashMap<>();
 
+    /**
+     * The auto-IO sides, as runtime values backed by the definition's defaults.
+     *
+     * <p>MBD2 21.1 moved auto-IO out of the definition and into {@link RuntimeAutoIO}, so that a
+     * placed machine can have its sides changed without editing the machine project. The key and the
+     * supplier are what {@code ForgeEnergyCapabilityTrait} uses, so a machine built there and one
+     * built here read the same.
+     */
+    public final RuntimeAutoIO autoIO;
+
     public MIEnergyTrait(MBDMachine machine, MIEnergyTraitDefinition definition) {
         super(machine, definition);
+        this.autoIO = new RuntimeAutoIO(runtimeValues, "auto_io", () -> getDefinition().getAutoIO());
         this.storage = createStorage();
         this.storage.setOnContentsChanged(this::notifyListeners);
     }
@@ -79,10 +90,15 @@ public class MIEnergyTrait extends SimpleCapabilityTrait<MIEnergyStorage, Direct
         return List.of(recipeHandler);
     }
 
-    @Nullable
+    /**
+     * {@inheritDoc}
+     *
+     * <p>Never null, and no enabled check: {@code IAutoIOTrait.serverTick} reads
+     * {@code autoIO.enable} itself before it does anything.
+     */
     @Override
-    public AutoIO getAutoIO() {
-        return getDefinition().getAutoIO().isEnable() ? getDefinition().getAutoIO() : null;
+    public RuntimeAutoIO getRuntimeAutoIO() {
+        return autoIO;
     }
 
     public BlockCapabilityCache<MIEnergyStorage, Direction> getNearbyCache(ServerLevel serverLevel, BlockPos pos, Direction side) {

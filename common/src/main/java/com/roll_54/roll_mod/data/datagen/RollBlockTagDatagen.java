@@ -35,7 +35,13 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
         pickaxeTag.add(
                 BlockRegistry.CROP_MANAGER.get(),
                 BlockRegistry.WEED_MANAGER.get(),
+                BlockRegistry.HYDROPONIC_GARDEN_BED.get(),
                 BlockRegistry.GRINDING_WHEELS.get());
+        needsStoneTag.add(BlockRegistry.HYDROPONIC_GARDEN_BED.get());
+
+        // The Crop Manager Mk2's block is created by MBD2 from its machine definition, not by this
+        // mod's DeferredRegister, so there is no DeferredBlock to hand to add(...) -- only its id.
+        pickaxeTag.addOptional(com.roll_54.roll_mod.compat.MBD2.machine.RollMBD2Machines.CROP_MANAGER_MK2);
 
         // Multiblock controllers added via KubeJS (mi_tweaks namespace), referenced by id.
         pickaxeTag.addOptional(ResourceLocation.fromNamespaceAndPath("mi_tweaks", "large_chemical_reactor"));

@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "roll_mod:block/crop_manager/crop_manager_side",
+    "side": "roll_mod:block/crop_manager/crop_manager_side",
+    "front": "roll_mod:block/crop_manager/crop_manager_front",
+    "back": "roll_mod:block/crop_manager/crop_manager_back"
+  },
+  "elements": [
+    {
+      "__comment": "Opaque casing. Carries the side texture on every face so the overlay below always has something behind it -- the front/back art is ~half transparent and the block renders on the cutout layer, so without this those pixels are holes straight through the block.",
+      "from": [0, 0, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "down":  {"texture": "#side", "cullface": "down"},
+        "up":    {"texture": "#side", "cullface": "up"},
+        "north": {"texture": "#side", "cullface": "north"},
+        "south": {"texture": "#side", "cullface": "south"},
+        "west":  {"texture": "#side", "cullface": "west"},
+        "east":  {"texture": "#side", "cullface": "east"}
+      }
+    },
+    {
+      "__comment": "Front/back overlay, nudged 0.01 proud of the casing so it wins the depth test instead of z-fighting with it. Authored facing NORTH; MBD2 bakes a rotated copy per facing.",
+      "from": [0, 0, -0.01],
+      "to": [16, 16, 16.01],
+      "faces": {
+        "north": {"texture": "#front", "cullface": "north"},
+        "south": {"texture": "#back", "cullface": "south"}
+      }
+    }
+  ]
+}

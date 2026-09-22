@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.economy;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.economy.api.CurrencyOfferService;
 import com.roll_54.roll_mod.economy.command.CurrencyCommand;
 import com.roll_54.roll_mod.economy.config.CurrencyConfig;
 import com.roll_54.roll_mod.economy.database.DatabaseManager;
@@ -72,6 +73,9 @@ public final class EconomyEvents {
       auctionTickCounter = 0;
       AuctionManager.tickExpiry(event.getServer());
     }
+    // Refunds payment offers nobody answered. It keeps its own counter, because a week-long
+    // deadline does not want checking on the auctions' five-second beat.
+    CurrencyOfferService.tickExpiry(event.getServer());
   }
 
   @SubscribeEvent

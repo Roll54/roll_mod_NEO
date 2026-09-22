@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.minestar.hub.home;
 
 import com.roll_54.roll_mod.compat.ftb.HomesFacade;
 import com.roll_54.roll_mod.economy.vendingblock.auction.LuckPermsCompat;
+import com.roll_54.roll_mod.minestar.teleport.TeleportService;
 import com.roll_54.roll_mod.util.LegacyText;
 import com.roll_54.roll_mod.util.PlayerLookup;
 import net.minecraft.ChatFormatting;
@@ -94,11 +95,12 @@ public final class HomeService {
     }
 
     /**
-     * Copies one FTB Essentials home into this mod's list and drops FTB's copy.
+     * Copies one FTB Essentials home into this mod's list and stops offering FTB's.
      *
-     * <p>Ordered that way deliberately: the copy is added first and FTB's is only forgotten once it
-     * is safely stored, so a failure anywhere leaves the player with the home twice rather than not
-     * at all. The name is FTB's, which may already be taken here — a home moved rather than added
+     * <p>Ordered that way deliberately: the copy is added first and the old one is only marked as
+     * migrated once it is safely stored, so a failure anywhere leaves the player with the home
+     * twice rather than not at all. FTB's own file is never edited — see
+     * {@code compat.ftb.LegacyHomesFacade}. The name is FTB's, which may already be taken here — a home moved rather than added
      * would silently discard the FTB position, so a clash is refused and the player renames one
      * side first.
      */
@@ -202,7 +204,9 @@ public final class HomeService {
         // Out of the hub first, so the player lands looking at the world rather than at the screen
         // they left from. Only once every refusal above has passed.
         player.closeContainer();
-        player.teleportTo(level, home.x(), home.y(), home.z(), home.yaw(), home.pitch());
+        // Through the teleport service, so /back can bring them home again from here.
+        TeleportService.teleport(player, level, home.x(), home.y(), home.z(),
+                home.yaw(), home.pitch());
         player.sendSystemMessage(Component.translatable("msg.roll_mod.homes.arrived",
                 LegacyText.display(home.name())));
     }

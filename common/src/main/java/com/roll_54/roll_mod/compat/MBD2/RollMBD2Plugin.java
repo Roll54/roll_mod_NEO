@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.compat.MBD2;
 import com.lowdragmc.mbd2.api.registry.MBDRegistries;
 import com.lowdragmc.mbd2.common.trait.TraitDefinitionType;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.compat.MBD2.crops.CropHarvesterTraitDefinition;
 import com.roll_54.roll_mod.compat.MBD2.energy.MIEnergyTraitDefinition;
 
 /**
@@ -20,6 +21,7 @@ public final class RollMBD2Plugin {
 
     public static void registerTraitTypes() {
         register(MIEnergyTraitDefinition.TYPE);
+        register(CropHarvesterTraitDefinition.TYPE);
     }
 
     private static void register(TraitDefinitionType<?> type) {

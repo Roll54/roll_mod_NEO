@@ -6,6 +6,7 @@ import com.roll_54.roll_mod.registry.TagRegistry;
 import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
 import com.roll_54.roll_mod.gui.menu.RocketControllerMenu;
 import io.netty.buffer.ByteBuf;
+import com.roll_54.roll_mod.util.SafeSpot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -117,7 +118,10 @@ public record PacketLaunchRocket(BlockPos pos) implements CustomPacketPayload {
      * Searches a square spiral of radius {@code radius} around (originX, originZ) for a
      * safe two-block-high air column sitting on a solid block.
      *
-     * @return the Y-level of the floor block (player stands one above), or {@code null} if nothing was found.
+     * <p>The search itself lives in {@link SafeSpot}, shared with {@code /rtp}; this only keeps the
+     * launch log around it.
+     *
+     * @return where the player's feet go, or {@code null} if nothing was found.
      */
     @Nullable
     private static BlockPos findSafeLanding(ServerLevel level, ResourceKey<Level> dim,
@@ -125,79 +129,14 @@ public record PacketLaunchRocket(BlockPos pos) implements CustomPacketPayload {
         LOGGER.info("[RocketLaunch] Searching for safe landing in dimension '{}' around ({}, {}) with radius {}",
                 dim.location(), originX, originZ, radius);
 
-        for (int r = 0; r <= radius; r++) {
-            for (int dx = -r; dx <= r; dx++) {
-                for (int dz = -r; dz <= r; dz++) {
-                    // Only check the perimeter ring for r > 0
-                    if (r > 0 && Math.abs(dx) != r && Math.abs(dz) != r) continue;
-
-                    int cx = originX + dx;
-                    int cz = originZ + dz;
-
-                    LOGGER.debug("[RocketLaunch] Trying column ({}, {})", cx, cz);
-
-                    BlockPos candidate = tryFindColumn(level, cx, cz);
-                    if (candidate != null) {
-                        LOGGER.info("[RocketLaunch] Safe landing found at ({}, {}, {})", candidate.getX(), candidate.getY(), candidate.getZ());
-                        return candidate;
-                    }
-                }
-            }
+        BlockPos found = SafeSpot.around(level, originX, originZ, radius);
+        if (found != null) {
+            LOGGER.info("[RocketLaunch] Safe landing found at ({}, {}, {})",
+                    found.getX(), found.getY(), found.getZ());
+        } else {
+            LOGGER.warn("[RocketLaunch] No safe landing found within radius {} around ({}, {}) in '{}'",
+                    radius, originX, originZ, dim.location());
         }
-
-        LOGGER.warn("[RocketLaunch] No safe landing found within radius {} around ({}, {}) in '{}'",
-                radius, originX, originZ, dim.location());
-        return null;
-    }
-
-    @Nullable
-    private static BlockPos tryFindColumn(ServerLevel level, int x, int z) {
-        for (int y = level.getMaxBuildHeight() - 2; y > level.getMinBuildHeight(); y--) {
-            BlockPos floor = new BlockPos(x, y, z);
-            BlockPos stand = floor.above();
-            BlockPos head = stand.above();
-
-            boolean floorSolid = level.getBlockState(floor).isFaceSturdy(level, floor, net.minecraft.core.Direction.UP);
-            boolean standAir = level.getBlockState(stand).isAir();
-            boolean headAir = level.getBlockState(head).isAir();
-
-            LOGGER.debug("[RocketLaunch]   Full scan ({}, {}, {}) floorSolid={}, standAir={}, headAir={}",
-                    x, y, z, floorSolid, standAir, headAir);
-
-            if (floorSolid && standAir && headAir) {
-                if (level.dimension() == Level.NETHER && !isSafeNetherLanding(level, stand)) {
-                    LOGGER.debug("[RocketLaunch]   Rejected Nether landing at ({}, {}, {}) due to roof/ceiling constraints",
-                            stand.getX(), stand.getY(), stand.getZ());
-                    continue;
-                }
-                return stand;
-            }
-        }
-
-        return null;
-    }
-
-    private static boolean isSafeNetherLanding(ServerLevel level, BlockPos standPos) {
-        BlockPos floorPos = standPos.below();
-
-        // Nether bedrock roof sits around y=127, so reject high roof-band floors directly.
-        // Using getMaxBuildHeight() here is wrong because build height is 320+ in modern versions.
-        int roofFloorMinY = 123;
-        if (floorPos.getY() >= roofFloorMinY) {
-            LOGGER.debug("[RocketLaunch]   Nether landing rejected: floor is in roof band at y={}", floorPos.getY());
-            return false;
-        }
-
-        int ceilingCheck = 8;
-        for (int i = 0; i <= ceilingCheck; i++) {
-            BlockPos checkPos = standPos.above(i);
-            if (!level.getBlockState(checkPos).isAir()) {
-                LOGGER.debug("[RocketLaunch]   Nether landing rejected: blocked above at ({}, {}, {})",
-                        checkPos.getX(), checkPos.getY(), checkPos.getZ());
-                return false;
-            }
-        }
-
-        return true;
+        return found;
     }
 }

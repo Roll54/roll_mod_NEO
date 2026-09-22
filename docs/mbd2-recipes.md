@@ -205,6 +205,217 @@ tier** matches the cables feeding it.
 
 ---
 
+## 8. Machines in Java (no editor, no `.sm`)
+
+A machine does not have to come from the MBD2 editor. `roll_mod:crop_manager_mk2` is assembled in
+Java in
+[`RollMBD2Machines.java`](../common/src/main/java/com/roll_54/roll_mod/compat/MBD2/machine/RollMBD2Machines.java),
+which is the pattern to copy.
+
+### Where custom machine logic goes
+MBD2 has **no machine class to subclass**, and `MachineEvent.postCustomEvent()` only forwards to
+KubeJS — there is no NeoForge event for per-machine ticks. The one supported hook for custom Java
+behaviour is **`ITrait.serverTick()`**. So machine logic lives in a custom trait
+(`TraitDefinition` + `Trait`), registered from `RollMBD2Plugin.registerTraitTypes()` exactly like
+`mi_energy_storage`. See
+[`CropHarvesterTrait`](../common/src/main/java/com/roll_54/roll_mod/compat/MBD2/crops/CropHarvesterTrait.java).
+
+### Building the definition
+```java
+@SubscribeEvent
+public void onRegisterMachines(MBDRegistryEvent.Machine event) {
+    event.register(MBDMachineDefinition.builder()
+            .id(RollMod.id("crop_manager_mk2"))
+            .rootState(StateMachine.createSingleDefault(builderSupplier, rendererSupplier))
+            .blockProperties(ConfigBlockProperties.builder()
+                    .rotationState(RotationState.NON_Y_AXIS)   // gives the block a facing
+                    .build())
+            .machineSettings(MyMachines::settings)              // a Supplier, re-invoked per load
+            .recipeLogicSettings(ConfigRecipeLogicSettings.builder().enable(false).build())
+            .build());
+}
+```
+
+Every `MBDMachineDefinition.Builder` field is null-checked in the constructor, so anything you leave
+unset falls back to a default. Two defaults bite:
+
+| Default | Why it matters |
+|---|---|
+| `ConfigRecipeLogicSettings.enable = true` | A machine with no recipe type still ticks `RecipeLogic`. Set `enable(false)` for a trait-driven machine. |
+| `ConfigBlockProperties.rotationState = NONE` | `MBDMachine#getFrontFacing()` is then empty, so "behind the machine" has no meaning. |
+
+MBD2 registers the block, item and block entity under the definition's own id, so the lang key is
+`block.<namespace>.<path>` and the block is **not** in the mod's `DeferredRegister` — datagen that
+needs it must use `addOptional(id)` rather than `add(block)`.
+
+### ⚠️ Registration runs before items exist
+MBD2 fires `MBDRegistryEvent.Machine` from `FMLConstructModEvent`, i.e. **before `RegisterEvent`**.
+Nothing in a definition may resolve a `DeferredHolder` — `ItemRegistry.FOO.get()` throws there. That
+is why the Crop Manager Mk2's herbicide slot filters on the item *tag* `roll_mod:herbicides`
+(a `ResourceLocation`, resolved lazily at runtime) instead of on item instances.
+
+### The GUI
+`ConfigMachineSettings.builder().uiTemplate(UITemplate.of(root))` takes an LdLib2 element tree —
+build it the same way as the economy UIs (see `VendorUIHelper`). MBD2 binds it afterwards **by id**:
+
+| Widget | Required id |
+|---|---|
+| Item slot | `<trait definition>.uiId() + "_" + slotIndex` — i.e. `ui:<trait name>_<n>` |
+| Trait bar (energy, fluid, …) | the trait definition's own `uiId()` |
+| Machine name label | `ui:machine_name` |
+| Progress / fuel bar | `ui:progress_bar` / `ui:fuel_bar` |
+
+Note the `ui:` prefix — `IUIProviderTrait#uiId()` returns `"ui:" + definition.getName()`, so derive
+ids from `uiId()` rather than writing them out. Because binding is by id, a layout later re-authored
+in the F4 editor binds identically, and switching to it is one line:
+`event.registerFromResource(getClass(), RollMod.MODID, "machine/crop_manager_mk2.sm")`.
+
+The trade-off of building in Java: the definition is not a project file, so the F4 editor **cannot
+edit it in place**.
+
+---
+
+## 9. Machine looks: per-state models, and trait-owned settings
+
+### Idle vs active, and facing
+A machine's visual state is a **`MachineState` with its own renderer**, not a blockstate. MBD2 resolves
+`machine.getMachineState().getRealRenderer()` on every `getQuads` call, and **a child state with no
+renderer of its own inherits its parent's**:
+
+```java
+MachineState.Builder<MachineState> builder =
+        (MachineState.Builder<MachineState>) MachineState.baseBuilder();
+return builder
+        .modelRenderer(RollMod.id("block/crop_manager_mk2"))            // base  -> idle
+        .child("working", w -> w.modelRenderer(RollMod.id("block/crop_manager_mk2_active"))
+                                .child("waiting"))                      // inherits -> active
+        .child("suspend")                                               // inherits -> idle
+        .build();
+```
+Switch at runtime with `machine.setMachineState("working" | "base")`. It **early-outs when the state is
+unchanged**, so calling it every tick is free; on a real change it fires `notifyBlockUpdate()` and the
+field is `@DescSynced`, so clients follow.
+
+**Facing is free.** With `ConfigBlockProperties.rotationState(RotationState.NON_Y_AXIS)`, MBD2 bakes a
+rotated copy of the model per facing and caches it (`MBDMachineBlock.getModelState` →
+`ModelFactory.getRotation`). Author the model **facing NORTH** and use `minecraft:block/cube` when you
+need a distinct back face — `block/orientable` has no `south` slot. No blockstate JSON is needed or
+used: LDLib's `BlockStateModelLoaderMixin` short-circuits blockstate loading for these blocks.
+
+> **Not the MI way, deliberately.** Modern Industrialization does the opposite — it never rotates the
+> model and instead index-swaps a sprite per face (`MachineBakedModel.getSprite`), with active/idle as
+> a `MachineModelClientData` flag. MI's model loader also resolves machines by
+> `BuiltInRegistries.BLOCK.get(MI.id(name))`, so it only works for blocks registered in MI's own
+> namespace through MI's pipeline — an MBD2 machine can never be one. Same visual result, different
+> engine.
+
+An animated face is an ordinary vertical strip PNG **plus a `.png.mcmeta`**; without the meta file
+Minecraft renders the whole strip squashed onto one face.
+
+**Overlay art needs a casing under it.** `ConfigBlockProperties.RenderTypes` defaults to **cutout**
+(applied through `ItemBlockRenderTypes.setRenderLayer`), so a transparent pixel in a face texture is
+discarded — and if that texture is the only thing on the face, you get a hole straight through the
+block. Front/back art in the MI style is ~half transparent, so the model needs two elements: a full
+`0..16` cube carrying the opaque side texture on all six faces, then the overlay faces nudged `0.01`
+proud of it so they win the depth test instead of z-fighting:
+
+```jsonc
+"elements": [
+  { "from": [0, 0, 0], "to": [16, 16, 16],
+    "faces": { "north": {"texture": "#side", "cullface": "north"}, /* ...all six... */ } },
+  { "from": [0, 0, -0.01], "to": [16, 16, 16.01],
+    "faces": { "north": {"texture": "#front", "cullface": "north"},
+               "south": {"texture": "#back",  "cullface": "south"} } }
+]
+```
+The `_active` texture *replaces* its overlay rather than stacking on it, matching MI's
+`front_active → front → side` fallback order.
+
+### Per-machine settings on a trait
+Put the state on the **trait** (per block), not the definition (shared config):
+
+```java
+@Persisted @DescSynced private boolean collectCrops = true;
+```
+`@Persisted` lands it in the machine's NBT, namespaced by trait name automatically
+(`MBDMachine.loadAdditionalTraits`); `@DescSynced` pushes it to clients. The trait's existing
+`ManagedFieldHolder` picks the fields up with no extra registration.
+
+To give the trait widgets, make its **definition** `implements IUIProviderTrait`:
+`createTraitUITemplate(UIElement)` builds them, `initTraitUI(ITrait, UI)` binds them — `bindMachineUI`
+calls the latter for every trait definition implementing the interface. LDLib has **no `Checkbox`**;
+the boolean widgets are `Switch` and `Toggle`, bound with
+`DataBindingBuilder.bool(getter, setter)` (also `boolS2C` / `boolC2S`).
+
+> **Trap:** seed with `switch.setOn(value, false)`. `setOn(value)` defaults `notify = true`, fires the
+> change listener as the GUI opens and bounces a spurious write back at the server.
+
+#### A `UITemplate` is data — listeners set at build time are lost
+
+This is the one that bites hardest, because it fails silently:
+
+```java
+UITemplate.of(root)   // -> root.serializeNBT(...)  : the tree becomes a CompoundTag
+template.createUI()   // -> new UIElement() + deserializeNBT(data) : a BRAND NEW tree
+```
+The element the machine actually shows is **never the element you built**. Element types survive
+(every widget is `@LDLRegister`-ed into `ldlib2:ui_element`), and so do ids, classes, layout and
+styles — but a `setOnClick`, `setOnSwitchChanged` or `addEventListener` lambda attached while
+building the template is dropped on the floor. The symptom is a widget that does nothing, with
+**nothing whatsoever in the log**.
+
+So the template may only carry *appearance and ids*. Everything behavioural is re-attached to the
+live UI in `initTraitUI(ITrait, UI)`, found by id:
+
+```java
+UIElement panel = ui.selectId(settingId(SETTINGS_PANEL), UIElement.class).findFirst().orElse(null);
+ui.selectId(settingId(SETTINGS_TOGGLE), Button.class)
+        .forEach(gear -> gear.setOnClick(e -> panel.setDisplay(!panel.isDisplayed())));
+```
+This is also why MBD2 itself binds *everything* by id (`ui:machine_name`, `ui:progress_bar`,
+`ui:<trait>_<slot>`) rather than wiring widgets as it creates them.
+
+A panel that overhangs the main window needs `overflowVisible(true)` on the root, or it is clipped.
+
+### In-world overlays without touching the client module
+`TraitDefinition.getBESRenderer(IMachine)` returns an `IRenderer` that `MBDBlockRenderer` already calls
+for every trait — **no `RenderLevelStageEvent`, no client-module registration**. Implement
+`hasBlockEntityRenderer`, `render`, and usually `shouldRenderOffScreen` +
+`getRenderBoundingBox` when the overlay is larger than the block. Draw with
+`RenderBufferUtils.drawCubeFrame(...)` / `shapeCube(...)` on `LDLibRenderTypes.noDepthLines()`.
+
+> **One renderer instance is shared by every machine of the definition**, so read the facing and any
+> toggles off the `BlockEntity` passed to `render(...)` (via `IMachine.ofMachine(be)` →
+> `getTraitByName(...)`) — never off the definition. Keep the renderer in a lazily-created field so the
+> class is never loaded on a dedicated server.
+
+#### `hasBlockEntityRenderer` is sampled when the chunk compiles, not per frame
+
+LDLib's `BlockEntityRendererDispatcherMixin` makes vanilla's
+`BlockEntityRenderDispatcher.getRenderer(be)` return **null** whenever
+`IRenderer.hasBlockEntityRenderer(be)` is false — and vanilla calls `getRenderer` **while compiling a
+chunk section**, to decide whether a block entity belongs in that section's renderable list at all.
+
+So `hasBlockEntityRenderer` (and `shouldRenderOffScreen`, same story) must be **constant**. Gate them
+on a mutable per-machine flag and the machine is baked out of the section: flipping the flag on then
+changes nothing until something forces a chunk rebuild — placing or breaking a block nearby. The
+symptom is an overlay that "only appears after I update a block".
+
+```java
+public boolean hasBlockEntityRenderer(BlockEntity be) { return true; }   // constant
+public boolean shouldRenderOffScreen(BlockEntity be)  { return true; }   // constant
+public int     getViewDistance()                      { return 64; }     // bound the cost
+public void render(BlockEntity be, ...) {
+    if (!enabledFor(be)) return;                                         // per-frame decision HERE
+    ...
+}
+```
+`shouldRenderOffScreen == true` also puts the machine in the level's *global* block-entity list, which
+is drawn without a frustum check — that is what keeps an overlay visible while the player stands
+inside it with the machine itself behind them. Bound `getViewDistance()` to pay for that.
+
+---
+
 ## Key classes (for reference)
 
 | Purpose | Class |

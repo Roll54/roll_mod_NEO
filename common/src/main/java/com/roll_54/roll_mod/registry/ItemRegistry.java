@@ -496,7 +496,10 @@ public class ItemRegistry {
             new Item.Properties(), TooltipOptions.name(MALACHITE_GREEEN)
     );
 
-
+    public static final DeferredHolder<Item, Item> DIAMOND_ALLOY_LARGE_PLATE = registerTooltip(
+            "diamond_alloy_large_plate",
+            new Item.Properties(), TooltipOptions.name(MALACHITE_GREEEN)
+    );
 
 
 
@@ -763,6 +766,11 @@ public class ItemRegistry {
     // Пластмаси
     public static final DeferredHolder<Item, Item> PVC_INGOT = ITEMS.register("pvc_ingot", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> PVC_PLATE = ITEMS.register("pvc_plate", () -> new Item(new Item.Properties()));
+
+    // Бісмут: злиток і прокат до нього. Руда й пил ідуть з GeneratedOreRegistry.
+    public static final DeferredHolder<Item, Item> BISMUTH_INGOT = registerSimple("bismuth_ingot");
+    public static final DeferredHolder<Item, Item> BISMUTH_PLATE = registerSimple("bismuth_plate");
+    public static final DeferredHolder<Item, Item> BISMUTH_CURVED_PLATE = registerSimple("bismuth_curved_plate");
 
     public static final DeferredHolder<Item, Item> ADV_CONVEYOR = ITEMS.register("advanced_conveyor", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> ADV_PISTON = ITEMS.register("advanced_piston", () -> new Item(new Item.Properties()));

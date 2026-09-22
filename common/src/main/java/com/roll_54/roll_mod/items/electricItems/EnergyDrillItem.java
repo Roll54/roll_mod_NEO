@@ -175,9 +175,20 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
             return true;
         }
 
-        long energyPerBlock = PER_BLOCK_BREAK_COST;
-
         List<BlockPos> targets = collectArea(player, pos, MINING_RADIUS);
+
+        // Здобич з усієї області злітається в інвентар гравця, а не на землю
+        DrillDropCollector.collect(player, () -> mineArea(stack, level, player, targets));
+
+        return true;
+    }
+
+    private void mineArea(ItemStack stack,
+                          Level level,
+                          ServerPlayer player,
+                          List<BlockPos> targets) {
+
+        long energyPerBlock = PER_BLOCK_BREAK_COST;
 
         for (BlockPos targetPos : targets) {
             BlockState targetState = level.getBlockState(targetPos);
@@ -209,8 +220,6 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
                 tryUseEnergy(stack, energyPerBlock);
             }
         }
-
-        return true;
     }
 
     private List<BlockPos> collectArea(ServerPlayer player,

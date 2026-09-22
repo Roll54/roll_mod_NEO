@@ -1,0 +1,12 @@
+{
+  "acidity": "neutral",
+  "growth_modifier": 1.0,
+  "humidity": "arid",
+  "mods": [],
+  "nutrients": "none",
+  "variants": [
+    {
+      "block": "roll_mod:hydroponic_garden_bed"
+    }
+  ]
+}

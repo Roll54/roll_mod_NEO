@@ -4,6 +4,7 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.vendingblock.auction.LuckPermsCompat;
+import com.roll_54.roll_mod.minestar.teleport.TeleportService;
 import com.roll_54.roll_mod.util.LegacyText;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
@@ -13,7 +14,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -37,26 +37,18 @@ public final class WarpService {
      */
     private static final String LIMIT_META = "rollmod.warps.max";
 
-    /** The pause before a teleport fires. Long enough to be interruptible, short enough to bear. */
-    public static final int WARMUP_SECONDS = 5;
+    /** The pause before a teleport fires; the same wait every other teleport in the mod uses. */
+    public static final int WARMUP_SECONDS = TeleportService.WARMUP_SECONDS;
 
     /** The project's warning pink, used for the blocked-warp appeal line. */
     public static final int APPEAL_COLOR = 0xE00D50;
-
-    /** Moving further than this from where the countdown started cancels it. */
-    private static final double CANCEL_DISTANCE_SQR = 0.5 * 0.5;
-
-    /** A teleport waiting out its warm-up. */
-    private record Pending(UUID warp, Vec3 origin, long readyAtTick) {}
-
-    private static final Map<UUID, Pending> PENDING = new ConcurrentHashMap<>();
 
     /**
      * How long an instant teleport locks out the next one, in ticks.
      *
      * <p>Only official warps take the instant path, and only they need this: a warm-up teleport is
-     * naturally idempotent, because a second request just overwrites the {@link #PENDING} entry and
-     * one arrival still follows. Arriving straight away has no such entry to overwrite, so a second
+     * naturally idempotent, because a second request just replaces the pending one and one arrival
+     * still follows. Arriving straight away has no such entry to overwrite, so a second
      * packet would charge the fee twice. The button stays clickable until the container-close packet
      * has made the round trip, which is long enough for a double-click on a poor connection to get
      * two packets out.
@@ -203,11 +195,11 @@ public final class WarpService {
 
     /**
      * Starts the warm-up. The price is checked now rather than on arrival, so a player who cannot
-     * afford it is told immediately instead of after standing still for five seconds.
+     * afford it is told immediately instead of after the countdown has run.
      *
-     * <p>Official warps skip the warm-up entirely (see {@link #begin}), but not these gates: the
-     * fee is independent of the wait, so an official warp that charges still checks the balance
-     * here and still takes the money on arrival.
+     * <p>Official warps, and players holding the bypass permission, skip the warm-up entirely (see
+     * {@link #begin}), but not these gates: the fee is independent of the wait, so an official warp
+     * that charges still checks the balance here and still takes the money on arrival.
      */
     public static void requestTeleport(ServerPlayer player, UUID warpId) {
         WarpData data = WarpData.get(player.server);
@@ -250,15 +242,15 @@ public final class WarpService {
     private static void begin(ServerPlayer player, Warp warp) {
         // Out of the hub and back to the world. Only here, never on a refusal: a player who cannot
         // afford the trip keeps the list open to pick something else. It matters more for warps than
-        // for anything else in the hub — the warm-up cancels on movement, and the countdown that
-        // says so arrives in chat, behind a screen that covers most of it.
+        // for anything else in the hub — the countdown runs over the hotbar, which the hub covers.
         player.closeContainer();
 
         // An official warp is staff-made and staff-vouched, so there is nothing for a countdown to
-        // protect against and it travels at once. Note that "instant" means no warm-up, not no
-        // latency: a priced one has already been through requestTeleport's balance lookup, which
-        // hops off the main thread and back, so it lands a tick or more after the click either way.
-        if (warp.isAdmin()) {
+        // protect against and it travels at once; the bypass permission says the same about a rank.
+        // Note that "instant" means no warm-up, not no latency: a priced one has already been
+        // through requestTeleport's balance lookup, which hops off the main thread and back, so it
+        // lands a tick or more after the click either way.
+        if (warp.isAdmin() || LuckPermsCompat.canBypassWarmup(player)) {
             long now = player.server.getTickCount();
             Long last = INSTANT.get(player.getUUID());
             if (last != null && now - last < INSTANT_COOLDOWN_TICKS) return;
@@ -267,42 +259,17 @@ public final class WarpService {
             return;
         }
 
-        PENDING.put(player.getUUID(), new Pending(warp.id(), player.position(),
-                player.server.getTickCount() + WARMUP_SECONDS * 20L));
-        player.sendSystemMessage(
-                Component.translatable("msg.roll_mod.warp.warmup", WARMUP_SECONDS,
-                        LegacyText.display(warp.name())));
+        // No message here: the shared service puts the countdown over the hotbar from the very next
+        // tick, and the warp's name is already on the arrival line.
+        UUID id = warp.id();
+        TeleportService.schedule(player, WARMUP_SECONDS, arriving -> arrive(arriving, id));
     }
 
     public static void cancel(UUID playerId) {
-        PENDING.remove(playerId);
+        TeleportService.cancel(playerId);
         // Logout comes through here too, so the instant lock-out does not outlive the session that
         // earned it — a player who reconnects within the second is not silently refused.
         INSTANT.remove(playerId);
-    }
-
-    /**
-     * Advances every warm-up. Called once a tick from {@code HubEvents}; a player who moved out of
-     * the starting spot loses the teleport, which is the whole point of the delay.
-     */
-    public static void tick(MinecraftServer server) {
-        if (PENDING.isEmpty()) return;
-
-        PENDING.entrySet().removeIf(entry -> {
-            ServerPlayer player = server.getPlayerList().getPlayer(entry.getKey());
-            if (player == null) return true;
-
-            Pending pending = entry.getValue();
-            if (player.position().distanceToSqr(pending.origin()) > CANCEL_DISTANCE_SQR) {
-                player.sendSystemMessage(Component.translatable("msg.roll_mod.warp.moved")
-                        .withStyle(ChatFormatting.RED));
-                return true;
-            }
-            if (server.getTickCount() < pending.readyAtTick()) return false;
-
-            arrive(player, pending.warp());
-            return true;
-        });
     }
 
     private static void arrive(ServerPlayer player, UUID warpId) {
@@ -312,7 +279,7 @@ public final class WarpService {
         ServerLevel level = level(player.server, warp);
         if (level == null) return;
 
-        player.teleportTo(level, warp.x(), warp.y(), warp.z(), warp.yaw(), warp.pitch());
+        TeleportService.teleport(player, level, warp.x(), warp.y(), warp.z(), warp.yaw(), warp.pitch());
         player.sendSystemMessage(Component.translatable("msg.roll_mod.warp.arrived", LegacyText.display(warp.name())));
 
         // Counted only once the player is actually there, for the same reason the fee is. withVisit

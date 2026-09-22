@@ -7,6 +7,14 @@ import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
 import com.roll_54.roll_mod.network.packet.DailyTaskToastPacket;
 import com.roll_54.roll_mod.network.packet.OpenHubPacket;
 import com.roll_54.roll_mod.network.packet.HomeActionPacket;
+import com.roll_54.roll_mod.network.packet.KitActionPacket;
+import com.roll_54.roll_mod.network.packet.SyncKitsPacket;
+import com.roll_54.roll_mod.network.packet.OperatorTogglePacket;
+import com.roll_54.roll_mod.network.packet.SyncOperatorsPacket;
+import com.roll_54.roll_mod.network.packet.SyncTpaPacket;
+import com.roll_54.roll_mod.network.packet.TeleportActionPacket;
+import com.roll_54.roll_mod.network.packet.TpaActionPacket;
+import com.roll_54.roll_mod.network.packet.TpaModePacket;
 import com.roll_54.roll_mod.network.packet.SyncHomesPacket;
 import com.roll_54.roll_mod.network.packet.SyncWarpsPacket;
 import com.roll_54.roll_mod.network.packet.WarpActionPacket;
@@ -90,6 +98,47 @@ public class NetworkHandler {
                 SyncUnlockedSkinsPacket.TYPE,
                 SyncUnlockedSkinsPacket.STREAM_CODEC,
                 SyncUnlockedSkinsPacket::handle
+        );
+
+        registrar.playToServer(
+                KitActionPacket.TYPE,
+                KitActionPacket.STREAM_CODEC,
+                KitActionPacket::handle
+        );
+        registrar.playToClient(
+                SyncKitsPacket.TYPE,
+                SyncKitsPacket.STREAM_CODEC,
+                SyncKitsPacket::handle
+        );
+        registrar.playToServer(
+                TeleportActionPacket.TYPE,
+                TeleportActionPacket.STREAM_CODEC,
+                TeleportActionPacket::handle
+        );
+        registrar.playToServer(
+                TpaActionPacket.TYPE,
+                TpaActionPacket.STREAM_CODEC,
+                TpaActionPacket::handle
+        );
+        registrar.playToServer(
+                TpaModePacket.TYPE,
+                TpaModePacket.STREAM_CODEC,
+                TpaModePacket::handle
+        );
+        registrar.playToClient(
+                SyncTpaPacket.TYPE,
+                SyncTpaPacket.STREAM_CODEC,
+                SyncTpaPacket::handle
+        );
+        registrar.playToServer(
+                OperatorTogglePacket.TYPE,
+                OperatorTogglePacket.STREAM_CODEC,
+                OperatorTogglePacket::handle
+        );
+        registrar.playToClient(
+                SyncOperatorsPacket.TYPE,
+                SyncOperatorsPacket.STREAM_CODEC,
+                SyncOperatorsPacket::handle
         );
 
         // The economy's payloads keep their own lists, but share this registrar: NeoForge allows a

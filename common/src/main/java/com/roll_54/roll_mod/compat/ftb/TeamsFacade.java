@@ -26,7 +26,31 @@ public interface TeamsFacade {
     /** A party: its stable id and every member, online or not. */
     record Party(UUID teamId, Set<UUID> members) {}
 
-    /** The no-op facade used when ftbteams is absent: everybody is on their own. */
+    /**
+     * Whether {@code other} is in the same party as {@code player}.
+     *
+     * <p>A {@code default} rather than a second abstract method, because {@link #NONE} is a lambda:
+     * a functional interface may only have the one.
+     */
+    default boolean sameParty(ServerPlayer player, UUID other) {
+        return false;
+    }
+
+    /**
+     * Whether {@code other} is in {@code player}'s party or allied to it.
+     *
+     * <p>Asked in the owner's direction, because an alliance is something one team extends to
+     * another and only the owner's team knows who it has extended it to.
+     */
+    default boolean trusted(ServerPlayer player, UUID other) {
+        return false;
+    }
+
+    /**
+     * The no-op facade used when ftbteams is absent: everybody is on their own, and the two
+     * team-shaped questions above answer no — so a player who has asked for team-only teleports
+     * gets exactly that rather than an accidental free-for-all.
+     */
     TeamsFacade NONE = player -> Optional.empty();
 
     static TeamsFacade get() {

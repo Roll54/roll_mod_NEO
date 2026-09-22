@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod;
 
 import com.roll_54.roll_mod.compat.MBD2.RollMBD2Plugin;
+import com.roll_54.roll_mod.compat.MBD2.machine.RollMBD2Machines;
 import com.roll_54.roll_mod.compat.MBD2.recipe.ExampleLavaRecipe;
 import com.lowdragmc.lowdraglib2.gui.factory.PlayerUIMenuType;
 import com.roll_54.roll_mod.cosmetics.ItemSkinRegistry;
@@ -58,10 +59,13 @@ public final class RollMod {
         ModEffects.register(eventBus);
         ModArmorMaterials.register(eventBus);
         eventBus.addListener(this::onCommonSetup);
-        //RollMBD2Plugin.registerTraitTypes();
+        // Must happen in the constructor: MBD2 iterates the trait registry from FMLConstructModEvent
+        // (to load machines) and again on RegisterCapabilitiesEvent, both after this point.
+        RollMBD2Plugin.registerTraitTypes();
         // Before AddPackFindersEvent, which is when MI's runtime datagen reads the models.
         MachineModelRegistry.register();
         eventBus.register(new ExampleLavaRecipe());
+        eventBus.register(new RollMBD2Machines());
         SoundRegistry.SOUND_EVENTS.register(eventBus);
         ComponentsRegistry.COMPONENTS.register(eventBus);
         RMMAttachment.ATTACHMENT_TYPES.register(eventBus);
@@ -88,7 +92,7 @@ public final class RollMod {
     private void registerEconomy(IEventBus eventBus, ModContainer container) {
         // Fully qualified: the economy's registry classes share their simple names with this mod's
         // own (ItemRegistry, BlockRegistry, ...), which arrive here through the registry wildcard.
-        ModRegistry.register(eventBus);            // the /rmc currency-type argument
+        ModRegistry.register(eventBus);            // the /rollmod money currency-type argument
         com.roll_54.roll_mod.economy.vendingblock.registry.ItemRegistry.register(eventBus);
         com.roll_54.roll_mod.economy.vendingblock.registry.BlockRegistry.register(eventBus);
         com.roll_54.roll_mod.economy.vendingblock.registry.BlockEntityRegistry.register(eventBus);

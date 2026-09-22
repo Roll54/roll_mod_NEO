@@ -1,0 +1,63 @@
+{
+  "lines": [
+    {
+      "text": "&fAsk another player to let you teleport to them, or to come to you. Nothing happens until they say yes."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lAsking"
+    },
+    {
+      "text": "&7Pick a name on the left. &b→&7 asks to go to them; &b←&7 asks them to come to you.",
+      "indent": 6
+    },
+    {
+      "text": "&7They see the request in this tab and as a line in chat with the two answers on it.",
+      "indent": 6
+    },
+    {
+      "text": "&7A request lapses after &e2 minutes&7 if nobody answers.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lAnswering"
+    },
+    {
+      "text": "&7Requests waiting on you are on the right. Accept starts a &a3 second countdown&7, then whoever is travelling arrives.",
+      "indent": 6
+    },
+    {
+      "text": "&7If the other player logs out or is gone by the time the countdown ends, nobody is moved.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lWho may ask"
+    },
+    {
+      "text": "&7The &fgear&7 at the top sets who may send you a request: anyone, your FTB party, your party and its allies, or no one.",
+      "indent": 6
+    },
+    {
+      "text": "&7A turned-away request is silent — the other player is told, you are not.",
+      "indent": 6
+    },
+    {
+      "text": "&7The two team settings need &fFTB Teams&7 on the server; without it they let nobody through.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&8Commands: /tpa, /tpahere, /tpaccept, /tpdeny, /tpcancel, /tpamode"
+    }
+  ]
+}

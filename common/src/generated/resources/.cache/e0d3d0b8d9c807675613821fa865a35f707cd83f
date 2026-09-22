@@ -1,3 +1,7 @@
-// 1.21.1	2026-07-05T01:59:42.969274807	Data Maps
+// 1.21.1	2026-09-20T21:02:10.682622455	Data Maps
 1d8187d3e37d27e492517581b39b3a6a6d5f7b66 data/neoforge/data_maps/item/compostables.json
 6e412d008a4fc3f5b670ae7428f6a02752a0424c data/neoforge/data_maps/item/furnace_fuels.json
+906a8623418461fc4ccf4cb67bb73f90e0ab9f5a data/roll_mod/data_maps/fluid/acidity.json
+269f8534c89d5941f99afe76610d3ac2834ef344 data/roll_mod/data_maps/fluid/fertilizer.json
+0855e2e6ff02f85dc87f0baf193b7d4255efcd9f data/roll_mod/data_maps/item/acidity.json
+94c2da4475044f9c531aa3c102620451c66c9e30 data/roll_mod/data_maps/item/fertilizer.json

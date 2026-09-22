@@ -1,5 +1,7 @@
 package com.roll_54.roll_mod.items;
 
+import aztech.modern_industrialization.MIText;
+import aztech.modern_industrialization.MITooltips;
 import aztech.modern_industrialization.items.SteamDrillItem;
 import aztech.modern_industrialization.util.TextHelper;
 import net.minecraft.ChatFormatting;
@@ -22,6 +24,23 @@ public class NetheriteSteamDrillItem extends SteamDrillItem {
     public static final int SPEED_BONUS_PERCENT = 200;
 
     private static final float SPEED_MULTIPLIER = 1f + SPEED_BONUS_PERCENT / 100f;
+
+    /**
+     * The steam drill's "Tool configuration" help block. MI attaches it to its own drill by item
+     * identity, so an upgraded drill would otherwise lose it: the lines below are MI's own, taken
+     * from {@link MITooltips#STEAM_DRILL}, so the two drills read the same under shift. Held in a
+     * field only because the attachment registers itself when it is built.
+     */
+    @SuppressWarnings("unused")
+    private static final MITooltips.TooltipAttachment HELP_TOOLTIP = MITooltips.TooltipAttachment.ofMultilines(
+            (stack, item) -> item instanceof NetheriteSteamDrillItem ? List.of(
+                    MITooltips.line(MIText.ToolConfiguration).build(),
+                    MITooltips.line(MIText.SteamDrillWaterHelp).arg("use", MITooltips.KEYBIND_PARSER).build(),
+                    MITooltips.line(MIText.SteamDrillFuelHelp).arg("use", MITooltips.KEYBIND_PARSER).build(),
+                    MITooltips.line(MIText.SteamDrillProfit).arg("modern_industrialization.toggle_3x3", MITooltips.KEYBIND_PARSER).build(),
+                    MITooltips.line(MIText.SteamDrillToggle).arg("sneak", MITooltips.KEYBIND_PARSER).arg("use", MITooltips.KEYBIND_PARSER)
+                            .build())
+                    : List.of());
 
     public NetheriteSteamDrillItem(Properties settings) {
         super(settings.fireResistant());

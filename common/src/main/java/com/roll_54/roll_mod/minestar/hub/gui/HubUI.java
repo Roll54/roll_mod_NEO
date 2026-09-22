@@ -5,7 +5,6 @@ import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.SimpleBinding;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture;
-import com.lowdragmc.lowdraglib2.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
 import com.lowdragmc.lowdraglib2.gui.ui.UI;
@@ -30,8 +29,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.level.ItemLike;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -175,9 +172,11 @@ public final class HubUI {
     /**
      * One tab.
      *
-     * <p>{@code id} keys the hover name, {@code gui.roll_mod.hub.tab.<id>}. {@code icon} is already
-     * a drawable rather than an item, so a tab can carry the mod's own artwork or a vanilla item
-     * without the record having to know which — see {@link #icon(String)} and {@link #icon(ItemLike)}.
+     * <p>{@code id} keys the hover name, {@code gui.roll_mod.hub.tab.<id>}. {@code icon} is a
+     * drawable rather than a file name, so a tab is free to carry something other than the mod's own
+     * artwork — see {@link #icon(String)}. A vanilla item works, through an {@code ItemStackTexture},
+     * but that stretches to the element box and draws outside the UI's batch, always on top; every
+     * tab wears a PNG now.
      * {@code content} runs on both sides, and receives a callback the tab can use to ask for the
      * player inventory; only the auction does.
      */
@@ -213,17 +212,6 @@ public final class HubUI {
     }
 
     /**
-     * A vanilla item standing in for a tab whose artwork has not landed yet.
-     *
-     * <p>Worth knowing when swapping one of these for a PNG: {@link ItemStackTexture} stretches the
-     * item to the element box, so the icon element has to stay square, and it draws outside the UI's
-     * batch — always on top. A {@link SpriteTexture} behaves normally on both counts.
-     */
-    private static IGuiTexture icon(ItemLike item) {
-        return new ItemStackTexture(new ItemStack(item));
-    }
-
-    /**
      * The tabs, in <em>tree</em> order. <b>Append only</b> — the bindings inside these subtrees are
      * addressed by position, so inserting in the middle would shift them. Where they appear in the
      * header is {@link #DISPLAY_ORDER}, which is deliberately a different order.
@@ -239,7 +227,12 @@ public final class HubUI {
             new HubTab("plots", icon("land_market"),
                     (player, inventory) -> PlotPurchaseUI.buildRoot(player)),
             new HubTab("homes", icon("home"),
-                    (player, inventory) -> PlayerHomesTab.build(player)));
+                    (player, inventory) -> PlayerHomesTab.build(player)),
+            // tp_icon, not the tpa arrow the rows wear: the tab is the whole section — asking,
+            // answering and the argument-less trips — and the row button's own icon on the tab read
+            // as if the tab were just the one action.
+            new HubTab("tpa", icon("teleportation/tp_icon"),
+                    (player, inventory) -> TpaTab.build(player)));
 
     /**
      * Header order, as indices into {@link #TABS}. Purely visual: the content slots are still built
@@ -247,7 +240,7 @@ public final class HubUI {
      * having to be inserted second. {@link #indexOf} keeps returning tree indices, which is what
      * every caller passes to {@code HubCommand.open}.
      */
-    private static final List<Integer> DISPLAY_ORDER = List.of(0, 5, 1, 2, 3, 4);
+    private static final List<Integer> DISPLAY_ORDER = List.of(0, 5, 6, 1, 2, 3, 4);
 
     static {
         // Appending a tab and forgetting this list would silently hide it; fail at class-load

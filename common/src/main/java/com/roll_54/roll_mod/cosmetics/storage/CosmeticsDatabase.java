@@ -55,6 +55,11 @@ public final class CosmeticsDatabase {
 
   private static final String LOCAL_PASSWORD = "";
 
+  /** Shared with the other server-owned files, such as the command logs. */
+  private static final String DIR = "minestar";
+
+  private static final String DB_FILE = "cosmetics.mv.db";
+
   private CosmeticsDatabase() {}
 
   public static CosmeticsDatabase getInstance() {
@@ -98,7 +103,7 @@ public final class CosmeticsDatabase {
   }
 
   /**
-   * {@code <gameDir>/roll_mod/cosmetics.mv.db} — outside the world save, so resetting the world
+   * {@code <gameDir>/minestar/cosmetics.mv.db} — outside the world save, so resetting the world
    * keeps everyone's skins.
    *
    * <p>{@code DATABASE_TO_LOWER} and {@code CASE_INSENSITIVE_IDENTIFIERS} are what actually make
@@ -107,15 +112,30 @@ public final class CosmeticsDatabase {
    * DB_CLOSE_ON_EXIT=FALSE} keeps H2's own JVM shutdown hook from racing Hikari's close.
    */
   private static String localFileUrl() {
-    Path dir = FMLPaths.GAMEDIR.get().resolve(RollMod.MODID);
+    Path dir = FMLPaths.GAMEDIR.get().resolve(DIR);
     try {
       Files.createDirectories(dir);
+      moveLegacyFile(dir);
     } catch (IOException e) {
       throw new UncheckedIOException("Cannot create the cosmetics directory " + dir, e);
     }
     return "jdbc:h2:file:" + dir.resolve("cosmetics").toAbsolutePath()
             + ";MODE=MySQL;DATABASE_TO_LOWER=TRUE;CASE_INSENSITIVE_IDENTIFIERS=TRUE"
             + ";DB_CLOSE_ON_EXIT=FALSE";
+  }
+
+  /**
+   * The file used to live in {@code <gameDir>/roll_mod/}. Move it once rather than open an empty one
+   * next to it, which would show every player as having lost every skin. Never overwrites: if both
+   * exist, the new location wins and the old file is left for a human to look at.
+   */
+  private static void moveLegacyFile(Path dir) throws IOException {
+    Path legacy = FMLPaths.GAMEDIR.get().resolve(RollMod.MODID).resolve(DB_FILE);
+    Path target = dir.resolve(DB_FILE);
+    if (Files.exists(legacy) && !Files.exists(target)) {
+      Files.move(legacy, target);
+      LOGGER.info("[Cosmetics] Moved {} to {}", legacy, target);
+    }
   }
 
   private boolean tryOpen(String url, String user, String password) {

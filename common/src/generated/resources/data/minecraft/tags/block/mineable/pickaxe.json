@@ -2,7 +2,12 @@
   "values": [
     "roll_mod:crop_manager",
     "roll_mod:weed_manager",
+    "roll_mod:hydroponic_garden_bed",
     "roll_mod:grinding_wheels",
+    {
+      "id": "roll_mod:crop_manager_mk2",
+      "required": false
+    },
     {
       "id": "mi_tweaks:large_chemical_reactor",
       "required": false

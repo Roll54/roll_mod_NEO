@@ -1,4 +1,4 @@
-// 1.21.1	2026-09-05T10:38:19.652147671	Item Models: roll_mod
+// 1.21.1	2026-09-18T22:38:19.132765675	Item Models: roll_mod
 5478948ed127b16a29bb07058702c1660666f43c assets/roll_mod/models/crop/cabbage_stage0.json
 b18c6664c22b2a76b367c0229864b02b683f78fe assets/roll_mod/models/crop/cabbage_stage1.json
 8b240f7745d13a6aac70dadeb43a747d4f8abc12 assets/roll_mod/models/crop/cabbage_stage2.json
@@ -146,6 +146,10 @@ bc3452fec12759709d45d0976b2737dc0a4cfcf8 assets/roll_mod/models/item/basecyberwa
 fa46fd90456e79e590dd49c0c1ba43a6dc7f221c assets/roll_mod/models/item/bell_pepper_slice_rutile.json
 1cf57e13b0901049c476dbdb2d3633ca58d0e86c assets/roll_mod/models/item/biomass.json
 713a0a5e6806663c146be7d587af0be67296e0db assets/roll_mod/models/item/bismuth_bronze_blockogriz.json
+2745207d1d137c0417e306df509143d578568fd7 assets/roll_mod/models/item/bismuth_curved_plate.json
+ff4517221f365455762af44fe378ac1858cc545a assets/roll_mod/models/item/bismuth_ingot.json
+77ffc7d8690e1fa77b2ecea75937082e31d7d138 assets/roll_mod/models/item/bismuth_lithium_battery.json
+4ab130157794ccc13266c17548035650cc8e4ac2 assets/roll_mod/models/item/bismuth_plate.json
 c430ed554b852d039ecab2cf2e0bf8868e1071b4 assets/roll_mod/models/item/black_bronze_blockogriz.json
 168ceb09c03890d9ba0c626c36d62003ffc4b768 assets/roll_mod/models/item/black_steel_blockogriz.json
 264e33a7dcd5edc6bc16dd440caa7fdf6128a8e9 assets/roll_mod/models/item/blue_boule.json
@@ -170,6 +174,7 @@ a161530180d8bcc170c7c52df9b410a5c9a67954 assets/roll_mod/models/item/copper_gear
 d2db77e19e23d37ffa2995b30eab5bf896ddb351 assets/roll_mod/models/item/deepslate_dust.json
 57c4adb181f6cc45c305fed0bb888a2b04fadd16 assets/roll_mod/models/item/diamond_alloy_dust.json
 587c829a6fd4b14ac87be764bb7d278426b7bf48 assets/roll_mod/models/item/diamond_alloy_ingot.json
+9628b2fa3801547cc8f486c9bdc17824cc4e2e4e assets/roll_mod/models/item/diamond_alloy_large_plate.json
 f6929b57806e197ecf577115243e12de9626fc69 assets/roll_mod/models/item/diamond_alloy_plate.json
 699a91ad02fe2ea9bb0468a9d1ed81e323b8bc24 assets/roll_mod/models/item/diamond_blockogriz.json
 7ee2a1d2c0aa3ca78a155d84a9f174d598f5f728 assets/roll_mod/models/item/diorite_dust.json
@@ -201,8 +206,12 @@ fbe0e463076e746f2419d0eca436bc03085e0175 assets/roll_mod/models/item/hops_seeds.
 e6e395fc9a92352012af622c0d94224ee61d75ab assets/roll_mod/models/item/iridium_based_board.json
 7e7bc59e667cd2e1f61fd8b4c20b09105e9c79ff assets/roll_mod/models/item/iridium_based_board_assembly.json
 23bcecef5cdf21c166e8ad8d0504bedbe12e48aa assets/roll_mod/models/item/iron_blockogriz.json
+3f98a2b8f692cfad317edbe45c93c869c573c43e assets/roll_mod/models/item/letter_b.json
+61fa622e19e83f3758f1ab920d87ad0c66a5211a assets/roll_mod/models/item/letter_n.json
+e5749138dfbf937ac71a26f68850678562fa1ec9 assets/roll_mod/models/item/letter_oo.json
 9c1788ee2052d789f49e3a5b5a17a909ac4f6d4f assets/roll_mod/models/item/light_blue_lens.json
 ac841e1420ce1833875e82b2b8df9461450853df assets/roll_mod/models/item/lithium_soap.json
+77b1148c82408022149572dc2f7ee4015172e4a6 assets/roll_mod/models/item/lithium_sulfate_dust.json
 e54850ac42683913bc0cb4c2ad792a2e5cc0f869 assets/roll_mod/models/item/lungsupgrade_sulfur_resistance.json
 dfa03c80660fd6f833149a258d4fed7e369e1e29 assets/roll_mod/models/item/magnetite_spinach.json
 992e177d9810c863ce39dc98974488be17d69b5f assets/roll_mod/models/item/magnetite_spinach_seeds.json

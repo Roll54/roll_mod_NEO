@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.minestar.hub.gui;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorBorderTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup;
+import com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.Icons;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay;
@@ -24,6 +25,7 @@ import org.appliedenergistics.yoga.YogaPositionType;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * The title row every hub tab wears, and the information panel behind its {@code I} button.
@@ -57,6 +59,9 @@ public final class HubSection {
 
     /** The I button, and the close button on the panel. */
     private static final int BUTTON = 12;
+
+    /** Breathing room between a tab's own header button and the I button it sits beside. */
+    private static final int BUTTON_GAP = 4;
     private static final int CLOSE_W = 44;
     private static final int CLOSE_H = 14;
 
@@ -156,7 +161,7 @@ public final class HubSection {
      * is the tab's own hover caption, so a tab is called the same thing in both places and adding a
      * section needs no second lang key.
      */
-    public static UIElement header(String id, Info info) {
+    public static UIElement header(String id, Info info, UIElement... extras) {
         UIElement header = new UIElement();
         header.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(HEADER_H)
                 .marginBottom(HEADER_GAP));
@@ -166,8 +171,76 @@ public final class HubSection {
         title.layout(l -> l.flexGrow(1).height(HEADER_H));
         title.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(true));
 
-        header.addChildren(title, info.button());
+        header.addChild(title);
+        // Anything the tab wants beside the I button goes to its left, so the I stays where it is
+        // on every tab — it is the one control in this row that is in the same place everywhere.
+        for (UIElement extra : extras) {
+            header.addChild(extra);
+        }
+        header.addChild(info.button());
         return header;
+    }
+
+    /**
+     * A second kind of floating panel: a caption, a body the caller fills, and a close button.
+     *
+     * <p>Shares {@link #info}'s one-panel-at-a-time state, so opening this closes an open
+     * explanation and {@code HubUI.select} closes this on a tab change — both for free. Unlike
+     * {@link #info} there is no separate-OS-window route: this holds live controls that send
+     * packets, and it belongs over the tab it configures.
+     *
+     * <p>Both halves have to be added to the tab, the same way {@link #info}'s are.
+     */
+    public static Info panel(Component title, IGuiTexture icon, Component tip,
+                             int width, int height, Consumer<UIElement> body) {
+        float[] pos = {(HubUI.CONTENT_W - width) / 2f, (HubUI.CONTENT_H - height) / 2f};
+
+        UIElement panel = new UIElement();
+        panel.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
+                .left(pos[0]).top(pos[1]).width(width).height(height)
+                .flexDirection(FlexDirection.COLUMN).paddingAll(PANEL_PADDING));
+        panel.style(s -> s.background(new GuiTextureGroup(
+                new ColorRectTexture(PANEL_FILL), new ColorBorderTexture(1, PANEL_BORDER)))
+                .zIndex(PANEL_Z));
+        panel.setDisplay(false);
+        // Swallows clicks landing on the panel itself, so a press meant for it cannot fall through
+        // to the tab behind.
+        panel.addEventListener(UIEvents.CLICK, e -> {});
+
+        Label caption = new Label();
+        caption.setText(title);
+        caption.layout(l -> l.widthPercent(100).height(HEADER_H).marginBottom(HEADER_GAP));
+        caption.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(true));
+        caption.style(s -> s.background(new ColorRectTexture(TITLE_FILL)));
+        drag(panel, caption, pos, width, height);
+
+        UIElement content = new UIElement();
+        content.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)
+                .flexBasis(0).flexGrow(1).gapRow(2));
+        body.accept(content);
+
+        Button close = new Button();
+        close.setText(Component.translatable("gui." + RollMod.MODID + ".hub.info.close"));
+        close.layout(l -> l.width(CLOSE_W).height(CLOSE_H).marginTop(HEADER_GAP).marginLeftAuto());
+        close.setOnClick(e -> closePanel());
+
+        panel.addChildren(caption, content, close);
+
+        UIElement button = new UIElement();
+        button.layout(l -> l.width(BUTTON).height(BUTTON).marginRight(BUTTON_GAP));
+        button.style(s -> s.background(icon));
+        button.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
+                List.of(tip), null, null, ItemStack.EMPTY));
+        button.addEventListener(UIEvents.CLICK, e -> {
+            boolean show = !panel.isDisplayed();
+            closePanel();
+            if (show) {
+                panel.setDisplay(true);
+                openPanel = panel;
+            }
+        });
+
+        return new Info(button, panel);
     }
 
     /* -------------------------------------------- the panel ------------------------------------------- */
@@ -202,7 +275,7 @@ public final class HubSection {
                 .textAlignVertical(Vertical.CENTER).textShadow(true));
         // Tinted because it is the grab handle, and a handle nobody can see is a handle nobody uses.
         title.style(s -> s.background(new ColorRectTexture(TITLE_FILL)));
-        drag(panel, title, pos);
+        drag(panel, title, pos, PANEL_W, PANEL_H);
 
         ScrollerView body = new ScrollerView();
         // flexBasis(0), for the reason HubInfoWindow gives: flex-shrink defaults to 0 and flex-basis
@@ -256,7 +329,7 @@ public final class HubSection {
      * client-only type, and mouse events never fire there — so unlike {@link HubInfo} and
      * {@code PlayerPreviewElement} this needs no client-only holder class.
      */
-    private static void drag(UIElement panel, UIElement handle, float[] pos) {
+    private static void drag(UIElement panel, UIElement handle, float[] pos, int width, int height) {
         handle.addEventListener(UIEvents.MOUSE_DOWN, e -> {
             handle.startDrag(new float[] {pos[0], pos[1]}, null);
             // As Scroller does: the grab must not also read as a press on the panel behind it.
@@ -267,8 +340,8 @@ public final class HubSection {
             if (!(e.dragHandler.draggingObject instanceof float[] origin)) return;
             // Clamped to the tab box, so the window can never be shoved somewhere it cannot be
             // grabbed back from.
-            pos[0] = Mth.clamp(origin[0] + (e.x - e.dragStartX), 0, HubUI.CONTENT_W - PANEL_W);
-            pos[1] = Mth.clamp(origin[1] + (e.y - e.dragStartY), 0, HubUI.CONTENT_H - PANEL_H);
+            pos[0] = Mth.clamp(origin[0] + (e.x - e.dragStartX), 0, HubUI.CONTENT_W - width);
+            pos[1] = Mth.clamp(origin[1] + (e.y - e.dragStartY), 0, HubUI.CONTENT_H - height);
             panel.layout(l -> l.left(pos[0]).top(pos[1]));
         });
     }

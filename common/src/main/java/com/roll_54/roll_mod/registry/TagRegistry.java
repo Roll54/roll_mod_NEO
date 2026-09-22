@@ -43,6 +43,13 @@ public class TagRegistry {
     /** Items that may never carry a cosmetic skin. Beats every slot tag and the type probe both. */
     public static final TagKey<Item> SKIN_BLACKLIST = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "skin_blacklist"));
 
+    /**
+     * Items the Crop Manager Mk2 accepts in its herbicide slot. A tag rather than a list of items
+     * because the MBD2 machine definition is built during mod construction, before items are
+     * registered, so its slot filter cannot resolve a DeferredHolder.
+     */
+    public static final TagKey<Item> HERBICIDES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "herbicides"));
+
     //for blockogriz
     public static final TagKey<Block> MINEABLE_WITH_PAXEL = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("cucumber", "mineable/paxel"));
 

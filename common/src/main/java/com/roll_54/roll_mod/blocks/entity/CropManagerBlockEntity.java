@@ -27,7 +27,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.neoforge.energy.EnergyStorage;
+import com.roll_54.roll_mod.energy.AnyTierEnergyStore;
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.ContainerHelper;
@@ -36,10 +36,16 @@ import java.util.ArrayList;
 public class CropManagerBlockEntity extends BlockEntity implements MenuProvider, WorldlyContainer {
 
     private static final long CAPACITY = 100000L;
-    private static final long MAX_TRANSFER = 1000L;
     private static final long COST_PER_OPERATION = 500L;
 
-    private final EnergyStorage energyStorage = new EnergyStorage((int) CAPACITY, (int) MAX_TRANSFER, (int) MAX_TRANSFER, 0);
+    // An MI-native buffer: every cable tier connects, and because MIEnergyStorage is also an
+    // IEnergyStorage the same object serves an FE cable at 1 FE == 1 EU.
+    //
+    // Transfer is bounded by the capacity rather than a rate of its own: a superconductor can fill
+    // the buffer in one tick, an LV cable takes as long as an LV cable takes, and the only thing
+    // deciding how fast the machine works is COST_PER_OPERATION against what the cable delivers.
+    private final AnyTierEnergyStore energyStorage =
+            new AnyTierEnergyStore((int) CAPACITY, (int) CAPACITY, (int) CAPACITY, 0);
     private int tickCounter = 0;
     
     // 0-7: Harvested crops
@@ -169,7 +175,7 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
 
     // ── Energy Storage Implementation ─────────────────────────────────────
 
-    public EnergyStorage getEnergyStorage() {
+    public AnyTierEnergyStore getEnergyStorage() {
         return energyStorage;
     }
 
@@ -186,7 +192,7 @@ public class CropManagerBlockEntity extends BlockEntity implements MenuProvider,
     protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
         super.loadAdditional(tag, registries);
         long energy = tag.getLong("energy");
-        energyStorage.receiveEnergy((int) Math.min(energy, Integer.MAX_VALUE), false);
+        energyStorage.setEnergy((int) Math.min(energy, Integer.MAX_VALUE));
         this.items.clear();
         ContainerHelper.loadAllItems(tag, this.items, registries);
     }

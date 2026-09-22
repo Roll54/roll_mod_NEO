@@ -44,7 +44,6 @@ neoForge {
 dependencies {
     implementation project(':common')
 
-//    implementation "curse.maven:ftb-essentials-410811:${ftb_essentials_file}"
 //    implementation "curse.maven:ftb-library-forge-404465:${ftb_library_file}"
 
     implementation files("jars/luckperms-neoforge.jar")
@@ -59,7 +58,6 @@ dependencies {
     // scaling can actually be tested. Not on any compile classpath here.
     implementation "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
     // ChatHandler reads FTBEPlayerData for the mute/nickname state it prints.
-    implementation "dev.ftb.mods:ftb-essentials-neoforge:${ftb_essentials_version}"
 
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
         version {
@@ -79,7 +77,7 @@ dependencies {
 
     implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
 
-    implementation files("jars/Multiblocked2-1.21-1.21.1-21.0.10.jar")
+    implementation files("jars/Multiblocked2-1.21-1.21.1-21.1.2-all.jar")
 
 }
 

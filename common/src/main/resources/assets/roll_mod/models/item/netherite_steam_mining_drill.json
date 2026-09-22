@@ -1,6 +1,6 @@
 {
   "parent": "item/handheld",
   "textures": {
-    "layer0": "modern_industrialization:item/steam_mining_drill"
+    "layer0": "roll_mod:item/tool/netherite_steam_mining_drill"
   }
 }

@@ -9,11 +9,14 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Hand-off between {@link ChatHandler} and {@code PlayerListChatMixin}.
  *
- * <p>{@link ChatHandler} delivers chat itself (local radius / global channel) but must not
- * cancel {@code ServerChatEvent}, otherwise every listener registered after it — other mods,
- * chat bridges, loggers — never sees the message. Instead it marks the message as already
- * delivered here, and the mixin drops the vanilla broadcast at the very last step, inside
+ * <p>This is the <em>global</em> channel's half of {@link ChatHandler}. A global message must not
+ * cancel {@code ServerChatEvent}, otherwise every listener registered after it — other mods, chat
+ * bridges, loggers — never sees it. Instead it is marked as already delivered here, and the mixin
+ * drops the vanilla broadcast at the very last step, inside
  * {@code PlayerList#broadcastChatMessage}. The event itself completes uncancelled.
+ *
+ * <p>Local chat is the opposite case and never comes through here: it is cancelled outright, at
+ * {@code HIGHEST} priority, precisely so that those same listeners never see it.
  *
  * <p>A message is marked only once its custom delivery actually succeeded, so any failure in
  * {@link ChatHandler} falls back to the untouched vanilla broadcast instead of silently

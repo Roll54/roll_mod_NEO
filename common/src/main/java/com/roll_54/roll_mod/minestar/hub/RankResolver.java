@@ -50,6 +50,23 @@ public final class RankResolver {
         return Language.getInstance().has(key) ? Component.translatable(key) : Component.literal(rankId);
     }
 
+    /** The lowest staff group. Everything weighted at or above it counts as staff. */
+    public static final String HELPER_RANK = "helper";
+
+    /**
+     * Whether the player is {@link #HELPER_RANK} or higher: they inherit the helper group, or hold a
+     * group weighted at least as heavily as it. Weight is what makes "higher" work without every
+     * senior group having to inherit helper. False without LuckPerms, or when no helper group exists.
+     */
+    public static boolean isHelperOrHigher(ServerPlayer player) {
+        if (!LuckPermsCompat.LOADED) return false;
+        try {
+            return Lp.atLeast(player, HELPER_RANK);
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
     /** Isolated holder for the LuckPerms API; only referenced when {@link LuckPermsCompat#LOADED}. */
     private static final class Lp {
 
@@ -73,6 +90,26 @@ public final class RankResolver {
                 }
             }
             return best != null ? best : user.getPrimaryGroup();
+        }
+
+        static boolean atLeast(ServerPlayer player, String groupName) {
+            net.luckperms.api.LuckPerms lp = net.luckperms.api.LuckPermsProvider.get();
+            net.luckperms.api.model.group.Group floor = lp.getGroupManager().getGroup(groupName);
+            if (floor == null) return false;
+            net.luckperms.api.model.user.User user = lp.getUserManager().getUser(player.getUUID());
+            if (user == null) return false;
+
+            net.luckperms.api.query.QueryOptions options =
+                    lp.getContextManager().getQueryOptions(user)
+                            .orElse(net.luckperms.api.query.QueryOptions.defaultContextualOptions());
+
+            java.util.OptionalInt floorWeight = floor.getWeight();
+            for (net.luckperms.api.model.group.Group group : user.getInheritedGroups(options)) {
+                if (group.getName().equals(floor.getName())) return true;
+                if (floorWeight.isPresent() && group.getWeight().isPresent()
+                        && group.getWeight().getAsInt() >= floorWeight.getAsInt()) return true;
+            }
+            return false;
         }
     }
 }

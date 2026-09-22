@@ -244,6 +244,9 @@ public final class ItemGroups {
 
                         // Research Workbench
                         out.accept(BlockRegistry.RESEARCH_WORKBENCH.get().asItem());
+
+                        // Hydroponic Garden Bed
+                        out.accept(BlockRegistry.HYDROPONIC_GARDEN_BED.get().asItem());
                         add(out, ItemRegistry.BLUEPRINT_FIRE_RESISTANCE);
 
                     })

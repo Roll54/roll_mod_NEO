@@ -228,6 +228,9 @@ public class RolltemModelProvider extends ItemModelProvider {
 
         basicItem(ItemRegistry.DIAMOND_ALLOY_INGOT.get());
         basicItem(ItemRegistry.DIAMOND_ALLOY_PLATE.get());
+        getBuilder(ItemRegistry.DIAMOND_ALLOY_LARGE_PLATE.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/large_diamond_alloy_plate"));
         basicItem(ItemRegistry.DIAMOND_ALLOY_DUST.get());
 
         rollToolItemModel(ItemRegistry.STEEL_SWORD.get());
@@ -242,6 +245,18 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.METEORITE_METAL_LARGE_PLATE.get());
         basicItem(ItemRegistry.METEORITE_METAL_ROD.get());
         basicItem(ItemRegistry.METEORITE_METAL_PLATE.get());
+
+        // Н У Б. The textures are animated strips, the animation comes from their .png.mcmeta.
+        basicItem(ItemRegistry.LETTER_N.get());
+        basicItem(ItemRegistry.LETTER_OO.get());
+        basicItem(ItemRegistry.LETTER_B.get());
+
+        basicItem(ItemRegistry.LITHIUM_SULFATE_DUST.get());
+        basicItem(ItemRegistry.BISMUTH_LITHIUM_BATTERY.get());
+
+        basicItem(ItemRegistry.BISMUTH_INGOT.get());
+        basicItem(ItemRegistry.BISMUTH_PLATE.get());
+        basicItem(ItemRegistry.BISMUTH_CURVED_PLATE.get());
 
         rollToolItemModel(ItemRegistry.STEEL_BLOCKOGRIZ.get());
         rollToolItemModel(ItemRegistry.DIAMOND_BLOCKOGRIZ.get());

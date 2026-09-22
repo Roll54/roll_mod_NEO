@@ -47,6 +47,22 @@ public final class VendorUIHelper {
     return root;
   }
 
+  /**
+   * A panel that wears the stylesheet's own {@code .panel_bg} look instead of a flat colour.
+   *
+   * <p>Deliberately sets <em>no</em> background. {@code Style}'s pipeline defaults to {@link
+   * com.lowdragmc.lowdraglib2.gui.ui.style.StyleOrigin#INLINE}, and inline outranks {@code
+   * STYLESHEET} in the cascade, so the {@link #panel} above would silently defeat the very rule this
+   * one exists to pick up — which is exactly what it had been doing to the Crop Manager's
+   * {@code panel_bg} class.
+   */
+  public static UIElement styledPanel(int width, int height) {
+    UIElement root = new UIElement();
+    root.addClass("panel_bg");
+    root.layout(l -> l.width(width).height(height));
+    return root;
+  }
+
   public static <T extends UIElement> T abs(T el, int x, int y, int w, int h) {
     el.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).left(x).top(y).width(w).height(h));
     return el;

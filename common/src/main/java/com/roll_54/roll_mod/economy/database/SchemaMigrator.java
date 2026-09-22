@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.FlywayException;
 import org.flywaydb.core.api.ResourceProvider;
@@ -28,9 +29,16 @@ public class SchemaMigrator {
    * classloader (it works in dev via the filesystem, but finds nothing in the packaged jar), so we
    * feed the scripts to Flyway by name instead. ADD EVERY NEW MIGRATION FILE HERE.
    */
-  private static final List<String> MIGRATIONS = List.of("V1__Initial_setup.sql");
+  private static final List<String> MIGRATIONS =
+      List.of("V1__Initial_setup.sql", "V2__Currency_offers.sql");
 
   public static CompletableFuture<Void> migrate() {
+    ExecutorService executor = DatabaseManager.getInstance().getExecutor();
+    if (executor == null) {
+      // init() failed or never ran; the caller logs it and carries on without an economy.
+      return CompletableFuture.failedFuture(
+          new IllegalStateException("Cannot run migration: the database is not open"));
+    }
     return CompletableFuture.runAsync(
         () -> {
           RollMod.LOGGER.info("[Migration] Starting database migration...");
@@ -67,7 +75,7 @@ public class SchemaMigrator {
             Thread.currentThread().setContextClassLoader(originalLoader);
           }
         },
-        DatabaseManager.getInstance().getExecutor());
+        executor);
   }
 
   /**

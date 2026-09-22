@@ -45,14 +45,30 @@
 	},
 	// Settings for the /rtp (random teleport) command
 	"rtp": {
-		/* Dimensions in which /rtp is allowed (namespaced ids, e.g. "minecraft:overworld").
-		   If a player runs /rtp from a dimension that is not in this list, they are first
-		   moved to the overworld and the random teleport is performed there instead.
-		   Leave the overworld out of the list to effectively disable /rtp everywhere.
+		/* Dimensions in which /rtp is refused (namespaced ids, e.g. "minecraft:the_end").
+		   A player running /rtp in one of these is moved to the overworld first and the
+		   random teleport happens there instead. Blacklisting the overworld too refuses
+		   /rtp outright rather than sending anyone in circles.
 		*/
-		"allowedDimensions": [
-			"minecraft:overworld"
-		]
+		"blacklistedDimensions": [
+			"minecraft:the_end"
+		],
+		// Closest a random teleport may land to the world spawn, in blocks.
+		"minRadius": 500,
+		// Furthest a random teleport may land from the world spawn, in blocks.
+		"maxRadius": 25000,
+		// How many candidate positions are tried before /rtp gives up.
+		"maxTries": 100,
+		/* Candidates examined per server tick, per searching player. Only candidates that
+		   pass the no-chunk-load height and biome check cost a chunk, but that chunk may
+		   have to be generated, so raising this trades stutter for a faster answer.
+		*/
+		"triesPerTick": 2,
+		/* Wait between random teleports, in TICKS (20 = one second).
+		   Overridden per rank by the LuckPerms meta 'rollmod.rtp.cooldown', and waived
+		   entirely by the permission 'rollmod.cooldown.bypass'.
+		*/
+		"cooldownTicks": 12000
 	},
 	// BUKVI for nothing
 	"enabled": true,
@@ -109,13 +125,8 @@
 		// HP multiplier
 		"MOB_HP_BUFF": 2.5
 	},
-	// Anvil tweaks: over-enchanting past max level and removing the 40-level 'Too Expensive!' cap.
+	// Anvil tweaks: removing the 40-level 'Too Expensive!' cap.
 	"anvil": {
-		/* Allow the anvil to combine enchantments past their normal maximum level.
-		   e.g. Sharpness V + Sharpness V -> Sharpness VI, and so on.
-		   False = vanilla behavior (combined level is clamped to the enchantment max).
-		*/
-		"overEnchant": true,
 		/* Remove the vanilla 'Too Expensive!' block at 40 levels so the anvil result is never
 		   greyed out for cost alone. Costs at or above the threshold are scaled exponentially
 		   instead (see expThreshold / expGrowth), so high-tier work stays possible but expensive.

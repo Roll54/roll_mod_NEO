@@ -8,6 +8,9 @@ import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.plot.PlotViewers;
 import com.roll_54.roll_mod.economy.vendingblock.auction.AuctionManager;
 import com.roll_54.roll_mod.minestar.hub.home.HomeViewers;
+import com.roll_54.roll_mod.minestar.kits.KitViewers;
+import com.roll_54.roll_mod.minestar.op.OperatorViewers;
+import com.roll_54.roll_mod.minestar.tpa.TpaViewers;
 import com.roll_54.roll_mod.minestar.hub.gui.HubUI;
 import com.roll_54.roll_mod.minestar.hub.warp.WarpViewers;
 import net.minecraft.commands.CommandSourceStack;
@@ -62,6 +65,9 @@ public final class HubCommand {
         // player ever clicks it. This has to happen here rather than on tab selection: selecting a
         // tab is a client-side click the server never sees — see HubUI's class javadoc.
         WarpViewers.add(player);
+        KitViewers.add(player);
+        TpaViewers.add(player);
+        OperatorViewers.add(player);
         HomeViewers.add(player);
         AuctionManager.addViewer(player);
         PlotViewers.add(player);

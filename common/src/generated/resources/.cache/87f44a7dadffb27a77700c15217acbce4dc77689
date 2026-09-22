@@ -1,4 +1,4 @@
-// 1.21.1	2026-09-09T19:10:50.727196237	Tags for minecraft:item mod id roll_mod
+// 1.21.1	2026-09-19T23:16:36.916518669	Tags for minecraft:item mod id roll_mod
 86c027ee359f63ead5663d6ec9769fc4251b4cab data/c/tags/item/antimony.json
 1510cca7a87081ff56ab1224106ebe72251f0764 data/c/tags/item/apatite.json
 d977069cd601e10a74b7fabeeaf84b966aceac80 data/c/tags/item/azure_silver.json
@@ -261,6 +261,7 @@ fd210a44e07704fd959b87d215f76275ea787748 data/roll_mod/tags/item/crushed_refined
 51d1f145c63c62a8ed1c6cb208c7c966e74f2ace data/roll_mod/tags/item/dust_impure_ore.json
 4ec8ff6047b8bce226c36496ebae83603f90e347 data/roll_mod/tags/item/dust_ore.json
 12007465d255a17e3dbb8b670247dffc5ce1cf27 data/roll_mod/tags/item/dust_pure_ore.json
+32de8aac9ccd87565f56eddc4dc125095ff0affc data/roll_mod/tags/item/herbicides.json
 68cf39c5e8e73aae8f635aea485dc9a7f10b49d2 data/roll_mod/tags/item/raw_ore.json
 35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/roll_mod/tags/item/skin_blacklist.json
 8359de310c3321a5789b050af63867571bed8f62 data/roll_mod/tags/item/skin_slot/axe.json

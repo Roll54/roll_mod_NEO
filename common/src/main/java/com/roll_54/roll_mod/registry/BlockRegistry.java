@@ -4,6 +4,7 @@ package com.roll_54.roll_mod.registry;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.blocks.*;
 import com.roll_54.roll_mod.blocks.regenblock.RegenBlock;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -159,6 +160,13 @@ public class BlockRegistry {
                     .sound(SoundType.METAL)
                     .requiresCorrectToolForDrops()));
 
+    public static final DeferredBlock<Block> HYDROPONIC_GARDEN_BED = BLOCKS.register(
+            "hydroponic_garden_bed",
+            () -> new HydroponicGardenBedBlock(BlockBehaviour.Properties.of()
+                    .strength(3.0F, 9.0F)
+                    .sound(SoundType.METAL)
+                    .requiresCorrectToolForDrops()));
+
     public static final DeferredBlock<Block> GRINDING_WHEELS = BLOCKS.register(
             "grinding_wheels",
             () -> new Block(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.METAL))
@@ -211,6 +219,7 @@ public class BlockRegistry {
 
     static {
         ITEMS.register("treated_planks", () -> new BlockItem(TREATED_PLANKS.get(), new Item.Properties()));
+        ITEMS.register("hydroponic_garden_bed", () -> new BlockItem(HYDROPONIC_GARDEN_BED.get(), new Item.Properties()));
         ITEMS.register("treated_log", () -> new BlockItem(TREATED_LOG.get(), new Item.Properties()));
         ITEMS.register("lapotronic_laser_block", () -> new BlockItem(LAPOTRONIC_LASER_BLOCK.get(), new Item.Properties()));
         ITEMS.register("research_workbench", () -> new BlockItem(RESEARCH_WORKBENCH.get(), new Item.Properties()));
@@ -240,8 +249,16 @@ public class BlockRegistry {
             }
         });
         ITEMS.register("grinding_wheels", () -> new BlockItem(GRINDING_WHEELS.get(), new Item.Properties()));
-        ITEMS.register("crop_manager", () -> new BlockItem(CROP_MANAGER.get(), new Item.Properties())
-        );
+        // Superseded by the MBD2 machine roll_mod:crop_manager_mk2. Kept registered so blocks already
+        // placed in a world keep working; the tooltip is the only thing that changed.
+        ITEMS.register("crop_manager", () -> new BlockItem(CROP_MANAGER.get(), new Item.Properties()) {
+            @Override
+            public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+                tooltip.add(Component.translatable("tooltip.roll_mod.crop_manager.deprecated")
+                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
+                super.appendHoverText(stack, context, tooltip, flag);
+            }
+        });
         ITEMS.register("weed_manager", () -> new BlockItem(WEED_MANAGER.get(), new Item.Properties())
         );
         ITEMS.register("netherite_frame", () -> new BlockItem(NETHERITE_FRAME.get(), new Item.Properties()));

@@ -41,7 +41,7 @@ public class CosmeticsConfig extends Config {
   public static class StorageSettings extends ConfigSection {
 
     /**
-     * Empty — the default — means the local embedded file at {@code <gameDir>/roll_mod/cosmetics},
+     * Empty — the default — means the local embedded file at {@code <gameDir>/minestar/cosmetics},
      * which needs no setup and works in singleplayer. Point this at a shared {@code jdbc:mysql://…}
      * to have several servers read one set of cosmetics.
      *

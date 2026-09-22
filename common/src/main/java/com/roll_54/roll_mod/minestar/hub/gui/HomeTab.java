@@ -30,7 +30,8 @@ import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 /**
- * The hub's home tab: the player's own model on the left, their status on the right.
+ * The hub's home tab: the player's own model on the left, their status beside it, and their kits
+ * and the argument-less trips on the right.
  *
  * <p>Everything the server knows and the client does not — rank, tier, quest counts — crosses as an
  * LdLib2 server→client binding, the same mechanism the daily-tasks screen uses, so no new packets
@@ -71,7 +72,10 @@ public final class HomeTab {
                 .gapColumn(PADDING));
         // The doll is told when the information window is up, because it draws over everything —
         // see PlayerPreviewElement's class javadoc.
-        body.addChildren(preview(() -> section.overlay().isDisplayed()), info(player, server));
+        // Appended, never inserted: info() registers six positional bindings and anything placed
+        // before it would shift every one of them. The kits panel registers none of its own.
+        body.addChildren(preview(() -> section.overlay().isDisplayed()), info(player, server),
+                KitsPanel.build());
 
         // The panel last, so it covers the body when opened.
         root.addChildren(HubSection.header("home", section), body, section.overlay());

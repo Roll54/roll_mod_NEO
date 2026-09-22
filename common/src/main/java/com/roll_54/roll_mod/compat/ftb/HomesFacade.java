@@ -8,9 +8,9 @@ import java.util.List;
 /**
  * Reads and clears the homes a player set through FTB Essentials, without hard-depending on it.
  *
- * <p>Same shape as {@link TeamsFacade}: no {@code dev.ftb.mods} class may be named from a class that
- * loads unconditionally, so every such reference lives in {@link FTBEssentialsHomesFacadeImpl},
- * which {@link #get()} only class-loads once it has confirmed the mod is present.
+ * <p>FTB Essentials itself is no longer a dependency, so {@link LegacyHomesFacade} reads the files
+ * it left in the world folder rather than calling its API. Nothing else changed: the homes tab
+ * still lists what it finds and still offers to bring each one across.
  *
  * <p>This exists for one job — {@code HomeCommandRedirect} hands {@code /home} and friends to this
  * mod, which leaves any home a player had already set with FTB stranded: still in FTB's player data,
@@ -35,7 +35,7 @@ public interface HomesFacade {
     record Legacy(String name, ResourceLocation dimension, double x, double y, double z,
                   float yaw, float pitch) {}
 
-    /** Used when ftbessentials is absent: nobody has anything to migrate. */
+    /** Used when the legacy data cannot be read at all: nobody has anything to migrate. */
     HomesFacade NONE = new HomesFacade() {
         @Override
         public List<Legacy> homesOf(ServerPlayer player) {
@@ -52,25 +52,19 @@ public interface HomesFacade {
         return Holder.INSTANCE;
     }
 
-    /** Lazy holder so the {@code Class.forName} lookup happens once, on first use. */
+    /** Lazy holder, so the reader is built once rather than per lookup. */
     final class Holder {
         static final HomesFacade INSTANCE = load();
 
         private Holder() {}
 
         private static HomesFacade load() {
-            if (!net.neoforged.fml.ModList.get().isLoaded("ftbessentials")) {
-                return NONE;
-            }
             try {
-                return (HomesFacade) Class
-                        .forName("com.roll_54.roll_mod.compat.ftb.FTBEssentialsHomesFacadeImpl")
-                        .getDeclaredConstructor()
-                        .newInstance();
+                return new LegacyHomesFacade();
             } catch (Throwable t) {
                 com.roll_54.roll_mod.RollMod.LOGGER.warn(
-                        "[Homes] ftbessentials is loaded but its API could not be bound; "
-                                + "legacy homes will not be offered for migration.", t);
+                        "[Homes] legacy FTB Essentials homes could not be read; "
+                                + "they will not be offered for migration.", t);
                 return NONE;
             }
         }

@@ -41,6 +41,14 @@ public class CapabilityRegistry {
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.EV_ELECTRIC_SABER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.IV_ELECTRIC_SABER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.MULTI_PROTECTING_GRAVI_CHESTPLATE.get());
+        // Crop Manager: the same AnyTierEnergyStore answers both energy capabilities, so an MI
+        // cable of any tier and an FE cable feed the one buffer at 1 FE == 1 EU. Every face is a
+        // port and no face is an output — it only ever consumes.
+        event.registerBlockEntity(
+                EnergyApi.SIDED,
+                BlockEntites.CROP_MANAGER_BE.get(),
+                (blockEntity, side) -> blockEntity.getEnergyStorage()
+        );
         event.registerBlockEntity(
                 Capabilities.EnergyStorage.BLOCK,
                 BlockEntites.CROP_MANAGER_BE.get(),
@@ -61,6 +69,30 @@ public class CapabilityRegistry {
                 BlockEntites.WEED_MANAGER_BE.get(),
                 (blockEntity, side) -> new SidedInvWrapper((WeedManagerBlockEntity) blockEntity, side)
         );
+        // Hydroponic Garden Bed: everything is backed by the shared node, so every face is a
+        // valid port and no face is an output. MIEnergyStorage extends NeoForge's IEnergyStorage,
+        // so the same object serves an MI cable and an FE cable at 1 FE == 1 EU.
+        event.registerBlockEntity(
+                EnergyApi.SIDED,
+                BlockEntites.HYDROPONIC_GARDEN_BED_BE.get(),
+                (blockEntity, side) -> blockEntity.energyPort()
+        );
+        event.registerBlockEntity(
+                Capabilities.EnergyStorage.BLOCK,
+                BlockEntites.HYDROPONIC_GARDEN_BED_BE.get(),
+                (blockEntity, side) -> blockEntity.energyPort()
+        );
+        event.registerBlockEntity(
+                Capabilities.FluidHandler.BLOCK,
+                BlockEntites.HYDROPONIC_GARDEN_BED_BE.get(),
+                (blockEntity, side) -> blockEntity.fluidPort()
+        );
+        event.registerBlockEntity(
+                Capabilities.ItemHandler.BLOCK,
+                BlockEntites.HYDROPONIC_GARDEN_BED_BE.get(),
+                (blockEntity, side) -> blockEntity.inputs()
+        );
+
         // Native MI energy source: cables connecting to the panel's bottom face pull from it.
         event.registerBlockEntity(
                 EnergyApi.SIDED,

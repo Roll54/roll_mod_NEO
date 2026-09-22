@@ -13,18 +13,26 @@ import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ProgressBar;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
+import com.lowdragmc.mbd2.api.blockentity.IMachineBlockEntity;
 import com.lowdragmc.mbd2.common.gui.MBDSprites;
+import com.lowdragmc.mbd2.common.machine.definition.MBDMachineDefinition;
 import com.lowdragmc.mbd2.common.machine.MBDMachine;
 import com.lowdragmc.mbd2.common.trait.ITrait;
 import com.lowdragmc.mbd2.common.trait.IUIProviderTrait.TraitUILayoutType;
 import com.lowdragmc.mbd2.common.trait.SimpleCapabilityTraitDefinition;
 import com.lowdragmc.mbd2.common.trait.ToggleAutoIO;
+import com.lowdragmc.mbd2.common.trait.forgeenergy.EnergyStorageList;
+import com.lowdragmc.mbd2.common.trait.forgeenergy.EnergyStorageWrapper;
 import com.lowdragmc.mbd2.common.trait.TraitDefinitionType;
 import com.lowdragmc.mbd2.utils.EnergyFormattingUtil;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.neoforged.neoforge.capabilities.BlockCapability;
+import net.neoforged.neoforge.capabilities.Capabilities;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -52,6 +60,44 @@ public class MIEnergyTraitDefinition extends SimpleCapabilityTraitDefinition<MIE
                 @Override
                 protected MIEnergyStorage merge(List<MIEnergyStorage> contents) {
                     return new MergedMIEnergyStorage(List.copyOf(contents));
+                }
+
+                /**
+                 * Exposes the very same buffer as Forge Energy as well as EU, so the machine can be
+                 * powered from an MI cable or an FE cable interchangeably.
+                 *
+                 * <p>This costs nothing but the registration: {@link MIEnergyStore} already
+                 * {@code extends EnergyStorage implements MIEnergyStorage} over one {@code int}, so
+                 * there is one buffer and no conversion — 1 FE in is 1 EU stored. Mirrors the EU
+                 * registration {@code super} performs, down to the per-side {@link IO} gating.
+                 */
+                @Override
+                public void registerCapabilities(MBDMachineDefinition definition, RegisterCapabilitiesEvent event) {
+                    super.registerCapabilities(definition, event);
+                    event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, definition.blockEntityType(),
+                            (blockEntity, side) -> {
+                                if (!(blockEntity instanceof IMachineBlockEntity machineBlockEntity)
+                                        || !(machineBlockEntity.getMetaMachine() instanceof MBDMachine machine)) {
+                                    return null;
+                                }
+                                List<IEnergyStorage> views = new ArrayList<>();
+                                for (ITrait trait : machine.getAdditionalTraits()) {
+                                    if (trait instanceof MIEnergyTrait energyTrait
+                                            && energyTrait.getDefinition().type() == this) {
+                                        MIEnergyTraitDefinition traitDefinition = energyTrait.getDefinition();
+                                        views.add(new EnergyStorageWrapper(energyTrait.getStorage(),
+                                                energyTrait.getCapabilityIO(side),
+                                                traitDefinition.getMaxReceive(),
+                                                traitDefinition.getMaxExtract()));
+                                    }
+                                }
+                                if (views.isEmpty()) {
+                                    return null;
+                                }
+                                return views.size() == 1
+                                        ? views.get(0)
+                                        : new EnergyStorageList(views.toArray(new IEnergyStorage[0]));
+                            });
                 }
             };
 

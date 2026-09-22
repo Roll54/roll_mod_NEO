@@ -25,6 +25,45 @@ the primary approach documented here. The weighted-permission alternative is in 
 > Do **not** prefix meta keys with `permission.` — meta and permissions are separate namespaces.
 > Use a plain dotted key like `home.can_hold`.
 
+Plain boolean nodes the mod reads today (all through
+`economy/vendingblock/auction/LuckPermsCompat.java`) — nothing to set but `true`:
+
+| Node | Effect |
+|------|--------|
+| `rollmod.ah.prime` | Longer auction listing cap, and the larger warp allowance |
+| `rollmod.warps.moderate` | Receives warp reports and may act on them without being an operator |
+| `rollmod.warps.bypasswarmup` | Warps travel at once, with no countdown |
+| `rollmod.kit.<name>` | May claim that kit (kits without it are hidden in the F4 screen) |
+| `rollmod.rtp.bypasscooldown` | The `/rtp` wait does not apply (kits have no such node) |
+| `rollmod.fly.use` | May use `/fly` (the toggle survives logout, death and portals) |
+| `rollmod.heal.use` | May use `/heal` |
+| `rollmod.heal.bypasscooldown` | The `/heal` wait does not apply |
+
+```bash
+/lp group vip permission set rollmod.warps.bypasswarmup true
+/lp group vip permission set rollmod.kit.vip true
+```
+
+Value-bearing meta the mod reads, alongside `rollmod.warps.max` / `rollmod.homes.max` /
+`rollmod.ah.positions`:
+
+| Meta key | Value | Effect |
+|----------|-------|--------|
+| `rollmod.rtp.cooldown` | ticks | Wait between random teleports; unset falls back to the config |
+| `rollmod.heal.cooldown` | ticks | Wait between heals; unset falls back to the config |
+
+A kit's cooldown is deliberately absent from both tables: it comes from the kit file and nothing —
+no node, no meta, no operator level — shortens or waives it. A rank that should wait less gets its
+own kit, with its own access node and its own cooldown.
+
+Cooldown durations are ticks everywhere — the kit files, `/kit create` and these keys — so there
+is one unit to think about. (20 ticks = 1 second; 12000 = 10 minutes.)
+
+```bash
+/lp group vip meta set rollmod.rtp.cooldown 2400
+/lp group vip meta set rollmod.heal.cooldown 2400
+```
+
 ---
 
 ## 2. Meta: setting the value (admin side)

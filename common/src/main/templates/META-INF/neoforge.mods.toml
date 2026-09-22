@@ -112,6 +112,39 @@ versionRange = "[1.3.2,)"
 ordering = "NONE"
 side = "BOTH"
 
+# Multiblocked2 and its UI library are hard dependencies, not soft ones: compat/MBD2 imports
+# com.lowdragmc.* directly with no ModList.isLoaded guard (the crop_manager_mk2 machine, the
+# mi_energy_storage and crop_harvester traits), and the economy/hub UIs are built on LdLib2. Without
+# these the mod does not class-load, so the loader should say so instead of letting it crash.
+[[dependencies."${mod_id}"]]
+modId = "mbd2"
+# [21.1,) not [21.0.11,): MBD2 21.1 replaced IAutoIOTrait#getAutoIO with #getRuntimeAutoIO, so the
+# mi_energy_storage trait built against 21.1 throws AbstractMethodError on every machine tick under
+# 21.0.x. Not [21.1.1,) either, for the reason spelled out under ldlib2 below: the shipped build is
+# "21.1.1.a", and a trailing qualifier sorts BEFORE the bare release, so it would not satisfy it.
+type = "required"
+versionRange = "[21.1,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies."${mod_id}"]]
+modId = "ldlib2"
+# [2.2,) not [2.2.39,): the shipped version is "2.2.39.a", and Maven ordering treats a trailing
+# qualifier as older than the bare release, so "2.2.39.a" does NOT satisfy "[2.2.39,)".
+type = "required"
+versionRange = "[2.2,)"
+ordering = "AFTER"
+side = "BOTH"
+
+# Same story: compat/argicraft and mixin/crops name AgriCraft classes unguarded, and
+# roll_mod.mixins.json is required = true with four mixins targeting them.
+[[dependencies."${mod_id}"]]
+modId = "agricraft"
+type = "required"
+versionRange = "[4.0.8,)"
+ordering = "AFTER"
+side = "BOTH"
+
 # Features are specific properties of the game environment, that you may want to declare you require. This example declares
 # that your mod requires GL version 3.2 or higher. Other features will be added. They are side aware so declaring this won't
 # stop your mod loading on the server for example.

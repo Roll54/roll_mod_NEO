@@ -87,14 +87,65 @@ public class MyConfig extends Config {
 
     public static class RtpSettings extends ConfigSection {
         @Comment("""
-                Dimensions in which /rtp is allowed (namespaced ids, e.g. "minecraft:overworld").
-                If a player runs /rtp from a dimension that is not in this list, they are first
-                moved to the overworld and the random teleport is performed there instead.
-                Leave the overworld out of the list to effectively disable /rtp everywhere.
+                Dimensions in which /rtp is refused (namespaced ids, e.g. "minecraft:the_end").
+                A player running /rtp in one of these is moved to the overworld first and the
+                random teleport happens there instead. Blacklisting the overworld too refuses
+                /rtp outright rather than sending anyone in circles.
                 """)
-        public ArrayList<String> allowedDimensions = new ArrayList<String>(
-                List.of("minecraft:overworld")
+        public ArrayList<String> blacklistedDimensions = new ArrayList<String>(
+                List.of("minecraft:the_end")
         );
+
+        @Comment("Closest a random teleport may land to the world spawn, in blocks.")
+        public ValidatedInt minRadius = new ValidatedInt(500, 30_000_000, 0);
+
+        @Comment("""
+                Furthest a random teleport may land from the world spawn, in blocks.
+                Capped by the world border: a border smaller than this shrinks both radii to fit,
+                so there is no need to keep this number in step with /worldborder set.
+                """)
+        public ValidatedInt maxRadius = new ValidatedInt(25_000, 30_000_000, 1);
+
+        @Comment("How many candidate positions are tried before /rtp gives up.")
+        public ValidatedInt maxTries = new ValidatedInt(100, 1000, 1);
+
+        @Comment("""
+                Candidates examined per server tick, per searching player. Only candidates that
+                pass the no-chunk-load height and biome check cost a chunk, but that chunk may
+                have to be generated, so raising this trades stutter for a faster answer.
+                """)
+        public ValidatedInt triesPerTick = new ValidatedInt(2, 20, 1);
+
+        @Comment("""
+                Wait between random teleports, in TICKS (20 = one second).
+                Overridden per rank by the LuckPerms meta 'rollmod.rtp.cooldown', and waived
+                entirely by the permission 'rollmod.rtp.bypasscooldown'.
+                """)
+        public ValidatedInt cooldownTicks = new ValidatedInt(12_000, 1_728_000, 0);
+    }
+
+    @Comment("Settings for the /fly command")
+    public FlySettings fly = new FlySettings();
+
+    public static class FlySettings extends ConfigSection {
+        @Comment("""
+                Dimensions where /fly is refused (namespaced ids, e.g. "minecraft:the_nether").
+                A player who enters one while flying is put back on their feet and told why.
+                Access to the command itself is the LuckPerms permission 'rollmod.fly.use'.
+                """)
+        public ArrayList<String> blacklistedDimensions = new ArrayList<String>();
+    }
+
+    @Comment("Settings for the /heal command")
+    public HealSettings heal = new HealSettings();
+
+    public static class HealSettings extends ConfigSection {
+        @Comment("""
+                Wait between heals, in TICKS (20 = one second).
+                Overridden per rank by the LuckPerms meta 'rollmod.heal.cooldown', and waived
+                entirely by the permission 'rollmod.heal.bypasscooldown'.
+                """)
+        public ValidatedInt cooldownTicks = new ValidatedInt(12_000, 1_728_000, 0);
     }
 
     @Comment("BUKVI for nothing")

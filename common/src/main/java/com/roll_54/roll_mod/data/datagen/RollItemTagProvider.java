@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.data.datagen;
 
 import com.roll_54.roll_mod.items.BlockogrizItem;
+import com.roll_54.roll_mod.items.HerbicideItem;
 import com.roll_54.roll_mod.items.electricItems.EnergyDrillItem;
 import com.roll_54.roll_mod.items.electricItems.EnergySwordItem;
 import com.roll_54.roll_mod.items.electricItems.refactored.ComponentEnergyDrill;
@@ -48,6 +49,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
 
         addSkinSlotTags();
+        addHerbicideTag();
 
         var raw = tag(RAW_ORE);
         var crushed = tag(CRUSHED_ORE);
@@ -126,6 +128,19 @@ public class RollItemTagProvider extends ItemTagsProvider {
         }
 
 
+    }
+
+    /**
+     * Every {@link HerbicideItem} the mod registers. Consumed by the Crop Manager Mk2's herbicide
+     * slot filter, which is built before the item registry exists and so can only name a tag.
+     */
+    private void addHerbicideTag() {
+        var herbicides = tag(HERBICIDES);
+        for (var holder : ItemRegistry.ITEMS.getEntries()) {
+            if (holder.get() instanceof HerbicideItem) {
+                herbicides.add(holder.get());
+            }
+        }
     }
 
     /**

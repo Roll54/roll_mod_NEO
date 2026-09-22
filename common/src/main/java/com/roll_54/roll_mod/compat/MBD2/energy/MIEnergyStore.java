@@ -57,11 +57,14 @@ public class MIEnergyStore extends EnergyStorage implements MIEnergyStorage, ICo
     }
 
     // --- dirty tracking (fire on real change, like CopiableEnergyStorage) ---
+    // `!simulate` matters: CropHarvesterTrait probes affordability with a simulated extract for
+    // every crop it looks at, every tick. Notifying on those would mark the machine dirty and
+    // re-sync the buffer constantly while nothing actually changed.
 
     @Override
     public int receiveEnergy(int maxReceive, boolean simulate) {
         int received = super.receiveEnergy(maxReceive, simulate);
-        if (received > 0) {
+        if (received > 0 && !simulate) {
             onContentsChanged.run();
         }
         return received;
@@ -70,7 +73,7 @@ public class MIEnergyStore extends EnergyStorage implements MIEnergyStorage, ICo
     @Override
     public int extractEnergy(int maxExtract, boolean simulate) {
         int extracted = super.extractEnergy(maxExtract, simulate);
-        if (extracted > 0) {
+        if (extracted > 0 && !simulate) {
             onContentsChanged.run();
         }
         return extracted;

@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.minestar.hub.home;
 
 import com.mojang.brigadier.CommandDispatcher;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
 import com.roll_54.roll_mod.RollMod;
@@ -23,12 +24,14 @@ import java.util.List;
 /**
  * The homes commands, kept for people who would rather type than open the hub.
  *
- * <p>Registered under {@code /rollmod} rather than at {@code /home} and friends, because FTB
- * Essentials ships its own homes module and owns those literals. Brigadier merges same-named roots
- * and lets whichever registered last win, and mod load order is not ours to decide — so competing
- * for the name would work or not work depending on the day. The short names are handed back to
- * players by {@code HomeCommandRedirect} in the server module, which rewrites them onto this
- * subtree.
+ * <p>Registered twice: under {@code /rollmod}, and at {@code /home} and friends. The short names
+ * used to be FTB Essentials' and were handed back by a {@code CommandEvent} interceptor in the
+ * server module; that only ever worked because FTB registered the literals for Brigadier to parse,
+ * so with FTB gone they have to be registered here in their own right.
+ *
+ * <p>Each subtree is built by its own method and registered from both places, rather than one node
+ * being redirected at the other: Brigadier's {@code redirect} forwards the rest of the input to the
+ * target, which reads badly under a {@code rollmod} parent.
  */
 @EventBusSubscriber(modid = RollMod.MODID)
 public final class HomeCommands {
@@ -64,68 +67,87 @@ public final class HomeCommands {
 
     private static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("rollmod")
-                // Bare /rollmod home opens the tab, the way /rollmod ah and /rollmod plots do.
-                .then(Commands.literal("home")
+                .then(home())
+                .then(homes())
+                .then(sethome())
+                .then(delhome())
+                .then(invitehome()));
+
+        dispatcher.register(home());
+        dispatcher.register(homes());
+        dispatcher.register(sethome());
+        dispatcher.register(delhome());
+        dispatcher.register(invitehome());
+    }
+
+    /**
+     * Bare {@code /home} opens the tab, the way {@code /rollmod ah} and {@code /rollmod plots} do —
+     * unless the player has exactly one home, in which case they mean that one and nothing else.
+     */
+    private static LiteralArgumentBuilder<CommandSourceStack> home() {
+        return Commands.literal("home")
+                .executes(ctx -> {
+                    ServerPlayer player = ctx.getSource().getPlayerOrException();
+                    List<PlayerHome> own = HomeData.get(player.server).ownedBy(player.getUUID());
+                    if (own.size() == 1) {
+                        return teleport(player, LegacyText.plain(own.get(0).name()));
+                    }
+                    HubCommand.open(player, HubUI.indexOf("homes"));
+                    return 1;
+                })
+                .then(Commands.argument("name", StringArgumentType.string())
+                        .suggests(REACHABLE_HOMES)
+                        .executes(ctx -> teleport(ctx.getSource().getPlayerOrException(),
+                                StringArgumentType.getString(ctx, "name"))));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> homes() {
+        return Commands.literal("homes")
+                .executes(ctx -> list(ctx.getSource().getPlayerOrException()));
+    }
+
+    private static LiteralArgumentBuilder<CommandSourceStack> sethome() {
+        return Commands.literal("sethome")
+                .then(Commands.argument("name", StringArgumentType.string())
                         .executes(ctx -> {
                             ServerPlayer player = ctx.getSource().getPlayerOrException();
-                            HubCommand.open(player, HubUI.indexOf("homes"));
+                            HomeService.create(player, StringArgumentType.getString(ctx, "name"));
                             return 1;
-                        })
-                        .then(Commands.argument("name", StringArgumentType.string())
-                                .suggests(REACHABLE_HOMES)
-                                .executes(ctx -> teleport(ctx.getSource().getPlayerOrException(),
-                                        StringArgumentType.getString(ctx, "name"))))));
+                        }));
+    }
 
-        dispatcher.register(Commands.literal("rollmod")
-                .then(Commands.literal("homes")
-                        .executes(ctx -> list(ctx.getSource().getPlayerOrException()))));
+    private static LiteralArgumentBuilder<CommandSourceStack> delhome() {
+        return Commands.literal("delhome")
+                .then(Commands.argument("name", StringArgumentType.string())
+                        .suggests(OWN_HOMES)
+                        .executes(ctx -> {
+                            ServerPlayer player = ctx.getSource().getPlayerOrException();
+                            String name = StringArgumentType.getString(ctx, "name");
+                            PlayerHome home = HomeData.get(player.server)
+                                    .byOwnerAndName(player.getUUID(), name);
+                            if (home == null) return notFound(player, name);
+                            HomeService.delete(player, home.id());
+                            return 1;
+                        }));
+    }
 
-        dispatcher.register(Commands.literal("rollmod")
-                .then(Commands.literal("sethome")
-                        .then(Commands.argument("name", StringArgumentType.string())
+    private static LiteralArgumentBuilder<CommandSourceStack> invitehome() {
+        return Commands.literal("invitehome")
+                .then(Commands.argument("name", StringArgumentType.string())
+                        .suggests(OWN_HOMES)
+                        // A plain word, not EntityArgument.player(): the whole point of
+                        // PlayerLookup is that an offline player can be invited.
+                        .then(Commands.argument("player", StringArgumentType.word())
                                 .executes(ctx -> {
-                                    ServerPlayer player = ctx.getSource().getPlayerOrException();
-                                    HomeService.create(player,
-                                            StringArgumentType.getString(ctx, "name"));
+                                    ServerPlayer owner = ctx.getSource().getPlayerOrException();
+                                    String name = StringArgumentType.getString(ctx, "name");
+                                    PlayerHome home = HomeData.get(owner.server)
+                                            .byOwnerAndName(owner.getUUID(), name);
+                                    if (home == null) return notFound(owner, name);
+                                    HomeService.invite(owner, home.id(),
+                                            StringArgumentType.getString(ctx, "player"));
                                     return 1;
-                                }))));
-
-        dispatcher.register(Commands.literal("rollmod")
-                .then(Commands.literal("delhome")
-                        .then(Commands.argument("name", StringArgumentType.string())
-                                .suggests(OWN_HOMES)
-                                .executes(ctx -> {
-                                    ServerPlayer player = ctx.getSource().getPlayerOrException();
-                                    PlayerHome home = HomeData.get(player.server)
-                                            .byOwnerAndName(player.getUUID(),
-                                                    StringArgumentType.getString(ctx, "name"));
-                                    if (home == null) {
-                                        return notFound(player,
-                                                StringArgumentType.getString(ctx, "name"));
-                                    }
-                                    HomeService.delete(player, home.id());
-                                    return 1;
-                                }))));
-
-        dispatcher.register(Commands.literal("rollmod")
-                .then(Commands.literal("invitehome")
-                        .then(Commands.argument("name", StringArgumentType.string())
-                                .suggests(OWN_HOMES)
-                                // A plain word, not EntityArgument.player(): the whole point of
-                                // PlayerLookup is that an offline player can be invited.
-                                .then(Commands.argument("player", StringArgumentType.word())
-                                        .executes(ctx -> {
-                                            ServerPlayer owner =
-                                                    ctx.getSource().getPlayerOrException();
-                                            String name =
-                                                    StringArgumentType.getString(ctx, "name");
-                                            PlayerHome home = HomeData.get(owner.server)
-                                                    .byOwnerAndName(owner.getUUID(), name);
-                                            if (home == null) return notFound(owner, name);
-                                            HomeService.invite(owner, home.id(),
-                                                    StringArgumentType.getString(ctx, "player"));
-                                            return 1;
-                                        })))));
+                                })));
     }
 
     /**

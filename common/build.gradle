@@ -91,12 +91,6 @@ dependencies {
     // ftbteams is present. Keeping it off the runtime classpath keeps the dependency soft.
     implementation "dev.ftb.mods:ftb-teams-neoforge:${ftb_teams_version}"
 
-    // Same soft shape again: the homes tab offers to migrate homes players set with FTB
-    // Essentials, and everything that touches its API lives in
-    // com.roll_54.roll_mod.compat.ftb.FTBEssentialsHomesFacadeImpl, class-loaded only when
-    // ftbessentials is present.
-    implementation "dev.ftb.mods:ftb-essentials-neoforge:${ftb_essentials_version}"
-
     api jarJar("dev.technici4n:GrandPower:${project.grandpower_version}")
 
     implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
@@ -105,7 +99,7 @@ dependencies {
 
     implementation files("jars/createcybernetics-0.4.8b-neoforge-1.21.1-PLAYTEST-PRERELEASE-4.jar")
 
-    implementation files("jars/Multiblocked2-1.21-1.21.1-21.0.11.jar")
+    implementation files("jars/Multiblocked2-1.21-1.21.1-21.1.2-all.jar")
 
     /* ------------------------------------- economy (ex roll_mod_currency) ------------------------------------- */
 
