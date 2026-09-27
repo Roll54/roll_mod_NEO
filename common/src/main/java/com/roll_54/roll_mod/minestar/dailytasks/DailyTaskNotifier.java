@@ -52,6 +52,8 @@ public final class DailyTaskNotifier {
      */
     public static void announce(MinecraftServer server, DailyTaskGroups.TaskGroup group,
                                 DailyTask task, int required, ServerPlayer trigger) {
+        // Something new to collect for the whole party.
+        DailyTaskStatus.markDirty();
         AdvancementHolder holder = holderFor(task, required);
         Component announcement =
                 server.getGameRules().getBoolean(GameRules.RULE_ANNOUNCE_ADVANCEMENTS)

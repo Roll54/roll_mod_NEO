@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.economy.vendingblock.network;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.VendorBlockEntity;
+import com.roll_54.roll_mod.economy.vendingblock.registry.ItemRegistry;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -37,7 +38,10 @@ public record InfiniteInventoryPacket(BlockPos pos, boolean infiniteInventory)
           Player player = context.player();
           Level level = player.level();
 
-          if (level.getBlockEntity(packet.pos()) instanceof VendorBlockEntity vendorBlockEntity) {
+          // Admin-only toggle (the admin UI opens only with the Vendor Key): infinite
+          // inventory mints items/money, so never trust the packet alone.
+          if (level.getBlockEntity(packet.pos()) instanceof VendorBlockEntity vendorBlockEntity
+              && player.getMainHandItem().is(ItemRegistry.VENDOR_KEY.get())) {
             vendorBlockEntity.setInfinite(packet.infiniteInventory());
           }
         });

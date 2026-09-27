@@ -74,6 +74,7 @@ public final class DailyTaskEvents {
         if (server.getTickCount() % ROLL_CHECK_INTERVAL_TICKS == 0) {
             DailyTaskManager.rollIfNeeded(server);
         }
+        DailyTaskStatus.tick(server);
         resolvePendingClips(server);
         if (server.getTickCount() % SAMPLE_INTERVAL_TICKS == 0) {
             sampleStats(server);

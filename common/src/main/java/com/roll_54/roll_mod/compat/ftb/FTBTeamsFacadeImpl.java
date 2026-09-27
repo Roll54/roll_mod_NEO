@@ -29,6 +29,19 @@ public final class FTBTeamsFacadeImpl implements TeamsFacade {
     }
 
     @Override
+    public Optional<UUID> partyId(ServerPlayer player) {
+        var api = FTBTeamsAPI.api();
+        if (!api.isManagerLoaded()) {
+            return Optional.empty();
+        }
+        // Same lookup as party(), minus the per-call member-set copy — this runs per event.
+        return api.getManager()
+                .getTeamForPlayer(player)
+                .filter(Team::isPartyTeam)
+                .map(Team::getTeamId);
+    }
+
+    @Override
     public boolean sameParty(ServerPlayer player, UUID other) {
         return party(player).map(party -> party.members().contains(other)).orElse(false);
     }

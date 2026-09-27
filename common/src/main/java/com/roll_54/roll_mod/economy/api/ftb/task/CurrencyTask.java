@@ -50,8 +50,15 @@ public class CurrencyTask extends Task {
               long take = Math.min(balance, remaining);
               if (take <= 0) return;
 
-              CurrencyService.withdraw(player, CurrencyType.MAIN, take);
-              teamData.addProgress(this, take);
+              // Only credit progress once the money is actually taken: the balance above is
+              // a stale read, and a failed withdraw (spent meanwhile, DB error) would
+              // otherwise complete the quest for free.
+              CurrencyService.withdraw(player, CurrencyType.MAIN, take)
+                  .thenAcceptAsync(
+                      ok -> {
+                        if (ok) teamData.addProgress(this, take);
+                      },
+                      player.server);
             },
             player.server);
   }

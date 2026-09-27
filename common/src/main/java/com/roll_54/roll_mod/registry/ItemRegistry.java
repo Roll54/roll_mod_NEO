@@ -1402,7 +1402,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, BlockItem> TENWOC_PLUSH_ITEM = ITEMS.register("tenwoc__plush", () -> new BlockItem(TENWOC__PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, StormScannerItem> LV_STORM_SCANNER = ITEMS.register("lv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 1, 0xff1500, 1_000_000));
     public static final DeferredHolder<Item, StormScannerItem> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 2, 0xff1500, 10_000_000));
-    public static final DeferredHolder<Item, EnergyBatteryItem> TEST_BATTERY = ITEMS.register("nano_battery", () -> new EnergyBatteryItem(new Item.Properties(), 20_000_000L, 20_000L, 200_000L, 0x00FFFF));
+    public static final DeferredHolder<Item, EnergyBatteryItem> TEST_BATTERY = ITEMS.register("nano_battery", () -> new EnergyBatteryItem(new Item.Properties().stacksTo(1), 20_000_000L, 20_000L, 200_000L, 0x00FFFF));
     // 🔋 REDSTONE BATTERY
     public static final DeferredHolder<Item, EnergyBatteryItem> REDSTONE_BATTERY =
             ITEMS.register("redstone_battery",

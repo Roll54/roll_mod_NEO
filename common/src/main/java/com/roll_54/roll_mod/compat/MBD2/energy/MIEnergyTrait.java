@@ -102,9 +102,14 @@ public class MIEnergyTrait extends SimpleCapabilityTrait<MIEnergyStorage, Direct
     }
 
     public BlockCapabilityCache<MIEnergyStorage, Direction> getNearbyCache(ServerLevel serverLevel, BlockPos pos, Direction side) {
+        // Auto-IO exchanges with the NEIGHBOR: cache at the block next to the port, queried
+        // from the face looking back at us (as MBD2's ForgeEnergyCapabilityTrait does).
+        // Caching at the port itself would find this machine's own capability and either
+        // no-op or shuffle energy into itself.
         return nearbyCache
                 .computeIfAbsent(pos, blockPos -> new EnumMap<>(Direction.class))
-                .computeIfAbsent(side, direction -> BlockCapabilityCache.create(EnergyApi.SIDED, serverLevel, pos, direction));
+                .computeIfAbsent(side, direction -> BlockCapabilityCache.create(
+                        EnergyApi.SIDED, serverLevel, pos.relative(direction), direction.getOpposite()));
     }
 
     @Override

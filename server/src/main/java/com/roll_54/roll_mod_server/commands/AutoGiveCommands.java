@@ -48,8 +48,11 @@ public class AutoGiveCommands {
         d.register(
                 Commands.literal("rollmod")
                         .then(Commands.literal("admin")
-                                .requires(src -> src.hasPermission(2))
+                                // Gate the unique "autogive" child, not the shared "admin"
+                                // literal: Brigadier keeps only the first-registered node's
+                                // requires when merging same-named literals.
                                 .then(Commands.literal("autogive")
+                                        .requires(src -> src.hasPermission(2))
 
                                         // GET
                                         .then(Commands.literal("get")

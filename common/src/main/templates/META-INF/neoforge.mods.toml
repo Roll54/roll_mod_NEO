@@ -48,6 +48,22 @@ config = "${mod_id}.ftbteams.mixins.json"
 [[mixins]]
 config = "${mod_id}.farmersdelight.mixins.json"
 
+# Create Cybernetics, soft as well, and with defaultRequire = 0 on top: the shipped build is a
+# PLAYTEST PRERELEASE, so its internals are expected to move. A renamed target should cost us the
+# optimisation, not the server.
+[[mixins]]
+config = "${mod_id}.createcybernetics.mixins.json"
+
+# Functional Storage, soft for the same reason: a pure performance mixin over its drawer controller.
+# Nothing else in this mod touches the mod, so if it is absent there is simply nothing to patch.
+[[mixins]]
+config = "${mod_id}.functionalstorage.mixins.json"
+
+# MI's FTB Quests submit path. Soft even though MI is effectively required here: the declared range
+# spans 2.4 to 2.6, and this is an optimisation, so a moved call site should not be a boot failure.
+[[mixins]]
+config = "${mod_id}.mi_ftbquests.mixins.json"
+
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg
 #[[accessTransformers]]
@@ -109,6 +125,23 @@ side = "BOTH"
 modId = "farmersdelight"
 type = "optional"
 versionRange = "[1.3.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+# Functional Storage carries a performance mixin only (ControllerInventoryHandler's per-slot
+# staleness check). Optional, and the range records where the targets were read: 1.5.8.
+[[dependencies."${mod_id}"]]
+modId = "functionalstorage"
+type = "optional"
+versionRange = "[1.5.8,)"
+ordering = "NONE"
+side = "BOTH"
+
+# Create Cybernetics likewise carries only the cyberware sync-throttle mixin.
+[[dependencies."${mod_id}"]]
+modId = "createcybernetics"
+type = "optional"
+versionRange = "[0,)"
 ordering = "NONE"
 side = "BOTH"
 

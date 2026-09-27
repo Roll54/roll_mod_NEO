@@ -1,0 +1,35 @@
+{
+  "lines": [
+    {
+      "text": "&fLetters from the server staff: news, apologies, gifts."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lReading"
+    },
+    {
+      "text": "&7Unread letters have a &6●&7. The hub button in your inventory shows a dot while any are waiting.",
+      "indent": 6
+    },
+    {
+      "text": "&7The whole letter is always shown, including what is attached.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lAccepting"
+    },
+    {
+      "text": "&7Press &aAccept&7 to take what is attached: money goes to your balance, items to your inventory (dropped at your feet if it is full).",
+      "indent": 6
+    },
+    {
+      "text": "&7Each letter can be accepted once. Letters disappear when they expire.",
+      "indent": 6
+    }
+  ]
+}

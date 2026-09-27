@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.roll_54.roll_mod.compat.functionalstorage.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ControllerInventoryHandlerMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

@@ -2,6 +2,8 @@ package com.roll_54.roll_mod.network.packet;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.hub.warp.Warp;
+import com.roll_54.roll_mod.minestar.hub.warp.WarpApproval;
+import com.roll_54.roll_mod.minestar.hub.warp.WarpData;
 import com.roll_54.roll_mod.minestar.hub.warp.WarpService;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -20,7 +22,8 @@ import java.util.UUID;
 public record WarpActionPacket(Action action, UUID warp, String name, String description, long price)
         implements CustomPacketPayload {
 
-    public enum Action { CREATE, DELETE, TELEPORT, CANCEL }
+    /** Append only: {@link #decode} indexes by ordinal. */
+    public enum Action { CREATE, DELETE, TELEPORT, CANCEL, SET_APPROVAL }
 
     public static final Type<WarpActionPacket> TYPE = new Type<>(RollMod.id("warp_action"));
 
@@ -51,6 +54,14 @@ public record WarpActionPacket(Action action, UUID warp, String name, String des
 
     public static WarpActionPacket teleport(UUID warp) {
         return new WarpActionPacket(Action.TELEPORT, warp, "", "", 0);
+    }
+
+    /**
+     * A moderator's verdict. The approval's id rides in {@code name}, which this action has no other
+     * use for — cheaper than a field every other action would carry empty.
+     */
+    public static WarpActionPacket setApproval(UUID warp, WarpApproval approval) {
+        return new WarpActionPacket(Action.SET_APPROVAL, warp, approval.id(), "", 0);
     }
 
     public static WarpActionPacket cancel() {
@@ -84,6 +95,14 @@ public record WarpActionPacket(Action action, UUID warp, String name, String des
                 case DELETE -> WarpService.delete(player, payload.warp);
                 case TELEPORT -> WarpService.requestTeleport(player, payload.warp);
                 case CANCEL -> WarpService.cancel(player.getUUID());
+                case SET_APPROVAL -> {
+                    // Re-checked here, not trusted from the tab being visible.
+                    if (!WarpService.isModerator(player)) return;
+                    Warp warp = WarpData.get(player.server).byId(payload.warp);
+                    if (warp != null) {
+                        WarpService.setApproval(player, warp, WarpApproval.byId(payload.name));
+                    }
+                }
             }
         });
     }

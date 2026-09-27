@@ -50,8 +50,8 @@ public final class RtpService {
     /**
      * How many players may be searching at once.
      *
-     * <p>Each one may generate {@code triesPerTick} chunks in a tick, so without a cap a popular
-     * server could spend an entire tick on nothing but random teleports.
+     * <p>Each one may generate a chunk in a tick, so without a cap a popular server could spend an
+     * entire tick on nothing but random teleports.
      */
     private static final int MAX_CONCURRENT = 4;
 
@@ -157,18 +157,28 @@ public final class RtpService {
                     .withStyle(ChatFormatting.GREEN), true);
 
             int tries = Math.min(perTick, search.triesLeft());
-            BlockPos found = null;
-            for (int i = 0; i < tries && found == null; i++) {
-                found = candidate(level);
+            Column column = null;
+            int used = 0;
+            for (int i = 0; i < tries && column == null; i++) {
+                used++;
+                column = candidate(level);
             }
 
-            if (found != null) {
-                SEARCHING.remove(id);
-                arrive(player, level, found);
-                continue;
+            // The one chunk this search may cost this tick. Generating a chunk runs tens of
+            // milliseconds, so however many candidates look promising, only the first is loaded;
+            // if its column turns out unsafe, the search resumes next tick with its tries kept.
+            if (column != null) {
+                level.getChunk(column.x() >> 4, column.z() >> 4);
+                BlockPos found = SafeSpot.inColumnFrom(level, column.x(), column.z(),
+                        column.surface() + 4, SURFACE_DEPTH);
+                if (found != null) {
+                    SEARCHING.remove(id);
+                    arrive(player, level, found);
+                    continue;
+                }
             }
 
-            int left = search.triesLeft() - tries;
+            int left = search.triesLeft() - used;
             if (left <= 0) {
                 SEARCHING.remove(id);
                 player.sendSystemMessage(Component.translatable("msg.roll_mod.rtp.failed")
@@ -179,8 +189,13 @@ public final class RtpService {
         }
     }
 
+    /** A column that passed every no-chunk test and is worth the cost of loading its chunk. */
+    private record Column(int x, int z, int surface) {}
+
     /**
-     * One candidate position, or {@code null} when it did not pass.
+     * One candidate column, or {@code null} when it did not pass. Costs no chunk: everything here
+     * is answered from the generator's own height and biome data, so {@link #tick} can afford to
+     * run this many times a tick and pay for a chunk only once.
      *
      * <p>The radius is square-rooted so the points are spread evenly by area; picking the radius
      * uniformly would bunch everybody near the inner ring.
@@ -191,7 +206,7 @@ public final class RtpService {
      * clamped to what fits inside the border, and the point is checked against it afterwards
      * anyway, because the border can be off-centre or moving.
      */
-    private static BlockPos candidate(ServerLevel level) {
+    private static Column candidate(ServerLevel level) {
         MyConfig.RtpSettings config = MyConfig.INSTANCE.rtp;
         WorldBorder border = level.getWorldBorder();
 
@@ -224,36 +239,25 @@ public final class RtpService {
         // Negative offset shrinks the bounds rather than widening them, so this is the margin.
         if (!border.isWithinBounds(x, z, -BORDER_MARGIN)) return null;
 
-        if (!promising(level, x, z)) return null;
-
-        ChunkGenerator generator = level.getChunkSource().getGenerator();
-        int surface = generator.getBaseHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, level,
-                level.getChunkSource().randomState());
-
-        // Only now is a chunk worth generating.
-        level.getChunk(x >> 4, z >> 4);
-        return SafeSpot.inColumnFrom(level, x, z, surface + 4, SURFACE_DEPTH);
-    }
-
-    /**
-     * The cheap half of the test: the generator can say how high the land is and which biome is
-     * there without a chunk existing, which throws out oceans, rivers and the void for free.
-     */
-    private static boolean promising(ServerLevel level, int x, int z) {
+        // The generator can say how high the land is and which biome is there without a chunk
+        // existing, which throws out oceans, rivers and the void for free.
         ChunkGenerator generator = level.getChunkSource().getGenerator();
         RandomState randomState = level.getChunkSource().randomState();
 
         int surface = generator.getBaseHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, level, randomState);
-        if (surface <= level.getMinBuildHeight() + 8) return false;
+        if (surface <= level.getMinBuildHeight() + 8) return null;
         // Nether has no meaningful sea level, and its surface reading is the roof, so skip the test.
-        if (level.dimension() != Level.NETHER && surface < level.getSeaLevel() + 2) return false;
+        if (level.dimension() != Level.NETHER && surface < level.getSeaLevel() + 2) return null;
 
         Holder<Biome> biome = generator.getBiomeSource().getNoiseBiome(
                 QuartPos.fromBlock(x), QuartPos.fromBlock(surface), QuartPos.fromBlock(z),
                 randomState.sampler());
-        return !biome.is(BiomeTags.IS_OCEAN)
-                && !biome.is(BiomeTags.IS_DEEP_OCEAN)
-                && !biome.is(BiomeTags.IS_RIVER);
+        if (biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_DEEP_OCEAN)
+                || biome.is(BiomeTags.IS_RIVER)) {
+            return null;
+        }
+
+        return new Column(x, z, surface);
     }
 
     private static void arrive(ServerPlayer player, ServerLevel level, BlockPos spot) {

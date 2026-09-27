@@ -45,7 +45,12 @@ public final class DailyTasksCommand {
                                 .executes(ctx -> rerollAll(ctx.getSource()))
                                 .then(Commands.argument("targets", EntityArgument.players())
                                         .executes(ctx -> rerollPlayers(ctx.getSource(),
-                                                EntityArgument.getPlayers(ctx, "targets")))))
+                                                EntityArgument.getPlayers(ctx, "targets")))
+                                        .then(Commands.argument("index", IntegerArgumentType.integer(
+                                                        0, DailyTasksState.MAX_TASK_COUNT - 1))
+                                                .executes(ctx -> rerollSlot(ctx.getSource(),
+                                                        EntityArgument.getPlayers(ctx, "targets"),
+                                                        IntegerArgumentType.getInteger(ctx, "index"))))))
                         .then(Commands.literal("reset")
                                 .then(Commands.argument("targets", EntityArgument.players())
                                         .executes(ctx -> resetPlayers(ctx.getSource(),
@@ -129,6 +134,27 @@ public final class DailyTasksCommand {
                             target.getGameProfile().getName(),
                             party > 1 ? " (and their party of %d)".formatted(party) : "",
                             String.join(", ", tasks))), true);
+        }
+        return rerolled;
+    }
+
+    /**
+     * Per-player, one slot: swaps the task at {@code index} for another, free and outside the
+     * slot's daily reroll cap. Same party caveat as {@link #rerollPlayers}.
+     */
+    private static int rerollSlot(CommandSourceStack source, Collection<ServerPlayer> targets, int index) {
+        int rerolled = 0;
+        for (ServerPlayer target : targets) {
+            String task = DailyTaskManager.forceRerollSlot(target, index);
+            if (task == null) {
+                source.sendFailure(Component.literal(
+                        "Could not reroll slot %d for %s — no such slot, or no other task left to draw."
+                                .formatted(index, target.getGameProfile().getName())));
+                continue;
+            }
+            rerolled++;
+            source.sendSuccess(() -> Component.literal("Rerolled slot %d for %s: %s"
+                    .formatted(index, target.getGameProfile().getName(), task)), true);
         }
         return rerolled;
     }

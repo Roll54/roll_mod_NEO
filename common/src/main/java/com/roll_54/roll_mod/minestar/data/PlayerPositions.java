@@ -65,8 +65,19 @@ public final class PlayerPositions {
 
     private record Entry(@Nullable Spot back, long rtpLastUsed) {}
 
+    /**
+     * How often pending changes reach the disk, in ticks.
+     *
+     * <p>Every teleport in the mod writes a back position, and rewriting a file that holds a row
+     * per player ever seen, on the server thread, per teleport, is a stutter players pay for other
+     * players' commands. So writes batch: at worst this many ticks of {@code /back} history are
+     * lost to a crash, which {@code /back} — a convenience, not an inventory — can afford.
+     */
+    private static final int SAVE_INTERVAL_TICKS = 200;
+
     private static final Map<UUID, Entry> ENTRIES = new ConcurrentHashMap<>();
     private static volatile boolean loaded;
+    private static volatile boolean dirty;
 
     private PlayerPositions() {}
 
@@ -99,10 +110,28 @@ public final class PlayerPositions {
 
     /* ------------------------------------------ persistence ----------------------------------------- */
 
-    /** Drops the cache so the next read picks the file up again, for {@code /rollmod reload}. */
+    /**
+     * Drops the cache so the next read picks the file up again, for {@code /rollmod reload}.
+     *
+     * <p>Unsaved changes are dropped with it, deliberately: reload exists to pick up an operator's
+     * hand edit, and flushing first would overwrite the very edit being loaded.
+     */
     public static synchronized void reload() {
         ENTRIES.clear();
         loaded = false;
+        dirty = false;
+    }
+
+    /** Batches the disk writes. Called once a tick; see {@link #SAVE_INTERVAL_TICKS}. */
+    public static void tick(MinecraftServer server) {
+        if (dirty && server.getTickCount() % SAVE_INTERVAL_TICKS == 0) flush();
+    }
+
+    /** Writes pending changes now, for server shutdown. */
+    public static synchronized void flush() {
+        if (!dirty) return;
+        dirty = false;
+        save();
     }
 
     private static Entry entry(UUID player) {
@@ -113,7 +142,7 @@ public final class PlayerPositions {
     private static synchronized void put(UUID player, Entry entry) {
         load();
         ENTRIES.put(player, entry);
-        save();
+        dirty = true;
     }
 
     private static void load() {

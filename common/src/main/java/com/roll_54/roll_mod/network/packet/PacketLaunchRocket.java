@@ -75,8 +75,11 @@ public record PacketLaunchRocket(BlockPos pos) implements CustomPacketPayload {
                     if (targetDim != null) {
                         ServerLevel targetLevel = player.server.getLevel(targetDim);
                         if (targetLevel != null) {
-                            int originX = payload.pos().getX();
-                            int originZ = payload.pos().getZ();
+                            // Land above the controller the player is actually using — the
+                            // packet's pos is client-supplied and must not choose the target.
+                            BlockPos origin = menu.blockEntity.getBlockPos();
+                            int originX = origin.getX();
+                            int originZ = origin.getZ();
 
                             BlockPos safePos = findSafeLanding(targetLevel, targetDim, originX, originZ, 20);
                             if (safePos == null) {

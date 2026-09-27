@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.minestar.data;
 
+import com.roll_54.roll_mod.minestar.moderation.ModerationViewers;
 import com.google.gson.JsonObject;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
@@ -71,6 +72,7 @@ public final class MuteStore {
     }
 
     public static void reload() {
+        ModerationViewers.markDirty();
         synchronized (MuteStore.class) {
             MUTES.clear();
             loaded = false;
@@ -105,6 +107,7 @@ public final class MuteStore {
     }
 
     private static void save() {
+        ModerationViewers.markDirty();
         JsonObject root = new JsonObject();
         MUTES.forEach((id, mute) -> {
             JsonObject row = new JsonObject();

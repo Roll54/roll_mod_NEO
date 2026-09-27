@@ -34,7 +34,9 @@ public class ShopReceiveCommand {
         RollMod.LOGGER.info("[Shop Sync] Checking for pending products for player {}.", player.getName().getString());
 
         minestar.getUserPendingShopProductsByProfileUuidAndServerId(player.getUUID())
-                .onSuccess(products -> {
+                // onSuccess runs on Minestar's own executor thread; the give-commands below
+                // mutate inventories and the world, so hop back to the server thread first.
+                .onSuccess(products -> player.server.execute(() -> {
 
                     if (products.isEmpty()) {
                         player.sendSystemMessage(Component.literal("У вас немає товарів для отримання.").withStyle(ChatFormatting.YELLOW));
@@ -45,7 +47,7 @@ public class ShopReceiveCommand {
                     player.sendSystemMessage(Component.literal("Знайдено товарів: %d. Починаємо видачу...".formatted(products.size())).withStyle(ChatFormatting.GREEN));
                     RollMod.LOGGER.info("[Shop Sync] Found {} pending products for {}.", products.size(), player.getName().getString());
                     processAndConfirmDelivery(player, products);
-                })
+                }))
                 .onFailure(cause -> {
                     player.sendSystemMessage(Component.literal("Помилка під час отримання товарів. Спробуйте пізніше.").withStyle(ChatFormatting.RED));
                     RollMod.LOGGER.error("[Shop Sync] Failed to get pending products for {}.", player.getName().getString(), cause);

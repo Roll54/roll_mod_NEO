@@ -31,4 +31,13 @@ public final class DailyTaskGroups {
                 .map(party -> new TaskGroup(party.teamId(), party.members()))
                 .orElseGet(() -> new TaskGroup(player.getUUID(), Set.of(player.getUUID())));
     }
+
+    /**
+     * Just the group key, without materializing the member set. For the per-event fast path in
+     * {@code DailyTaskManager.progress}, where {@link #of} would copy the party's members on every
+     * block break only to throw them away.
+     */
+    public static UUID idOf(ServerPlayer player) {
+        return TeamsFacade.get().partyId(player).orElseGet(player::getUUID);
+    }
 }

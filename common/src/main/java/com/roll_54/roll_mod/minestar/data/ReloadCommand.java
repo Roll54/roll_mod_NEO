@@ -4,6 +4,11 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.kits.KitCooldowns;
 import com.roll_54.roll_mod.minestar.kits.KitStore;
 import com.roll_54.roll_mod.minestar.kits.KitViewers;
+import com.roll_54.roll_mod.minestar.letters.LetterStore;
+import com.roll_54.roll_mod.minestar.letters.LetterViewers;
+import com.roll_54.roll_mod.minestar.moderation.BanStore;
+import com.roll_54.roll_mod.minestar.moderation.WarnStore;
+import com.roll_54.roll_mod.minestar.moderation.WhitelistStore;
 import com.roll_54.roll_mod.minestar.op.OperatorStore;
 import com.roll_54.roll_mod.minestar.op.OperatorViewers;
 import com.roll_54.roll_mod.minestar.tpa.TpaSettings;
@@ -42,6 +47,11 @@ public final class ReloadCommand {
         PlayerPositions.reload();
         TpaSettings.reload();
         OperatorStore.reload();
+        WarnStore.reload();
+        BanStore.reload();
+        WhitelistStore.reload();
+        LetterStore.reload();
+        LetterViewers.resync(source.getServer());
 
         // Operators are applied as well as re-read: the file is the authority, so reloading it has
         // to mean the server matches it again, not just that the next login will.

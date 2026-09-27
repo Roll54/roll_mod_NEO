@@ -51,6 +51,39 @@ public final class LegacyText {
         return Component.literal(toSection(raw));
     }
 
+    /**
+     * What a text editor draws while the codes are being typed: every {@code &x} stays visible,
+     * with the real section code slipped in front of it, so {@code &chello} shows as a red
+     * {@code &chello}.
+     *
+     * <p>Keeping the codes on screen is what keeps the editor usable: a section pair draws at zero
+     * width, so every visible character sits exactly where the editor measured it from the raw
+     * text and the cursor and selection still line up. Bold ({@code l}) and obfuscated ({@code k})
+     * are left out for the same reason — bold widens every glyph after it and would drag the text
+     * out from under the cursor. They still apply wherever the text is finally shown.
+     */
+    public static String editorPreview(String raw) {
+        if (raw == null || raw.isEmpty()) return "";
+        StringBuilder out = new StringBuilder(raw.length() + 8);
+        for (int i = 0; i < raw.length(); i++) {
+            char c = raw.charAt(i);
+            if (c == SECTION) continue;
+            if (c == '&' && i + 1 < raw.length()) {
+                char next = Character.toLowerCase(raw.charAt(i + 1));
+                if (next == '&') {
+                    out.append("&&");
+                    i++;
+                    continue;
+                }
+                if (isCode(next) && next != 'l' && next != 'k') {
+                    out.append(SECTION).append(next);
+                }
+            }
+            out.append(c);
+        }
+        return out.toString();
+    }
+
     private static String convert(String raw, boolean keep) {
         if (raw == null || raw.isEmpty()) return "";
         StringBuilder out = new StringBuilder(raw.length());

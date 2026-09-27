@@ -1,5 +1,7 @@
 package com.roll_54.roll_mod.minestar.hub;
 
+import com.roll_54.roll_mod.minestar.letters.LetterViewers;
+import com.roll_54.roll_mod.minestar.moderation.ModerationViewers;
 import com.lowdragmc.lowdraglib2.gui.factory.PlayerUIMenuType;
 import com.mojang.brigadier.CommandDispatcher;
 import com.roll_54.roll_mod.RollMod;
@@ -68,6 +70,8 @@ public final class HubCommand {
         KitViewers.add(player);
         TpaViewers.add(player);
         OperatorViewers.add(player);
+        ModerationViewers.add(player);
+        LetterViewers.add(player);
         HomeViewers.add(player);
         AuctionManager.addViewer(player);
         PlotViewers.add(player);

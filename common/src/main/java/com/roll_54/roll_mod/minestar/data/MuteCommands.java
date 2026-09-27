@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.minestar.moderation.ModerationStatus;
+import com.roll_54.roll_mod.minestar.moderation.PunishmentLetters;
 import com.roll_54.roll_mod.util.Durations;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -72,6 +74,10 @@ public final class MuteCommands {
                 target.getGameProfile().getName(), duration), true);
         target.sendSystemMessage(Component.translatable("msg.roll_mod.mute.youAre", duration)
                 .withStyle(ChatFormatting.RED));
+        ModerationStatus.sendTo(target);
+        // This command takes no rule, only free text, which the letter carries as the note.
+        PunishmentLetters.send(target.server, target.getUUID(), PunishmentLetters.Kind.MUTE,
+                source.getTextName(), minutes * 60_000L, "", reason, 0);
         return 1;
     }
 
@@ -84,6 +90,7 @@ public final class MuteCommands {
         source.sendSuccess(() -> Component.translatable("msg.roll_mod.mute.unmuted",
                 target.getGameProfile().getName()), true);
         target.sendSystemMessage(Component.translatable("msg.roll_mod.mute.youAreNot"));
+        ModerationStatus.sendTo(target);
         return 1;
     }
 }

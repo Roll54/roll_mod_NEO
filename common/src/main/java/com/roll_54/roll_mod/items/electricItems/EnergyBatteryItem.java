@@ -157,6 +157,10 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, OneSta
         // Modern Industrialization / EI component
         var energyComp = aztech.modern_industrialization.MIComponents.ENERGY.get();
 
+        // The component belongs to the whole stack: charging a stack of N would give every
+        // item the energy while the battery pays once. Only ever charge single items.
+        if (targetStack.getCount() != 1) return;
+
         if (targetStack.has(energyComp)) {
             long cur = targetStack.getOrDefault(energyComp, 0L);
             long cap = 1_000_000_000L;

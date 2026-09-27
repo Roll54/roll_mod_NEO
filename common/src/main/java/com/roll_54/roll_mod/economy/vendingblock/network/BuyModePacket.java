@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.economy.vendingblock.network;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.VendorBlockEntity;
+import com.roll_54.roll_mod.economy.vendingblock.registry.ItemRegistry;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -36,7 +37,12 @@ public record BuyModePacket(BlockPos pos, boolean buyMode) implements CustomPack
           Player player = context.player();
           Level level = player.level();
 
-          if (level.getBlockEntity(packet.pos()) instanceof VendorBlockEntity vendorBlockEntity) {
+          // Owner/key only: buy mode also unlocks hopper extraction of position items
+          // (VendorBlockEntity.extractItemHandler), so a stranger flipping it could drain
+          // a shop's sale stock.
+          if (level.getBlockEntity(packet.pos()) instanceof VendorBlockEntity vendorBlockEntity
+              && (vendorBlockEntity.isOwner(player)
+                  || player.getMainHandItem().is(ItemRegistry.VENDOR_KEY.get()))) {
             vendorBlockEntity.setBuyMode(packet.buyMode());
           }
         });

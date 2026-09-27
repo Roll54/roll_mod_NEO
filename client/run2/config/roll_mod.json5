@@ -55,7 +55,10 @@
 		],
 		// Closest a random teleport may land to the world spawn, in blocks.
 		"minRadius": 500,
-		// Furthest a random teleport may land from the world spawn, in blocks.
+		/* Furthest a random teleport may land from the world spawn, in blocks.
+		   Capped by the world border: a border smaller than this shrinks both radii to fit,
+		   so there is no need to keep this number in step with /worldborder set.
+		*/
 		"maxRadius": 25000,
 		// How many candidate positions are tried before /rtp gives up.
 		"maxTries": 100,
@@ -66,7 +69,23 @@
 		"triesPerTick": 2,
 		/* Wait between random teleports, in TICKS (20 = one second).
 		   Overridden per rank by the LuckPerms meta 'rollmod.rtp.cooldown', and waived
-		   entirely by the permission 'rollmod.cooldown.bypass'.
+		   entirely by the permission 'rollmod.rtp.bypasscooldown'.
+		*/
+		"cooldownTicks": 12000
+	},
+	// Settings for the /fly command
+	"fly": {
+		/* Dimensions where /fly is refused (namespaced ids, e.g. "minecraft:the_nether").
+		   A player who enters one while flying is put back on their feet and told why.
+		   Access to the command itself is the LuckPerms permission 'rollmod.fly.use'.
+		*/
+		"blacklistedDimensions": []
+	},
+	// Settings for the /heal command
+	"heal": {
+		/* Wait between heals, in TICKS (20 = one second).
+		   Overridden per rank by the LuckPerms meta 'rollmod.heal.cooldown', and waived
+		   entirely by the permission 'rollmod.heal.bypasscooldown'.
 		*/
 		"cooldownTicks": 12000
 	},

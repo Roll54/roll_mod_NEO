@@ -9,7 +9,10 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
 
+import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskHook;
+
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +60,13 @@ public class DailyTasksState extends SavedData {
 
     public final Map<UUID, GroupState> groups = new HashMap<>();
 
+    /**
+     * Free task rerolls each player has spent this period, against their
+     * {@code rollmod.dailytasks.freererolls} allowance. Per player rather than per group: the
+     * allowance is the clicker's own, whichever party they are in. Cleared when the day turns over.
+     */
+    public final Map<UUID, Integer> freeRerollsUsed = new HashMap<>();
+
     /** One group's task set, bonus reward and progress for the day it was rolled on. */
     public static class GroupState {
         /**
@@ -86,11 +96,44 @@ public class DailyTasksState extends SavedData {
         public final List<Set<UUID>> claimedBy = new ArrayList<>(MAX_TASK_COUNT);
         /** Who has already taken the all-complete bonus. Per player, for the same reason. */
         public final Set<UUID> rewardClaimedBy = new HashSet<>();
+        /**
+         * How many times each slot has been rerolled today — it picks the slot's next price and caps
+         * it. Kept apart from {@link #clearProgress()} so resetting progress does not hand rerolls back.
+         */
+        public final int[] rerolls = new int[MAX_TASK_COUNT];
+
+        /**
+         * The hooks of this board's still-unfinished tasks, so the per-event funnel
+         * ({@code DailyTaskManager.progress}) can bail out before doing any real work when an
+         * event's hook has no open task. Derived from {@link #taskIds} + {@link #completed},
+         * never saved; {@code null} means "rebuild on next ask", which every mutation of those
+         * two ({@link #invalidateHooks()}) resets it to.
+         */
+        private EnumSet<DailyTaskHook> activeHooks;
 
         public GroupState() {
             for (int i = 0; i < MAX_TASK_COUNT; i++) {
                 claimedBy.add(new HashSet<>());
             }
+        }
+
+        /** The hooks with at least one uncompleted task on this board. Never null. */
+        public EnumSet<DailyTaskHook> activeHooks() {
+            if (activeHooks == null) {
+                EnumSet<DailyTaskHook> hooks = EnumSet.noneOf(DailyTaskHook.class);
+                for (int i = 0; i < taskCount(); i++) {
+                    if (completed[i]) continue;
+                    var task = DailyTaskRegistry.byId(taskIds.get(i));
+                    if (task != null) hooks.add(task.hook());
+                }
+                activeHooks = hooks;
+            }
+            return activeHooks;
+        }
+
+        /** Call after any change to {@link #taskIds} or {@link #completed}. */
+        public void invalidateHooks() {
+            activeHooks = null;
         }
 
         /** Back to zero on every task and on the bonus, keeping the group's current task set. */
@@ -101,6 +144,7 @@ public class DailyTasksState extends SavedData {
                 claimedBy.get(i).clear();
             }
             rewardClaimedBy.clear();
+            invalidateHooks();
         }
 
         /**
@@ -173,12 +217,23 @@ public class DailyTasksState extends SavedData {
                 }
             }
 
+            // Absent in saves written before per-slot rerolls: getIntArray reads back empty.
+            int[] rerolls = g.getIntArray("rerolls");
+            System.arraycopy(rerolls, 0, state.rerolls, 0,
+                    Math.min(rerolls.length, MAX_TASK_COUNT));
+
             ListTag rewardClaimed = g.getList("rewardClaimed", Tag.TAG_INT_ARRAY);
             for (int p = 0; p < rewardClaimed.size(); p++) {
                 state.rewardClaimedBy.add(NbtUtils.loadUUID(rewardClaimed.get(p)));
             }
 
             s.groups.put(id, state);
+        }
+
+        ListTag freeRerolls = tag.getList("freeRerollsUsed", Tag.TAG_COMPOUND);
+        for (int i = 0; i < freeRerolls.size(); i++) {
+            CompoundTag e = freeRerolls.getCompound(i);
+            s.freeRerollsUsed.put(e.getUUID("id"), e.getInt("used"));
         }
         return s;
     }
@@ -224,10 +279,20 @@ public class DailyTasksState extends SavedData {
                 rewardClaimed.add(NbtUtils.createUUID(player));
             }
             g.put("rewardClaimed", rewardClaimed);
+            g.putIntArray("rerolls", state.rerolls);
 
             groupList.add(g);
         });
         tag.put("groups", groupList);
+
+        ListTag freeRerolls = new ListTag();
+        freeRerollsUsed.forEach((id, used) -> {
+            CompoundTag e = new CompoundTag();
+            e.putUUID("id", id);
+            e.putInt("used", used);
+            freeRerolls.add(e);
+        });
+        tag.put("freeRerollsUsed", freeRerolls);
         return tag;
     }
 

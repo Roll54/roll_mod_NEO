@@ -15,6 +15,8 @@ import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.lowdragmc.lowdraglib2.gui.ui.styletemplate.MCSprites;
 import com.lowdragmc.lowdraglib2.math.Size;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.minestar.moderation.ClientModerationCache;
+import com.roll_54.roll_mod.minestar.moderation.ClientPlayerStatusCache;
 import com.roll_54.roll_mod.economy.plot.gui.PlotPurchaseUI;
 import com.roll_54.roll_mod.economy.vendingblock.gui.VendorUIHelper;
 import com.roll_54.roll_mod.economy.vendingblock.gui.auction.AuctionUI;
@@ -36,6 +38,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
@@ -179,9 +182,25 @@ public final class HubUI {
      * tab wears a PNG now.
      * {@code content} runs on both sides, and receives a callback the tab can use to ask for the
      * player inventory; only the auction does.
+     *
+     * <p>{@code visible} decides whether the <em>bookmark</em> shows, never whether the content is
+     * built — the content always is, for everyone, see the class javadoc. It is read client-side
+     * every frame, so it must be a cheap cache read.
      */
     private record HubTab(String id, IGuiTexture icon,
-                          BiFunction<Player, Consumer<Boolean>, UIElement> content) {
+                          BiFunction<Player, Consumer<Boolean>, UIElement> content,
+                          BooleanSupplier visible, BooleanSupplier attention) {
+
+        HubTab(String id, IGuiTexture icon, BiFunction<Player, Consumer<Boolean>, UIElement> content) {
+            this(id, icon, content, () -> true, () -> false);
+        }
+
+        /** Always shown, badged while {@code attention} holds. */
+        static HubTab flagged(String id, IGuiTexture icon,
+                              BiFunction<Player, Consumer<Boolean>, UIElement> content,
+                              BooleanSupplier attention) {
+            return new HubTab(id, icon, content, () -> true, attention);
+        }
 
         IGuiTexture texture() {
             return icon;
@@ -217,22 +236,33 @@ public final class HubUI {
      * header is {@link #DISPLAY_ORDER}, which is deliberately a different order.
      */
     private static final List<HubTab> TABS = List.of(
-            new HubTab("home", icon("main"), (player, inventory) -> HomeTab.build(player)),
-            new HubTab("daily_tasks", icon("daily_tasks"),
-                    (player, inventory) -> DailyTasksUI.buildRoot(player)),
+            HubTab.flagged("home", icon("main"), (player, inventory) -> HomeTab.build(player),
+                    HubBadge::homePending),
+            HubTab.flagged("daily_tasks", icon("daily/daily_tasks"),
+                    (player, inventory) -> DailyTasksUI.buildRoot(player), HubBadge::dailyPending),
             // The only tab that wants the inventory, and only while its create form is open.
             // Still an item: hub/ has no auction artwork yet.
-            new HubTab("auction", icon("auction"), AuctionUI::buildRoot),
+            HubTab.flagged("auction", icon("auction"), AuctionUI::buildRoot, HubBadge::auctionPending),
             new HubTab("warps", icon("warp"), (player, inventory) -> WarpTab.build(player)),
             new HubTab("plots", icon("land_market"),
                     (player, inventory) -> PlotPurchaseUI.buildRoot(player)),
-            new HubTab("homes", icon("home"),
-                    (player, inventory) -> PlayerHomesTab.build(player)),
+            HubTab.flagged("homes", icon("home"),
+                    (player, inventory) -> PlayerHomesTab.build(player), HubBadge::homeInvitePending),
             // tp_icon, not the tpa arrow the rows wear: the tab is the whole section — asking,
             // answering and the argument-less trips — and the row button's own icon on the tab read
             // as if the tab were just the one action.
-            new HubTab("tpa", icon("teleportation/tp_icon"),
-                    (player, inventory) -> TpaTab.build(player)));
+            HubTab.flagged("tpa", icon("teleportation/tp_icon"),
+                    (player, inventory) -> TpaTab.build(player), HubBadge::tpaPending),
+            // TODO(art): placeholder icon — drop a real textures/gui/hub/moderation.png in and
+            // change the name here; nothing else needs to move.
+            new HubTab("moderation", icon("warp/admin"),
+                    ModerationTab::build,
+                    () -> ClientModerationCache.ALLOWED, HubBadge::moderationPending),
+            // The envelope carries its own mark while something is unread (letter_new.png), so this
+            // bookmark takes no HubBadge on top — it would be the same mark twice.
+            new HubTab("letters",
+                    IGuiTexture.dynamic(() -> LetterIcons.envelope(ClientPlayerStatusCache.UNREAD_LETTERS > 0)),
+                    (player, inventory) -> LettersTab.build(player)));
 
     /**
      * Header order, as indices into {@link #TABS}. Purely visual: the content slots are still built
@@ -240,7 +270,7 @@ public final class HubUI {
      * having to be inserted second. {@link #indexOf} keeps returning tree indices, which is what
      * every caller passes to {@code HubCommand.open}.
      */
-    private static final List<Integer> DISPLAY_ORDER = List.of(0, 5, 6, 1, 2, 3, 4);
+    private static final List<Integer> DISPLAY_ORDER = List.of(0, 5, 6, 1, 2, 3, 4, 8, 7);
 
     static {
         // Appending a tab and forgetting this list would silently hide it; fail at class-load
@@ -249,6 +279,8 @@ public final class HubUI {
             throw new IllegalStateException("HubUI.DISPLAY_ORDER must be a permutation of TABS");
         }
     }
+
+    private static final int HOME = indexOf("home");
 
     /** Index of a tab by id, for the commands that open the hub on a particular one. */
     public static int indexOf(String id) {
@@ -381,6 +413,7 @@ public final class HubUI {
         // Indexed by TREE index, filled in display order — so `tabs.get(n)` still lines up with
         // `slots.get(n)` while the header renders in whatever order DISPLAY_ORDER asks for.
         List<Tab> tabs = new ArrayList<>(Collections.nCopies(TABS.size(), (Tab) null));
+        List<UIElement> badges = new ArrayList<>(Collections.nCopies(TABS.size(), (UIElement) null));
         for (int displayed : DISPLAY_ORDER) {
             final int index = displayed;
             HubTab spec = TABS.get(index);
@@ -390,11 +423,27 @@ public final class HubUI {
             // Square, and exactly the header's height. The 3px padding leaves a 16x16 content box,
             // which is the icon's own size, so the icon centres itself on both axes.
             tab.layout(l -> l.width(TAB_W).height(TAB_H).paddingAll(3));
+            // Start hidden if it is not for this viewer, rather than showing until the first TICK
+            // below catches up — that gap is long enough to see the bookmark blink.
+            if (FMLEnvironment.dist == Dist.CLIENT && !spec.visible().getAsBoolean()) {
+                tab.setDisplay(false);
+            }
 
             UIElement icon = new UIElement();
             icon.layout(l -> l.width(TAB_ICON).height(TAB_ICON));
             icon.style(s -> s.background(spec.texture()));
             tab.addChild(icon);
+
+            // The attention mark, over the icon's top-right corner. Absolute, so it costs the
+            // bookmark no layout; toggled by the client-only TICK below, which is safe for the same
+            // reasons hiding the bookmark itself is — no sync value, no TICK of its own.
+            UIElement badge = new UIElement();
+            badge.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).right(1).top(1)
+                    .width(HubBadge.SIZE).height(HubBadge.SIZE));
+            badge.style(s -> s.background(HubBadge.texture()).zIndex(1));
+            badge.setDisplay(false);
+            tab.addChild(badge);
+            badges.set(index, badge);
 
             // Tooltips are collected by walking up from the hovered element, so this fires with the
             // cursor over the icon too.
@@ -442,6 +491,29 @@ public final class HubUI {
 
         // Honour the tab the command asked for, once, as soon as the value arrives.
         boolean[] applied = {false};
+        // Bookmarks whose tab is not for this viewer. setDisplay is safe on these, and only these:
+        // a bookmark carries no sync value and no TICK listener, and is not an ancestor of its
+        // content slot, which lives under `content`. A hidden flex child also drops its gap, so the
+        // row closes up rather than leaving a hole.
+        // Client only: the dedicated server has no client caches to ask, and its copy's bookmarks
+        // are never drawn.
+        root.addEventListener(UIEvents.TICK, e -> {
+            if (FMLEnvironment.dist != Dist.CLIENT) return;
+            // Being on the home tab is seeing the mute it shows, which clears its mark here and on
+            // the inventory button.
+            if (currentTab[0] == HOME) ClientPlayerStatusCache.acknowledgeStanding();
+            for (int i = 0; i < TABS.size(); i++) {
+                Tab tab = tabs.get(i);
+                boolean visible = TABS.get(i).visible().getAsBoolean();
+                if (tab.isDisplayed() != visible) tab.setDisplay(visible);
+                boolean flagged = visible && TABS.get(i).attention().getAsBoolean();
+                UIElement badge = badges.get(i);
+                if (badge != null && badge.isDisplayed() != flagged) badge.setDisplay(flagged);
+                // Standing on a tab that just went away: back to the first one.
+                if (!visible && currentTab[0] == i) select(tabs, slots, onSelected, 0);
+            }
+        });
+
         root.addEventListener(UIEvents.TICK, e -> {
             if (applied[0]) return;
             Integer wanted = requestedTab.getSyncValue().getValue();

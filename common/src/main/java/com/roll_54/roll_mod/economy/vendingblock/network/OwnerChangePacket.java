@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.economy.vendingblock.network;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.VendorBlockEntity;
+import com.roll_54.roll_mod.economy.vendingblock.registry.ItemRegistry;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -36,7 +37,10 @@ public record OwnerChangePacket(BlockPos pos, String newOwner) implements Custom
           Player player = context.player();
           Level level = player.level();
 
-          if (level.getBlockEntity(packet.pos()) instanceof VendorBlockEntity vendorBlockEntity) {
+          // Admin-only (admin UI opens only with the Vendor Key): reassigning the owner
+          // hands over storage, payments and break rights.
+          if (level.getBlockEntity(packet.pos()) instanceof VendorBlockEntity vendorBlockEntity
+              && player.getMainHandItem().is(ItemRegistry.VENDOR_KEY.get())) {
             vendorBlockEntity.setOwnerByUsername(packet.newOwner());
           }
         });

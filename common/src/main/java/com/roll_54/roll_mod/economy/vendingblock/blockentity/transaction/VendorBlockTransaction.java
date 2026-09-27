@@ -61,8 +61,11 @@ public class VendorBlockTransaction {
     }
 
     /* ================= CURRENCY ================= */
+    // Capture the payment mode now: the reversal below must undo exactly what was done,
+    // even if an admin flips the vendor's flags during the DB roundtrip.
+    boolean voidPayment = vendor.isDiscarding() || ownerId == null;
     CompletableFuture<Boolean> paymentFuture;
-    if (vendor.isDiscarding() || ownerId == null) {
+    if (voidPayment) {
       paymentFuture = CurrencyRepository.withdraw(serverBuyer.getUUID(), CurrencyType.MAIN, price);
     } else {
       paymentFuture = transfer(serverBuyer.getUUID(), ownerId, price);
@@ -73,6 +76,19 @@ public class VendorBlockTransaction {
             success -> {
               if (!success) {
                 buyer.sendSystemMessage(Messages.playerInsufficientCurrency(price));
+                vendor.checkErrorState();
+                return;
+              }
+
+              // The world may have changed during the async payment roundtrip: the stock
+              // was only checked before it, the block may have been broken (dropping its
+              // storage), or the buyer may have logged out. Without this re-check two
+              // racing buyers of the last stock would both be handed items.
+              if (serverBuyer.hasDisconnected()
+                  || vendor.isRemoved()
+                  || vendor.purchasesLeft(position) < 1) {
+                refundPurchase(server, serverBuyer, ownerId, price, voidPayment);
+                buyer.sendSystemMessage(Messages.vendorSold());
                 vendor.checkErrorState();
                 return;
               }
@@ -156,8 +172,10 @@ public class VendorBlockTransaction {
     }
 
     /* ================= CURRENCY ================= */
+    // Capture the payment mode now so the reversal below undoes exactly what was done.
+    boolean printedPayment = vendor.isInfinite() || ownerId == null;
     CompletableFuture<Boolean> paymentFuture;
-    if (vendor.isInfinite() || ownerId == null) {
+    if (printedPayment) {
       // Unlimited budget / no owner: print the payment to the seller.
       paymentFuture =
           CurrencyRepository.addBalance(serverSeller.getUUID(), CurrencyType.MAIN, price);
@@ -171,6 +189,19 @@ public class VendorBlockTransaction {
             success -> {
               if (!success) {
                 seller.sendSystemMessage(Messages.ownerCannotAfford());
+                vendor.checkErrorState();
+                return;
+              }
+
+              // The items were only counted before the async payment: the seller may have
+              // dropped them, logged out, or spam-clicked several sells backed by one batch.
+              // Re-check on the server thread (nothing can change between this check and
+              // takeAndStore below) and reverse the payment if the goods are gone.
+              if (serverSeller.hasDisconnected()
+                  || vendor.isRemoved()
+                  || VendorBlockInventory.countInPlayer(seller, want) < amount) {
+                reverseSellPayment(server, serverSeller, ownerId, price, printedPayment);
+                seller.sendSystemMessage(Messages.playerEmpty(want.getHoverName()));
                 vendor.checkErrorState();
                 return;
               }
@@ -252,9 +283,9 @@ public class VendorBlockTransaction {
     ItemStack product = position.item();
     int amount = position.amount();
 
-    VendorBlockInventory.deductFromStorage(vendor, product, amount);
-
-    int transfer = amount;
+    // Only hand out what actually came out of storage — a race that drained the stock
+    // during the payment must not conjure items.
+    int transfer = VendorBlockInventory.deductFromStorage(vendor, product, amount);
     for (int i = 0; i < 36 && transfer > 0; i++) {
       ItemStack slot = buyer.getInventory().getItem(i);
       if (slot.isEmpty()) {
@@ -269,5 +300,60 @@ public class VendorBlockTransaction {
         }
       }
     }
+    // Inventory filled up during the payment roundtrip: drop the paid-for rest instead of
+    // silently destroying it.
+    if (transfer > 0) {
+      buyer.drop(product.copyWithCount(transfer), false);
+    }
+  }
+
+  /** Undo a purchase payment after the goods turned out to be unavailable. */
+  private static void refundPurchase(
+      MinecraftServer server, ServerPlayer buyer, UUID ownerId, long price, boolean voidPayment) {
+    CompletableFuture<Boolean> refund =
+        voidPayment
+            ? CurrencyRepository.addBalance(buyer.getUUID(), CurrencyType.MAIN, price)
+            : CurrencyRepository.transfer(ownerId, buyer.getUUID(), CurrencyType.MAIN, price);
+    refund.thenAcceptAsync(
+        ok -> {
+          if (!ok) {
+            LOGGER.error(
+                "Vendor purchase refund of {} to {} failed (voidPayment={}, owner={})",
+                price,
+                buyer.getUUID(),
+                voidPayment,
+                ownerId);
+          } else {
+            syncPlayerCurrency(buyer);
+          }
+        },
+        server);
+  }
+
+  /** Undo a sell payment after the seller's goods turned out to be unavailable. */
+  private static void reverseSellPayment(
+      MinecraftServer server,
+      ServerPlayer seller,
+      UUID ownerId,
+      long price,
+      boolean printedPayment) {
+    CompletableFuture<Boolean> reverse =
+        printedPayment
+            ? CurrencyRepository.withdraw(seller.getUUID(), CurrencyType.MAIN, price)
+            : CurrencyRepository.transfer(seller.getUUID(), ownerId, CurrencyType.MAIN, price);
+    reverse.thenAcceptAsync(
+        ok -> {
+          if (!ok) {
+            LOGGER.error(
+                "Vendor sell reversal of {} from {} failed (printedPayment={}, owner={})",
+                price,
+                seller.getUUID(),
+                printedPayment,
+                ownerId);
+          } else {
+            syncPlayerCurrency(seller);
+          }
+        },
+        server);
   }
 }

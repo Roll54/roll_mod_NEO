@@ -31,6 +31,11 @@ public final class ClipAgriCropsTask implements DailyTask {
     }
 
     @Override
+    public double teamMultiplier() {
+        return 1.75;
+    }
+
+    @Override
     public DailyTaskIcon icon() {
         return ICON;
     }

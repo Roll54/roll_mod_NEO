@@ -99,6 +99,15 @@ dependencies {
 
     implementation files("jars/createcybernetics-0.4.8b-neoforge-1.21.1-PLAYTEST-PRERELEASE-4.jar")
 
+    // Functional Storage is here only so compat/functionalstorage/mixin can name
+    // ControllerInventoryHandler. Nothing else in this mod references it and the mixin config is
+    // required = false, so it stays soft; implementation rather than compileOnly so the dev runs
+    // have a drawer controller to test the mixin against. Titanium is its own hard dependency --
+    // without it the dev server refuses to start -- and is runtimeOnly because nothing compiles
+    // against it.
+    implementation files("jars/functionalstorage-1.21.1-1.5.8.jar")
+    runtimeOnly files("jars/titanium-1.21-4.0.45.jar")
+
     implementation files("jars/Multiblocked2-1.21-1.21.1-21.1.2-all.jar")
 
     /* ------------------------------------- economy (ex roll_mod_currency) ------------------------------------- */

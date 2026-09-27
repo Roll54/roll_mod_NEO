@@ -43,6 +43,11 @@ public abstract class BreedSpeciesTask implements DailyTask {
     }
 
     @Override
+    public double teamMultiplier() {
+        return 1.5;
+    }
+
+    @Override
     public DailyTaskIcon icon() {
         return icon;
     }

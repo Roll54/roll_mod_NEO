@@ -15,14 +15,18 @@ import static com.roll_54.roll_mod.data.RMMAttachment.STORM_PROTECTED;
 public class NetherstormCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
+        // Gate the unique children, never the shared "rollmod"/"admin" literals: Brigadier
+        // merges same-named literals keeping only the FIRST-registered node's requires, so a
+        // gate here would either be dropped or lock every /rollmod command behind level 2,
+        // depending on registration order (see ItemSkinCommand/DailyTasksCommand).
         var adminRoot = Commands.literal("rollmod")
-                .requires(src -> src.hasPermission(2))
                 .then(Commands.literal("admin")
 
                         // --------------------------
                         // /rollmod admin netherstorm
                         // --------------------------
                         .then(Commands.literal("netherstorm")
+                                .requires(src -> src.hasPermission(2))
                                 .then(Commands.literal("start")
                                         .executes(ctx -> {
                                             StormHandler.forceStart(ctx.getSource().getServer(), null);
@@ -64,6 +68,7 @@ public class NetherstormCommand {
                         // /rollmod admin storm_protected get/set <player>
                         // ----------------------------------------------
                         .then(Commands.literal("storm_protected")
+                                .requires(src -> src.hasPermission(2))
 
                                 // ===== GET =====
                                 .then(Commands.literal("get")

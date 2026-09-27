@@ -193,6 +193,109 @@ public final class HubSection {
      */
     public static Info panel(Component title, IGuiTexture icon, Component tip,
                              int width, int height, Consumer<UIElement> body) {
+        Floating floating = floating(title, width, height, body);
+
+        UIElement button = new UIElement();
+        button.layout(l -> l.width(BUTTON).height(BUTTON).marginRight(BUTTON_GAP));
+        button.style(s -> s.background(icon));
+        button.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
+                List.of(tip), null, null, ItemStack.EMPTY));
+        button.addEventListener(UIEvents.CLICK, e -> floating.toggle());
+
+        return new Info(button, floating.root());
+    }
+
+    /**
+     * The same window as {@link #panel}, with no button of its own: the caller opens it, typically
+     * under the cursor with {@link Floating#openAt} — the shape of FTB Quests' "add reward" menu.
+     *
+     * <p>{@link Floating#root()} still has to be added to the tab's root, last, like every overlay
+     * here; it is positioned in that root's coordinates.
+     */
+    public static Floating popup(Component title, int width, int height, Consumer<UIElement> body) {
+        return floating(title, width, height, body);
+    }
+
+    /**
+     * A floating window over a tab, and the handle for showing it.
+     *
+     * <p>All of them share the single {@link #openPanel} slot, so opening one closes whichever other
+     * is up. Only ever opened from a click, which never fires on a dedicated server, so that slot
+     * stays client-only as its javadoc requires.
+     */
+    public static final class Floating {
+        private final UIElement root;
+        private final float[] pos;
+        private final int width;
+        private final int height;
+
+        private Floating(UIElement root, float[] pos, int width, int height) {
+            this.root = root;
+            this.pos = pos;
+            this.width = width;
+            this.height = height;
+        }
+
+        /** Add this to the tab's root, last. */
+        public UIElement root() {
+            return root;
+        }
+
+        public boolean isOpen() {
+            return root.isDisplayed();
+        }
+
+        /** Opens wherever it last was — centred, the first time. */
+        public void open() {
+            closePanel();
+            root.setDisplay(true);
+            openPanel = root;
+        }
+
+        /**
+         * Opens with its corner at a click, in the screen coordinates {@code UIEvent.x/y} carry.
+         *
+         * <p>Converted into the root's frame by subtracting the parent's absolute position — the pair
+         * {@code isMouseOver} compares — and clamped with the same bounds {@link #drag} uses, so a
+         * popup opened near an edge can never land somewhere it cannot be dragged back from.
+         */
+        public void openAt(float screenX, float screenY) {
+            UIElement host = root.getParent();
+            float originX = host == null ? 0 : host.getPositionX();
+            float originY = host == null ? 0 : host.getPositionY();
+            pos[0] = Mth.clamp(screenX - originX, 0, HubUI.CONTENT_W - width);
+            pos[1] = Mth.clamp(screenY - originY, 0, HubUI.CONTENT_H - height);
+            root.layout(l -> l.left(pos[0]).top(pos[1]));
+            open();
+        }
+
+        /** Moves it, in the tab root's own coordinates, clamped like everything else here. */
+        public void place(float x, float y) {
+            pos[0] = Mth.clamp(x, 0, HubUI.CONTENT_W - width);
+            pos[1] = Mth.clamp(y, 0, HubUI.CONTENT_H - height);
+            root.layout(l -> l.left(pos[0]).top(pos[1]));
+        }
+
+        /** Where it is now, in the tab root's coordinates. */
+        public float x() {
+            return pos[0];
+        }
+
+        public void toggle() {
+            if (isOpen()) close(); else open();
+        }
+
+        /** Closes this one; leaves any other window alone. */
+        public void close() {
+            if (openPanel == root) {
+                closePanel();
+            } else {
+                root.setDisplay(false);
+            }
+        }
+    }
+
+    private static Floating floating(Component title, int width, int height, Consumer<UIElement> body) {
         float[] pos = {(HubUI.CONTENT_W - width) / 2f, (HubUI.CONTENT_H - height) / 2f};
 
         UIElement panel = new UIElement();
@@ -225,22 +328,7 @@ public final class HubSection {
         close.setOnClick(e -> closePanel());
 
         panel.addChildren(caption, content, close);
-
-        UIElement button = new UIElement();
-        button.layout(l -> l.width(BUTTON).height(BUTTON).marginRight(BUTTON_GAP));
-        button.style(s -> s.background(icon));
-        button.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
-                List.of(tip), null, null, ItemStack.EMPTY));
-        button.addEventListener(UIEvents.CLICK, e -> {
-            boolean show = !panel.isDisplayed();
-            closePanel();
-            if (show) {
-                panel.setDisplay(true);
-                openPanel = panel;
-            }
-        });
-
-        return new Info(button, panel);
+        return new Floating(panel, pos, width, height);
     }
 
     /* -------------------------------------------- the panel ------------------------------------------- */

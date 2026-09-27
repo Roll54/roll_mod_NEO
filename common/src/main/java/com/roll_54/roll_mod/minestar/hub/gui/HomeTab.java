@@ -1,5 +1,8 @@
 package com.roll_54.roll_mod.minestar.hub.gui;
 
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.minecraft.network.chat.MutableComponent;
+import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.DataBindingBuilder;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.SimpleBinding;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
@@ -10,6 +13,10 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.minestar.moderation.ClientModerationCache;
+import com.roll_54.roll_mod.minestar.moderation.ClientPlayerStatusCache;
+import com.roll_54.roll_mod.minestar.moderation.ModerationService;
+import com.roll_54.roll_mod.util.Durations;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.network.client.ClientCurrencyHolder;
 import com.roll_54.roll_mod.economy.util.EnergyFormatUtils;
@@ -137,6 +144,12 @@ public final class HomeTab {
         Label questsRow = row(column, null);
         Label tierRow = row(column, "gui.roll_mod.hub.home.tier.tip");
 
+        // Standing, letters, and the staff summary. Read from the client caches, not bindings —
+        // the same exception ClientCurrencyHolder gets — so the six sync ids above stay put.
+        Label standingRow = wrappingRow(row(column, "gui.roll_mod.hub.home.standing.tip"));
+        Label lettersRow = row(column, null);
+        Label staffRow = wrappingRow(row(column, "gui.roll_mod.hub.home.staff.tip"));
+
         column.addEventListener(UIEvents.TICK, e -> {
             rankRow.setText(Component.translatable("gui.roll_mod.hub.home.rank",
                     value(rank, Component.empty())));
@@ -146,6 +159,13 @@ public final class HomeTab {
                     value(questsDone, 0), value(questsTotal, 0)));
             tierRow.setText(Component.translatable("gui.roll_mod.hub.home.tier",
                     PlayerTier.name(value(tier, 0))));
+            standingRow.setText(standing());
+            int unread = ClientPlayerStatusCache.UNREAD_LETTERS;
+            lettersRow.setText(unread > 0
+                    ? Component.translatable("gui.roll_mod.hub.status.letters", unread)
+                            .withStyle(ChatFormatting.GOLD)
+                    : Component.empty());
+            staffRow.setText(staff());
         });
 
         // The optional count is a footnote to the quest row rather than a row of its own.
@@ -159,7 +179,96 @@ public final class HomeTab {
         return column;
     }
 
-    /** A status line, with an optional hover explanation. */
+    /**
+     * Past this width a line takes no more pieces: the next one starts a line of its own. Small on
+     * purpose — each fact reads on its own line rather than being strung out across the column.
+     */
+    private static final int MAX_LINE_W = 50;
+
+    /** Warnings, and the mute when there is one. */
+    private static Component standing() {
+        int warns = ClientPlayerStatusCache.WARNS;
+        List<Component> parts = new java.util.ArrayList<>();
+        parts.add(Component.translatable("gui.roll_mod.hub.home.warns",
+                Component.literal(String.valueOf(warns)).withStyle(warns == 0 ? ChatFormatting.GREEN
+                        : warns >= ModerationService.WARNS_BEFORE_BAN - 1 ? ChatFormatting.RED
+                        : ChatFormatting.GOLD),
+                ModerationService.WARNS_BEFORE_BAN));
+        if (ClientPlayerStatusCache.muted()) {
+            long left = ClientPlayerStatusCache.muteRemaining();
+            parts.add((left < 0L
+                    ? Component.translatable("gui.roll_mod.hub.status.mutedForever")
+                    : Component.translatable("gui.roll_mod.hub.status.muted", Durations.format(left)))
+                    .withStyle(ChatFormatting.RED));
+        }
+        return lines(parts);
+    }
+
+    /** For staff only: who is on, who is banned, whether the server is closed. Empty for everyone else. */
+    private static Component staff() {
+        if (!ClientModerationCache.ALLOWED) return Component.empty();
+        int online = 0;
+        int banned = 0;
+        long now = System.currentTimeMillis();
+        for (ClientModerationCache.Row row : ClientModerationCache.ROWS) {
+            if (row.row().online()) online++;
+            if (row.banned(now)) banned++;
+        }
+        return lines(List.of(
+                Component.translatable("gui.roll_mod.hub.home.staff.online", online),
+                Component.translatable("gui.roll_mod.hub.home.staff.banned", banned),
+                Component.translatable("gui.roll_mod.hub.home.staff.server",
+                        Component.translatable(ClientModerationCache.WHITELIST
+                                ? "gui.roll_mod.hub.moderation.whitelist.on"
+                                : "gui.roll_mod.hub.moderation.whitelist.off")))
+        ).copy().withStyle(ChatFormatting.AQUA);
+    }
+
+    /**
+     * Joins the pieces with " · ", starting a new line instead whenever the current one is already
+     * past {@link #MAX_LINE_W}. Measuring needs the client's font, so off the client — the dedicated
+     * server's copy of this tree, which nobody sees — every piece simply gets its own line.
+     */
+    private static Component lines(List<Component> parts) {
+        MutableComponent out = Component.empty();
+        int lineWidth = 0;
+        for (int i = 0; i < parts.size(); i++) {
+            Component part = parts.get(i);
+            if (i > 0) {
+                if (lineWidth > MAX_LINE_W) {
+                    out.append("\n");
+                    lineWidth = 0;
+                } else {
+                    out.append(" · ");
+                    lineWidth += ClientFont.width(Component.literal(" · "));
+                }
+            }
+            out.append(part);
+            lineWidth += ClientFont.width(part);
+        }
+        return out;
+    }
+
+    /** Isolated so the dedicated server never resolves the client's font. */
+    private static final class ClientFont {
+        static int width(Component text) {
+            if (!FMLEnvironment.dist.isClient()) return Integer.MAX_VALUE / 4;
+            return net.minecraft.client.Minecraft.getInstance().font.width(text);
+        }
+    }
+
+    /**
+     * A status line that may run to several lines: it wraps inside the column and grows to fit, so
+     * the line breaks {@link #lines} puts in, and anything still too wide, push the rows
+     * below it down instead of overlapping them.
+     */
+    private static Label wrappingRow(Label label) {
+        label.layout(l -> l.heightAuto().minHeight(ROW_H));
+        label.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
+        return label;
+    }
+
+        /** A status line, with an optional hover explanation. */
     private static Label row(UIElement parent, @Nullable String tooltipKey) {
         Label label = new Label();
         label.layout(l -> l.widthPercent(100).height(ROW_H));

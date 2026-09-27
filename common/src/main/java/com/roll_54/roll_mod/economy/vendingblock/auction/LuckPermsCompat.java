@@ -23,6 +23,12 @@ import net.neoforged.fml.ModList;
  *   <li>Permission {@code rollmod.heal.use} &rarr; may use {@code /heal}.
  *   <li>Permission {@code rollmod.heal.bypasscooldown} &rarr; no wait between heals.
  *   <li>Meta {@code rollmod.heal.cooldown} (ticks) &rarr; per-player wait between heals.
+ *   <li>Permission {@code rollmod.moderation.use} &rarr; may open the moderation tab, and is let
+ *       past the whitelist.
+ *   <li>Permission {@code rollmod.moderation.ban} &rarr; may ban, unban and close the server.
+ *   <li>Permission {@code rollmod.moderation.letters} &rarr; may write letters to players.
+ *   <li>Meta {@code rollmod.dailytasks.freererolls} (integer) &rarr; daily-task rerolls a player
+ *       gets for free each day before the Starcoins price applies.
  * </ul>
  */
 public final class LuckPermsCompat {
@@ -42,6 +48,10 @@ public final class LuckPermsCompat {
   private static final String HEAL_PERMISSION = "rollmod.heal.use";
   private static final String HEAL_BYPASS_PERMISSION = "rollmod.heal.bypasscooldown";
   private static final String HEAL_COOLDOWN_META = "rollmod.heal.cooldown";
+  private static final String DAILY_FREE_REROLLS_META = "rollmod.dailytasks.freererolls";
+  private static final String MODERATION_PERMISSION = "rollmod.moderation.use";
+  private static final String MODERATION_BAN_PERMISSION = "rollmod.moderation.ban";
+  private static final String MODERATION_LETTERS_PERMISSION = "rollmod.moderation.letters";
 
   private LuckPermsCompat() {}
 
@@ -120,6 +130,55 @@ public final class LuckPermsCompat {
     if (!LOADED) return false;
     try {
       return Lp.hasPermission(player, MODERATE_PERMISSION);
+    } catch (Throwable ignored) {
+      return false;
+    }
+  }
+
+  /**
+   * Whether the player may open the moderation tab — and, because of that, is let past the
+   * whitelist.
+   *
+   * <p>Returns false without LuckPerms rather than falling back to {@code hasPermissions(2)}, the
+   * same way {@link #canModerateWarps} does. Operators are folded back in by
+   * {@code ModerationPermissions}, so the "operators always count" rule lives in one place instead
+   * of being half here and half there.
+   */
+  public static boolean canModerate(ServerPlayer player) {
+    if (!LOADED) return false;
+    try {
+      return Lp.hasPermission(player, MODERATION_PERMISSION);
+    } catch (Throwable ignored) {
+      return false;
+    }
+  }
+
+  /**
+   * Whether the player may ban, unban, and close the server to everyone without a bypass.
+   *
+   * <p>Separate from {@link #canModerate} on purpose: muting someone is a moment's inconvenience,
+   * while banning them and shutting the door are the two actions that can empty a server. The
+   * whitelist toggle rides this node rather than one of its own for exactly that reason.
+   */
+  public static boolean canBan(ServerPlayer player) {
+    if (!LOADED) return false;
+    try {
+      return Lp.hasPermission(player, MODERATION_BAN_PERMISSION);
+    } catch (Throwable ignored) {
+      return false;
+    }
+  }
+
+  /**
+   * Whether the player may write letters to players.
+   *
+   * <p>Worth granting narrowly: a letter may carry a command, and letter commands run at permission
+   * level 4 as the player who accepts them.
+   */
+  public static boolean canWriteLetters(ServerPlayer player) {
+    if (!LOADED) return false;
+    try {
+      return Lp.hasPermission(player, MODERATION_LETTERS_PERMISSION);
     } catch (Throwable ignored) {
       return false;
     }
@@ -210,6 +269,15 @@ public final class LuckPermsCompat {
    */
   public static Integer healCooldownTicks(ServerPlayer player) {
     return meta(player, HEAL_COOLDOWN_META);
+  }
+
+  /**
+   * How many daily-task rerolls this player gets free each day, from meta
+   * {@code rollmod.dailytasks.freererolls}. Unset, or no LuckPerms, is none: every reroll is paid.
+   */
+  public static int dailyTaskFreeRerolls(ServerPlayer player) {
+    Integer value = meta(player, DAILY_FREE_REROLLS_META);
+    return value == null ? 0 : value;
   }
 
   /**

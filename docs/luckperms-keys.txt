@@ -78,6 +78,22 @@ meta as unset, and the mod falls back to the defaults given here.
   Example:    /lp group vip meta set rollmod.heal.cooldown 2400        (2 min)
 
 
+--------------------------------------------------------------------------------
+ rollmod.dailytasks.freererolls                                       (a count)
+--------------------------------------------------------------------------------
+  How many daily-task rerolls the player gets FREE each day. A task slot is
+  rerolled with the button at the bottom-right of its row in the daily tasks
+  tab; normally the 1st reroll of a slot costs 100 Starcoins, the 2nd 150 and
+  the 3rd 200, and then that slot is locked until the 06:00 reset. The first N
+  rerolls a player makes each day (across all slots) skip the price. A free
+  reroll still counts towards the slot's 3-reroll limit. The count of free
+  rerolls used resets at 06:00. In a party, the player who clicks pays and
+  spends their own free rerolls.
+  Unset:      0 - every reroll is paid
+  Read by:    DailyTaskManager.rerollCost
+  Example:    /lp group vip meta set rollmod.dailytasks.freererolls 2
+
+
 ================================================================================
  2. PERMISSIONS  (plain yes/no nodes)
 ================================================================================
@@ -101,6 +117,12 @@ meta as unset, and the mod falls back to the defaults given here.
   Receives warp reports and may approve or block a warp without being an
   operator. This is what "moderation and higher" means on this server.
   Read by:    LuckPermsCompat.canModerateWarps
+
+  Because it is already this server's staff marker, it is also accepted as an
+  alias for rollmod.moderation.use below - holding it opens the moderation tab
+  and gets past the whitelist. Grant rollmod.moderation.use to new staff; this
+  alias exists so the staff group that already has this node did not silently
+  lose the tab on the day it shipped.
 
 --------------------------------------------------------------------------------
  rollmod.warps.bypasswarmup
@@ -178,6 +200,50 @@ meta as unset, and the mod falls back to the defaults given here.
   are two separate grants (though the wildcard rollmod.heal.* is both).
   Read by:    LuckPermsCompat.canBypassHealCooldown
 
+--------------------------------------------------------------------------------
+ rollmod.moderation.use
+--------------------------------------------------------------------------------
+  Opens the moderation tab in the F4 hub - the online-player list, mute and
+  warn, warp approval, and the live TPS readout - and is let past the whitelist
+  while it is on.
+
+  Does not grant banning or closing the server; those are the node below.
+
+  Unset:      operators (level 2) hold it regardless, as does anyone with
+              rollmod.warps.moderate. Without LuckPerms installed, operators
+              only.
+  Read by:    ModerationPermissions.canModerate / bypassesWhitelist
+  Example:    /lp group moderator permission set rollmod.moderation.use true
+
+--------------------------------------------------------------------------------
+ rollmod.moderation.ban
+--------------------------------------------------------------------------------
+  May ban and unban, and may turn the whitelist on and off.
+
+  Deliberately separate from rollmod.moderation.use: muting someone is a
+  moment's inconvenience, while banning them and shutting the door are the two
+  actions that can empty a server. The whitelist toggle rides this node rather
+  than one of its own for the same reason.
+
+  Unset:      operators (level 2) hold it regardless. Without LuckPerms
+              installed, operators only.
+  Read by:    ModerationPermissions.canBan
+  Example:    /lp group admin permission set rollmod.moderation.ban true
+
+--------------------------------------------------------------------------------
+ rollmod.moderation.letters
+--------------------------------------------------------------------------------
+  May write letters to players. Reading a letter needs no node at all.
+
+  Grant this narrowly. A letter may carry a command, and letter commands run at
+  permission level 4 as the player who accepts them - so anyone who can write a
+  letter can effectively run any command as any player on the server.
+
+  Unset:      operators (level 2) hold it regardless. Without LuckPerms
+              installed, operators only.
+  Read by:    ModerationPermissions.canWriteLetters
+  Example:    /lp group admin permission set rollmod.moderation.letters true
+
 
 ================================================================================
  3. QUICK REFERENCE
@@ -189,6 +255,8 @@ meta as unset, and the mod falls back to the defaults given here.
    rollmod.ah.positions       count    active listings       config, 5
    rollmod.rtp.cooldown       ticks    /rtp wait             config, 12000
    rollmod.heal.cooldown      ticks    /heal wait            config, 12000
+   rollmod.dailytasks.freererolls
+                              count    free task rerolls/day 0
 
    (no kit cooldown meta exists - a kit's wait is the kit file's, always)
 
@@ -201,6 +269,9 @@ meta as unset, and the mod falls back to the defaults given here.
    rollmod.fly.use                     may use /fly
    rollmod.heal.use                    may use /heal
    rollmod.heal.bypasscooldown         no /heal wait
+   rollmod.moderation.use              opens the moderation tab, skips whitelist
+   rollmod.moderation.ban              may ban/unban and close the server
+   rollmod.moderation.letters          may write letters to players
 
  Setting them:
    /lp group vip meta set rollmod.homes.max 10

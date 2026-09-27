@@ -99,8 +99,9 @@ public final class WarpService {
         Warp warp = data.byId(warpId);
         if (warp == null) return false;
 
-        // Operators can clear out anyone's warp; everyone else only their own.
-        if (!warp.owner().equals(player.getUUID()) && !player.hasPermissions(2)) {
+        // Moderators — operators, or a rank carrying the warp node — can clear out anyone's warp;
+        // everyone else only their own. isModerator already includes operators.
+        if (!warp.owner().equals(player.getUUID()) && !isModerator(player)) {
             player.sendSystemMessage(Component.translatable("msg.roll_mod.warp.notOwner")
                     .withStyle(ChatFormatting.RED));
             return false;

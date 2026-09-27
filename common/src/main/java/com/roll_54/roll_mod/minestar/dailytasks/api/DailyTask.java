@@ -38,6 +38,15 @@ public interface DailyTask {
     }
 
     /**
+     * How a party's requirement grows, per member past the first: {@code base * m^(members - 1)},
+     * rounded up. {@code 0} — the default — keeps the stock {@code base * (members + 1)}. Only
+     * consulted when {@link #scalesWithTeam()} is {@code true}.
+     */
+    default double teamMultiplier() {
+        return 0;
+    }
+
+    /**
      * Whether this occurrence counts. {@code subject}'s runtime type is fixed by {@link #hook()};
      * anything else must return {@code false}, so pattern-match rather than cast — {@code
      * instanceof} also covers the null case for free.

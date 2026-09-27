@@ -110,9 +110,9 @@ public class MyConfig extends Config {
         public ValidatedInt maxTries = new ValidatedInt(100, 1000, 1);
 
         @Comment("""
-                Candidates examined per server tick, per searching player. Only candidates that
-                pass the no-chunk-load height and biome check cost a chunk, but that chunk may
-                have to be generated, so raising this trades stutter for a faster answer.
+                Candidates examined per server tick, per searching player. These checks cost no
+                chunk — at most one chunk is generated per player per tick regardless — so raising
+                this only makes the search settle on a promising spot sooner.
                 """)
         public ValidatedInt triesPerTick = new ValidatedInt(2, 20, 1);
 

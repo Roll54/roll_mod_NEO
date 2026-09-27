@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.minestar.dailytasks.gui;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.DataBindingBuilder;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.SimpleBinding;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
+import com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.data.Horizontal;
@@ -25,11 +26,13 @@ import com.roll_54.roll_mod.minestar.dailytasks.api.DailyReward;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTask;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskQuota;
+import com.roll_54.roll_mod.minestar.hub.gui.HubBadge;
 import com.roll_54.roll_mod.minestar.hub.gui.HubSection;
 import com.roll_54.roll_mod.minestar.hub.gui.HubUI;
 import com.roll_54.roll_mod.minestar.dailytasks.api.TaskReward;
 import com.roll_54.roll_mod.network.packet.ClaimDailyBonusPacket;
 import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
+import com.roll_54.roll_mod.network.packet.RerollDailyTaskPacket;
 import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import net.minecraft.ChatFormatting;
@@ -40,6 +43,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
+import org.appliedenergistics.yoga.YogaPositionType;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -78,6 +82,10 @@ public final class DailyTasksUI {
     private static final int ROW_GAP = 3;
     private static final int ICON = 32;
     private static final int CLAIM_W = 70;
+    /** The reroll button in the row's bottom-right corner: its icon, then the price. */
+    private static final int REROLL_ICON = 12;
+    private static final int REROLL_TEXT_W = 26;
+    private static final ResourceLocation REROLL_TEXTURE = RollMod.id("textures/gui/hub/daily/reroll.png");
     /** The gap between the stacked pieces of a row's middle column. */
     private static final int ROW_INNER_GAP = 4;
 
@@ -324,8 +332,28 @@ public final class DailyTasksUI {
             e.hoverTooltips = new HoverTooltips(lines, null, null, ItemStack.EMPTY);
         });
 
-        panel.addChildren(heading, counter, icon, footer);
+        UIElement badge = badge();
+        panel.addChildren(heading, counter, icon, footer, badge);
+        // Toggled by this panel's own TICK below: the badge has no listener or sync value of its own.
+        panel.addEventListener(UIEvents.TICK, e -> {
+            boolean flag = value(claimState, LOCKED) == CLAIMABLE;
+            if (badge.isDisplayed() != flag) badge.setDisplay(flag);
+        });
         return panel;
+    }
+
+    /**
+     * The hub's attention mark (see {@link HubBadge}) at the top-right of a row or the bonus panel,
+     * shown while there is something to collect there. Absolute, so it takes no room in the layout,
+     * and carrying no sync value, so it moves no binding.
+     */
+    private static UIElement badge() {
+        UIElement badge = new UIElement();
+        badge.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).right(2).top(2)
+                .width(HubBadge.SIZE).height(HubBadge.SIZE));
+        badge.style(s -> s.background(HubBadge.texture()).zIndex(1));
+        badge.setDisplay(false);
+        return badge;
     }
 
     /* -------------------------------------------------- row --------------------------------------------------- */
@@ -340,6 +368,13 @@ public final class DailyTasksUI {
         // every task adds is a constant, so the client appends it rather than the server syncing it.
         SimpleBinding<Integer> rewardA = intBinding(view(server, index, v -> rewardIndex(v, 0), -1), -1);
         SimpleBinding<Integer> rewardB = intBinding(view(server, index, v -> rewardIndex(v, 1), -1), -1);
+        // What rerolling this slot would cost the viewer: -1 hides the button (done, or out of
+        // rerolls), 0 is free. Per viewer, not per group — the price and the free allowance are
+        // theirs — which the per-player server tree gives for free.
+        SimpleBinding<Integer> rerollCost = intBinding(
+                () -> server == null ? -1 : (int) DailyTaskManager.rerollCost(server, index), -1);
+        SimpleBinding<Integer> rerollsLeft = intBinding(
+                () -> server == null ? 0 : DailyTaskManager.rerollsLeft(server, index), 0);
 
         UIElement row = new UIElement();
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
@@ -353,6 +388,8 @@ public final class DailyTasksUI {
         row.addSyncValue(claimState.getSyncValue());
         row.addSyncValue(rewardA.getSyncValue());
         row.addSyncValue(rewardB.getSyncValue());
+        row.addSyncValue(rerollCost.getSyncValue());
+        row.addSyncValue(rerollsLeft.getSyncValue());
 
         // One element for both icon kinds: DailyTaskIcon.texture() hands back an ItemStackTexture
         // for an item icon and a SpriteTexture for a PNG, so the row does not care which it is.
@@ -398,7 +435,10 @@ public final class DailyTasksUI {
 
         bottom.addChildren(claim, rewards);
         middle.addChildren(name, bar, bottom);
-        row.addChildren(icon, middle);
+        UIElement badge = badge();
+        Label rerollPrice = new Label();
+        UIElement reroll = rerollButton(index, rerollCost, rerollsLeft, rerollPrice);
+        row.addChildren(icon, middle, badge, reroll);
 
         int[] shownTask = {Integer.MIN_VALUE};
         int[] shownRewards = {Integer.MIN_VALUE, Integer.MIN_VALUE};
@@ -408,6 +448,9 @@ public final class DailyTasksUI {
             int done = value(progress, 0);
             int goal = value(required, 0);
             int state = value(claimState, LOCKED);
+
+            boolean flag = state == CLAIMABLE;
+            if (badge.isDisplayed() != flag) badge.setDisplay(flag);
 
             // A slot past the group's quota syncs no task at all: collapse it to nothing so the
             // list is as long as the set actually drawn.
@@ -452,6 +495,11 @@ public final class DailyTasksUI {
             bar.label.setText(task == null ? Component.empty()
                     : Component.literal(done + " / " + goal));
             claim.setText(claimCaption(state));
+
+            int cost = value(rerollCost, -1);
+            boolean canReroll = task != null && cost >= 0;
+            if (reroll.isDisplayed() != canReroll) reroll.setDisplay(canReroll);
+            if (canReroll) rerollPrice.setText(rerollCaption(cost));
         });
 
         row.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> {
@@ -470,6 +518,58 @@ public final class DailyTasksUI {
         });
 
         return row;
+    }
+
+    /**
+     * The row's reroll button, pinned to its bottom-right corner. Absolute, like {@link #badge()},
+     * so it takes no room from the claim button and reward strip on the left. The row's TICK shows
+     * it only while the slot can still be rerolled — never on a finished task.
+     */
+    private static UIElement rerollButton(int index, SimpleBinding<Integer> cost,
+                                          SimpleBinding<Integer> left, Label price) {
+        UIElement reroll = new UIElement();
+        reroll.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).right(8).bottom(3)
+                .flexDirection(FlexDirection.ROW).alignItems(AlignItems.CENTER)
+                .height(14).paddingLeft(1));
+        reroll.style(s -> s.background(new ColorRectTexture(COLOR_BUTTON)).zIndex(1));
+        reroll.setDisplay(false);
+
+        UIElement icon = new UIElement();
+        icon.layout(l -> l.width(REROLL_ICON).height(REROLL_ICON));
+        icon.style(s -> s.background(SpriteTexture.of(REROLL_TEXTURE)));
+
+        price.layout(l -> l.width(REROLL_TEXT_W).height(14));
+        price.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
+                .textAlignVertical(Vertical.CENTER)
+                .textShadow(true));
+        reroll.addChildren(icon, price);
+        // Sent unconditionally: DailyTaskManager.rerollSlot prices and re-validates on the server.
+        reroll.addEventListener(UIEvents.CLICK, e -> {
+            PacketDistributor.sendToServer(new RerollDailyTaskPacket(index));
+            e.stopPropagation();
+        });
+        reroll.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> {
+            int now = value(cost, -1);
+            Component what = now == 0
+                    ? Component.translatable("gui.roll_mod.daily_tasks.reroll.free")
+                    : Component.translatable("gui.roll_mod.daily_tasks.reroll.price", now);
+            e.hoverTooltips = new HoverTooltips(List.of(
+                    Component.translatable("gui.roll_mod.daily_tasks.reroll.tip", what)
+                            .withStyle(ChatFormatting.GOLD),
+                    Component.translatable("gui.roll_mod.daily_tasks.reroll.left", value(left, 0))
+                            .withStyle(ChatFormatting.GRAY)),
+                    null, null, ItemStack.EMPTY);
+            // Otherwise the row's own tooltip, handled further up, replaces this one.
+            e.stopPropagation();
+        });
+        return reroll;
+    }
+
+    private static Component rerollCaption(int cost) {
+        return cost == 0
+                ? Component.translatable("gui.roll_mod.daily_tasks.reroll.free")
+                        .withStyle(ChatFormatting.GREEN)
+                : Component.literal(String.valueOf(cost)).withStyle(ChatFormatting.GOLD);
     }
 
     /* ------------------------------------------------- rewards ------------------------------------------------ */

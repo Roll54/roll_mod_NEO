@@ -62,9 +62,6 @@ public final class TpaTab {
      */
     private static final int TRIP_H = ROW_H;
 
-    /** Stands in for the artwork random teleport and spawn have yet to be given. */
-    private static final String TRIP_PLACEHOLDER = "textures/gui/hub/teleportation/tp_icon.png";
-
     private static final int COLOR_PANEL = 0x40000000;
     private static final int COLOR_ROW = 0x30FFFFFF;
 
@@ -395,13 +392,12 @@ public final class TpaTab {
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(TRIP_H)
                 .gapColumn(3));
         row.addChildren(
-                // PLACEHOLDER: random and spawn wear the tab's own icon until each has artwork of
-                // its own. Back is the only one drawing the file it is actually named after.
-                trip("gui.roll_mod.hub.trip.rtp", TeleportActionPacket.Action.RTP, TRIP_PLACEHOLDER),
+                trip("gui.roll_mod.hub.trip.rtp", TeleportActionPacket.Action.RTP,
+                        "textures/gui/hub/teleportation/rtp.png"),
                 trip("gui.roll_mod.hub.trip.back", TeleportActionPacket.Action.BACK,
                         "textures/gui/hub/teleportation/back.png"),
                 trip("gui.roll_mod.hub.trip.spawn", TeleportActionPacket.Action.SPAWN,
-                        TRIP_PLACEHOLDER));
+                        "textures/gui/hub/teleportation/spawn.png"));
 
         column.addChildren(note("gui.roll_mod.hub.trip.title"), row);
         return column;

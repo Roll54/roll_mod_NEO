@@ -61,7 +61,27 @@ public record FilterSlotUpdatePacket(BlockPos pos, int slotIndex, ItemStack stac
               instanceof
               com.roll_54.roll_mod.economy.vendingblock.blockentity.DisplayBlockEntity
                   displayBlockEntity) {
-            displayBlockEntity.inventory.setStackInSlot(packet.slotIndex(), packet.stack());
+            // The UI only ever edits the facade filter (slot 1) with a single validated
+            // item; slot 0 with count > 1 would drop real item entities, and other
+            // indices throw. Re-run the client-side checks here — never trust the packet.
+            if (packet.slotIndex() != 1) return;
+            if (!displayBlockEntity.isOwner(player)
+                && !player.getMainHandItem()
+                    .is(com.roll_54.roll_mod.economy.vendingblock.registry.ItemRegistry
+                        .VENDOR_KEY.get())) {
+              return;
+            }
+            ItemStack stack = packet.stack();
+            if (!stack.isEmpty()) {
+              if (com.roll_54.roll_mod.economy.vendingblock.gui.components.FilterValidation
+                      .isBlacklistedFacade(stack, level, packet.pos())
+                  || !com.roll_54.roll_mod.economy.vendingblock.gui.components.FilterValidation
+                      .isFullBlock(stack, level, packet.pos())) {
+                return;
+              }
+              stack = stack.copyWithCount(1);
+            }
+            displayBlockEntity.inventory.setStackInSlot(packet.slotIndex(), stack);
             displayBlockEntity.setChanged();
           }
         });

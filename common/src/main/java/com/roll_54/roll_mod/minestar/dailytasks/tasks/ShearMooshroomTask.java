@@ -8,10 +8,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Items;
 
-/**
- * One mooshroom sheared, red or brown. Finding one is the hard part, so a party is not asked for
- * more — shearing turns it into a plain cow, and there may be only the one nearby.
- */
+/** One mooshroom sheared, red or brown. */
 @AutoDailyTask
 public final class ShearMooshroomTask implements DailyTask {
 
@@ -33,8 +30,8 @@ public final class ShearMooshroomTask implements DailyTask {
     }
 
     @Override
-    public boolean scalesWithTeam() {
-        return false;
+    public double teamMultiplier() {
+        return 1.75;
     }
 
     @Override

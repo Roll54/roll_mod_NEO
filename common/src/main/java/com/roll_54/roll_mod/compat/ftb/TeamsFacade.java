@@ -27,6 +27,15 @@ public interface TeamsFacade {
     record Party(UUID teamId, Set<UUID> members) {}
 
     /**
+     * Just the party's id, for callers that only key by it. On the hot event path this matters:
+     * {@link #party} copies the member set on every call, and the daily-task funnel asks once per
+     * block break — the impl answers this one without the copy.
+     */
+    default Optional<UUID> partyId(ServerPlayer player) {
+        return party(player).map(Party::teamId);
+    }
+
+    /**
      * Whether {@code other} is in the same party as {@code player}.
      *
      * <p>A {@code default} rather than a second abstract method, because {@link #NONE} is a lambda:

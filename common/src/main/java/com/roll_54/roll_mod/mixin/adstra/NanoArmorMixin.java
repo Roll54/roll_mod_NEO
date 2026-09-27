@@ -90,7 +90,10 @@ public abstract class NanoArmorMixin implements FluidProvider.Item {
                 entity.setAirSupply(Math.min(entity.getMaxAirSupply(), entity.getAirSupply() + 40));
             }
 
-            if (!isPlayerProtectedFromStormWithOutArmor((ServerPlayer) entity)){
+            // armorTick fires for every LivingEntity wearing the suit (armor stands, mobs
+            // that picked it up), not just players — an unconditional cast crashes the tick.
+            if (entity instanceof ServerPlayer serverPlayer
+                    && !isPlayerProtectedFromStormWithOutArmor(serverPlayer)) {
                 roll_mod$consumeOxygen(stack, 3L);
             }
         }

@@ -1,0 +1,75 @@
+{
+  "lines": [
+    {
+      "text": "&fStaff tools. Only operators and ranks with a moderation permission see this tab."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lPlayers"
+    },
+    {
+      "text": "&7Everyone online, then everyone banned. &6⚠N&7 is warnings, &eM&7 muted, &4B&7 banned.",
+      "indent": 6
+    },
+    {
+      "text": "&7Pick a name to see their standing and act on it. Click it again to clear the pick.",
+      "indent": 6
+    },
+    {
+      "text": "&7Mute and warn need the player online. Ban works offline too.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lWarnings"
+    },
+    {
+      "text": "&7Warnings never expire. The &c3rd&7 warning — and every one after — bans for a day. The warn form tells you before you confirm.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lDurations"
+    },
+    {
+      "text": "&7Type &b30m&7, &b2h&7, &b1d&7, &b1w&7 or combine them (&b1d12h&7). &b0&7 means no end.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lWarps"
+    },
+    {
+      "text": "&7Approve, reject, make official or delete. With a player picked, only their warps are listed.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lWhitelist"
+    },
+    {
+      "text": "&7Closing the server kicks everyone who is not staff. The message is what they see.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lTPS"
+    },
+    {
+      "text": "&7Live server speed. Below &c15&7 every staff member gets a chat alert.",
+      "indent": 6
+    }
+  ]
+}

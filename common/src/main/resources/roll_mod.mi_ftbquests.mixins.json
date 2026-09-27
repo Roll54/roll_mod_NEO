@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.roll_54.roll_mod.compat.mi.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "PlayerStatisticsMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

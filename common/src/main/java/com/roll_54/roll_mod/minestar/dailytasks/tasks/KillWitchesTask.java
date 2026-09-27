@@ -30,6 +30,11 @@ public final class KillWitchesTask implements DailyTask {
     }
 
     @Override
+    public double teamMultiplier() {
+        return 1.25;
+    }
+
+    @Override
     public DailyTaskIcon icon() {
         return ICON;
     }

@@ -4,6 +4,7 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.network.CurrencyNetworking;
 import com.roll_54.roll_mod.network.packet.ClaimDailyBonusPacket;
 import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
+import com.roll_54.roll_mod.network.packet.RerollDailyTaskPacket;
 import com.roll_54.roll_mod.network.packet.DailyTaskToastPacket;
 import com.roll_54.roll_mod.network.packet.OpenHubPacket;
 import com.roll_54.roll_mod.network.packet.HomeActionPacket;
@@ -11,6 +12,12 @@ import com.roll_54.roll_mod.network.packet.KitActionPacket;
 import com.roll_54.roll_mod.network.packet.SyncKitsPacket;
 import com.roll_54.roll_mod.network.packet.OperatorTogglePacket;
 import com.roll_54.roll_mod.network.packet.SyncOperatorsPacket;
+import com.roll_54.roll_mod.network.packet.SyncPlayerStatusPacket;
+import com.roll_54.roll_mod.network.packet.SyncModerationPacket;
+import com.roll_54.roll_mod.network.packet.ModerationActionPacket;
+import com.roll_54.roll_mod.network.packet.SyncLettersPacket;
+import com.roll_54.roll_mod.network.packet.LetterComposePacket;
+import com.roll_54.roll_mod.network.packet.LetterAcceptPacket;
 import com.roll_54.roll_mod.network.packet.SyncTpaPacket;
 import com.roll_54.roll_mod.network.packet.TeleportActionPacket;
 import com.roll_54.roll_mod.network.packet.TpaActionPacket;
@@ -47,6 +54,11 @@ public class NetworkHandler {
                 ClaimDailyTaskPacket.TYPE,
                 ClaimDailyTaskPacket.STREAM_CODEC,
                 ClaimDailyTaskPacket::handle
+        );
+        registrar.playToServer(
+                RerollDailyTaskPacket.TYPE,
+                RerollDailyTaskPacket.STREAM_CODEC,
+                RerollDailyTaskPacket::handle
         );
         registrar.playToServer(
                 ClaimDailyBonusPacket.TYPE,
@@ -139,6 +151,36 @@ public class NetworkHandler {
                 SyncOperatorsPacket.TYPE,
                 SyncOperatorsPacket.STREAM_CODEC,
                 SyncOperatorsPacket::handle
+        );
+        registrar.playToClient(
+                SyncPlayerStatusPacket.TYPE,
+                SyncPlayerStatusPacket.STREAM_CODEC,
+                SyncPlayerStatusPacket::handle
+        );
+        registrar.playToClient(
+                SyncModerationPacket.TYPE,
+                SyncModerationPacket.STREAM_CODEC,
+                SyncModerationPacket::handle
+        );
+        registrar.playToServer(
+                ModerationActionPacket.TYPE,
+                ModerationActionPacket.STREAM_CODEC,
+                ModerationActionPacket::handle
+        );
+        registrar.playToClient(
+                SyncLettersPacket.TYPE,
+                SyncLettersPacket.STREAM_CODEC,
+                SyncLettersPacket::handle
+        );
+        registrar.playToServer(
+                LetterComposePacket.TYPE,
+                LetterComposePacket.STREAM_CODEC,
+                LetterComposePacket::handle
+        );
+        registrar.playToServer(
+                LetterAcceptPacket.TYPE,
+                LetterAcceptPacket.STREAM_CODEC,
+                LetterAcceptPacket::handle
         );
 
         // The economy's payloads keep their own lists, but share this registrar: NeoForge allows a
