@@ -1,0 +1,85 @@
+MODULES & TEXTURES
+==================
+65 modules: 32 with texture [✓], 33 without [ ].
+
+Checked against the generated item models (layer0) and the PNGs in
+common/src/main/resources/assets/roll_mod/textures/.
+Missing ones: draw the PNG at the path shown, then switch its datagen line in
+RolltemModelProvider from pendingTextureItem(...) to drillModuleItem(...) and rerun
+./gradlew :client:runData.
+
+Drill modules — 15/15
+---------------------
+[✓] silk_touch_module          Silk Touch Module                  tier 1  textures/item/tool/modules/silk_touch_module.png
+[✓] overcharge_module          Overcharge Module                  tier 1  textures/item/tool/modules/overcharge_module.png
+[✓] reach_module_i             Reach Module I                     tier 1  textures/item/tool/modules/reach_module_i.png
+[✓] reach_module_ii            Reach Module II                    tier 2  textures/item/tool/modules/reach_module_ii.png
+[✓] reach_module_iii           Reach Module III                   tier 3  textures/item/tool/modules/reach_module_iii.png
+[✓] burn_module                Burn Module                        tier 1  textures/item/tool/modules/burn_module.png
+[✓] auto_smelt_module          Auto-Smelt Module                  tier 1  textures/item/tool/modules/auto_smelt_module.png
+[✓] trash_filter_module        Trash Filter Module                tier 1  textures/item/tool/modules/trash_filter_module.png
+[✓] lava_solidifier_module     Lava Solidifier Module             tier 1  textures/item/tool/modules/lava_solidifier_module.png
+[✓] speak_module               Speak Module                       tier 1  textures/item/tool/modules/speak_module.png
+[✓] aoe_module_i               AOE Module I                       tier 1  textures/item/tool/modules/aoe_module_i.png
+[✓] aoe_module_ii              AOE Module II                      tier 2  textures/item/tool/modules/aoe_module_ii.png
+[✓] aoe_module_iii             AOE Module III                     tier 3  textures/item/tool/modules/aoe_module_iii.png
+[✓] aoe_module_iv              AOE Module IV                      tier 4  textures/item/tool/modules/aoe_module_iv.png
+[✓] aoe_module_v               AOE Module V                       tier 5  textures/item/tool/modules/aoe_module_v.png
+
+Shared modules (drill + saber) — 17/18
+--------------------------------------
+[✓] speed_module_i             Speed Module I                     tier 1  textures/item/tool/modules/speed_module_i.png
+[✓] speed_module_ii            Speed Module II                    tier 2  textures/item/tool/modules/speed_module_ii.png
+[✓] speed_module_iii           Speed Module III                   tier 3  textures/item/tool/modules/speed_module_iii.png
+[✓] speed_module_iv            Speed Module IV                    tier 4  textures/item/tool/modules/speed_module_iv.png
+[✓] speed_module_v             Speed Module V                     tier 5  textures/item/tool/modules/speed_module_v.png
+[✓] fortune_module_i           Fortune / Looting Module I         tier 1  textures/item/tool/modules/fortune_module_i.png
+[✓] fortune_module_ii          Fortune / Looting Module II        tier 2  textures/item/tool/modules/fortune_module_ii.png
+[✓] fortune_module_iii         Fortune / Looting Module III       tier 3  textures/item/tool/modules/fortune_module_iii.png
+[✓] fortune_module_iv          Fortune / Looting Module IV        tier 4  textures/item/tool/modules/fortune_module_iv.png
+[✓] fortune_module_v           Fortune / Looting Module V         tier 5  textures/item/tool/modules/fortune_module_v.png
+[✓] xp_reactor_module          XP Reactor Module                  tier 1  textures/item/tool/modules/xp_reactor_module.png
+[✓] battery_module_i           Battery Module I                   tier 1  textures/item/tool/modules/battery_module_i.png
+[✓] battery_module_ii          Battery Module II                  tier 2  textures/item/tool/modules/battery_module_ii.png
+[✓] battery_module_iii         Battery Module III                 tier 3  textures/item/tool/modules/battery_module_iii.png
+[✓] battery_module_iv          Battery Module IV                  tier 4  textures/item/tool/modules/battery_module_iv.png
+[✓] battery_module_v           Battery Module V                   tier 5  textures/item/tool/modules/battery_module_v.png
+[✓] eco_module_i               Eco Module I                       tier 1  textures/item/tool/modules/eco_module_i.png
+[✓] eco_module_ii              Eco Module II                      tier 2  textures/item/tool/modules/eco_module_ii.png
+
+Saber modules — 0/32
+--------------------
+[ ] damage_module_i            Damage Module I                    tier 1  textures/item/tool/modules/damage_module_i.png  (to draw)
+[ ] damage_module_ii           Damage Module II                   tier 2  textures/item/tool/modules/damage_module_ii.png  (to draw)
+[ ] damage_module_iii          Damage Module III                  tier 3  textures/item/tool/modules/damage_module_iii.png  (to draw)
+[ ] damage_module_iv           Damage Module IV                   tier 4  textures/item/tool/modules/damage_module_iv.png  (to draw)
+[ ] damage_module_v            Damage Module V                    tier 5  textures/item/tool/modules/damage_module_v.png  (to draw)
+[ ] sweep_module_i             Sweep Module I                     tier 1  textures/item/tool/modules/sweep_module_i.png  (to draw)
+[ ] sweep_module_ii            Sweep Module II                    tier 2  textures/item/tool/modules/sweep_module_ii.png  (to draw)
+[ ] sweep_module_iii           Sweep Module III                   tier 3  textures/item/tool/modules/sweep_module_iii.png  (to draw)
+[ ] xp_multiplier_module_i     XP Multiplier Module I             tier 1  textures/item/tool/modules/xp_multiplier_module_i.png  (to draw)
+[ ] xp_multiplier_module_ii    XP Multiplier Module II            tier 2  textures/item/tool/modules/xp_multiplier_module_ii.png  (to draw)
+[ ] xp_multiplier_module_iii   XP Multiplier Module III           tier 3  textures/item/tool/modules/xp_multiplier_module_iii.png  (to draw)
+[ ] xp_multiplier_module_iv    XP Multiplier Module IV            tier 4  textures/item/tool/modules/xp_multiplier_module_iv.png  (to draw)
+[ ] xp_multiplier_module_v     XP Multiplier Module V             tier 5  textures/item/tool/modules/xp_multiplier_module_v.png  (to draw)
+[ ] drop_collector_module      Drop Collector Module              tier 1  textures/item/tool/modules/drop_collector_module.png  (to draw)
+[ ] vampirism_module_i         Vampirism Module I                 tier 1  textures/item/tool/modules/vampirism_module_i.png  (to draw)
+[ ] vampirism_module_ii        Vampirism Module II                tier 2  textures/item/tool/modules/vampirism_module_ii.png  (to draw)
+[ ] vampirism_module_iii       Vampirism Module III               tier 3  textures/item/tool/modules/vampirism_module_iii.png  (to draw)
+[ ] beheading_module_i         Beheading Module I                 tier 1  textures/item/tool/modules/beheading_module_i.png  (to draw)
+[ ] beheading_module_ii        Beheading Module II                tier 2  textures/item/tool/modules/beheading_module_ii.png  (to draw)
+[ ] beheading_module_iii       Beheading Module III               tier 3  textures/item/tool/modules/beheading_module_iii.png  (to draw)
+[ ] irradiation_module_i       Irradiation Module I               tier 1  textures/item/tool/modules/irradiation_module_i.png  (to draw)
+[ ] irradiation_module_ii      Irradiation Module II              tier 2  textures/item/tool/modules/irradiation_module_ii.png  (to draw)
+[ ] irradiation_module_iii     Irradiation Module III             tier 3  textures/item/tool/modules/irradiation_module_iii.png  (to draw)
+[ ] meteorite_module           Meteorite Module                   tier 1  textures/item/tool/modules/meteorite_module.png  (to draw)
+
+
+TODO
+----
+[ ] Tooltip colours: give each part of the module tooltip a consistent colour scheme
+    (effect line, Parameters block, conflicts, Description, hints) and colour module
+    names by tier. Code: DrillModuleItem.appendHoverText / costLine / detailLines.
+[ ] Tooltip text design: rewrite the effect lines and the Shift descriptions
+    (tooltip.roll_mod.module.<type> and .<type>.desc.N in en_us.json / uk_ua.json)
+    so they read consistently in length, tone and formatting.

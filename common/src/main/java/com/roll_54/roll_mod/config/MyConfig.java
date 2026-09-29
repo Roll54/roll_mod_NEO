@@ -252,19 +252,33 @@ public class MyConfig extends Config {
     }
 
 
-    @Comment("Anvil tweaks: removing the 40-level 'Too Expensive!' cap.")
+    @Comment("How the new modular drills, modular sabers, their modules and the Module Installation Table look.")
+    public NewItems newItems = new NewItems();
+
+    public static class NewItems extends ConfigSection {
+
+        @Comment("""
+                Show the new modular items as they really are: their textures, names and tooltips.
+                False = every one of them shows the 'no texture yet' placeholder, the name
+                'Unknown item' and no tooltip, for every player. Server-side and synced to clients;
+                changes apply live, without a restart.
+                """)
+        public ValidatedBoolean showNewItems = new ValidatedBoolean(true);
+    }
+
+    @Comment("Anvil tweaks: over-max enchantment transfer and removing the 40-level 'Too Expensive!' cap.")
     public AnvilSettings anvil = new AnvilSettings();
 
     public static class AnvilSettings extends ConfigSection {
 
-        // Over-enchanting was cut from the mod. Commented out rather than deleted so it can be
-        // restored alongside the injector in AnvilOverEnchantMixin, which is its only reader.
-//        @Comment("""
-//                Allow the anvil to combine enchantments past their normal maximum level.
-//                e.g. Sharpness V + Sharpness V -> Sharpness VI, and so on.
-//                False = vanilla behavior (combined level is clamped to the enchantment max).
-//                """)
-//        public ValidatedBoolean overEnchant = new ValidatedBoolean(true);
+        @Comment("""
+                Let an over-max enchantment on an anvil input carry into the result, e.g. a
+                Sharpness VII book applied to a sword gives Sharpness VII. Combining never raises a
+                level past max(enchantment max, highest input level): Sharpness V + Sharpness V is
+                still Sharpness V, so books (and items) cannot be overchanted by combining.
+                False = vanilla behavior (every combined level is clamped to the enchantment max).
+                """)
+        public ValidatedBoolean overEnchant = new ValidatedBoolean(true);
 
         @Comment("""
                 Remove the vanilla 'Too Expensive!' block at 40 levels so the anvil result is never

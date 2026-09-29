@@ -2,12 +2,14 @@ package com.roll_54.roll_mod.registry;
 
 import com.mojang.serialization.Codec;
 import com.roll_54.roll_mod.data.UpgradeComponent;
+import com.roll_54.roll_mod.items.modulardrill.DrillModules;
 import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
 import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.component.ItemContainerContents;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
@@ -49,6 +51,13 @@ public class ComponentsRegistry {
     // Rocket item — stores the tier
     public static final Supplier<DataComponentType<Integer>> ROCKET_TIER;
 
+    // Modular drill — installed modules + throttle. Network-synced, unlike UPGRADES below.
+    public static final Supplier<DataComponentType<DrillModules>> DRILL_MODULES;
+    // Modular drill — blocks mined with the Speak module installed; every 10k it talks.
+    public static final Supplier<DataComponentType<Integer>> SPEAK_BLOCKS;
+    // Trash Filter module — its 18 ghost slots. On the drill while installed, on the module item otherwise.
+    public static final Supplier<DataComponentType<ItemContainerContents>> TRASH_FILTER;
+
     private static <D> DeferredHolder<DataComponentType<?>, DataComponentType<D>> create(String name, Codec<D> codec, StreamCodec<? super RegistryFriendlyByteBuf, D> streamCodec) {
         return COMPONENTS.registerComponentType(name, (b) -> b.persistent(codec).networkSynchronized(streamCodec));
     }
@@ -88,6 +97,10 @@ public class ComponentsRegistry {
         CARTRIDGE_DATA = create("cartridge_data", CartridgeData.CODEC, CartridgeData.STREAM_CODEC);
         // Rocket tier
         ROCKET_TIER = create("rocket_tier", Codec.INT, ByteBufCodecs.INT);
+
+        DRILL_MODULES = create("drill_modules", DrillModules.CODEC, DrillModules.STREAM_CODEC);
+        SPEAK_BLOCKS = create("speak_blocks", Codec.INT, ByteBufCodecs.VAR_INT);
+        TRASH_FILTER = create("trash_filter", ItemContainerContents.CODEC, ItemContainerContents.STREAM_CODEC);
     }
 
 

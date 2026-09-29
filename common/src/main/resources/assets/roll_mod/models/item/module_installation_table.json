@@ -1,0 +1,11 @@
+{
+  "parent": "roll_mod:block/module_installation_table",
+  "overrides": [
+    {
+      "predicate": {
+        "roll_mod:hidden": 1.0
+      },
+      "model": "roll_mod:item/no_texture_yet_placeholder"
+    }
+  ]
+}

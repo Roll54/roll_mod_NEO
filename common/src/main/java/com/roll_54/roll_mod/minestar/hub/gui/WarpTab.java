@@ -74,8 +74,8 @@ public final class WarpTab {
      * The space opening each group of the detail panel: where it is, how visited it is, what it
      * costs.
      *
-     * <p>Deliberately small. The panel has no scroller and {@code HubUI.CONTENT_H} is fixed, so the
-     * gaps come out of the same budget as a blocked warp's appeal paragraph and a full-length
+     * <p>Deliberately small. The panel has no scroller, and at the hub window's minimum height
+     * ({@code HubWindowState.MIN_H}) the gaps come out of the same budget as a blocked warp's appeal paragraph and a full-length
      * description; at that extreme the teleport button's {@code marginTopAuto} has no slack left to
      * give and the buttons below it would be pushed off the bottom. Four also happens to be the
      * margin the owner line already carried, so the first group costs nothing new.

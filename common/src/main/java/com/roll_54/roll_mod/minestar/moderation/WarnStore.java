@@ -91,6 +91,30 @@ public final class WarnStore {
         return removed.warns().size();
     }
 
+    /**
+     * Drops only the warnings {@code filter} matches, keeping the rest. For tooling that must undo
+     * its own warnings without touching real ones — {@link #clear} would take those too. Returns how
+     * many were removed.
+     */
+    public static synchronized int removeWhere(UUID player, java.util.function.Predicate<Warn> filter) {
+        load();
+        Record existing = WARNS.get(player);
+        if (existing == null) return 0;
+        List<Warn> kept = new ArrayList<>();
+        for (Warn warn : existing.warns()) {
+            if (!filter.test(warn)) kept.add(warn);
+        }
+        int removed = existing.warns().size() - kept.size();
+        if (removed == 0) return 0;
+        if (kept.isEmpty()) {
+            WARNS.remove(player);
+        } else {
+            WARNS.put(player, new Record(existing.name(), kept));
+        }
+        save();
+        return removed;
+    }
+
     /** Everyone with at least one warning, for the moderator's list. */
     public static Map<UUID, Integer> counts() {
         load();

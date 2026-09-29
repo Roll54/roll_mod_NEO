@@ -209,6 +209,21 @@ public final class TpaService {
         return false;
     }
 
+    /* -------------------------------------------- debug --------------------------------------------- */
+
+    /**
+     * Files a request as-is, with no players, checks or messages: for {@code /rollmod debug fill},
+     * which needs requests from players who are not online. It lapses on {@link #tick} like any other.
+     */
+    public static void debugPut(TpaRequest request) {
+        BY_ID.put(request.id(), request);
+    }
+
+    /** Withdraws a request filed by {@link #debugPut}, silently. */
+    public static boolean debugRemove(UUID id) {
+        return BY_ID.remove(id) != null;
+    }
+
     /* ------------------------------------------- upkeep --------------------------------------------- */
 
     /** Forgets everything to or from this player, for logout. */

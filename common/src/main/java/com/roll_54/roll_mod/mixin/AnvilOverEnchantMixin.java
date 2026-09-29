@@ -1,58 +1,87 @@
 package com.roll_54.roll_mod.mixin;
 
-//import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
-//import com.roll_54.roll_mod.registry.ModConfigs;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+import com.roll_54.roll_mod.registry.ModConfigs;
 import net.minecraft.world.inventory.AnvilMenu;
 import net.minecraft.world.item.enchantment.Enchantment;
 import org.spongepowered.asm.mixin.Mixin;
-//import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.At;
 
 /**
- * DISABLED. Over-enchanting has been cut from the mod; the injector below is commented out rather
- * than deleted so the mechanic can be brought back by uncommenting it and the {@code overEnchant}
- * option in {@code MyConfig.AnvilSettings}.
+ * Lets an over-max enchantment on an anvil input carry into the result ("overchanting" an item with
+ * an overchanted book), without letting the anvil create new over-max levels.
  *
- * <p>The class stays registered in {@code roll_mod.mixins.json} — with no injector left it applies
- * nothing, and JSON has no comment syntax to disable the entry in kind. Anvils now clamp combined
- * enchantment levels the way vanilla does. {@link AnvilLevelCapMixin} is a separate tweak and is
- * untouched: the "Too Expensive!" cap is still removed and costs still scale exponentially.
- *
- * <p>What it used to do:
- *
- * <p>Lets the anvil combine enchantments past their natural maximum level ("over-enchanting").
- *
- * <p>Vanilla {@link AnvilMenu#createResult()} clamps the combined level of every enchantment down to
- * {@link Enchantment#getMaxLevel()}:
+ * <p>Vanilla {@link AnvilMenu#createResult()} merges each enchantment of the right input into the
+ * left one and clamps the combined level down to {@link Enchantment#getMaxLevel()}:
  * <pre>
+ *     int i2 = itemenchantments$mutable.getLevel(holder);   // left level
+ *     int j2 = entry.getIntValue();                          // right level
+ *     j2 = i2 == j2 ? j2 + 1 : Math.max(j2, i2);
+ *     ...
  *     if (j2 &gt; enchantment.getMaxLevel()) {
  *         j2 = enchantment.getMaxLevel();
  *     }
  * </pre>
- * Both reads of {@code getMaxLevel()} in that clamp are the only ones in the method, so lifting the
- * returned value to {@link Integer#MAX_VALUE} removes the clamp entirely: two Sharpness V books yield
- * Sharpness VI, that book plus another Sharpness V yields VII, and so on. The natural combined level
- * (computed as {@code i2 == j2 ? j2 + 1 : Math.max(j2, i2)}) is untouched — we only stop it being
- * pulled back down. The anvil level cost still scales with the level via {@code i += anvilCost * j2},
- * which pairs with {@link AnvilLevelCapMixin}'s exponential cost scaling.
+ * That clamp even pulls an already over-max level back down. Here both {@code getMaxLevel()} reads
+ * of the clamp — the only ones in the method — are raised to the highest level on either input, so:
+ * <ul>
+ *   <li>Sharpness V sword + Sharpness VII book → Sharpness VII sword;</li>
+ *   <li>Sharpness VII sword + Sharpness I book → stays Sharpness VII;</li>
+ *   <li>Sharpness V book + Sharpness V book → Sharpness V book, not VI — the {@code +1} of two equal
+ *       levels still stops at the enchantment max, so books can't be overchanted by combining.</li>
+ * </ul>
+ * The anvil level cost still scales with the level via {@code i += anvilCost * j2}, which pairs with
+ * {@link AnvilLevelCapMixin}'s exponential cost scaling.
  *
  * @author roll_54
  */
 @Mixin(AnvilMenu.class)
 public abstract class AnvilOverEnchantMixin {
 
-//    @ModifyExpressionValue(
-//            method = "createResult",
-//            at = @At(
-//                    value = "INVOKE",
-//                    target = "Lnet/minecraft/world/item/enchantment/Enchantment;getMaxLevel()I"
-//            )
-//    )
-//    private int roll_mod$liftEnchantmentMaxLevel(int originalMaxLevel) {
-//        if (!ModConfigs.MAIN.anvil.overEnchant.get()) {
-//            return originalMaxLevel;
-//        }
-//        // Disable the "clamp combined level to the enchantment max" step without changing the
-//        // naturally computed combined level.
-//        return Integer.MAX_VALUE;
-//    }
+    /** Level of the enchantment being merged on the left input; set just before the clamp reads it. */
+    @Unique
+    private int roll_mod$leftLevel;
+
+    /** Level of the enchantment being merged on the right input; set just before the clamp reads it. */
+    @Unique
+    private int roll_mod$rightLevel;
+
+    @ModifyExpressionValue(
+            method = "createResult",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/item/enchantment/ItemEnchantments$Mutable;getLevel(Lnet/minecraft/core/Holder;)I"
+            )
+    )
+    private int roll_mod$captureLeftLevel(int level) {
+        roll_mod$leftLevel = level;
+        return level;
+    }
+
+    @ModifyExpressionValue(
+            method = "createResult",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lit/unimi/dsi/fastutil/objects/Object2IntMap$Entry;getIntValue()I"
+            )
+    )
+    private int roll_mod$captureRightLevel(int level) {
+        roll_mod$rightLevel = level;
+        return level;
+    }
+
+    @ModifyExpressionValue(
+            method = "createResult",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lnet/minecraft/world/item/enchantment/Enchantment;getMaxLevel()I"
+            )
+    )
+    private int roll_mod$liftMaxLevelToInputs(int originalMaxLevel) {
+        if (!ModConfigs.MAIN.anvil.overEnchant.get()) {
+            return originalMaxLevel;
+        }
+        return Math.max(originalMaxLevel, Math.max(roll_mod$leftLevel, roll_mod$rightLevel));
+    }
 }

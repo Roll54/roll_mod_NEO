@@ -17,7 +17,6 @@ import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.RollMod;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import net.minecraft.network.chat.Component;
-import net.minecraft.util.Mth;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.minecraft.world.item.ItemStack;
@@ -68,7 +67,9 @@ public final class HubSection {
     private static final int PANEL_PADDING = 8;
 
     /**
-     * The window's size, inside the {@link HubUI#CONTENT_W}x{@link HubUI#CONTENT_H} tab box.
+     * The window's size, inside the tab box — {@link HubUI#DEFAULT_CONTENT_W}x
+     * {@link HubUI#DEFAULT_CONTENT_H} at the default hub size, and whatever the hub window has been
+     * resized to otherwise.
      *
      * <p>Deliberately smaller than the tab it floats over. Covering everything meant the section
      * underneath was unusable while the explanation of it was open, which is backwards — the two are
@@ -148,6 +149,7 @@ public final class HubSection {
             boolean show = !panel.root().isDisplayed();
             closePanel();
             if (show) {
+                panel.show();
                 panel.root().setDisplay(true);
                 openPanel = panel.root();
             }
@@ -228,6 +230,8 @@ public final class HubSection {
         private final float[] pos;
         private final int width;
         private final int height;
+        /** Whether it has been positioned yet. Until then it is centred on first open. */
+        private boolean placed;
 
         private Floating(UIElement root, float[] pos, int width, int height) {
             this.root = root;
@@ -247,6 +251,12 @@ public final class HubSection {
 
         /** Opens wherever it last was — centred, the first time. */
         public void open() {
+            if (!placed) {
+                centre(root, pos, width, height);
+                placed = true;
+            } else {
+                keepInside(root, pos, width, height);
+            }
             closePanel();
             root.setDisplay(true);
             openPanel = root;
@@ -263,17 +273,19 @@ public final class HubSection {
             UIElement host = root.getParent();
             float originX = host == null ? 0 : host.getPositionX();
             float originY = host == null ? 0 : host.getPositionY();
-            pos[0] = Mth.clamp(screenX - originX, 0, HubUI.CONTENT_W - width);
-            pos[1] = Mth.clamp(screenY - originY, 0, HubUI.CONTENT_H - height);
+            pos[0] = clampTo(screenX - originX, width, boundW(root));
+            pos[1] = clampTo(screenY - originY, height, boundH(root));
             root.layout(l -> l.left(pos[0]).top(pos[1]));
+            placed = true;
             open();
         }
 
         /** Moves it, in the tab root's own coordinates, clamped like everything else here. */
         public void place(float x, float y) {
-            pos[0] = Mth.clamp(x, 0, HubUI.CONTENT_W - width);
-            pos[1] = Mth.clamp(y, 0, HubUI.CONTENT_H - height);
+            pos[0] = clampTo(x, width, boundW(root));
+            pos[1] = clampTo(y, height, boundH(root));
             root.layout(l -> l.left(pos[0]).top(pos[1]));
+            placed = true;
         }
 
         /** Where it is now, in the tab root's coordinates. */
@@ -296,7 +308,9 @@ public final class HubSection {
     }
 
     private static Floating floating(Component title, int width, int height, Consumer<UIElement> body) {
-        float[] pos = {(HubUI.CONTENT_W - width) / 2f, (HubUI.CONTENT_H - height) / 2f};
+        // The default-size centre, which the server's copy keeps; the client re-centres against the
+        // live tab size when it first opens. See Floating.open.
+        float[] pos = {(HubUI.DEFAULT_CONTENT_W - width) / 2f, (HubUI.DEFAULT_CONTENT_H - height) / 2f};
 
         UIElement panel = new UIElement();
         panel.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
@@ -316,6 +330,7 @@ public final class HubSection {
         caption.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(true));
         caption.style(s -> s.background(new ColorRectTexture(TITLE_FILL)));
         drag(panel, caption, pos, width, height);
+        keepInsideWhileOpen(panel, pos, width, height);
 
         UIElement content = new UIElement();
         content.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)
@@ -333,15 +348,27 @@ public final class HubSection {
 
     /* -------------------------------------------- the panel ------------------------------------------- */
 
-    /** The fallback panel, wrapped only so {@link #info} can tell it apart from the window path. */
-    private record Panel(UIElement root) {}
+    /**
+     * The fallback panel, wrapped so {@link #info} can tell it apart from the window path, and can
+     * centre it against the live tab size the first time it opens.
+     */
+    private record Panel(UIElement root, float[] pos, boolean[] placed) {
+        void show() {
+            if (placed[0]) {
+                keepInside(root, pos, PANEL_W, PANEL_H);
+            } else {
+                centre(root, pos, PANEL_W, PANEL_H);
+                placed[0] = true;
+            }
+        }
+    }
 
     private static Panel overlay(String id) {
         // Where the window sits, in tab coordinates. Kept in an array because the drag listeners
         // below close over it. Centred to start, and centred again next time the hub is opened: the
         // tree is rebuilt per HubUI.createUI, so a window shoved into a corner during one session is
         // not still hiding there in the next.
-        float[] pos = {(HubUI.CONTENT_W - PANEL_W) / 2f, (HubUI.CONTENT_H - PANEL_H) / 2f};
+        float[] pos = {(HubUI.DEFAULT_CONTENT_W - PANEL_W) / 2f, (HubUI.DEFAULT_CONTENT_H - PANEL_H) / 2f};
 
         UIElement panel = new UIElement();
         panel.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
@@ -364,6 +391,7 @@ public final class HubSection {
         // Tinted because it is the grab handle, and a handle nobody can see is a handle nobody uses.
         title.style(s -> s.background(new ColorRectTexture(TITLE_FILL)));
         drag(panel, title, pos, PANEL_W, PANEL_H);
+        keepInsideWhileOpen(panel, pos, PANEL_W, PANEL_H);
 
         ScrollerView body = new ScrollerView();
         // flexBasis(0), for the reason HubInfoWindow gives: flex-shrink defaults to 0 and flex-basis
@@ -396,7 +424,7 @@ public final class HubSection {
             body.addScrollViewChild(line);
         }
 
-        return new Panel(panel);
+        return new Panel(panel, pos, new boolean[1]);
     }
 
     /**
@@ -428,10 +456,61 @@ public final class HubSection {
             if (!(e.dragHandler.draggingObject instanceof float[] origin)) return;
             // Clamped to the tab box, so the window can never be shoved somewhere it cannot be
             // grabbed back from.
-            pos[0] = Mth.clamp(origin[0] + (e.x - e.dragStartX), 0, HubUI.CONTENT_W - width);
-            pos[1] = Mth.clamp(origin[1] + (e.y - e.dragStartY), 0, HubUI.CONTENT_H - height);
+            pos[0] = clampTo(origin[0] + (e.x - e.dragStartX), width, boundW(panel));
+            pos[1] = clampTo(origin[1] + (e.y - e.dragStartY), height, boundH(panel));
             panel.layout(l -> l.left(pos[0]).top(pos[1]));
         });
+    }
+
+    /* ------------------------------------------ bounds ------------------------------------------ */
+
+    /**
+     * The tab box a floating panel lives in: its parent's live size, which follows the hub window as
+     * it is resized. Falls back to the default box before the first layout, and on the server's copy
+     * of the tree, which is never laid out against a screen.
+     */
+    private static float boundW(UIElement panel) {
+        UIElement parent = panel.getParent();
+        float w = parent == null ? 0 : parent.getSizeWidth();
+        return w > 0 ? w : HubUI.DEFAULT_CONTENT_W;
+    }
+
+    private static float boundH(UIElement panel) {
+        UIElement parent = panel.getParent();
+        float h = parent == null ? 0 : parent.getSizeHeight();
+        return h > 0 ? h : HubUI.DEFAULT_CONTENT_H;
+    }
+
+    /**
+     * {@code v} kept so {@code [v, v + size]} stays inside {@code [0, bound]}. A panel bigger than
+     * its box pins to the top-left rather than going negative, so its title bar stays reachable.
+     */
+    private static float clampTo(float v, float size, float bound) {
+        return Math.max(0, Math.min(v, bound - size));
+    }
+
+    private static void centre(UIElement panel, float[] pos, int width, int height) {
+        pos[0] = clampTo((boundW(panel) - width) / 2f, width, boundW(panel));
+        pos[1] = clampTo((boundH(panel) - height) / 2f, height, boundH(panel));
+        panel.layout(l -> l.left(pos[0]).top(pos[1]));
+    }
+
+    /** Pulls the panel back inside its box, if the box has shrunk under it. */
+    private static void keepInside(UIElement panel, float[] pos, int width, int height) {
+        float x = clampTo(pos[0], width, boundW(panel));
+        float y = clampTo(pos[1], height, boundH(panel));
+        if (x == pos[0] && y == pos[1]) return;
+        pos[0] = x;
+        pos[1] = y;
+        panel.layout(l -> l.left(x).top(y));
+    }
+
+    /**
+     * Keeps an open panel inside its tab while the hub window is resized under it. A hidden element
+     * does not tick, so this costs nothing while the panel is closed.
+     */
+    private static void keepInsideWhileOpen(UIElement panel, float[] pos, int width, int height) {
+        panel.addEventListener(UIEvents.TICK, e -> keepInside(panel, pos, width, height));
     }
 
     /** Isolated holder for the client-only window, as {@link HubInfo} does for its resource read. */

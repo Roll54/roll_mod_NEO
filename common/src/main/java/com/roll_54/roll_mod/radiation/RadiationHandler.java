@@ -85,6 +85,24 @@ public class RadiationHandler {
         }
     }
 
+    /**
+     * A one-off dose from outside the held-item mechanic — an irradiating weapon, say — reduced by
+     * the player's armour resistance exactly as held-item gain is. Creative and spectator players
+     * take none, matching the tick.
+     */
+    public static void addDose(ServerPlayer player, int dose) {
+        if (dose <= 0) return;
+        GameType gm = player.gameMode.getGameModeForPlayer();
+        if (gm == GameType.CREATIVE || gm == GameType.SPECTATOR) return;
+        float resistance = 0f;
+        for (ItemStack armor : player.getInventory().armor) {
+            resistance += pieceResistance(armor);
+        }
+        int gain = Math.round(dose * (1.0f - Math.min(1.0f, resistance)));
+        if (gain <= 0) return;
+        player.setData(RADIATION, Mth.clamp(player.getData(RADIATION) + gain, 0, MAX_RADIATION));
+    }
+
     /** Drinking milk clears accumulated radiation, mirroring how milk clears effects. */
     @SubscribeEvent
     public static void onUseItemFinish(LivingEntityUseItemEvent.Finish e) {

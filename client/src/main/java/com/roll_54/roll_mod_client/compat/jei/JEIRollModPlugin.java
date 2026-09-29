@@ -2,6 +2,7 @@ package com.roll_54.roll_mod_client.compat.jei;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;
 import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
+import com.roll_54.roll_mod.minestar.hub.gui.HubReturn;
 import com.roll_54.roll_mod.recipe.ItemResearchRecipe;
 import com.roll_54.roll_mod.registry.BlockRegistry;
 import com.roll_54.roll_mod.registry.MenuTypes;
@@ -9,8 +10,11 @@ import com.roll_54.roll_mod.registry.RecipeRegistry;
 import com.roll_54.roll_mod_client.gui.screen.ResearchWorkbenchScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -98,6 +102,39 @@ public class JEIRollModPlugin implements IModPlugin {
                 68, 49,
                 ResearchTableRecipeCategory.ITEM_RESEARCH_TYPE
         );
+        registerHubBounds(registration, HubReturn.screenClass());
+    }
+
+    /**
+     * Tells JEI where the hub window really is. The hub's root covers the whole screen now, with a
+     * movable, resizable window floating on it, so JEI's default — the container's image rectangle —
+     * would be the entire screen and leave its item list no room at all. Every other LdLib container
+     * screen gets exactly what JEI would have worked out for it anyway.
+     */
+    private static <T extends AbstractContainerScreen<?>> void registerHubBounds(
+            IGuiHandlerRegistration registration, Class<T> screenClass) {
+        registration.addGuiScreenHandler(screenClass, screen -> {
+            float[] rect = HubReturn.windowRect(screen);
+            if (rect == null) {
+                return properties(screenClass, screen.getGuiLeft(), screen.getGuiTop(),
+                        screen.getXSize(), screen.getYSize(), screen.width, screen.height);
+            }
+            return properties(screenClass, Math.round(rect[0]), Math.round(rect[1]),
+                    Math.round(rect[2]), Math.round(rect[3]), screen.width, screen.height);
+        });
+    }
+
+    private static IGuiProperties properties(Class<? extends Screen> screenClass, int left, int top,
+                                             int width, int height, int screenWidth, int screenHeight) {
+        return new IGuiProperties() {
+            @Override public Class<? extends Screen> screenClass() { return screenClass; }
+            @Override public int guiLeft() { return left; }
+            @Override public int guiTop() { return top; }
+            @Override public int guiXSize() { return width; }
+            @Override public int guiYSize() { return height; }
+            @Override public int screenWidth() { return screenWidth; }
+            @Override public int screenHeight() { return screenHeight; }
+        };
     }
 
     @Override

@@ -5,6 +5,7 @@ import com.perigrine3.createcybernetics.api.CyberwareSlot;
 import com.perigrine3.createcybernetics.common.capabilities.ModAttachments;
 import com.perigrine3.createcybernetics.common.capabilities.PlayerCyberwareData;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod_client.blocks.entity.render.ModuleInstallationTableRenderer;
 import com.roll_54.roll_mod_client.blocks.entity.render.PedestalBlockEntityRenderer;
 import com.roll_54.roll_mod_client.blocks.entity.render.RocketControllerBlockEntityRenderer;
 import com.roll_54.roll_mod_client.blocks.entity.render.model.rocket.normal.NormalRocketModel;
@@ -142,6 +143,8 @@ public final class RollModClient {
         @SubscribeEvent
         public static void registerBER(EntityRenderersEvent.RegisterRenderers event) {
             event.registerBlockEntityRenderer(BlockEntites.PEDESTAL_BE.get(), PedestalBlockEntityRenderer::new);
+            event.registerBlockEntityRenderer(BlockEntites.MODULE_INSTALLATION_TABLE_BE.get(),
+                    ModuleInstallationTableRenderer::new);
             event.registerBlockEntityRenderer(BlockEntites.ROCKET_CONTROLLER_BE.get(), RocketControllerBlockEntityRenderer::new);
             event.registerBlockEntityRenderer(BlockEntites.HUERI_STATUE_BE.get(), HueriStatueRenderer::new);
         }
@@ -183,6 +186,7 @@ public final class RollModClient {
             event.register(KeyMappingRegistry.CHESTPLATE_TOGGLE_TWO.get());
             event.register(KeyMappingRegistry.CHESTPLATE_TOGGLE_THREE.get());
             event.register(KeyMappingRegistry.HUB.get());
+            event.register(KeyMappingRegistry.DRILL_CONFIG.get());
         }
 
         @SubscribeEvent

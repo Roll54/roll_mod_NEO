@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "roll_mod:block/module_installation_table" }
+  }
+}

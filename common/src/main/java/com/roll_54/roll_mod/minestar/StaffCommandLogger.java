@@ -20,7 +20,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Logs every command sent by a staff player — {@code helper} rank or higher, or an operator — to
- * minecraft_root/minestar/op_users_check.txt.
+ * minecraft_root/minestar/logs/op_users_check.txt.
  *
  * <p>Runs last and still sees cancelled commands, so an attempt another mod blocked is on record too.
  */
@@ -29,6 +29,7 @@ public final class StaffCommandLogger {
 
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
     private static final String LOG_DIR = "minestar";
+    private static final String LOG_SUBDIR = "logs";
     private static final String LOG_FILE_NAME = "op_users_check.txt";
 
     /** Vanilla's gamemaster level: the lowest at which {@code /op} grants anything worth watching. */
@@ -70,7 +71,7 @@ public final class StaffCommandLogger {
     }
 
     private static void writeToLog(String logEntry) throws IOException {
-        Path logDir = FMLPaths.GAMEDIR.get().resolve(LOG_DIR);
+        Path logDir = FMLPaths.GAMEDIR.get().resolve(LOG_DIR).resolve(LOG_SUBDIR);
         Files.createDirectories(logDir);
 
         Files.writeString(

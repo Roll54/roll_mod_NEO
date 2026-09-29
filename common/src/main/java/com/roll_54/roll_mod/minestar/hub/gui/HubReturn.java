@@ -5,6 +5,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
 import com.roll_54.roll_mod.RollMod;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.neoforged.api.distmarker.Dist;
@@ -85,6 +86,28 @@ public final class HubReturn {
     }
 
     /**
+     * The screen class every LdLib container UI — the hub included — is shown in. Typed as a plain
+     * container screen so callers without LdLib on their compile classpath (the client module) can
+     * register against it.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static Class<AbstractContainerScreen<?>> screenClass() {
+        return (Class) ModularUIContainerScreen.class;
+    }
+
+    /**
+     * The hub window's rectangle on {@code screen}, as {x, y, w, h} in GUI-scaled pixels, or
+     * {@code null} when the screen is not the hub. For overlays such as JEI that need to know where
+     * the GUI really is: the hub's own root now covers the whole screen, with the window floating on
+     * it.
+     */
+    @Nullable
+    public static float[] windowRect(@Nullable Screen screen) {
+        ModularUI hub = hubOf(screen);
+        return hub == null ? null : HubUI.windowRect(hub);
+    }
+
+    /**
      * The hub's {@link ModularUI} if that is what is on screen, otherwise {@code null} — every other
      * LdLib screen in the mod (the vendor, the buyer view) keeps vanilla's close-to-world behaviour.
      * Identified by the id {@code HubUI} stamps on its root element, which is cheaper and steadier
@@ -94,6 +117,6 @@ public final class HubReturn {
     private static ModularUI hubOf(@Nullable Screen screen) {
         if (!(screen instanceof ModularUIContainerScreen container)) return null;
         ModularUI ui = container.getMenu().getModularUI();
-        return HubUI.ROOT_ID.equals(ui.ui.getRootElement().getId()) ? ui : null;
+        return HubUI.isHub(ui) ? ui : null;
     }
 }

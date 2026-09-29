@@ -57,7 +57,8 @@ public final class AuctionManager {
             new ArrayList<>(data.getClaims(player.getUUID()))));
   }
 
-  private static void resyncAll(MinecraftServer server) {
+  /** Pushes the listings, and each viewer's own claims, to everyone with the auction open. */
+  public static void resyncAll(MinecraftServer server) {
     AuctionData data = AuctionData.get(server);
     List<AuctionListing> snapshot = new ArrayList<>(data.getListings());
     for (UUID id : VIEWERS) {

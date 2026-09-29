@@ -4,6 +4,7 @@ import com.roll_54.roll_mod.items.BlockogrizItem;
 import com.roll_54.roll_mod.items.HerbicideItem;
 import com.roll_54.roll_mod.items.electricItems.EnergyDrillItem;
 import com.roll_54.roll_mod.items.electricItems.EnergySwordItem;
+import com.roll_54.roll_mod.items.modularsaber.ModularSaberItem;
 import com.roll_54.roll_mod.items.electricItems.refactored.ComponentEnergyDrill;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinition;
@@ -170,7 +171,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
 
             // Pickaxe is tested before axe: a paxel answers to both, and the mod treats a multi-tool
             // as a pickaxe. SkinCategory repeats this ordering for untagged third-party tools.
-            if (item instanceof EnergySwordItem || item instanceof SwordItem) {
+            if (item instanceof EnergySwordItem || item instanceof ModularSaberItem || item instanceof SwordItem) {
                 swords.add(item);
             } else if (item instanceof EnergyDrillItem
                     || item instanceof ComponentEnergyDrill

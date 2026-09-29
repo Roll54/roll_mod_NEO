@@ -85,6 +85,7 @@ public class ShopReceiveCommand {
 
             if (allCommandsSuccessful) {
                 deliveredProductIds.add(product.id());
+                ShopReceiveLogger.logReceived(player, product);
             }
         }
 

@@ -5,6 +5,7 @@ import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.SimpleBinding;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib2.gui.texture.Icons;
 import com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
 import com.lowdragmc.lowdraglib2.gui.ui.UI;
@@ -13,7 +14,6 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.Tab;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.lowdragmc.lowdraglib2.gui.ui.styletemplate.MCSprites;
-import com.lowdragmc.lowdraglib2.math.Size;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.moderation.ClientModerationCache;
 import com.roll_54.roll_mod.minestar.moderation.ClientPlayerStatusCache;
@@ -22,6 +22,7 @@ import com.roll_54.roll_mod.economy.vendingblock.gui.VendorUIHelper;
 import com.roll_54.roll_mod.economy.vendingblock.gui.auction.AuctionUI;
 import com.roll_54.roll_mod.minestar.dailytasks.gui.DailyTasksUI;
 import com.roll_54.roll_mod.minestar.hub.HubCommand;
+import dev.vfyjxf.taffy.style.AlignContent;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -41,6 +42,7 @@ import java.util.function.BiFunction;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
+import java.util.function.Supplier;
 
 /**
  * The player hub: one screen holding the home panel and every other player-facing screen as a tab.
@@ -77,9 +79,16 @@ public final class HubUI {
      */
     public static final String ROOT_ID = "roll_mod_hub";
 
-    /** The box every tab is sized to. Changing it resizes all of them. */
-    public static final int CONTENT_W = 460;
-    public static final int CONTENT_H = 250;
+    /** The movable window inside the full-screen root, for anything that needs its rectangle. */
+    public static final String WINDOW_ID = "roll_mod_hub_window";
+
+    /**
+     * The tab box at the default window size. Tabs lay themselves out against their live size now;
+     * this is only the fallback for before the first layout, and for the server's copy of the tree,
+     * which is never laid out against a screen.
+     */
+    public static final int DEFAULT_CONTENT_W = 460;
+    public static final int DEFAULT_CONTENT_H = 250;
 
     private static final int PADDING = 6;
     private static final int TAB_H = 22;
@@ -101,6 +110,9 @@ public final class HubUI {
     /** Above the header strip and the content box, both of which reach into its corner. */
     private static final int BACK_Z = 2;
 
+    /** Maximize and reset, lined up to the left of the back button with this much between them. */
+    private static final int WINDOW_BTN_GAP = 2;
+
     /**
      * Breathing room at the top of the content box, so an embedded screen does not start flush
      * against the tab strip. The box grows by the same amount rather than eating into it, so no tab
@@ -111,16 +123,8 @@ public final class HubUI {
     /** Where the player's inventory sits under the content box: three rows, a gap, and the hotbar. */
     private static final int INVENTORY_H = 3 * VendorUIHelper.SLOT_SIZE + 5 + VendorUIHelper.SLOT_SIZE;
 
-    /**
-     * The whole window. Always this size, inventory shown or not — see {@link #buildRoot}.
-     *
-     * <p>The inventory is deliberately <em>not</em> in this sum. It is laid out absolutely, pinned
-     * to the bottom of the window and drawn over the foot of the content box, so showing it neither
-     * grows the window nor pushes anything down. Reserving a row for it instead made the window
-     * 68px taller for every tab, to hold something only the auction's create form ever asks for.
-     */
-    private static final int ROOT_W = CONTENT_W + 2 * PADDING;
-    private static final int ROOT_H = 290 + GUI_TOP_INSET;
+    /** Between the content box and the inventory, while the inventory is shown. */
+    private static final int INVENTORY_GAP = 4;
 
     private static final int COLOR_CONTENT = 0x40000000;
 
@@ -236,7 +240,7 @@ public final class HubUI {
      * header is {@link #DISPLAY_ORDER}, which is deliberately a different order.
      */
     private static final List<HubTab> TABS = List.of(
-            HubTab.flagged("home", icon("main"), (player, inventory) -> HomeTab.build(player),
+            HubTab.flagged("home", icon("main_hub_icon"), (player, inventory) -> HomeTab.build(player),
                     HubBadge::homePending),
             HubTab.flagged("daily_tasks", icon("daily/daily_tasks"),
                     (player, inventory) -> DailyTasksUI.buildRoot(player), HubBadge::dailyPending),
@@ -317,14 +321,38 @@ public final class HubUI {
     private HubUI() {}
 
     public static ModularUI createUI(Player player) {
-        // The size argument sets LdLib's own wrapper element, the one the inspector calls __ROOT__,
-        // which is the parent of everything built below. Without a provider here that wrapper is
-        // never given a size at all and just hugs its content. The lambda receives the screen size;
-        // ignoring it keeps the hub a fixed size at every resolution.
-        return ModularUI.of(UI.of(buildRoot(player), screen -> Size.of(ROOT_W, ROOT_H)), player);
+        HubWindow[] window = new HubWindow[1];
+        UIElement root = buildRoot(player, window);
+        // The provider sizes the root, and LdLib centres whatever size it returns. Returning the
+        // screen itself makes the root a full-screen host at 0,0 for the window to float on. It runs
+        // on every screen init — opening, resizing the game window, changing the GUI scale — so it is
+        // also where the window is pulled back onto a screen that got smaller. Client only: the
+        // server's copy is never initialised against a screen.
+        return ModularUI.of(UI.of(root, screen -> {
+            window[0].fit(screen.getWidth(), screen.getHeight());
+            return screen;
+        }), player);
     }
 
-    public static UIElement buildRoot(Player player) {
+    /**
+     * Whether {@code ui} is the hub. Identified by the id stamped on its root, which is cheaper and
+     * steadier than recognising the menu's holder.
+     */
+    public static boolean isHub(@Nullable ModularUI ui) {
+        return ui != null && ROOT_ID.equals(ui.ui.getRootElement().getId());
+    }
+
+    /** The hub window's rectangle in GUI-scaled screen pixels, as {x, y, w, h}; null if not the hub. */
+    @Nullable
+    public static float[] windowRect(@Nullable ModularUI ui) {
+        if (!isHub(ui)) return null;
+        UIElement window = ui.getElementById(WINDOW_ID);
+        if (window == null) return null;
+        return new float[] {window.getPositionX(), window.getPositionY(),
+                window.getSizeWidth(), window.getSizeHeight()};
+    }
+
+    private static UIElement buildRoot(Player player, HubWindow[] windowOut) {
         ServerPlayer server = player instanceof ServerPlayer sp ? sp : null;
 
         // Which tab the command asked for. Selection is client state, but the request is made on the
@@ -334,20 +362,31 @@ public final class HubUI {
                         () -> server == null ? 0 : HubCommand.requestedTab(server))
                 .initialValue(0).build();
 
-        // Fixed, and sized as though the inventory were always there. A hidden element leaves the
-        // layout completely, so without this the whole window shrank by the inventory's height the
-        // moment it hid — and grew again when the auction's create form asked for it back.
+        // The full-screen host: sized to the screen by createUI's provider, transparent, and home to
+        // the one sync value the hub itself owns. Everything visible lives in the window on top of it.
         UIElement root = new UIElement();
         root.setId(ROOT_ID);
-        root.layout(l -> l.flexDirection(FlexDirection.COLUMN).paddingAll(PADDING)
-                .width(ROOT_W).height(ROOT_H));
-        root.style(s -> s.background(MCSprites.BORDER));
         root.addSyncValue(requestedTab.getSyncValue());
+
+        // The window: moved by its header, resized from its frame, remembered between openings —
+        // see HubWindow. Its size is always an explicit pixel size, so nothing inside can change it:
+        // switching tabs or showing the inventory only redistributes the space within.
+        // Built on both sides like everything else; which copy may touch the saved state is decided
+        // by the player's level, not the dist, since single player's server is also a client JVM.
+        HubWindow window = new HubWindow(player.level().isClientSide());
+        windowOut[0] = window;
+        window.setId(WINDOW_ID);
+        window.layout(l -> l.flexDirection(FlexDirection.COLUMN).paddingAll(PADDING));
+        window.style(s -> s.background(MCSprites.BORDER));
+        root.addChild(window);
 
         // Flush against the panel rather than sunk into it: the tabs are closed boxes now, so they
         // have no open foot to hide and nothing to be continuous with.
         UIElement header = new UIElement();
-        header.layout(l -> l.flexDirection(FlexDirection.ROW).height(TAB_H).gapColumn(TAB_GAP));
+        header.layout(l -> l.flexDirection(FlexDirection.ROW).height(TAB_H).flexShrink(0)
+                .gapColumn(TAB_GAP));
+        // The title bar of the window: drag its empty stretch to move, double-click to maximize.
+        window.dragBy(header);
         // Unclipped, so a tab can never be trimmed by its own row. It also gates hit-testing, so
         // turning it off would newly clip clicks to the header's content rect.
         //
@@ -358,10 +397,11 @@ public final class HubUI {
         // it, and unclickable, because hit-testing follows the same order.
         header.setOverflowVisible(true);
 
-        // A fixed box, so the window does not resize as tabs are switched: collapsed slots
-        // contribute no height and the box decides the size for all of them.
+        // Whatever the window has left under the header (and over the inventory, when shown).
+        // flexBasis 0 rather than auto: an auto basis sizes from content, and collapsed slots would
+        // then decide the box. Every tab lays itself out against this box's live size.
         UIElement content = new UIElement();
-        content.layout(l -> l.width(CONTENT_W).height(CONTENT_H + GUI_TOP_INSET)
+        content.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1).flexShrink(1)
                 .paddingTop(GUI_TOP_INSET));
         content.style(s -> s.background(new ColorRectTexture(COLOR_CONTENT)));
         content.setOverflowVisible(false);
@@ -370,14 +410,14 @@ public final class HubUI {
         // out of the way: a hidden ItemSlot can never be the hovered element, so LdLib's isHovering
         // override refuses every click on it. The slots themselves stay registered on the menu, so
         // nothing is lost and shift-clicking from elsewhere still finds them.
-        // Absolute, so it costs the column nothing: pinned to the bottom of the window, overlapping
-        // the foot of the content box. The auction's create form is the only thing that asks for
-        // it, and that form ends well above where this starts.
+        // A plain row under the content box. The window's size is fixed in pixels, so showing it
+        // takes its height out of the content box rather than growing the window, and hiding it gives
+        // that height straight back.
         UIElement inventory = new UIElement();
-        inventory.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
-                .left(PADDING).bottom(PADDING).width(CONTENT_W).height(INVENTORY_H));
-        inventory.addChild(VendorUIHelper.playerInventory(
-                (CONTENT_W - 9 * VendorUIHelper.SLOT_SIZE) / 2, 0));
+        inventory.layout(l -> l.widthPercent(100).height(INVENTORY_H).flexShrink(0)
+                .marginTop(INVENTORY_GAP).flexDirection(FlexDirection.ROW)
+                .justifyContent(AlignContent.CENTER));
+        inventory.addChild(VendorUIHelper.playerInventory());
         inventory.setDisplay(false);
 
         // Each tab's request is remembered rather than obeyed immediately, because a tab that is not
@@ -392,7 +432,7 @@ public final class HubUI {
         for (int i = 0; i < TABS.size(); i++) {
             final int index = i;
             UIElement slot = new UIElement();
-            slot.layout(l -> l.width(CONTENT_W));
+            slot.layout(l -> l.widthPercent(100));
             // Clipped, because a collapsed slot's child keeps its own fixed height.
             slot.setOverflowVisible(false);
             Consumer<Boolean> ask = wanted -> {
@@ -462,17 +502,30 @@ public final class HubUI {
 
         // Header first, panel under it. Nothing overlaps any more, so the order is just the order
         // they are read in.
-        root.addChildren(header, content);
+        window.addChildren(header, content);
 
-        root.addChild(inventory);
+        window.addChild(inventory);
 
-        // The way out, pinned to the window rather than parked at the end of the tab row — see
-        // back(). Last, and lifted by a z-index of its own, so it stays a button on top of the
-        // window rather than something the header's band draws over. Added unconditionally and on
-        // both sides, like everything else in this tree: only its click behaviour is client-side,
-        // and an element that existed on one side only would shift every positional binding after
-        // it — see the class javadoc.
-        root.addChild(back());
+        // The way out and the window controls, pinned to the window rather than parked at the end
+        // of the tab row — see back(). Last, and lifted by a z-index of their own, so they stay
+        // buttons on top of the window rather than something the header's band draws over. Added
+        // unconditionally and on both sides, like everything else in this tree: only their click
+        // behaviour is client-side, and an element that existed on one side only would shift every
+        // positional binding after it — see the class javadoc.
+        window.addChild(windowButton(2, () -> Icons.REPLAY, "reset", window::reset));
+        window.addChild(windowButton(1,
+                () -> window.maximized() ? Icons.WINDOW_RESTORE : Icons.WINDOW_MAXIMIZE,
+                null, window::toggleMaximize));
+        window.addChild(back());
+
+        // With the window no longer covering the screen, a click beside it lands on the bare host.
+        // Vanilla drops a carried stack on a click outside the GUI, but it measures "outside" against
+        // the root — the whole screen now — so the host does that itself.
+        root.addEventListener(UIEvents.MOUSE_DOWN, e -> {
+            if (e.target == root && FMLEnvironment.dist == Dist.CLIENT && ClientReturn.dropCarried(e.button)) {
+                e.stopPropagation();
+            }
+        });
 
         select(tabs, slots, onSelected, 0);
 
@@ -486,6 +539,8 @@ public final class HubUI {
             // server copy of this tree, and while the hub is open the screen itself is the record of
             // which tab is showing. See lastTab.
             if (FMLEnvironment.dist == Dist.CLIENT) lastTab = currentTab[0];
+            // Moves and resizes save as they finish; this only catches anything still pending.
+            if (player.level().isClientSide()) HubWindowState.get().save();
             HubSection.closeInfo();
         });
 
@@ -559,10 +614,47 @@ public final class HubUI {
         return back;
     }
 
+    /**
+     * One of the window controls to the left of {@link #back()}: {@code slot} counts button widths
+     * leftwards from it. {@code tip} names the tooltip key; {@code null} means the maximize button,
+     * whose tooltip follows its state.
+     */
+    private static UIElement windowButton(int slot, Supplier<IGuiTexture> texture, @Nullable String tip,
+                                          Runnable action) {
+        UIElement button = new UIElement();
+        button.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
+                .right(BACK_INSET_X + 4 + slot * (BACK_BTN + WINDOW_BTN_GAP)).top(BACK_INSET_Y)
+                .width(BACK_BTN).height(BACK_BTN));
+        // Read through a supplier every frame: LdLib swaps its Icons fields at resource load.
+        button.style(s -> s.background(IGuiTexture.dynamic(texture)).zIndex(BACK_Z));
+        button.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> {
+            String key = tip != null ? tip
+                    : texture.get() == Icons.WINDOW_RESTORE ? "restore" : "maximize";
+            e.hoverTooltips = new HoverTooltips(
+                    List.of(Component.translatable("gui." + RollMod.MODID + ".hub." + key + ".tip")),
+                    null, null, ItemStack.EMPTY);
+        });
+        // Only the client copy ever receives a click, and the window refuses on the server anyway.
+        button.addEventListener(UIEvents.CLICK, e -> action.run());
+        return button;
+    }
+
     /** Isolated holder for the client-only return, as {@code HubSection} does for its window. */
     private static final class ClientReturn {
         static void toInventory() {
             HubReturn.toInventory();
+        }
+
+        /** Vanilla's click outside the GUI: drops the carried stack, or one of it on right-click. */
+        static boolean dropCarried(int button) {
+            net.minecraft.client.Minecraft mc = net.minecraft.client.Minecraft.getInstance();
+            if (mc.player == null || mc.gameMode == null || button > 1) return false;
+            net.minecraft.world.inventory.AbstractContainerMenu menu = mc.player.containerMenu;
+            if (menu.getCarried().isEmpty()) return false;
+            mc.gameMode.handleInventoryMouseClick(menu.containerId,
+                    net.minecraft.world.inventory.AbstractContainerMenu.SLOT_CLICKED_OUTSIDE, button,
+                    net.minecraft.world.inventory.ClickType.PICKUP, mc.player);
+            return true;
         }
     }
 
@@ -579,7 +671,11 @@ public final class HubUI {
         HubSection.closeInfo();
         for (int i = 0; i < slots.size(); i++) {
             final boolean shown = i == selected;
-            slots.get(i).layout(l -> l.height(shown ? CONTENT_H : 0));
+            // The shown slot fills the content box, whatever size the window is.
+            slots.get(i).layout(l -> {
+                if (shown) l.heightPercent(100);
+                else l.height(0);
+            });
             Tab tab = i < tabs.size() ? tabs.get(i) : null;
             if (tab != null) tab.setSelected(shown);
         }

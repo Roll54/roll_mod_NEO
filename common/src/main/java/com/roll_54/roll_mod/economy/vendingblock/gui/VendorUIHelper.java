@@ -82,19 +82,30 @@ public final class VendorUIHelper {
 
   /** A starcoin currency icon element of the given size. */
   public static UIElement starcoinIcon(int x, int y, int size) {
+    return abs(starcoinIcon(size), x, y, size, size);
+  }
+
+  /** The starcoin, sized but not positioned, for flex layouts. */
+  public static UIElement starcoinIcon(int size) {
     UIElement icon = new UIElement();
+    icon.layout(l -> l.width(size).height(size).flexShrink(0));
     icon.style(s -> s.backgroundTexture(SpriteTexture.of(STARCOIN)));
-    return abs(icon, x, y, size, size);
+    return icon;
   }
 
   /** An integer-only text field; {@code responder} receives the raw text on each edit. */
   public static TextField intField(
       int x, int y, int w, int h, String initial, Consumer<String> responder) {
+    return abs(intField(initial, responder), x, y, w, h);
+  }
+
+  /** {@link #intField(int, int, int, int, String, Consumer)} without a position or size. */
+  public static TextField intField(String initial, Consumer<String> responder) {
     TextField field = new TextField();
     field.setTextRegexValidator("\\d*");
     field.setText(initial);
     field.setTextResponder(responder);
-    return abs(field, x, y, w, h);
+    return field;
   }
 
   public static long parseLong(String text, long fallback) {
@@ -115,9 +126,14 @@ public final class VendorUIHelper {
 
   /** Standard player inventory grid; auto-binds to the viewing player when added to the UI. */
   public static InventorySlots playerInventory(int x, int y) {
-    InventorySlots inv = new InventorySlots();
+    InventorySlots inv = playerInventory();
     inv.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).left(x).top(y));
     return inv;
+  }
+
+  /** The player inventory as a flow child, for a parent that places it. */
+  public static InventorySlots playerInventory() {
+    return new InventorySlots();
   }
 
   /**

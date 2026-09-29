@@ -148,96 +148,86 @@ public final class ItemGroups {
 
                         add(out, ItemRegistry.PROSPECTOR_PICK_ITEM);
 
-                        add(out, ItemRegistry.METEORITE_METAL_NANO_SABER);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.METEORITE_METAL_NANO_SABER.get());
-                            full.set(MIComponents.ENERGY.get(), 54_000_000L);
+                        // The old fixed sabers are deprecated and deliberately absent here — only
+                        // DEV_TAB still lists them. These are their modular replacements.
+                        for (var saber : java.util.List.of(
+                                ItemRegistry.LV_MODULAR_SABER, ItemRegistry.MV_MODULAR_SABER,
+                                ItemRegistry.HV_MODULAR_SABER, ItemRegistry.EV_MODULAR_SABER,
+                                ItemRegistry.IV_MODULAR_SABER)) {
+                            add(out, saber);
+                            ItemStack full = new ItemStack(saber.get());
+                            full.set(MIComponents.ENERGY.get(), saber.get().voltage().baseCapacity);
                             out.accept(full);
                         }
 
-                        add(out, ItemRegistry.MV_ELECTRIC_SABER);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.MV_ELECTRIC_SABER.get());
-                            full.set(MIComponents.ENERGY.get(), 1_000_000L);
+                        // The old fixed drills are deprecated and deliberately absent here — only
+                        // DEV_TAB still lists them. These are their modular replacements.
+                        for (var drill : java.util.List.of(
+                                ItemRegistry.LV_MODULAR_DRILL, ItemRegistry.MV_MODULAR_DRILL,
+                                ItemRegistry.HV_MODULAR_DRILL, ItemRegistry.EV_MODULAR_DRILL,
+                                ItemRegistry.IV_MODULAR_DRILL)) {
+                            add(out, drill);
+                            ItemStack full = new ItemStack(drill.get());
+                            full.set(MIComponents.ENERGY.get(), drill.get().voltage().baseCapacity);
                             out.accept(full);
                         }
 
-                        add(out, ItemRegistry.HV_ELECTRIC_SABER);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.HV_ELECTRIC_SABER.get());
-                            full.set(MIComponents.ENERGY.get(), 1_000_000_000L);
-                            out.accept(full);
+                        add(out, ItemRegistry.SPEED_MODULE_I);
+                        add(out, ItemRegistry.SPEED_MODULE_II);
+                        add(out, ItemRegistry.SPEED_MODULE_III);
+                        add(out, ItemRegistry.SPEED_MODULE_IV);
+                        add(out, ItemRegistry.SILK_TOUCH_MODULE);
+                        add(out, ItemRegistry.FORTUNE_MODULE_I);
+                        add(out, ItemRegistry.FORTUNE_MODULE_II);
+                        add(out, ItemRegistry.FORTUNE_MODULE_III);
+                        add(out, ItemRegistry.FORTUNE_MODULE_IV);
+                        add(out, ItemRegistry.FORTUNE_MODULE_V);
+                        add(out, ItemRegistry.XP_REACTOR_MODULE);
+                        add(out, ItemRegistry.OVERCHARGE_MODULE);
+                        add(out, ItemRegistry.REACH_MODULE_I);
+                        add(out, ItemRegistry.REACH_MODULE_II);
+                        add(out, ItemRegistry.REACH_MODULE_III);
+                        add(out, ItemRegistry.BURN_MODULE);
+                        add(out, ItemRegistry.BATTERY_MODULE_I);
+                        add(out, ItemRegistry.BATTERY_MODULE_II);
+                        add(out, ItemRegistry.BATTERY_MODULE_III);
+                        add(out, ItemRegistry.BATTERY_MODULE_IV);
+                        add(out, ItemRegistry.AOE_MODULE_I);
+                        add(out, ItemRegistry.AOE_MODULE_II);
+                        add(out, ItemRegistry.AOE_MODULE_III);
+                        add(out, ItemRegistry.AOE_MODULE_IV);
+                        add(out, ItemRegistry.AOE_MODULE_V);
+                        add(out, ItemRegistry.SPEED_MODULE_V);
+                        add(out, ItemRegistry.BATTERY_MODULE_V);
+                        add(out, ItemRegistry.AUTO_SMELT_MODULE);
+                        add(out, ItemRegistry.TRASH_FILTER_MODULE);
+                        add(out, ItemRegistry.ECO_MODULE_I);
+                        add(out, ItemRegistry.ECO_MODULE_II);
+                        add(out, ItemRegistry.LAVA_SOLIDIFIER_MODULE);
+                        add(out, ItemRegistry.SPEAK_MODULE);
+
+                        // Saber modules; Battery, Eco, Speed, Fortune/Looting and the XP Reactor above
+                        // fit sabers too. The old Looting and Attack Speed modules are deprecated and left out.
+                        for (var module : java.util.List.of(
+                                ItemRegistry.DAMAGE_MODULE_I, ItemRegistry.DAMAGE_MODULE_II, ItemRegistry.DAMAGE_MODULE_III,
+                                ItemRegistry.DAMAGE_MODULE_IV, ItemRegistry.DAMAGE_MODULE_V,
+                                ItemRegistry.SWEEP_MODULE_I, ItemRegistry.SWEEP_MODULE_II, ItemRegistry.SWEEP_MODULE_III,
+                                ItemRegistry.XP_MULTIPLIER_MODULE_I, ItemRegistry.XP_MULTIPLIER_MODULE_II,
+                                ItemRegistry.XP_MULTIPLIER_MODULE_III,
+                                ItemRegistry.XP_MULTIPLIER_MODULE_IV, ItemRegistry.XP_MULTIPLIER_MODULE_V,
+                                ItemRegistry.DROP_COLLECTOR_MODULE,
+                                ItemRegistry.VAMPIRISM_MODULE_I, ItemRegistry.VAMPIRISM_MODULE_II,
+                                ItemRegistry.VAMPIRISM_MODULE_III,
+                                ItemRegistry.BEHEADING_MODULE_I, ItemRegistry.BEHEADING_MODULE_II,
+                                ItemRegistry.BEHEADING_MODULE_III,
+                                ItemRegistry.IRRADIATION_MODULE_I, ItemRegistry.IRRADIATION_MODULE_II,
+                                ItemRegistry.IRRADIATION_MODULE_III,
+                                ItemRegistry.METEORITE_MODULE)) {
+                            add(out, module);
                         }
 
-                        add(out, ItemRegistry.EV_ELECTRIC_SABER);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.EV_ELECTRIC_SABER.get());
-                            full.set(MIComponents.ENERGY.get(), 10_000_000_000L);
-                            out.accept(full);
-                        }
+                        out.accept(BlockRegistry.MODULE_INSTALLATION_TABLE.get().asItem());
 
-                        add(out, ItemRegistry.IV_ELECTRIC_SABER);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.IV_ELECTRIC_SABER.get());
-                            full.set(MIComponents.ENERGY.get(), 1_000_000_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.LV_MINING_DRILL);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.LV_MINING_DRILL.get());
-                            full.set(MIComponents.ENERGY.get(), 1_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.ADVANCED_LV_MINING_DRILL);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.ADVANCED_LV_MINING_DRILL.get());
-                            full.set(MIComponents.ENERGY.get(), 2_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.MV_MINING_DRILL);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.MV_MINING_DRILL.get());
-                            full.set(MIComponents.ENERGY.get(), 10_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.ADVANCED_MV_MINING_DRILL);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.ADVANCED_MV_MINING_DRILL.get());
-                            full.set(MIComponents.ENERGY.get(), 20_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.HV_MINING_DRILL);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.HV_MINING_DRILL.get());
-                            full.set(MIComponents.ENERGY.get(), 1_000_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.ADVANCED_HV_MINING_DRILL);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.ADVANCED_HV_MINING_DRILL.get());
-                            full.set(MIComponents.ENERGY.get(), 2_000_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.EV_MINING_DRILL);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.EV_MINING_DRILL.get());
-                            full.set(MIComponents.ENERGY.get(), 50_000_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.ADVANCED_EV_MINING_DRILL);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.ADVANCED_EV_MINING_DRILL.get());
-                            full.set(MIComponents.ENERGY.get(), 100_000_000_000L);
-                            out.accept(full);
-                        }
                         add(out, ItemRegistry.NETHERITE_STEAM_MINING_DRILL);
 
                         add(out, ItemRegistry.SKIN_APPLICATOR);

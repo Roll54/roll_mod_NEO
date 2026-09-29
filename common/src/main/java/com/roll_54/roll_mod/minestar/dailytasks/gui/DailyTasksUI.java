@@ -28,7 +28,6 @@ import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskQuota;
 import com.roll_54.roll_mod.minestar.hub.gui.HubBadge;
 import com.roll_54.roll_mod.minestar.hub.gui.HubSection;
-import com.roll_54.roll_mod.minestar.hub.gui.HubUI;
 import com.roll_54.roll_mod.minestar.dailytasks.api.TaskReward;
 import com.roll_54.roll_mod.network.packet.ClaimDailyBonusPacket;
 import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
@@ -72,7 +71,6 @@ public final class DailyTasksUI {
     public static final ResourceLocation UI_ID = RollMod.id("daily_tasks");
 
 
-    private static final int TASKS_W = 300;
     private static final int PADDING = 12;
     /**
      * Tall enough for the row's three stacked lines — name, bar, then the reward strip and Claim
@@ -100,29 +98,9 @@ public final class DailyTasksUI {
     /** One cell of a reward strip, in the bonus panel and in every task row. */
     private static final int REWARD_ICON = 16;
 
-    /**
-     * The screen fills the hub's tab box. With this width the task column works out to exactly
-     * {@link #TASKS_W}, which is what {@link #CLAIM_W} and the ProgressBar padding worked around in
-     * {@link #row} were tuned against — it was narrower than that when the panel sized itself.
-     */
-    private static final int ROOT_W = HubUI.CONTENT_W;
-    private static final int ROOT_H = HubUI.CONTENT_H;
-
     /** The title row and the gap under it — see {@link #header}. */
     private static final int HEADER_H = 12;
     private static final int HEADER_GAP = 4;
-
-    /**
-     * What is left of the window once the padding and the header are taken out, and therefore the
-     * height of the task list.
-     *
-     * <p>Spelled out rather than left to {@code flexGrow} with a percentage height on the child:
-     * the scroller only clips — and so only scrolls — when its own height is definite, and a
-     * {@code heightPercent(100)} resolved against a parent that is itself still being sized by the
-     * flex pass is not. It sized itself to all eight rows instead, so the overflow was clipped by
-     * the hub's content box with no scrollbar and no way to reach the rows below the fold.
-     */
-    private static final int BODY_H = ROOT_H - 2 * PADDING - HEADER_H - HEADER_GAP;
 
     private static final int COLOR_ROW = 0x40000000;
     private static final int COLOR_BUTTON = 0x80000000;
@@ -141,24 +119,26 @@ public final class DailyTasksUI {
         // No background: the hub paints the window frame and content panel behind every tab, so a
         // frame here drew a second window inset inside the first. The padding stays as inset spacing.
         UIElement root = new UIElement();
+        // Fills the hub's tab box, whatever size the hub window has been given.
         root.layout(l -> l.flexDirection(FlexDirection.COLUMN)
-                .width(ROOT_W).height(ROOT_H).paddingAll(PADDING));
+                .widthPercent(100).heightPercent(100).paddingAll(PADDING));
 
         // This section already had a title row of its own, so it keeps it and only gains the I
         // button on the end.
         HubSection.Info section = HubSection.info("daily_tasks");
         root.addChild(header(server, section));
 
-        // The rows move into their own column so the bonus panel can sit beside them. The height is
-        // BODY_H rather than flexGrow so the scroller inside gets a definite box to clip against;
-        // it still tracks ROOT_H, so the list grows with the window rather than being pinned to a
-        // whole number of rows.
+        // The rows move into their own column so the bonus panel can sit beside them, and take
+        // whatever height the window leaves under the header, so a taller hub shows more rows.
+        // flexBasis(0), not flexGrow alone: LdLib defaults flex-shrink to 0 and flex-basis to auto,
+        // so an auto basis would be all eight rows and the scroller would never overflow — the list
+        // was clipped by the hub's content box with no scrollbar. Same fix as TpaTab's body.
         UIElement body = new UIElement();
-        body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(BODY_H));
+        body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexBasis(0).flexGrow(1));
 
         // ScrollerView clips its viewport and handles the wheel itself, so neither is set here.
         ScrollerView tasks = new ScrollerView();
-        tasks.layout(l -> l.flexGrow(1).height(BODY_H));
+        tasks.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
         tasks.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
@@ -231,8 +211,8 @@ public final class DailyTasksUI {
                 bonus(server, DailyTasksUI::bonusStateOf, LOCKED), LOCKED);
 
         UIElement panel = new UIElement();
-        panel.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(BONUS_W)
-                .marginLeft(BONUS_GAP).paddingAll(3).alignItems(AlignItems.CENTER));
+        panel.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(BONUS_W).heightPercent(100)
+                .flexShrink(0).marginLeft(BONUS_GAP).paddingAll(3).alignItems(AlignItems.CENTER));
         panel.style(s -> s.background(new ColorRectTexture(COLOR_ROW)));
         panel.addSyncValue(rewardIndex.getSyncValue());
         panel.addSyncValue(completed.getSyncValue());

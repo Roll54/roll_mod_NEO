@@ -30,6 +30,8 @@ import net.minecraft.world.phys.HitResult;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO(drill-modules): this whole class is deprecated together with its 9 registrations in
+//  ItemRegistry — replaced by ModularDrillItem. Delete after the migration window.
 public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
 
     private final long PER_BLOCK_BREAK_COST;
@@ -362,5 +364,16 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Energy flowing into the drill mid-dig (a charging chestplate, a backpack, an MI charger)
+     * changes the ENERGY component, and the NeoForge default treats any component change short of
+     * damage as a new item and restarts block breaking — so a drill being charged while mining
+     * never finishes a block. The same drill in the same slot is the same dig.
+     */
+    @Override
+    public boolean shouldCauseBlockBreakReset(ItemStack oldStack, ItemStack newStack) {
+        return oldStack.getItem() != newStack.getItem();
     }
 }

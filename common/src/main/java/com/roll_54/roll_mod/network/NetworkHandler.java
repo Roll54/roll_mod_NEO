@@ -7,6 +7,10 @@ import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
 import com.roll_54.roll_mod.network.packet.RerollDailyTaskPacket;
 import com.roll_54.roll_mod.network.packet.DailyTaskToastPacket;
 import com.roll_54.roll_mod.network.packet.OpenHubPacket;
+import com.roll_54.roll_mod.network.packet.drill.DrillThrottlePacket;
+import com.roll_54.roll_mod.network.packet.drill.DrillVolumePacket;
+import com.roll_54.roll_mod.network.packet.drill.DrillTrashFilterPacket;
+import com.roll_54.roll_mod.network.packet.drill.OpenDrillConfigPacket;
 import com.roll_54.roll_mod.network.packet.HomeActionPacket;
 import com.roll_54.roll_mod.network.packet.KitActionPacket;
 import com.roll_54.roll_mod.network.packet.SyncKitsPacket;
@@ -69,6 +73,26 @@ public class NetworkHandler {
                 OpenHubPacket.TYPE,
                 OpenHubPacket.STREAM_CODEC,
                 OpenHubPacket::handle
+        );
+        registrar.playToServer(
+                DrillThrottlePacket.TYPE,
+                DrillThrottlePacket.STREAM_CODEC,
+                DrillThrottlePacket::handle
+        );
+        registrar.playToServer(
+                OpenDrillConfigPacket.TYPE,
+                OpenDrillConfigPacket.STREAM_CODEC,
+                OpenDrillConfigPacket::handle
+        );
+        registrar.playToServer(
+                DrillVolumePacket.TYPE,
+                DrillVolumePacket.STREAM_CODEC,
+                DrillVolumePacket::handle
+        );
+        registrar.playToServer(
+                DrillTrashFilterPacket.TYPE,
+                DrillTrashFilterPacket.STREAM_CODEC,
+                DrillTrashFilterPacket::handle
         );
         registrar.playToServer(
                 WarpActionPacket.TYPE,

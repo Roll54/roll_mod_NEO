@@ -1,11 +1,15 @@
 package com.roll_54.roll_mod_server.util;
 
+import com.roll_54.roll_mod_server.mixin.patch.BaseSpawnerAccessor;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BaseSpawner;
+import net.minecraft.world.level.SpawnData;
 import net.minecraft.world.level.storage.loot.LootParams;
 import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParamSets;
@@ -23,7 +27,8 @@ import java.util.List;
 /**
  * Turns a vanilla mob spawner into a passive drop generator: instead of spawning mobs, the
  * spawner simulates the mob's loot-table drops and deposits them into a chest placed directly
- * above it. See {@code SpawnerBlockEntityMixin} / {@code BaseSpawnerMixin} in the server module.
+ * above it. {@code SpawnerBlockEntityMixin} in the server module runs {@link #tick} in place of
+ * vanilla's spawner tick whenever a container is above.
  */
 public final class SpawnerChestHelper {
     private SpawnerChestHelper() {
@@ -38,8 +43,46 @@ public final class SpawnerChestHelper {
         return level.getCapability(Capabilities.ItemHandler.BLOCK, spawnerPos.above(), Direction.DOWN);
     }
 
-    public static boolean hasContainerAbove(ServerLevel level, BlockPos spawnerPos) {
-        return containerAbove(level, spawnerPos) != null;
+    /**
+     * One spawner tick, replacing vanilla's {@code BaseSpawner.serverTick}: counts the delay down,
+     * then produces up to {@code spawnCount} mobs' worth of drops into {@code dest} and rolls the next
+     * delay. No mob is ever added to the world, so vanilla's spawn gates — player range, light,
+     * liquid, obstruction, crowd cap, {@code MobSpawnEvent.PositionCheck}, custom spawn rules — have
+     * nothing to check and are skipped; the spawner only needs its chunk to tick.
+     *
+     * <p>The mob is created from its spawn data but not finalized: {@code finalizeSpawn} can add
+     * entities to the world on its own (a zombie's chicken jockey, for one), which a drop generator
+     * must not do.
+     */
+    public static void tick(ServerLevel level, BlockPos pos, BaseSpawner spawner, IItemHandler dest) {
+        BaseSpawnerAccessor state = (BaseSpawnerAccessor) spawner;
+        if (state.roll_mod$getSpawnDelay() == -1) {
+            state.roll_mod$delay(level, pos);
+        }
+        if (state.roll_mod$getSpawnDelay() > 0) {
+            state.roll_mod$setSpawnDelay(state.roll_mod$getSpawnDelay() - 1);
+            return;
+        }
+
+        SpawnData data = state.roll_mod$getOrCreateNextSpawnData(level, level.getRandom(), pos);
+        boolean produced = false;
+        for (int i = 0; i < state.roll_mod$getSpawnCount(); i++) {
+            Entity entity = EntityType.loadEntityRecursive(data.getEntityToSpawn(), level, e -> {
+                e.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, e.getYRot(), e.getXRot());
+                return e;
+            });
+            // No entity (empty or unknown spawn data), or the chest can't take the batch: stop here.
+            if (entity == null || !depositMobDrops(level, dest, entity)) {
+                break;
+            }
+            produced = true;
+        }
+
+        if (produced) {
+            level.levelEvent(2004, pos, 0); // vanilla's spawner flame puff
+        }
+        // Whatever happened, wait a full cycle before the next attempt, like vanilla after a spawn.
+        state.roll_mod$delay(level, pos);
     }
 
 

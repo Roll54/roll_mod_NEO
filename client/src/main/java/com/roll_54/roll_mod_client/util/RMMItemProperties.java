@@ -5,6 +5,10 @@ import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import com.roll_54.roll_mod.items.electricItems.EnergyDrillItem;
 import com.roll_54.roll_mod.items.electricItems.EnergySwordItem;
+import com.roll_54.roll_mod.items.modulardrill.DrillModuleHelper;
+import com.roll_54.roll_mod.items.modulardrill.ModuleType;
+import com.roll_54.roll_mod.items.modulardrill.NewItemVisibility;
+import com.roll_54.roll_mod.items.modularsaber.ModularSaberItem;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -58,6 +62,36 @@ public class RMMItemProperties {
                         ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "murasama"),
                         (stack, level, entity, seed) ->
                                 stack.getOrDefault(ComponentsRegistry.MURASAMA.get(), 0f)
+                );
+            }
+            if (item instanceof ModularSaberItem) {
+                ItemProperties.register(
+                        item,
+                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "activated"),
+                        (stack, level, entity, seed) ->
+                                stack.getOrDefault(ComponentsRegistry.FIRST_STATE_ACTIVATED.get(), false) ? 1.0F : 0.0F
+                );
+                ItemProperties.register(
+                        item,
+                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "murasama"),
+                        (stack, level, entity, seed) ->
+                                stack.getOrDefault(ComponentsRegistry.MURASAMA.get(), 0f)
+                );
+                // The meteorite module: the meteorite blade and its skins, on any tier.
+                ItemProperties.register(
+                        item,
+                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "meteorite"),
+                        (stack, level, entity, seed) ->
+                                DrillModuleHelper.get(stack).has(ModuleType.METEORITE) ? 1.0F : 0.0F
+                );
+            }
+            // The client's "show new items" option: 1 swaps the model to the placeholder. Read every
+            // frame, so the swap follows the option live.
+            if (NewItemVisibility.isNew(item)) {
+                ItemProperties.register(
+                        item,
+                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "hidden"),
+                        (stack, level, entity, seed) -> NewItemVisibility.hidden() ? 1.0F : 0.0F
                 );
             }
             ItemProperties.register(

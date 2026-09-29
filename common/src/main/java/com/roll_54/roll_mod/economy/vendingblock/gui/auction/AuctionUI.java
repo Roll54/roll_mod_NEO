@@ -2,6 +2,9 @@ package com.roll_54.roll_mod.economy.vendingblock.gui.auction;
 
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
+import com.lowdragmc.lowdraglib2.gui.ui.data.Horizontal;
+import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay;
+import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollerMode;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.*;
 import com.lowdragmc.lowdraglib2.gui.ui.data.Vertical;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
@@ -14,6 +17,10 @@ import com.roll_54.roll_mod.minestar.hub.gui.HubSection;
 import com.roll_54.roll_mod.minestar.hub.gui.HubUI;
 import com.roll_54.roll_mod.economy.vendingblock.network.AuctionActionPacket;
 import com.roll_54.roll_mod.economy.vendingblock.network.CreateListingPacket;
+import dev.vfyjxf.taffy.style.AlignContent;
+import dev.vfyjxf.taffy.style.AlignItems;
+import dev.vfyjxf.taffy.style.FlexDirection;
+import dev.vfyjxf.taffy.style.FlexWrap;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
@@ -23,8 +30,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
-import org.appliedenergistics.yoga.YogaAlign;
-import org.appliedenergistics.yoga.YogaFlexDirection;
 
 /**
  * The {@code /rollmod ah} GUI. A single {@link ModularUI} hosting four sub-panels toggled via
@@ -33,18 +38,16 @@ import org.appliedenergistics.yoga.YogaFlexDirection;
  * {@code createUI} runs on both sides. All mutating actions are addressed by listing UUID through
  * {@link AuctionActionPacket}/{@link CreateListingPacket}, so client-side filtering/pagination
  * never has to match the server's element tree.
+ *
+ * <p>Laid out in flex rows and columns against whatever size the hub window has, not in pixels:
+ * the browse grid gains columns and rows as the window grows, and the other three panels scroll
+ * when it is too small for them.
  */
 public final class AuctionUI {
-
-  // The panel fills the hub's content box. Everything below is derived from it, so re-sizing the
-  // hub re-sizes the auction house with it — this screen used to be ~45 loose magic numbers.
-  private static final int PANEL_W = HubUI.CONTENT_W;
-  private static final int PANEL_H = HubUI.CONTENT_H;
 
   private static final int EDGE = 8;          // panel-edge inset
   private static final int INSET = EDGE * 2;  // content inset, one step further in
   private static final int HEADER_H = 24;     // title row and its two buttons
-  private static final int BODY_H = PANEL_H - HEADER_H;
 
   private static final int SLOT = VendorUIHelper.SLOT_SIZE;
   private static final int LINE_H = 12;
@@ -52,41 +55,24 @@ public final class AuctionUI {
   private static final int BTN_H = 18;
   /**
    * Wide enough for the longest sort label — uk_ua's "Скоро завершаться" needs ~100px, and a
-   * Button spends 8 of its width on padding and margins. The search field's width is derived
-   * from this, so the two always add up to the panel.
+   * Button spends 8 of its width on padding and margins. The search field takes the rest of the row.
    */
   private static final int SORT_W = 120;
   private static final int HEAD_BTN_W = 56;
 
-  /** The I button, and the width the header buttons move left to clear it. */
+  /** The I button. */
   private static final int INFO = 12;
-  private static final int INFO_SLOT = INFO + 4;
 
   private static final int GRID_X = 12;
-  private static final int GRID_Y = 22;
   private static final int PAGER_H = 24;
 
-  /** The browse grid fills whatever room the panel leaves, rather than a fixed 12x6. */
-  private static final int COLS = (PANEL_W - 2 * GRID_X) / SLOT;
-  private static final int ROWS = (BODY_H - GRID_Y - PAGER_H) / SLOT;
-  private static final int PAGE_SIZE = COLS * ROWS;
-
-  /** A full-width line inside a content panel. */
-  private static final int TEXT_W = PANEL_W - 2 * INSET;
-  private static final int PAGER_Y = BODY_H - PAGER_H;
-
-  // The create form's rows. It used to be a scatter of literals, which is how the Select item
-  // button ended up underneath the bidding switch and the price labels on top of the picker hint —
-  // in LdLib2 a later sibling wins both the paint and the click, so overlapping rectangles are not
-  // a cosmetic problem. The form only reaches y 150 of the 226 available, so the rows are spread.
-  private static final int ROW_ITEM = 8; // picker slot, quantity, Select item, bidding switch
-  private static final int ROW_HINT = 32; // what is currently picked
-  private static final int ROW_PRICE = 52; // whichever of the two price groups is showing
-  private static final int ROW_DAYS = 90; // duration
-  // Kept clear of the player inventory, which the hub overlays across the bottom ~70px of the
-  // content box while this form is open — the Back button must not end up underneath it.
-  private static final int ROW_LIST = 104; // the List button
-  private static final int ROW_BACK = 128;
+  /**
+   * The grid's size before it has been laid out — the default hub window's — and on the server's
+   * copy of the tree, which never is. After that the grid measures itself every tick.
+   */
+  private static final int DEFAULT_COLS = (HubUI.DEFAULT_CONTENT_W - 2 * GRID_X) / SLOT;
+  private static final int DEFAULT_ROWS =
+      (HubUI.DEFAULT_CONTENT_H - HEADER_H - 22 - PAGER_H) / SLOT;
 
   /** Fits "Вибрати предмет" (~88px) with the Button's own padding on top. */
   private static final int PICK_BTN_W = 110;
@@ -107,25 +93,22 @@ public final class AuctionUI {
    *     without it, and it is clutter everywhere else.
    */
   public static UIElement buildRoot(Player player, Consumer<Boolean> showInventory) {
-    // Sized, but with no background of its own: the hub already paints the window frame and the
-    // dark content panel behind every tab, and a panel here only washed over them.
+    // Fills the tab box, but with no background of its own: the hub already paints the window frame
+    // and the dark content panel behind every tab, and a panel here only washed over them.
     UIElement root = new UIElement();
-    root.layout(l -> l.width(PANEL_W).height(PANEL_H));
+    root.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).heightPercent(100));
 
     HubSection.Info section = HubSection.info("auction");
-
-    Label title = new Label();
-    title.setText(Component.translatable("menu.roll_mod.ah.title"));
-    root.addChild(VendorUIHelper.abs(title, EDGE, 6, 200, LINE_H));
 
     UIElement browse = new UIElement();
     UIElement detail = new UIElement();
     UIElement create = new UIElement();
     UIElement collection = new UIElement();
-    VendorUIHelper.abs(browse, 0, HEADER_H, PANEL_W, BODY_H);
-    VendorUIHelper.abs(detail, 0, HEADER_H, PANEL_W, BODY_H);
-    VendorUIHelper.abs(create, 0, HEADER_H, PANEL_W, BODY_H);
-    VendorUIHelper.abs(collection, 0, HEADER_H, PANEL_W, BODY_H);
+    // The four share the body; only one is displayed, and a hidden one leaves the layout.
+    for (UIElement panel : List.of(browse, detail, create, collection)) {
+      panel.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)
+          .flexBasis(0).flexGrow(1));
+    }
 
     IntConsumer select =
         idx -> {
@@ -138,21 +121,29 @@ public final class AuctionUI {
           showInventory.accept(idx == 2);
         };
 
-    // Both buttons shift left by INFO_SLOT to clear the I button, which takes the far corner so
-    // it sits where every other section's does.
+    // Title on the left, then the two panel buttons, then the I button in the far corner where
+    // every other section has it.
+    UIElement header = row(HEADER_H);
+    header.layout(l -> l.paddingHorizontal(EDGE).flexShrink(0));
+
+    Label title = new Label();
+    title.setText(Component.translatable("menu.roll_mod.ah.title"));
+    title.layout(l -> l.flexGrow(1).height(LINE_H));
+    title.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+
     Button createBtn = new Button();
     createBtn.setText(Component.translatable("menu.roll_mod.ah.create"));
     createBtn.setOnClick(e -> select.accept(2));
-    root.addChild(VendorUIHelper.abs(
-        createBtn, PANEL_W - EDGE - 2 * HEAD_BTN_W - 4 - INFO_SLOT, 4, HEAD_BTN_W, FIELD_H));
+    createBtn.layout(l -> l.width(HEAD_BTN_W).height(FIELD_H).marginRight(4));
 
     Button collectionBtn = new Button();
     collectionBtn.setText(Component.translatable("menu.roll_mod.ah.collection"));
     collectionBtn.setOnClick(e -> select.accept(3));
-    root.addChild(VendorUIHelper.abs(
-        collectionBtn, PANEL_W - EDGE - HEAD_BTN_W - INFO_SLOT, 4, HEAD_BTN_W, FIELD_H));
+    collectionBtn.layout(l -> l.width(HEAD_BTN_W).height(FIELD_H).marginRight(4));
 
-    root.addChild(VendorUIHelper.abs(section.button(), PANEL_W - EDGE - INFO, 6, INFO, INFO));
+    section.button().layout(l -> l.width(INFO).height(INFO).flexShrink(0));
+    header.addChildren(title, createBtn, collectionBtn, section.button());
+    root.addChild(header);
 
     UUID[] selected = {null};
     Runnable[] rebuildDetail = {() -> {}};
@@ -164,11 +155,50 @@ public final class AuctionUI {
 
     select.accept(0);
 
-    root.addChildren(browse, detail, create, collection);
+    UIElement body = new UIElement();
+    body.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)
+        .flexBasis(0).flexGrow(1));
+    body.addChildren(browse, detail, create, collection);
+    root.addChild(body);
     // Last, so it covers whichever of the four panels is on screen.
     root.addChild(section.overlay());
-    // The player inventory lives on the hub root, so it is visible from every tab.
+    // The player inventory lives on the hub window, under the content box.
     return root;
+  }
+
+  /* -------------------------------------------------- layout ----------------------------------------------------- */
+
+  /** A full-width row of fixed height, children centred vertically. */
+  private static UIElement row(int height) {
+    UIElement row = new UIElement();
+    row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(height)
+        .alignItems(AlignItems.CENTER).flexShrink(0));
+    return row;
+  }
+
+  /** A full-width single line of text. */
+  private static Label line(Component text, int marginTop) {
+    Label label = new Label();
+    label.setText(text);
+    label.layout(l -> l.widthPercent(100).height(LINE_H).marginTop(marginTop).flexShrink(0));
+    label.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+    return label;
+  }
+
+  /**
+   * A vertical scroller that takes the rest of its column. flexBasis(0) for the reason HubSection
+   * gives: LdLib's flex-basis defaults to auto, so a grow alone leaves the scroller as tall as its
+   * content and it never scrolls. COLUMN explicitly, or the measured height never exceeds the view.
+   */
+  private static ScrollerView scroller() {
+    ScrollerView scroller = new ScrollerView();
+    scroller.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
+    scroller.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
+        .verticalScrollDisplay(ScrollDisplay.AUTO)
+        .horizontalScrollDisplay(ScrollDisplay.NEVER));
+    scroller.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN)
+        .widthPercent(100)));
+    return scroller;
   }
 
   /* -------------------------------------------------- browse ----------------------------------------------------- */
@@ -182,6 +212,13 @@ public final class AuctionUI {
     String[] filter = {""};
     int[] sort = {0};
     int[] page = {0};
+    // Listings per page as of the last rebuild, so a resize keeps the first listing on screen.
+    int[] pageSize = {DEFAULT_COLS * DEFAULT_ROWS};
+
+    panel.layout(l -> l.paddingHorizontal(GRID_X));
+
+    UIElement toolbar = row(14);
+    toolbar.layout(l -> l.marginTop(2));
 
     TextField search = new TextField();
     search.setText("");
@@ -190,7 +227,7 @@ public final class AuctionUI {
           filter[0] = t;
           page[0] = 0;
         });
-    panel.addChild(VendorUIHelper.abs(search, EDGE, 2, PANEL_W - 2 * EDGE - SORT_W - 4, 14));
+    search.layout(l -> l.flexGrow(1).height(14).marginRight(4));
 
     Button sortBtn = new Button();
     sortBtn.setText(sortLabel(sort[0]));
@@ -200,13 +237,18 @@ public final class AuctionUI {
           sortBtn.setText(sortLabel(sort[0]));
           page[0] = 0;
         });
-    panel.addChild(VendorUIHelper.abs(sortBtn, PANEL_W - EDGE - SORT_W, 2, SORT_W, 14));
+    sortBtn.layout(l -> l.width(SORT_W).height(14).flexShrink(0));
+    toolbar.addChildren(search, sortBtn);
 
+    // Wraps plain slot-sized cells, so a wider window is simply more columns. Clipped, because a
+    // row that no longer fits after a shrink is dropped at the next rebuild, not before.
     UIElement grid = new UIElement();
-    panel.addChild(VendorUIHelper.abs(grid, GRID_X, GRID_Y, COLS * SLOT, ROWS * SLOT));
+    grid.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1).marginTop(6)
+        .flexDirection(FlexDirection.ROW).flexWrap(FlexWrap.WRAP)
+        .alignContent(AlignContent.FLEX_START));
+    grid.setOverflowVisible(false);
 
-    Label pageLabel = new Label();
-    panel.addChild(VendorUIHelper.abs(pageLabel, GRID_X + 28, PAGER_Y + 4, PANEL_W - 2 * (GRID_X + 28), LINE_H));
+    UIElement pager = row(PAGER_H);
 
     Button prev = new Button();
     prev.setText(Component.literal("<"));
@@ -214,23 +256,47 @@ public final class AuctionUI {
         e -> {
           if (page[0] > 0) page[0]--;
         });
-    panel.addChild(VendorUIHelper.abs(prev, GRID_X, PAGER_Y + 2, 20, FIELD_H));
+    prev.layout(l -> l.width(20).height(FIELD_H).flexShrink(0));
+
+    Label pageLabel = new Label();
+    pageLabel.layout(l -> l.flexGrow(1).height(LINE_H));
+    pageLabel.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
+        .textAlignVertical(Vertical.CENTER));
 
     Button next = new Button();
     next.setText(Component.literal(">"));
-    panel.addChild(VendorUIHelper.abs(next, PANEL_W - GRID_X - 20, PAGER_Y + 2, 20, FIELD_H));
+    next.layout(l -> l.width(20).height(FIELD_H).flexShrink(0));
+    pager.addChildren(prev, pageLabel, next);
+
+    panel.addChildren(toolbar, grid, pager);
 
     String[] sig = {null};
     Runnable rebuild =
         () -> {
+          // Measured every time rather than on LAYOUT_CHANGED: the tree must never be rebuilt from
+          // inside a layout pass, and this already runs once a tick. Cells hold no sync value, so a
+          // column count that differs between client and server — the server's copy is never laid
+          // out — costs nothing; the two already page through different lists.
+          int cols = cells(grid.getContentWidth(), DEFAULT_COLS);
+          int rows = cells(grid.getContentHeight(), DEFAULT_ROWS);
+          int size = cols * rows;
+          if (size != pageSize[0]) {
+            page[0] = page[0] * pageSize[0] / size;
+            pageSize[0] = size;
+          }
+
           List<AuctionListing> list = filtered(player, filter[0], sort[0]);
-          int pages = Math.max(1, (list.size() + PAGE_SIZE - 1) / PAGE_SIZE);
+          int pages = Math.max(1, (list.size() + size - 1) / size);
           if (page[0] >= pages) page[0] = pages - 1;
-          int start = page[0] * PAGE_SIZE;
-          int end = Math.min(list.size(), start + PAGE_SIZE);
+          int start = page[0] * size;
+          int end = Math.min(list.size(), start + size);
 
           StringBuilder s =
               new StringBuilder()
+                  .append(cols)
+                  .append('x')
+                  .append(rows)
+                  .append('/')
                   .append(page[0])
                   .append('/')
                   .append(sort[0])
@@ -254,7 +320,6 @@ public final class AuctionUI {
           grid.clearLayoutCache();
           for (int i = start; i < end; i++) {
             AuctionListing l = list.get(i);
-            int slot = i - start;
             ItemSlot itemSlot = VendorUIHelper.phantomSlot();
             itemSlot.setItem(l.item.copy());
             UUID lid = l.id;
@@ -266,8 +331,8 @@ public final class AuctionUI {
                   select.accept(1);
                   e.stopPropagation();
                 });
-            grid.addChild(
-                VendorUIHelper.abs(itemSlot, (slot % COLS) * SLOT, (slot / COLS) * SLOT, SLOT, SLOT));
+            itemSlot.layout(l2 -> l2.width(SLOT).height(SLOT).flexShrink(0));
+            grid.addChild(itemSlot);
           }
           pageLabel.setText(
               Component.translatable("menu.roll_mod.ah.page", page[0] + 1, pages));
@@ -276,12 +341,17 @@ public final class AuctionUI {
     next.setOnClick(
         e -> {
           List<AuctionListing> list = filtered(player, filter[0], sort[0]);
-          int pages = Math.max(1, (list.size() + PAGE_SIZE - 1) / PAGE_SIZE);
+          int pages = Math.max(1, (list.size() + pageSize[0] - 1) / pageSize[0]);
           if (page[0] < pages - 1) page[0]++;
         });
 
     rebuild.run();
     panel.addEventListener(UIEvents.TICK, e -> rebuild.run());
+  }
+
+  /** How many whole slots fit along {@code length}; the default until the grid has a size. */
+  private static int cells(float length, int fallback) {
+    return length <= 0 ? fallback : Math.max(1, (int) (length / SLOT));
   }
 
   /* -------------------------------------------------- detail ----------------------------------------------------- */
@@ -292,50 +362,52 @@ public final class AuctionUI {
       IntConsumer select,
       UUID[] selected,
       Runnable[] rebuildDetail) {
-    UIElement content = new UIElement();
-    panel.addChild(VendorUIHelper.abs(content, 0, 0, PANEL_W, BODY_H - 26));
+    ScrollerView content = scroller();
+    content.viewContainer(c -> c.layout(l -> l.paddingHorizontal(INSET).paddingTop(16)));
 
+    UIElement footer = row(FIELD_H + 8);
+    footer.layout(l -> l.paddingHorizontal(EDGE));
     Button back = new Button();
     back.setText(Component.translatable("menu.roll_mod.ah.back"));
     back.setOnClick(e -> select.accept(0));
-    panel.addChild(VendorUIHelper.abs(back, EDGE, BODY_H - 24, 60, FIELD_H));
+    back.layout(l -> l.width(60).height(FIELD_H));
+    footer.addChild(back);
+
+    panel.addChildren(content, footer);
 
     Runnable rebuild =
         () -> {
-          content.clearAllChildren();
-          content.clearLayoutCache();
+          content.clearAllScrollViewChildren();
           AuctionListing l = findById(player, selected[0]);
           if (l == null) {
-            Label gone = new Label();
-            gone.setText(Component.translatable("menu.roll_mod.ah.notFound"));
-            content.addChild(VendorUIHelper.abs(gone, INSET, 16, TEXT_W, LINE_H));
+            content.addScrollViewChild(line(Component.translatable("menu.roll_mod.ah.notFound"), 0));
             return;
           }
 
+          UIElement itemRow = row(SLOT);
           ItemSlot item = VendorUIHelper.phantomSlot();
           item.setItem(l.item.copy());
-          content.addChild(VendorUIHelper.abs(item, INSET, 16, SLOT, SLOT));
-
+          item.layout(l2 -> l2.width(SLOT).height(SLOT).flexShrink(0).marginRight(6));
           Label name = new Label();
           name.setText(Component.literal(l.item.getCount() + "x ").append(l.item.getHoverName()));
-          content.addChild(VendorUIHelper.abs(name, INSET + SLOT + 6, 18, TEXT_W - SLOT - 6, LINE_H));
+          name.layout(l2 -> l2.flexGrow(1).height(LINE_H));
+          name.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+          itemRow.addChildren(item, name);
+          content.addScrollViewChild(itemRow);
 
-          Label seller = new Label();
-          seller.setText(Component.translatable("menu.roll_mod.ah.seller", l.sellerName));
-          content.addChild(VendorUIHelper.abs(seller, INSET, 44, TEXT_W, LINE_H));
+          content.addScrollViewChild(
+              line(Component.translatable("menu.roll_mod.ah.seller", l.sellerName), 10));
 
-          Label time = new Label();
-          time.setText(remainingText(l));
+          Label time = line(remainingText(l), 4);
           time.addEventListener(UIEvents.TICK, e -> time.setText(remainingText(l)));
-          content.addChild(VendorUIHelper.abs(time, INSET, 60, TEXT_W, LINE_H));
+          content.addScrollViewChild(time);
 
           if (!l.bidding) {
-            Label price = new Label();
-            price.setText(
+            content.addScrollViewChild(line(
                 Component.translatable(
                     "menu.roll_mod.ah.price",
-                    EnergyFormatUtils.formatEnergy(l.fixedPrice)));
-            content.addChild(VendorUIHelper.abs(price, INSET, 80, TEXT_W, LINE_H));
+                    EnergyFormatUtils.formatEnergy(l.fixedPrice)),
+                8));
 
             Button buy = new Button();
             buy.setText(Component.translatable("menu.roll_mod.buy.button"));
@@ -345,21 +417,23 @@ public final class AuctionUI {
                       AuctionActionPacket.of(AuctionActionPacket.Action.BUY, l.id));
                   select.accept(0);
                 });
-            content.addChild(VendorUIHelper.abs(buy, INSET, 104, 90, BTN_H));
+            buy.layout(l2 -> l2.width(90).height(BTN_H));
+            UIElement actions = row(BTN_H);
+            actions.layout(l2 -> l2.marginTop(12));
+            actions.addChild(buy);
+            content.addScrollViewChild(actions);
           } else {
-            Label bidLabel = new Label();
-            bidLabel.setText(
+            content.addScrollViewChild(line(
                 Component.translatable(
                     l.hasBids()
                         ? "menu.roll_mod.ah.currentBid"
                         : "menu.roll_mod.ah.startBid",
-                    EnergyFormatUtils.formatEnergy(l.displayPrice())));
-            content.addChild(VendorUIHelper.abs(bidLabel, INSET, 80, TEXT_W, LINE_H));
+                    EnergyFormatUtils.formatEnergy(l.displayPrice())),
+                8));
 
             long minNext = l.minNextBid(1);
-            TextField bidField =
-                VendorUIHelper.intField(INSET, 102, 70, FIELD_H, Long.toString(minNext), t -> {});
-            content.addChild(bidField);
+            TextField bidField = VendorUIHelper.intField(Long.toString(minNext), t -> {});
+            bidField.layout(l2 -> l2.width(70).height(FIELD_H).marginRight(6));
 
             Button placeBid = new Button();
             placeBid.setText(Component.translatable("menu.roll_mod.ah.bid"));
@@ -371,24 +445,32 @@ public final class AuctionUI {
                         new AuctionActionPacket(AuctionActionPacket.Action.BID, l.id, amount));
                   }
                 });
-            content.addChild(VendorUIHelper.abs(placeBid, INSET + 76, 102, 70, BTN_H));
+            placeBid.layout(l2 -> l2.width(70).height(BTN_H));
 
-            if (l.buyout > 0) {
-              Button buyout = new Button();
-              buyout.setText(
-                  Component.translatable(
-                      "menu.roll_mod.ah.buyout",
-                      EnergyFormatUtils.formatEnergy(l.buyout)));
-              buyout.setOnClick(
-                  e -> {
-                    PacketDistributor.sendToServer(
-                        AuctionActionPacket.of(AuctionActionPacket.Action.BUYOUT, l.id));
-                    select.accept(0);
-                  });
-              content.addChild(VendorUIHelper.abs(buyout, INSET, 124, 120, BTN_H));
-            }
+            UIElement bidRow = row(BTN_H);
+            bidRow.layout(l2 -> l2.marginTop(10));
+            bidRow.addChildren(bidField, placeBid);
+            content.addScrollViewChild(bidRow);
           }
 
+          // Buyout (bidding only) and cancel (own listing only) share the last row.
+          UIElement lastRow = row(BTN_H);
+          lastRow.layout(l2 -> l2.marginTop(4));
+          if (l.bidding && l.buyout > 0) {
+            Button buyout = new Button();
+            buyout.setText(
+                Component.translatable(
+                    "menu.roll_mod.ah.buyout",
+                    EnergyFormatUtils.formatEnergy(l.buyout)));
+            buyout.setOnClick(
+                e -> {
+                  PacketDistributor.sendToServer(
+                      AuctionActionPacket.of(AuctionActionPacket.Action.BUYOUT, l.id));
+                  select.accept(0);
+                });
+            buyout.layout(l2 -> l2.width(120).height(BTN_H).marginRight(8));
+            lastRow.addChild(buyout);
+          }
           if (l.sellerId.equals(player.getUUID())) {
             Button cancel = new Button();
             cancel.setText(Component.translatable("menu.roll_mod.ah.cancel"));
@@ -398,8 +480,10 @@ public final class AuctionUI {
                       AuctionActionPacket.of(AuctionActionPacket.Action.CANCEL, l.id));
                   select.accept(0);
                 });
-            content.addChild(VendorUIHelper.abs(cancel, INSET + 128, 124, 74, BTN_H));
+            cancel.layout(l2 -> l2.width(74).height(BTN_H));
+            lastRow.addChild(cancel);
           }
+          content.addScrollViewChild(lastRow);
         };
     rebuildDetail[0] = rebuild;
 
@@ -421,6 +505,15 @@ public final class AuctionUI {
   /* -------------------------------------------------- create ----------------------------------------------------- */
 
   private static void buildCreate(Player player, UIElement panel, IntConsumer select) {
+    // One column of rows, in reading order. It used to be a scatter of absolute rectangles, which is
+    // how the Select item button ended up underneath the bidding switch and the price labels on top
+    // of the picker hint — in LdLib2 a later sibling wins both the paint and the click. Flow layout
+    // cannot overlap. It scrolls, because with the inventory shown under it the form may get less
+    // height than it needs in a small window.
+    ScrollerView form = scroller();
+    form.viewContainer(c -> c.layout(l -> l.paddingHorizontal(INSET).paddingTop(8)));
+    panel.addChild(form);
+
     ItemSlot pick = VendorUIHelper.phantomSlot();
     // Clicking the slot with something on the cursor still works, for anyone who already knows the
     // trick; the Select item button below is the discoverable version of the same thing.
@@ -434,7 +527,7 @@ public final class AuctionUI {
           pick.setItem(cursor.isEmpty() ? ItemStack.EMPTY : cursor.copyWithCount(1));
           e.stopPropagation();
         });
-    panel.addChild(VendorUIHelper.abs(pick, INSET, ROW_ITEM, SLOT, SLOT));
+    pick.layout(l -> l.width(SLOT).height(SLOT).flexShrink(0).marginRight(6));
 
     // "Select item": arms the picker, then the next thing the player lifts off their inventory
     // becomes the listing's item.
@@ -445,18 +538,12 @@ public final class AuctionUI {
     // and the stack is only copied, so the player still puts it straight back.
     boolean[] picking = {false};
 
-    Label pickHint = new Label();
-    pickHint.setText(Component.translatable("menu.roll_mod.ah.pick.idle"));
-    pickHint.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
-    panel.addChild(VendorUIHelper.abs(pickHint, INSET, ROW_HINT, TEXT_W, LINE_H));
+    Label pickHint = line(Component.translatable("menu.roll_mod.ah.pick.idle"), 6);
 
     Button selectItem = new Button();
     selectItem.setText(Component.translatable("menu.roll_mod.ah.pick.button"));
     selectItem.setOnClick(e -> picking[0] = true);
-    // Beside the quantity field rather than at the right edge: the bidding label and switch live
-    // there, and being added later they took every click that landed on this button.
-    panel.addChild(
-        VendorUIHelper.abs(selectItem, INSET + SLOT + 6 + 40 + 8, ROW_ITEM, PICK_BTN_W, BTN_H));
+    selectItem.layout(l -> l.width(PICK_BTN_W).height(BTN_H).flexShrink(0).marginLeft(8));
 
     panel.addEventListener(
         UIEvents.TICK,
@@ -481,45 +568,48 @@ public final class AuctionUI {
                           .withStyle(ChatFormatting.GREEN));
         });
 
-    TextField qty =
-        VendorUIHelper.intField(INSET + SLOT + 6, ROW_ITEM + 2, 40, FIELD_H, "1", t -> {});
-    panel.addChild(qty);
+    TextField qty = VendorUIHelper.intField("1", t -> {});
+    qty.layout(l -> l.width(40).height(FIELD_H).flexShrink(0));
 
+    // The bidding switch keeps the far end of the row; the spacer pushes it there.
+    UIElement spacer = new UIElement();
+    spacer.layout(l -> l.flexGrow(1));
     Label typeLabel = new Label();
     typeLabel.setText(Component.translatable("menu.roll_mod.ah.bidding"));
-    panel.addChild(
-        VendorUIHelper.abs(typeLabel, PANEL_W - INSET - 48 - 32, ROW_ITEM + 2, 48, LINE_H));
+    typeLabel.layout(l -> l.width(48).height(LINE_H).flexShrink(0).marginRight(4));
+    typeLabel.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
     Switch type = new Switch();
     type.setOn(false);
-    panel.addChild(VendorUIHelper.abs(type, PANEL_W - INSET - 28, ROW_ITEM, 28, 14));
+    type.layout(l -> l.width(28).height(14).flexShrink(0));
 
-    // Fixed-price fields
+    UIElement itemRow = row(BTN_H);
+    itemRow.addChildren(pick, qty, selectItem, spacer, typeLabel, type);
+
+    // Fixed-price fields. The two groups are mutually exclusive and take the same place in the
+    // column: a hidden one leaves the layout.
     UIElement fixedGroup = new UIElement();
-    // Below the hint, not over it. The two groups deliberately share one rectangle — they are
-    // mutually exclusive — but at y 34 they also covered pickHint, so in bidding mode the start
-    // and buyout labels printed straight over the "what you picked" line.
-    VendorUIHelper.abs(fixedGroup, 0, ROW_PRICE, PANEL_W, 32);
-    Label priceLabel = new Label();
-    priceLabel.setText(Component.translatable("menu.roll_mod.ah.priceField"));
-    fixedGroup.addChild(VendorUIHelper.abs(priceLabel, INSET, 0, 120, 10));
-    TextField priceField = VendorUIHelper.intField(INSET, 12, 100, FIELD_H, "1", t -> {});
-    fixedGroup.addChild(priceField);
-    panel.addChild(fixedGroup);
+    fixedGroup.layout(l -> l.flexDirection(FlexDirection.COLUMN).marginTop(8).flexShrink(0));
+    Label priceLabel = fieldLabel(Component.translatable("menu.roll_mod.ah.priceField"), 120);
+    TextField priceField = VendorUIHelper.intField("1", t -> {});
+    priceField.layout(l -> l.width(100).height(FIELD_H).marginTop(2));
+    fixedGroup.addChildren(priceLabel, priceField);
 
-    // Bidding fields
+    // Bidding fields: start and buyout side by side.
     UIElement bidGroup = new UIElement();
-    VendorUIHelper.abs(bidGroup, 0, ROW_PRICE, PANEL_W, 32);
-    Label startLabel = new Label();
-    startLabel.setText(Component.translatable("menu.roll_mod.ah.startField"));
-    bidGroup.addChild(VendorUIHelper.abs(startLabel, INSET, 0, 90, 10));
-    TextField startField = VendorUIHelper.intField(INSET, 12, 90, FIELD_H, "1", t -> {});
-    bidGroup.addChild(startField);
-    Label buyoutLabel = new Label();
-    buyoutLabel.setText(Component.translatable("menu.roll_mod.ah.buyoutField"));
-    bidGroup.addChild(VendorUIHelper.abs(buyoutLabel, INSET + 110, 0, 110, 10));
-    TextField buyoutField = VendorUIHelper.intField(INSET + 110, 12, 90, FIELD_H, "0", t -> {});
-    bidGroup.addChild(buyoutField);
-    panel.addChild(bidGroup);
+    bidGroup.layout(l -> l.flexDirection(FlexDirection.ROW).marginTop(8).flexShrink(0));
+    UIElement startCol = new UIElement();
+    startCol.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(110));
+    Label startLabel = fieldLabel(Component.translatable("menu.roll_mod.ah.startField"), 90);
+    TextField startField = VendorUIHelper.intField("1", t -> {});
+    startField.layout(l -> l.width(90).height(FIELD_H).marginTop(2));
+    startCol.addChildren(startLabel, startField);
+    UIElement buyoutCol = new UIElement();
+    buyoutCol.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(110));
+    Label buyoutLabel = fieldLabel(Component.translatable("menu.roll_mod.ah.buyoutField"), 110);
+    TextField buyoutField = VendorUIHelper.intField("0", t -> {});
+    buyoutField.layout(l -> l.width(90).height(FIELD_H).marginTop(2));
+    buyoutCol.addChildren(buyoutLabel, buyoutField);
+    bidGroup.addChildren(startCol, buyoutCol);
     bidGroup.setDisplay(false);
 
     type.setOnSwitchChanged(
@@ -528,12 +618,12 @@ public final class AuctionUI {
           bidGroup.setDisplay(on);
         });
 
-    Label daysLabel = new Label();
-    daysLabel.setText(Component.translatable("menu.roll_mod.ah.daysField"));
-    panel.addChild(VendorUIHelper.abs(daysLabel, INSET, ROW_DAYS, 120, 10));
-    TextField daysField =
-        VendorUIHelper.intField(INSET, ROW_DAYS + 12, 50, FIELD_H, "10", t -> {});
-    panel.addChild(daysField);
+    UIElement daysGroup = new UIElement();
+    daysGroup.layout(l -> l.flexDirection(FlexDirection.COLUMN).marginTop(8).flexShrink(0));
+    Label daysLabel = fieldLabel(Component.translatable("menu.roll_mod.ah.daysField"), 120);
+    TextField daysField = VendorUIHelper.intField("10", t -> {});
+    daysField.layout(l -> l.width(50).height(FIELD_H).marginTop(2));
+    daysGroup.addChildren(daysLabel, daysField);
 
     Button list = new Button();
     list.setText(Component.translatable("menu.roll_mod.ah.list"));
@@ -553,21 +643,32 @@ public final class AuctionUI {
           pick.setItem(ItemStack.EMPTY);
           select.accept(0);
         });
-    panel.addChild(VendorUIHelper.abs(list, INSET + 110, ROW_LIST, 90, BTN_H));
+    list.layout(l -> l.width(90).height(BTN_H).marginRight(8));
 
     Button back = new Button();
     back.setText(Component.translatable("menu.roll_mod.ah.back"));
     back.setOnClick(e -> select.accept(0));
-    panel.addChild(VendorUIHelper.abs(back, INSET + 110, ROW_BACK, 90, FIELD_H));
+    back.layout(l -> l.width(90).height(FIELD_H));
+
+    UIElement buttons = row(BTN_H);
+    buttons.layout(l -> l.marginTop(10).marginBottom(4));
+    buttons.addChildren(list, back);
+
+    form.addScrollViewChildren(itemRow, pickHint, fixedGroup, bidGroup, daysGroup, buttons);
+  }
+
+  private static Label fieldLabel(Component text, int width) {
+    Label label = new Label();
+    label.setText(text);
+    label.layout(l -> l.width(width).height(10));
+    return label;
   }
 
   /* ------------------------------------------------ collection --------------------------------------------------- */
 
   private static void buildCollection(Player player, UIElement panel, IntConsumer select) {
-    ScrollerView scroller = new ScrollerView();
-    scroller.viewContainer(c -> c.layout(l -> l.flexDirection(YogaFlexDirection.COLUMN)));
-    scroller.horizontalScroller(s -> s.setDisplay(false));
-    VendorUIHelper.abs(scroller, EDGE, 4, PANEL_W - 2 * EDGE, BODY_H - 34);
+    ScrollerView scroller = scroller();
+    scroller.layout(l -> l.marginTop(4).marginHorizontal(EDGE).widthAuto());
     panel.addChild(scroller);
 
     int[] lastCount = {-1};
@@ -577,21 +678,15 @@ public final class AuctionUI {
           scroller.clearAllScrollViewChildren();
           for (ItemStack stack : claims) {
             if (stack.isEmpty()) continue;
-            UIElement row = new UIElement();
-            row.layout(
-                l ->
-                    l.width(PANEL_W - 2 * EDGE - 16)
-                        .height(SLOT)
-                        .flexDirection(YogaFlexDirection.ROW)
-                        .alignItems(YogaAlign.CENTER)
-                        .marginBottom(2));
+            UIElement row = row(SLOT);
+            row.layout(l -> l.marginBottom(2));
             ItemSlot slot = VendorUIHelper.phantomSlot();
             slot.setItem(stack.copy());
-            slot.layout(l -> l.width(18).height(18));
+            slot.layout(l -> l.width(18).height(18).flexShrink(0));
             row.addChild(slot);
             Label label = new Label();
             label.setText(Component.literal(stack.getCount() + "x ").append(stack.getHoverName()));
-            label.layout(l -> l.width(180).height(12).marginLeft(6));
+            label.layout(l -> l.flexGrow(1).height(12).marginLeft(6));
             row.addChild(label);
             scroller.addScrollViewChild(row);
           }
@@ -607,12 +702,17 @@ public final class AuctionUI {
     Button claimAll = new Button();
     claimAll.setText(Component.translatable("menu.roll_mod.ah.claimAll"));
     claimAll.setOnClick(e -> PacketDistributor.sendToServer(AuctionActionPacket.claim()));
-    panel.addChild(VendorUIHelper.abs(claimAll, EDGE, BODY_H - 26, 90, FIELD_H));
+    claimAll.layout(l -> l.width(90).height(FIELD_H).marginRight(10));
 
     Button back = new Button();
     back.setText(Component.translatable("menu.roll_mod.ah.back"));
     back.setOnClick(e -> select.accept(0));
-    panel.addChild(VendorUIHelper.abs(back, EDGE + 100, BODY_H - 26, 60, FIELD_H));
+    back.layout(l -> l.width(60).height(FIELD_H));
+
+    UIElement footer = row(FIELD_H + 10);
+    footer.layout(l -> l.paddingHorizontal(EDGE));
+    footer.addChildren(claimAll, back);
+    panel.addChild(footer);
   }
 
   /* -------------------------------------------------- data ------------------------------------------------------- */

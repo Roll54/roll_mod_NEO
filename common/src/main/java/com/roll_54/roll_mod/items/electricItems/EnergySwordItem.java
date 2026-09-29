@@ -24,6 +24,8 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
+// TODO(saber-modules): this whole class is deprecated together with its 6 registrations in
+//  ItemRegistry — replaced by ModularSaberItem. Delete after the migration window.
 public class EnergySwordItem extends Item implements OneStateToggleableItem, ISimpleEnergyItem {
 
     private final long energyCapacity;
@@ -179,6 +181,17 @@ public class EnergySwordItem extends Item implements OneStateToggleableItem, ISi
                 : offAttributes;
     }
 
+
+    /**
+     * Energy flowing into the sword mid-dig (a charging chestplate, a backpack, an MI charger)
+     * changes the ENERGY component, and the NeoForge default treats any component change short of
+     * damage as a new item and restarts block breaking. The activation toggle is a component too,
+     * so it is covered by the same rule: the same sword in the same slot is the same dig.
+     */
+    @Override
+    public boolean shouldCauseBlockBreakReset(ItemStack oldStack, ItemStack newStack) {
+        return oldStack.getItem() != newStack.getItem();
+    }
 
     @Override
     public void appendHoverText(ItemStack stack,

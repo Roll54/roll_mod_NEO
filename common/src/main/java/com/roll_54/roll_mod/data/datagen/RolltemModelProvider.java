@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.data.datagen;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon;
+import com.roll_54.roll_mod.items.modulardrill.NewItemVisibility;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
@@ -267,7 +268,84 @@ public class RolltemModelProvider extends ItemModelProvider {
         rollToolItemModel(ItemRegistry.BISMUTH_BRONZE_BLOCKOGRIZ.get());
         rollToolItemModel(ItemRegistry.METEORITE_METAL_BLOCKOGRIZ.get());
 
+        // Modular drills wear the old drills' models: parenting inherits the visuals but not the
+        // parents' `overrides`, so the cake/beacon skin swaps stay behind with the old items.
+        hideable(withExistingParent("lv_modular_drill", modLoc("item/lv_mining_drill")));
+        hideable(withExistingParent("mv_modular_drill", modLoc("item/mv_mining_drill")));
+        hideable(withExistingParent("hv_modular_drill", modLoc("item/hv_mining_drill")));
+        hideable(withExistingParent("ev_modular_drill", modLoc("item/ev_mining_drill")));
+        hideable(withExistingParent("iv_modular_drill", modLoc("item/iv_electric_pickaxe")));
 
+        // Module textures live in item/tool/modules. HV speed is the one not drawn yet, so it is
+        // still tracked as generated first, the way the solar panel provider handles it.
+        drillModuleItem(ItemRegistry.SPEED_MODULE_I.get());
+        drillModuleItem(ItemRegistry.SPEED_MODULE_II.get());
+        hideable(pendingTextureItem(ItemRegistry.SPEED_MODULE_III.get()));
+        drillModuleItem(ItemRegistry.SPEED_MODULE_IV.get());
+        drillModuleItem(ItemRegistry.SILK_TOUCH_MODULE.get());
+        drillModuleItem(ItemRegistry.FORTUNE_MODULE_I.get());
+        drillModuleItem(ItemRegistry.FORTUNE_MODULE_II.get());
+        drillModuleItem(ItemRegistry.FORTUNE_MODULE_III.get());
+        drillModuleItem(ItemRegistry.FORTUNE_MODULE_IV.get());
+        drillModuleItem(ItemRegistry.FORTUNE_MODULE_V.get());
+        drillModuleItem(ItemRegistry.XP_REACTOR_MODULE.get());
+        drillModuleItem(ItemRegistry.OVERCHARGE_MODULE.get());
+        drillModuleItem(ItemRegistry.REACH_MODULE_I.get());
+        drillModuleItem(ItemRegistry.REACH_MODULE_II.get());
+        drillModuleItem(ItemRegistry.REACH_MODULE_III.get());
+        drillModuleItem(ItemRegistry.BURN_MODULE.get());
+        drillModuleItem(ItemRegistry.BATTERY_MODULE_I.get());
+        drillModuleItem(ItemRegistry.BATTERY_MODULE_II.get());
+        drillModuleItem(ItemRegistry.BATTERY_MODULE_III.get());
+        drillModuleItem(ItemRegistry.BATTERY_MODULE_IV.get());
+        drillModuleItem(ItemRegistry.AOE_MODULE_I.get());
+        drillModuleItem(ItemRegistry.AOE_MODULE_II.get());
+        drillModuleItem(ItemRegistry.AOE_MODULE_III.get());
+        drillModuleItem(ItemRegistry.AOE_MODULE_IV.get());
+        drillModuleItem(ItemRegistry.AOE_MODULE_V.get());
+        drillModuleItem(ItemRegistry.SPEED_MODULE_V.get());
+        drillModuleItem(ItemRegistry.BATTERY_MODULE_V.get());
+        drillModuleItem(ItemRegistry.AUTO_SMELT_MODULE.get());
+        drillModuleItem(ItemRegistry.TRASH_FILTER_MODULE.get());
+        drillModuleItem(ItemRegistry.ECO_MODULE_I.get());
+        drillModuleItem(ItemRegistry.ECO_MODULE_II.get());
+        drillModuleItem(ItemRegistry.LAVA_SOLIDIFIER_MODULE.get());
+        drillModuleItem(ItemRegistry.SPEAK_MODULE.get());
+
+        // Saber modules: none is drawn yet, so all are tracked as pending, like HV speed above.
+        // Switch each to drillModuleItem once its PNG lands in item/tool/modules.
+        hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_I.get()));
+        hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_II.get()));
+        hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_III.get()));
+        hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_IV.get()));
+        hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_V.get()));
+        hideable(pendingTextureItem(ItemRegistry.ATTACK_SPEED_MODULE_I.get()));
+        hideable(pendingTextureItem(ItemRegistry.ATTACK_SPEED_MODULE_II.get()));
+        hideable(pendingTextureItem(ItemRegistry.ATTACK_SPEED_MODULE_III.get()));
+        hideable(pendingTextureItem(ItemRegistry.SWEEP_MODULE_I.get()));
+        hideable(pendingTextureItem(ItemRegistry.SWEEP_MODULE_II.get()));
+        hideable(pendingTextureItem(ItemRegistry.SWEEP_MODULE_III.get()));
+        hideable(pendingTextureItem(ItemRegistry.LOOTING_MODULE_I.get()));
+        hideable(pendingTextureItem(ItemRegistry.LOOTING_MODULE_II.get()));
+        hideable(pendingTextureItem(ItemRegistry.LOOTING_MODULE_III.get()));
+        hideable(pendingTextureItem(ItemRegistry.LOOTING_MODULE_IV.get()));
+        hideable(pendingTextureItem(ItemRegistry.LOOTING_MODULE_V.get()));
+        hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_I.get()));
+        hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_II.get()));
+        hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_III.get()));
+        hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_IV.get()));
+        hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_V.get()));
+        hideable(pendingTextureItem(ItemRegistry.DROP_COLLECTOR_MODULE.get()));
+        hideable(pendingTextureItem(ItemRegistry.VAMPIRISM_MODULE_I.get()));
+        hideable(pendingTextureItem(ItemRegistry.VAMPIRISM_MODULE_II.get()));
+        hideable(pendingTextureItem(ItemRegistry.VAMPIRISM_MODULE_III.get()));
+        hideable(pendingTextureItem(ItemRegistry.BEHEADING_MODULE_I.get()));
+        hideable(pendingTextureItem(ItemRegistry.BEHEADING_MODULE_II.get()));
+        hideable(pendingTextureItem(ItemRegistry.BEHEADING_MODULE_III.get()));
+        hideable(pendingTextureItem(ItemRegistry.IRRADIATION_MODULE_I.get()));
+        hideable(pendingTextureItem(ItemRegistry.IRRADIATION_MODULE_II.get()));
+        hideable(pendingTextureItem(ItemRegistry.IRRADIATION_MODULE_III.get()));
+        hideable(pendingTextureItem(ItemRegistry.METEORITE_MODULE.get()));
 
         // TEXTURES ARE NOT NEDEED FOR THESE ITEMS, THEY ARE DEV ONES.
         getBuilder(ItemRegistry.EXAMPLE_ARMOR_HELMET.get().toString())
@@ -404,5 +482,35 @@ public class RolltemModelProvider extends ItemModelProvider {
                 );
     }
 
+    private ItemModelBuilder drillModuleItem(Item item) {
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
+
+        return hideable(withExistingParent(itemId.getPath(), mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/tool/modules/" + itemId.getPath())));
+    }
+
+    /**
+     * Adds the {@code roll_mod:hidden} override: the client's "show new items" option turned off
+     * swaps the model for the "no texture yet" placeholder, live. See {@code NewItemVisibility}.
+     */
+    private ItemModelBuilder hideable(ItemModelBuilder builder) {
+        return builder.override()
+                .predicate(modLoc("hidden"), 1.0F)
+                .model(getExistingFile(modLoc(NewItemVisibility.PLACEHOLDER_MODEL)))
+                .end();
+    }
+
+    /**
+     * {@link #basicItem} for an item whose PNG has not been drawn yet: the texture is registered
+     * as generated first so the existing-file check does not fail the whole run. The same
+     * workaround {@code SolarPanelBlockStateProvider.trackTexture} uses.
+     */
+    private ItemModelBuilder pendingTextureItem(Item item) {
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
+        existingFileHelper.trackGenerated(
+                modLoc("item/" + itemId.getPath()),
+                net.minecraft.server.packs.PackType.CLIENT_RESOURCES, ".png", "textures");
+        return basicItem(item);
+    }
 
 }

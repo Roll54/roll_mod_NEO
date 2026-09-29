@@ -12,7 +12,7 @@
     "prime.MixinServerPlayerEntityPrimeFeature",
     "spawn.SpawnPointMixin",
     "patch.SpawnerBlockEntityMixin",
-    "patch.BaseSpawnerMixin"
+    "patch.BaseSpawnerAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

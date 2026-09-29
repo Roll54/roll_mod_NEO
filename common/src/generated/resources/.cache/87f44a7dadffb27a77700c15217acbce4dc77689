@@ -1,4 +1,4 @@
-// 1.21.1	2026-09-19T23:16:36.916518669	Tags for minecraft:item mod id roll_mod
+// 1.21.1	2026-09-27T20:02:15.60787407	Tags for minecraft:item mod id roll_mod
 86c027ee359f63ead5663d6ec9769fc4251b4cab data/c/tags/item/antimony.json
 1510cca7a87081ff56ab1224106ebe72251f0764 data/c/tags/item/apatite.json
 d977069cd601e10a74b7fabeeaf84b966aceac80 data/c/tags/item/azure_silver.json
@@ -267,4 +267,4 @@ fd210a44e07704fd959b87d215f76275ea787748 data/roll_mod/tags/item/crushed_refined
 8359de310c3321a5789b050af63867571bed8f62 data/roll_mod/tags/item/skin_slot/axe.json
 9f0d0ae84dccc944749962d652984b2a9c018f7d data/roll_mod/tags/item/skin_slot/helmet.json
 649baca7e5de4bf19b54ddc99fc0d9fbf51a9835 data/roll_mod/tags/item/skin_slot/pickaxe.json
-a50a3607fb40a78ed400a83dcb0340075ce37d68 data/roll_mod/tags/item/skin_slot/sword.json
+bc1a84c5a503d05646d1953cf91bbe9b938034c6 data/roll_mod/tags/item/skin_slot/sword.json

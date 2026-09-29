@@ -19,6 +19,12 @@ import com.roll_54.roll_mod.items.cyberware.CropLenseItem;
 import com.roll_54.roll_mod.items.cyberware.CropModuleItem;
 import com.roll_54.roll_mod.items.cyberware.SulfurResistantLungsItem;
 import com.roll_54.roll_mod.items.electricItems.*;
+import com.roll_54.roll_mod.items.modulardrill.DrillModuleItem;
+import com.roll_54.roll_mod.items.modulardrill.DrillVoltage;
+import com.roll_54.roll_mod.items.modulardrill.ModularDrillItem;
+import com.roll_54.roll_mod.items.modularsaber.ModularSaberItem;
+import com.roll_54.roll_mod.items.modularsaber.SaberVoltage;
+import com.roll_54.roll_mod.items.modulardrill.ModuleType;
 import com.roll_54.roll_mod.items.spaceModule.DimensionCartridgeCItem;
 import com.roll_54.roll_mod.items.spaceModule.RocketItem;
 import com.roll_54.roll_mod.util.TooltipOptions;
@@ -1512,6 +1518,8 @@ public class ItemRegistry {
                             0xDD3333
                     )
             );
+    // TODO(drill-modules): the 9 fixed drills below are deprecated in favor of the modular drills.
+    //  Kept registered so existing items in worlds survive; delete after the migration window.
     //lv
     public static final DeferredHolder<Item, EnergyDrillItem> LV_MINING_DRILL =
             ITEMS.register("lv_mining_drill",
@@ -1625,6 +1633,235 @@ public class ItemRegistry {
                             36000
                     )
             );
+
+    /* ------------------------------------- modular drills ------------------------------------- */
+    // The replacement for the fixed drills above: bare drills whose area, loot, speed and energy
+    // behavior come from modules installed at the Module Installation Table.
+
+    public static final DeferredHolder<Item, ModularDrillItem> LV_MODULAR_DRILL =
+            ITEMS.register("lv_modular_drill", () -> new ModularDrillItem(DrillVoltage.LV, new Item.Properties()));
+    public static final DeferredHolder<Item, ModularDrillItem> MV_MODULAR_DRILL =
+            ITEMS.register("mv_modular_drill", () -> new ModularDrillItem(DrillVoltage.MV, new Item.Properties()));
+    public static final DeferredHolder<Item, ModularDrillItem> HV_MODULAR_DRILL =
+            ITEMS.register("hv_modular_drill", () -> new ModularDrillItem(DrillVoltage.HV, new Item.Properties()));
+    public static final DeferredHolder<Item, ModularDrillItem> EV_MODULAR_DRILL =
+            ITEMS.register("ev_modular_drill", () -> new ModularDrillItem(DrillVoltage.EV, new Item.Properties()));
+    public static final DeferredHolder<Item, ModularDrillItem> IV_MODULAR_DRILL =
+            ITEMS.register("iv_modular_drill", () -> new ModularDrillItem(DrillVoltage.IV, new Item.Properties()));
+
+    /** What the strongest single-tier modules take from the complexity budget; others take 3 × tier. */
+    private static final int STRONG_COMPLEXITY = 6;
+
+    // Drill modules. value/costFactor semantics are in DrillModuleItem's javadoc; all numbers are
+    // balance knobs. No voltage requirements — progression is gated by the crafting recipes.
+    // Speed fits drills and sabers: a mining multiplier in a drill (cost per block as before), added
+    // attack speed in a saber. The saber side keeps the old Attack Speed ceiling (+1.2, cost x1.3)
+    // spread over five tiers instead of three.
+    public static final DeferredHolder<Item, DrillModuleItem> SPEED_MODULE_I =
+            speedModule("speed_module_i", 1, 1.5, 0.24, 1.5, 1.06);
+    public static final DeferredHolder<Item, DrillModuleItem> SPEED_MODULE_II =
+            speedModule("speed_module_ii", 2, 2.0, 0.48, 2.0, 1.12);
+    public static final DeferredHolder<Item, DrillModuleItem> SPEED_MODULE_III =
+            speedModule("speed_module_iii", 3, 3.0, 0.72, 3.0, 1.18);
+    public static final DeferredHolder<Item, DrillModuleItem> SPEED_MODULE_IV =
+            speedModule("speed_module_iv", 4, 4.0, 0.96, 4.0, 1.24);
+
+    public static final DeferredHolder<Item, DrillModuleItem> SILK_TOUCH_MODULE =
+            module("silk_touch_module", ModuleType.SILK_TOUCH, 1, 0, 2.0, 5);
+
+    // Fortune in a drill, Looting in a saber. Each tool keeps its own energy balance: the first cost
+    // factor is per block in a drill, the second per hit in a saber (the old Looting modules').
+    public static final DeferredHolder<Item, DrillModuleItem> FORTUNE_MODULE_I =
+            sharedModule("fortune_module_i", ModuleType.FORTUNE, 1, 1, 1.5, 1.1);
+    public static final DeferredHolder<Item, DrillModuleItem> FORTUNE_MODULE_II =
+            sharedModule("fortune_module_ii", ModuleType.FORTUNE, 2, 2, 2.0, 1.2);
+    public static final DeferredHolder<Item, DrillModuleItem> FORTUNE_MODULE_III =
+            sharedModule("fortune_module_iii", ModuleType.FORTUNE, 3, 3, 2.5, 1.3);
+    public static final DeferredHolder<Item, DrillModuleItem> FORTUNE_MODULE_IV =
+            sharedModule("fortune_module_iv", ModuleType.FORTUNE, 4, 4, 3.0, 1.4);
+    public static final DeferredHolder<Item, DrillModuleItem> FORTUNE_MODULE_V =
+            sharedModule("fortune_module_v", ModuleType.FORTUNE, 5, 5, 4.0, 1.5);
+
+    public static final DeferredHolder<Item, DrillModuleItem> XP_REACTOR_MODULE =
+            module("xp_reactor_module", ModuleType.XP_REACTOR, 1, 0, 1.0, 5);
+    public static final DeferredHolder<Item, DrillModuleItem> OVERCHARGE_MODULE =
+            module("overcharge_module", ModuleType.OVERCHARGE, 1, 0, 1.0, STRONG_COMPLEXITY);
+
+    public static final DeferredHolder<Item, DrillModuleItem> REACH_MODULE_I =
+            module("reach_module_i", ModuleType.REACH, 1, 2, 1.0);
+    public static final DeferredHolder<Item, DrillModuleItem> REACH_MODULE_II =
+            module("reach_module_ii", ModuleType.REACH, 2, 4, 1.0);
+    public static final DeferredHolder<Item, DrillModuleItem> REACH_MODULE_III =
+            module("reach_module_iii", ModuleType.REACH, 3, 8, 1.0);
+
+    public static final DeferredHolder<Item, DrillModuleItem> BURN_MODULE =
+            module("burn_module", ModuleType.BURN, 1, 0, 0.9);
+
+    public static final DeferredHolder<Item, DrillModuleItem> BATTERY_MODULE_I =
+            module("battery_module_i", ModuleType.BATTERY, 1, 1.10, 1.0);
+    public static final DeferredHolder<Item, DrillModuleItem> BATTERY_MODULE_II =
+            module("battery_module_ii", ModuleType.BATTERY, 2, 1.25, 1.0);
+    public static final DeferredHolder<Item, DrillModuleItem> BATTERY_MODULE_III =
+            module("battery_module_iii", ModuleType.BATTERY, 3, 1.50, 1.0);
+    public static final DeferredHolder<Item, DrillModuleItem> BATTERY_MODULE_IV =
+            module("battery_module_iv", ModuleType.BATTERY, 4, 2.00, 1.0);
+
+    public static final DeferredHolder<Item, DrillModuleItem> SPEED_MODULE_V =
+            speedModule("speed_module_v", 5, 6.0, 1.2, 6.0, 1.3);
+    public static final DeferredHolder<Item, DrillModuleItem> BATTERY_MODULE_V =
+            module("battery_module_v", ModuleType.BATTERY, 5, 3.00, 1.0);
+
+    public static final DeferredHolder<Item, DrillModuleItem> AUTO_SMELT_MODULE =
+            module("auto_smelt_module", ModuleType.SMELT, 1, 0, 1.5);
+    public static final DeferredHolder<Item, DrillModuleItem> TRASH_FILTER_MODULE =
+            module("trash_filter_module", ModuleType.TRASH_FILTER, 1, 0, 0.95);
+    public static final DeferredHolder<Item, DrillModuleItem> ECO_MODULE_I =
+            module("eco_module_i", ModuleType.ECO, 1, 0, 0.85);
+    public static final DeferredHolder<Item, DrillModuleItem> ECO_MODULE_II =
+            module("eco_module_ii", ModuleType.ECO, 2, 0, 0.70);
+    // Cost factor 1.0: it charges per solidified fluid block instead, in mineArea.
+    public static final DeferredHolder<Item, DrillModuleItem> LAVA_SOLIDIFIER_MODULE =
+            module("lava_solidifier_module", ModuleType.LAVA_SOLIDIFIER, 1, 0, 1.0);
+
+    // Talks in chat every 10k mined blocks; no effect on mining, so no cost — and it gives 5
+    // complexity back, the one module that does.
+    public static final DeferredHolder<Item, DrillModuleItem> SPEAK_MODULE =
+            module("speak_module", ModuleType.SPEAK, 1, 0, 1.0, -5);
+
+    // Areas taken from the retired advanced drills: 3³, 5³, 7³, 9³ — and the IV pickaxe's 11³.
+    public static final DeferredHolder<Item, DrillModuleItem> AOE_MODULE_I =
+            module("aoe_module_i", ModuleType.AOE, 1, 1, 1.5);
+    public static final DeferredHolder<Item, DrillModuleItem> AOE_MODULE_II =
+            module("aoe_module_ii", ModuleType.AOE, 2, 2, 2.0);
+    public static final DeferredHolder<Item, DrillModuleItem> AOE_MODULE_III =
+            module("aoe_module_iii", ModuleType.AOE, 3, 3, 2.5);
+    public static final DeferredHolder<Item, DrillModuleItem> AOE_MODULE_IV =
+            module("aoe_module_iv", ModuleType.AOE, 4, 4, 3.0);
+    public static final DeferredHolder<Item, DrillModuleItem> AOE_MODULE_V =
+            module("aoe_module_v", ModuleType.AOE, 5, 5, 3.5);
+
+    /* ------------------------------------- modular sabers ------------------------------------- */
+    // The replacement for the fixed nano sabers below: switchable blades whose damage, energy use and
+    // on-hit effects come from modules installed at the same Module Installation Table as the drills.
+    // Battery, Eco and the XP Reactor above fit both tools; the modules below are saber-only.
+
+    public static final DeferredHolder<Item, ModularSaberItem> LV_MODULAR_SABER =
+            ITEMS.register("lv_modular_saber", () -> new ModularSaberItem(SaberVoltage.LV, new Item.Properties()));
+    public static final DeferredHolder<Item, ModularSaberItem> MV_MODULAR_SABER =
+            ITEMS.register("mv_modular_saber", () -> new ModularSaberItem(SaberVoltage.MV, new Item.Properties()));
+    public static final DeferredHolder<Item, ModularSaberItem> HV_MODULAR_SABER =
+            ITEMS.register("hv_modular_saber", () -> new ModularSaberItem(SaberVoltage.HV, new Item.Properties()));
+    public static final DeferredHolder<Item, ModularSaberItem> EV_MODULAR_SABER =
+            ITEMS.register("ev_modular_saber", () -> new ModularSaberItem(SaberVoltage.EV, new Item.Properties()));
+    public static final DeferredHolder<Item, ModularSaberItem> IV_MODULAR_SABER =
+            ITEMS.register("iv_modular_saber", () -> new ModularSaberItem(SaberVoltage.IV, new Item.Properties()));
+
+    // Saber modules. value/costFactor semantics are in DrillModuleItem's javadoc; all numbers are
+    // balance knobs, and docs/drill-modules.txt lists them.
+    public static final DeferredHolder<Item, DrillModuleItem> DAMAGE_MODULE_I =
+            module("damage_module_i", ModuleType.DAMAGE, 1, 1.25, 1.25);
+    public static final DeferredHolder<Item, DrillModuleItem> DAMAGE_MODULE_II =
+            module("damage_module_ii", ModuleType.DAMAGE, 2, 1.50, 1.50);
+    public static final DeferredHolder<Item, DrillModuleItem> DAMAGE_MODULE_III =
+            module("damage_module_iii", ModuleType.DAMAGE, 3, 2.00, 2.00);
+    public static final DeferredHolder<Item, DrillModuleItem> DAMAGE_MODULE_IV =
+            module("damage_module_iv", ModuleType.DAMAGE, 4, 2.50, 2.50);
+    public static final DeferredHolder<Item, DrillModuleItem> DAMAGE_MODULE_V =
+            module("damage_module_v", ModuleType.DAMAGE, 5, 3.00, 3.00);
+
+    // Deprecated: merged into the Speed modules. Kept registered so existing items and installed
+    // modules still load and work; left out of the creative tab, and never installable beside Speed.
+    public static final DeferredHolder<Item, DrillModuleItem> ATTACK_SPEED_MODULE_I =
+            module("attack_speed_module_i", ModuleType.ATTACK_SPEED, 1, 0.4, 1.1);
+    public static final DeferredHolder<Item, DrillModuleItem> ATTACK_SPEED_MODULE_II =
+            module("attack_speed_module_ii", ModuleType.ATTACK_SPEED, 2, 0.8, 1.2);
+    public static final DeferredHolder<Item, DrillModuleItem> ATTACK_SPEED_MODULE_III =
+            module("attack_speed_module_iii", ModuleType.ATTACK_SPEED, 3, 1.2, 1.3);
+
+    // Cost factor 1.0: each extra mob a sweep reaches is charged half a hit on its own.
+    public static final DeferredHolder<Item, DrillModuleItem> SWEEP_MODULE_I =
+            module("sweep_module_i", ModuleType.SWEEP, 1, 1.5, 1.0);
+    public static final DeferredHolder<Item, DrillModuleItem> SWEEP_MODULE_II =
+            module("sweep_module_ii", ModuleType.SWEEP, 2, 2.5, 1.0);
+    public static final DeferredHolder<Item, DrillModuleItem> SWEEP_MODULE_III =
+            module("sweep_module_iii", ModuleType.SWEEP, 3, 3.5, 1.0);
+
+    // DEPRECATED: merged into the Fortune/Looting modules above. Kept registered so existing stacks
+    // and already-installed modules load and keep working; no longer in the creative tab.
+    public static final DeferredHolder<Item, DrillModuleItem> LOOTING_MODULE_I =
+            module("looting_module_i", ModuleType.LOOTING, 1, 1, 1.1);
+    public static final DeferredHolder<Item, DrillModuleItem> LOOTING_MODULE_II =
+            module("looting_module_ii", ModuleType.LOOTING, 2, 2, 1.2);
+    public static final DeferredHolder<Item, DrillModuleItem> LOOTING_MODULE_III =
+            module("looting_module_iii", ModuleType.LOOTING, 3, 3, 1.3);
+    public static final DeferredHolder<Item, DrillModuleItem> LOOTING_MODULE_IV =
+            module("looting_module_iv", ModuleType.LOOTING, 4, 4, 1.4);
+    public static final DeferredHolder<Item, DrillModuleItem> LOOTING_MODULE_V =
+            module("looting_module_v", ModuleType.LOOTING, 5, 5, 1.5);
+
+    public static final DeferredHolder<Item, DrillModuleItem> XP_MULTIPLIER_MODULE_I =
+            module("xp_multiplier_module_i", ModuleType.XP_MULTIPLIER, 1, 1.5, 1.1);
+    public static final DeferredHolder<Item, DrillModuleItem> XP_MULTIPLIER_MODULE_II =
+            module("xp_multiplier_module_ii", ModuleType.XP_MULTIPLIER, 2, 2.0, 1.2);
+    public static final DeferredHolder<Item, DrillModuleItem> XP_MULTIPLIER_MODULE_III =
+            module("xp_multiplier_module_iii", ModuleType.XP_MULTIPLIER, 3, 3.0, 1.4);
+    public static final DeferredHolder<Item, DrillModuleItem> XP_MULTIPLIER_MODULE_IV =
+            module("xp_multiplier_module_iv", ModuleType.XP_MULTIPLIER, 4, 4.0, 1.6);
+    public static final DeferredHolder<Item, DrillModuleItem> XP_MULTIPLIER_MODULE_V =
+            module("xp_multiplier_module_v", ModuleType.XP_MULTIPLIER, 5, 5.0, 1.8);
+
+    public static final DeferredHolder<Item, DrillModuleItem> DROP_COLLECTOR_MODULE =
+            module("drop_collector_module", ModuleType.DROP_COLLECTOR, 1, 0, 1.05);
+
+    public static final DeferredHolder<Item, DrillModuleItem> VAMPIRISM_MODULE_I =
+            module("vampirism_module_i", ModuleType.VAMPIRISM, 1, 0.05, 1.1);
+    public static final DeferredHolder<Item, DrillModuleItem> VAMPIRISM_MODULE_II =
+            module("vampirism_module_ii", ModuleType.VAMPIRISM, 2, 0.10, 1.2);
+    public static final DeferredHolder<Item, DrillModuleItem> VAMPIRISM_MODULE_III =
+            module("vampirism_module_iii", ModuleType.VAMPIRISM, 3, 0.15, 1.3);
+
+    public static final DeferredHolder<Item, DrillModuleItem> BEHEADING_MODULE_I =
+            module("beheading_module_i", ModuleType.BEHEADING, 1, 0.05, 1.0);
+    public static final DeferredHolder<Item, DrillModuleItem> BEHEADING_MODULE_II =
+            module("beheading_module_ii", ModuleType.BEHEADING, 2, 0.15, 1.0);
+    public static final DeferredHolder<Item, DrillModuleItem> BEHEADING_MODULE_III =
+            module("beheading_module_iii", ModuleType.BEHEADING, 3, 0.30, 1.0);
+
+    public static final DeferredHolder<Item, DrillModuleItem> IRRADIATION_MODULE_I =
+            module("irradiation_module_i", ModuleType.IRRADIATION, 1, 1, 1.1);
+    public static final DeferredHolder<Item, DrillModuleItem> IRRADIATION_MODULE_II =
+            module("irradiation_module_ii", ModuleType.IRRADIATION, 2, 2, 1.2);
+    public static final DeferredHolder<Item, DrillModuleItem> IRRADIATION_MODULE_III =
+            module("irradiation_module_iii", ModuleType.IRRADIATION, 3, 3, 1.3);
+
+    // Looks only: the meteorite blade (and its skins) on any modular saber. No cost.
+    public static final DeferredHolder<Item, DrillModuleItem> METEORITE_MODULE =
+            module("meteorite_module", ModuleType.METEORITE, 1, 0, 1.0, STRONG_COMPLEXITY);
+
+    private static DeferredHolder<Item, DrillModuleItem> module(
+            String id, ModuleType type, int tier, double value, double costFactor, int complexity) {
+        return ITEMS.register(id, () -> new DrillModuleItem(type, tier, value, costFactor, complexity,
+                new Item.Properties()));
+    }
+
+    /** A module shared by drills and sabers whose energy cost differs per tool. */
+    private static DeferredHolder<Item, DrillModuleItem> sharedModule(
+            String id, ModuleType type, int tier, double value, double drillCostFactor, double saberCostFactor) {
+        return ITEMS.register(id, () -> new DrillModuleItem(type, tier, value, drillCostFactor, saberCostFactor,
+                DrillModuleItem.COMPLEXITY_PER_TIER * tier, new Item.Properties()));
+    }
+
+    /** A Speed module: its effect and its energy cost both differ between drill and saber. */
+    private static DeferredHolder<Item, DrillModuleItem> speedModule(String id, int tier,
+            double drillSpeed, double saberAttackSpeed, double drillCostFactor, double saberCostFactor) {
+        return ITEMS.register(id, () -> new DrillModuleItem(ModuleType.SPEED, tier, drillSpeed, saberAttackSpeed,
+                drillCostFactor, saberCostFactor, DrillModuleItem.COMPLEXITY_PER_TIER * tier, new Item.Properties()));
+    }
+
+    private static DeferredHolder<Item, DrillModuleItem> module(
+            String id, ModuleType type, int tier, double value, double costFactor) {
+        return ITEMS.register(id, () -> new DrillModuleItem(type, tier, value, costFactor, new Item.Properties()));
+    }
 
     /**
      * MI's steam mining drill in a netherite frame: fireproof, and {@value

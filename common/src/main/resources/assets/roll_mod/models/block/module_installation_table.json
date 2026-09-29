@@ -1,0 +1,9 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "roll_mod:block/module_installation_table_top",
+    "side": "roll_mod:block/module_installation_table_side",
+    "bottom": "roll_mod:block/module_installation_table_bottom",
+    "particle": "roll_mod:block/module_installation_table_side"
+  }
+}

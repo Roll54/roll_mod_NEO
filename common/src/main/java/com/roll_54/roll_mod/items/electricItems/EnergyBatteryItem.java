@@ -149,9 +149,12 @@ public class EnergyBatteryItem extends Item implements ISimpleEnergyItem, OneSta
 
                 if (received > 0) {
                     setStoredEnergy(battery, stored - received);
-                    return;
                 }
             }
+            // The capability's answer is final either way. An item whose storage refused the
+            // energy — a full item, or a modular drill locked by its XP Reactor — must not be
+            // filled through the raw component write below.
+            return;
         }
 
         // Modern Industrialization / EI component

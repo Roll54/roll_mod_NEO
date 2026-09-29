@@ -10,6 +10,7 @@ import com.roll_54.roll_mod.data.RMMAttachment;
 import com.roll_54.roll_mod.minestar.dailytasks.DailyRewardRegistry;
 import com.roll_54.roll_mod.minestar.dailytasks.DailyTaskRegistry;
 import com.roll_54.roll_mod.minestar.dailytasks.gui.DailyTasksUI;
+import com.roll_54.roll_mod.items.modulardrill.gui.ModularDrillConfigUI;
 import com.roll_54.roll_mod.minestar.hub.gui.HubUI;
 import com.roll_54.roll_mod.minestar.CleanDropConfig;
 import com.roll_54.roll_mod.registry.MachineModelRegistry;
@@ -150,6 +151,9 @@ public final class RollMod {
             // longer register ids of their own.
             PlayerUIMenuType.register(HubUI.UI_ID,
                     player -> (PlayerUIMenuType.PlayerUIHolder) HubUI::createUI);
+            // The modular drill's config screen — block-less like the hub, opened by keybind.
+            PlayerUIMenuType.register(ModularDrillConfigUI.UI_ID,
+                    player -> (PlayerUIMenuType.PlayerUIHolder) ModularDrillConfigUI::createUI);
         });
         LOGGER.info("[{}] common setup", MODID);
     }

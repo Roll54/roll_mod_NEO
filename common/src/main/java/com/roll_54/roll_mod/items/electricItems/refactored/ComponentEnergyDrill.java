@@ -13,6 +13,8 @@ import java.util.List;
 
 import static com.roll_54.roll_mod.registry.ComponentsRegistry.UPGRADES;
 
+// TODO(drill-modules): dead, never-registered skeleton — superseded by
+//  com.roll_54.roll_mod.items.modulardrill.ModularDrillItem. Delete along with UpgradeType.
 public class ComponentEnergyDrill  extends Item implements ISimpleEnergyItem, OneStateToggleableItem {
     private final int tier;
 

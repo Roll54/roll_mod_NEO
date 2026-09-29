@@ -38,4 +38,11 @@ public class KeyMappingRegistry {
             "key.categories.roll_mod"
     ));
 
+    /** Opens the held modular drill's config screen. V is unbound in vanilla. */
+    public static final Lazy<KeyMapping> DRILL_CONFIG = Lazy.of(() -> new KeyMapping(
+            "key.roll_mod.drill_config",
+            GLFW.GLFW_KEY_V,
+            "key.categories.roll_mod"
+    ));
+
 }

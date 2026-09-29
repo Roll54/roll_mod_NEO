@@ -167,6 +167,13 @@ public class BlockRegistry {
                     .sound(SoundType.METAL)
                     .requiresCorrectToolForDrops()));
 
+    /** Where modular drills get their modules changed — and nowhere else. */
+    public static final DeferredBlock<Block> MODULE_INSTALLATION_TABLE = BLOCKS.register(
+            "module_installation_table",
+            () -> new ModuleInstallationTableBlock(BlockBehaviour.Properties.of()
+                    .strength(2.5F)
+                    .sound(SoundType.METAL)));
+
     public static final DeferredBlock<Block> GRINDING_WHEELS = BLOCKS.register(
             "grinding_wheels",
             () -> new Block(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.METAL))
@@ -223,6 +230,13 @@ public class BlockRegistry {
         ITEMS.register("treated_log", () -> new BlockItem(TREATED_LOG.get(), new Item.Properties()));
         ITEMS.register("lapotronic_laser_block", () -> new BlockItem(LAPOTRONIC_LASER_BLOCK.get(), new Item.Properties()));
         ITEMS.register("research_workbench", () -> new BlockItem(RESEARCH_WORKBENCH.get(), new Item.Properties()));
+        // Its name follows the client's "show new items" option, like the modules it installs.
+        ITEMS.register("module_installation_table", () -> new BlockItem(MODULE_INSTALLATION_TABLE.get(), new Item.Properties()) {
+            @Override
+            public net.minecraft.network.chat.Component getName(net.minecraft.world.item.ItemStack stack) {
+                return com.roll_54.roll_mod.items.modulardrill.NewItemVisibility.name(super.getName(stack));
+            }
+        });
         ITEMS.register("rocket_controller", () -> new BlockItem(ROCKET_CONTROLLER_BLOCK.get(), new Item.Properties()));
         ITEMS.register("hueri_plush", () -> new BlockItem(HUERI_PLUSH.get(), new Item.Properties())
                 {
