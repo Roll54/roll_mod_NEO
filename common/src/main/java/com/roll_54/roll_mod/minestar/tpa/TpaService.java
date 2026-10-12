@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.minestar.tpa;
 
+import com.roll_54.roll_mod.minestar.friends.FriendsService;
 import com.roll_54.roll_mod.minestar.teleport.TeleportService;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
@@ -12,6 +13,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import com.roll_54.roll_mod.minestar.interactions.InteractionSettings;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 
@@ -68,14 +71,48 @@ public final class TpaService {
             return false;
         }
 
-        // The target's own setting. Only the sender is told: a request the target chose never to
-        // see should not arrive as a notification that somebody tried.
-        if (!TpaSettings.allows(target, from)) {
-            from.sendSystemMessage(Component.translatable("msg.roll_mod.tpa.refused",
-                    target.getGameProfile().getName()).withStyle(ChatFormatting.RED));
+        // Someone the target ignores is turned away the same quiet way the "No one" setting does.
+        if (InteractionSettings.ignores(target.getUUID(), from.getUUID())) {
+            refused(from, target);
             return false;
         }
 
+        // The target's own setting. Only the sender is told: a request the target chose never to
+        // see should not arrive as a notification that somebody tried.
+        if (TpaSettings.mode(target.getUUID()) == TpaMode.FRIENDS) {
+            // MINESTAR friends may need fetching, so the request goes out (or not) once they are known;
+            // by then either player may have left, so both are looked up again.
+            MinecraftServer server = from.server;
+            UUID fromId = from.getUUID();
+            UUID targetId = target.getUUID();
+            FriendsService.withFriends(target, friends -> {
+                ServerPlayer sender = server.getPlayerList().getPlayer(fromId);
+                ServerPlayer receiver = server.getPlayerList().getPlayer(targetId);
+                if (sender == null || receiver == null) return;
+                if (friends == null) {
+                    refuse(sender, "msg.roll_mod.tpa.friendsUnavailable");
+                } else if (friends.stream().anyMatch(f -> f.id().equals(fromId))) {
+                    send(sender, receiver, kind);
+                } else {
+                    refused(sender, receiver);
+                }
+            });
+            return true;
+        }
+        if (!TpaSettings.allows(target, from)) {
+            refused(from, target);
+            return false;
+        }
+        send(from, target, kind);
+        return true;
+    }
+
+    private static void refused(ServerPlayer from, ServerPlayer target) {
+        from.sendSystemMessage(Component.translatable("msg.roll_mod.tpa.refused",
+                target.getGameProfile().getName()).withStyle(ChatFormatting.RED));
+    }
+
+    private static void send(ServerPlayer from, ServerPlayer target, TpaRequest.Kind kind) {
         TpaRequest existing = find(from.getUUID(), target.getUUID());
         if (existing != null) BY_ID.remove(existing.id());
 
@@ -85,9 +122,14 @@ public final class TpaService {
         BY_ID.put(request.id(), request);
 
         from.sendSystemMessage(Component.translatable("msg.roll_mod.tpa.sent", request.toName()));
+        // The target said yes in advance for this player and this kind of request.
+        InteractionSettings.Flags flags = InteractionSettings.flags(target.getUUID(), from.getUUID());
+        if (kind == TpaRequest.Kind.TO ? flags.autoTpa() : flags.autoTpaHere()) {
+            resolve(target, request.id(), true);
+            return;
+        }
         target.sendSystemMessage(invitation(request));
         TpaViewers.resync(from.server);
-        return true;
     }
 
     /** The line the target sees, with the two answers on it — chat is where most of this happens. */

@@ -85,6 +85,16 @@ public final class HubBadge {
         return false;
     }
 
+    /**
+     * The player interactions tab: a teleport request, a friend request or money — an offer to take
+     * or a request to pay — waiting on this player's answer.
+     */
+    public static boolean interactionsPending() {
+        return tpaPending()
+                || !com.roll_54.roll_mod.minestar.friends.ClientFriendsCache.INCOMING.isEmpty()
+                || com.roll_54.roll_mod.economy.network.client.ClientMoneyCache.anyIncoming();
+    }
+
     /** Auction items — expired, cancelled or won — waiting in the claim list. */
     public static boolean auctionPending() {
         return !ClientAuctionCache.CLAIMS.isEmpty();
@@ -106,7 +116,7 @@ public final class HubBadge {
      * sources (daily rewards, letters, mute) work from login.
      */
     public static boolean hubButton() {
-        return ClientPlayerStatusCache.attention() || moderationPending() || tpaPending()
+        return ClientPlayerStatusCache.attention() || moderationPending() || interactionsPending()
                 || auctionPending() || homeInvitePending();
     }
 

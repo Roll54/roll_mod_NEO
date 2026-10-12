@@ -23,7 +23,9 @@ import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -86,6 +88,14 @@ public class StormHandler {
                 spawnStormMobs(server);
                 spawnTickCounter = 0;
             }
+        }
+    }
+
+    @SubscribeEvent
+    public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent e) {
+        if (e.getEntity() instanceof ServerPlayer player) {
+            initIfNeeded(player.server);
+            PacketDistributor.sendToPlayer(player, new SyncStormPacket(isStormActive()));
         }
     }
 
@@ -155,6 +165,7 @@ public class StormHandler {
         state.ticksUntilNextStorm = getRandomStormDelay();
         state.warningSent = false;
         state.dirty();
+        PacketDistributor.sendToAllPlayers(new SyncStormPacket(true));
 
         for (ServerPlayer p : server.getPlayerList().getPlayers()) {
             p.sendSystemMessage(Component.translatable("message.roll_mod.nether_storm.start")
@@ -167,6 +178,7 @@ public class StormHandler {
         state.stormActive = false;
         state.stormTicks = 0;
         state.dirty();
+        PacketDistributor.sendToAllPlayers(new SyncStormPacket(false));
 
         for (ServerPlayer p : server.getPlayerList().getPlayers()) {
             p.sendSystemMessage(Component.translatable("message.roll_mod.nether_storm.end").withStyle(style -> style.withColor(0x009921)));
@@ -229,6 +241,7 @@ public class StormHandler {
             state.ticksUntilNextStorm = getRandomStormDelay();
             state.warningSent = false;
             state.dirty();
+            PacketDistributor.sendToAllPlayers(new SyncStormPacket(true));
 
             for (ServerPlayer p : server.getPlayerList().getPlayers()) {
                 p.sendSystemMessage(Component.literal(

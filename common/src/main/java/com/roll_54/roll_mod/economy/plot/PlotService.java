@@ -1,7 +1,10 @@
 package com.roll_54.roll_mod.economy.plot;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
 import com.roll_54.roll_mod.RollMod;
 import com.mojang.logging.LogUtils;
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.config.CurrencyConfig;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
@@ -216,7 +219,9 @@ public final class PlotService {
     long price = priceFor(plot.startingPrice(), ownedByPlayer(server, buyer.getUUID()));
     logAction("{} attempting to buy {} for {}", who, plot.id(), price);
 
-    CurrencyService.withdraw(buyer, CurrencyType.MAIN, price)
+    CurrencyLedger.logged(CurrencyService.withdraw(buyer, CurrencyType.MAIN, price,
+                CurrencyCause.player(buyer, LedgerReason.PLOT).withDetail("buy plot " + plot.id() + " from server")),
+            buyer.getUUID(), CurrencyType.MAIN, -price, LedgerReason.PLOT)
         .thenAcceptAsync(
             ok -> {
               if (!ok) {
@@ -225,12 +230,12 @@ public final class PlotService {
                 return;
               }
               if (playerOwner(cm, nonPlayers, plot.anchor()) != null) { // claimed during withdraw
-                refund(buyer, price);
+                refund(buyer, price, plot.id());
                 msg(buyer, "menu.roll_mod.plot.takenRefunded");
                 return;
               }
               if (!claimAll(cm, plot, buyer.getUUID())) {
-                refund(buyer, price);
+                refund(buyer, price, plot.id());
                 msg(buyer, "menu.roll_mod.plot.claimFailed");
                 return;
               }
@@ -260,7 +265,11 @@ public final class PlotService {
     logAction(
         "{} attempting resale buy of {} for {} (seller gets {})", who, plot.id(), price, base);
 
-    CurrencyService.withdraw(buyer, CurrencyType.MAIN, price)
+    CurrencyLedger.logged(CurrencyService.withdraw(buyer, CurrencyType.MAIN, price,
+                CurrencyCause.player(buyer, LedgerReason.PLOT)
+                    .withSender(seller, resolveName(server, cm, seller))
+                    .withDetail("buy plot " + plot.id() + " (resale)")),
+            buyer.getUUID(), CurrencyType.MAIN, -price, LedgerReason.PLOT)
         .thenAcceptAsync(
             ok -> {
               if (!ok) {
@@ -270,18 +279,20 @@ public final class PlotService {
               // Re-validate: still owned by the same seller and listed at the same price.
               PlotListings.Listing now = validListing(server, cm, nonPlayers, plot);
               if (now == null || !now.seller().equals(seller) || now.basePrice() != base) {
-                refund(buyer, price);
+                refund(buyer, price, plot.id());
                 msg(buyer, "menu.roll_mod.plot.takenRefunded");
                 return;
               }
               if (!transfer(cm, plot, buyer.getUUID())) {
-                refund(buyer, price);
+                refund(buyer, price, plot.id());
                 msg(buyer, "menu.roll_mod.plot.claimFailed");
                 return;
               }
               PlotListings.get(server).remove(plot.id());
               // Seller receives only the base price; the escalation premium is burned.
-              payout(server, seller, base);
+              payout(server, seller, base,
+                  CurrencyCause.player(buyer, LedgerReason.PLOT).withSender(buyer)
+                      .withDetail("plot " + plot.id() + " sold (resale), base price"));
               logAction(
                   "{} bought {} (resale) for {}; {} paid base {}",
                   who,
@@ -374,7 +385,9 @@ public final class PlotService {
 
     long refund = plot.startingPrice();
     String who = owner.getGameProfile().getName();
-    CurrencyService.deposit(owner, CurrencyType.MAIN, refund, server)
+    CurrencyLedger.logged(CurrencyService.deposit(owner, CurrencyType.MAIN, refund, server,
+                CurrencyCause.player(owner, LedgerReason.PLOT).withDetail("sell plot " + plotId + " to server")),
+            owner.getUUID(), CurrencyType.MAIN, refund, LedgerReason.PLOT)
         .thenAcceptAsync(
             ok -> {
               if (!ok) {
@@ -492,13 +505,16 @@ public final class PlotService {
     }
   }
 
-  private static void refund(ServerPlayer buyer, long price) {
-    CurrencyService.deposit(buyer, CurrencyType.MAIN, price, buyer.server);
+  private static void refund(ServerPlayer buyer, long price, String plotId) {
+    CurrencyLedger.logged(CurrencyService.deposit(buyer, CurrencyType.MAIN, price, buyer.server,
+            CurrencyCause.player(buyer, LedgerReason.PLOT).withDetail("refund: plot " + plotId + " purchase failed")),
+        buyer.getUUID(), CurrencyType.MAIN, price, LedgerReason.PLOT);
   }
 
   /** Pay an arbitrary (possibly offline) player; sync if they are online. */
-  private static void payout(MinecraftServer server, UUID playerId, long amount) {
-    CurrencyRepository.addBalance(playerId, CurrencyType.MAIN, amount)
+  private static void payout(MinecraftServer server, UUID playerId, long amount, CurrencyCause cause) {
+    CurrencyLedger.logged(CurrencyRepository.addBalance(playerId, CurrencyType.MAIN, amount, cause),
+            playerId, CurrencyType.MAIN, amount, LedgerReason.PLOT)
         .thenAcceptAsync(
             ok -> {
               ServerPlayer online = server.getPlayerList().getPlayer(playerId);
@@ -517,7 +533,7 @@ public final class PlotService {
   private static Void fail(
       ServerPlayer buyer, long price, String what, String plotId, Throwable e) {
     LOGGER.error("Plot {} failed for {}", what, plotId, e);
-    refund(buyer, price);
+    refund(buyer, price, plotId);
     msg(buyer, "menu.roll_mod.plot.failed");
     return null;
   }

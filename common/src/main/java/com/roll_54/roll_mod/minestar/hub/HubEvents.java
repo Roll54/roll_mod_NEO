@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.minestar.hub;
 
+import com.roll_54.roll_mod.minestar.friends.FriendViewers;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.data.PlayerPositions;
 import com.roll_54.roll_mod.minestar.hub.home.HomeViewers;
@@ -52,6 +53,10 @@ public final class HubEvents {
     public static void onLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             TpaViewers.resync(player.server);
+            // A friend arriving here changes their "online here" mark in every open friends tab.
+            FriendViewers.resync(player.server);
+            // Loaded once at login so the friends bookmark can already show waiting requests.
+            com.roll_54.roll_mod.minestar.friends.FriendsService.refresh(player, false);
         }
         // The moderation list is the online roster, so an arrival is a change to it.
         ModerationViewers.markDirty();
@@ -70,8 +75,10 @@ public final class HubEvents {
         LetterViewers.remove(event.getEntity().getUUID());
         ModerationViewers.markDirty();
         TpaService.forget(event.getEntity().getUUID());
+        FriendViewers.remove(event.getEntity().getUUID());
         if (event.getEntity() instanceof ServerPlayer player) {
             TpaViewers.resync(player.server);
+            FriendViewers.resync(player.server);
         }
     }
 }

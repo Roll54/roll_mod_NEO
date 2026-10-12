@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.registry;
 
 import com.perigrine3.createcybernetics.api.CyberwareSlot;
+import earth.terrarium.adastra.common.items.GasTankItem;
 import com.perigrine3.createcybernetics.item.cyberware.arm.CyberarmItem;
 import com.perigrine3.createcybernetics.item.cyberware.leg.CyberlegItem;
 import com.perigrine3.createcybernetics.util.CyberwareAttributeHelper;
@@ -179,6 +180,18 @@ public class ItemRegistry {
                             TooltipOptions.nameAndLore(MALACHITE_GREEEN, 2, AQUA)
                     )
             );
+
+    // Ad Astra oxygen gas tanks, bigger than its own gas_tank (1 bucket / 10 mB per use) and
+    // large_gas_tank (3 buckets / 50 mB). Args: capacity in mB, mB pushed into the suit per use tick.
+    // Ids follow the texture file names in textures/item/tool.
+    public static final DeferredHolder<Item, Item> GIGANTIC_CHROME_VANADIUM_STEEL_GAS_TANK = ITEMS.register(
+            "gigantic_chrome_vanadium_steel_gas_tank",
+            () -> new GasTankItem(new Item.Properties().stacksTo(1), 12_000L, 200L)
+    );
+    public static final DeferredHolder<Item, Item> ABSURDLY_BIG_INCOLOY_GAS_TANK = ITEMS.register(
+            "absurdly_big_incoloy_gas_tank",
+            () -> new GasTankItem(new Item.Properties().stacksTo(1), 48_000L, 800L)
+    );
 
     public static final DeferredHolder<Item, BlockogrizItem> METEORITE_METAL_BLOCKOGRIZ =
             ITEMS.register(
@@ -1114,16 +1127,24 @@ public class ItemRegistry {
             ))
     );
 
-    // 🥧 Пиріг із сірчаних ягід
+    // 🥧 Пиріг із сірчаних ягід — ставиться блоком, їсться/ріжеться ножем по чверті (BlockRegistry.SULFUR_BERRY_PIE_BLOCK)
+    // Used to be a plain food item; the id is unchanged, so existing stacks become the placeable pie.
     public static final DeferredHolder<Item, Item> SULFUR_BERRY_PIE = ITEMS.register(
             "sulfur_berry_pie",
+            () -> new BlockItem(BlockRegistry.SULFUR_BERRY_PIE_BLOCK.get(), new Item.Properties().stacksTo(1))
+    );
+
+    // 🥧 Шматок пирога із сірчаних ягід — чверть пирога; ефекти розраховані так, щоб весь пиріг ≈ старий пиріг-їжа
+    public static final DeferredHolder<Item, Item> SULFUR_BERRY_PIE_SLICE = ITEMS.register(
+            "sulfur_berry_pie_slice",
             () -> new Item(new Item.Properties().food(
                     new FoodProperties.Builder()
-                            .nutrition(12)
-                            .saturationModifier(1.2f)
-                            .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 2400, 2), 1.0f) // дає золоті серця
-                            .effect(() -> new MobEffectInstance(ModEffects.SULFUR_POISONING, 600, 0), 0.2f) // 20% шанс отримати твою власну хворобу
-                            .effect(() -> new MobEffectInstance(ModEffects.SULFUR_RESISTANCE, 2000, 0), 0.2f)
+                            .nutrition(3)
+                            .saturationModifier(0.3f)
+                            .fast()
+                            .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 600, 1), 1.0f) // дає золоті серця
+                            .effect(() -> new MobEffectInstance(ModEffects.SULFUR_POISONING, 600, 0), 0.05f)
+                            .effect(() -> new MobEffectInstance(ModEffects.SULFUR_RESISTANCE, 2000, 0), 0.05f)
                             .build()
             ))
     );
@@ -1138,6 +1159,12 @@ public class ItemRegistry {
                             .fast()
                             .build()
             ))
+    );
+
+    // 🍕 Піца з фторитовим ананасом — ставиться блоком, їсться/ріжеться ножем по чверті (BlockRegistry.FLUORITE_PINEAPPLE_PIZZA)
+    public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE_PIZZA = ITEMS.register(
+            "fluorite_pineapple_pizza",
+            () -> new BlockItem(BlockRegistry.FLUORITE_PINEAPPLE_PIZZA.get(), new Item.Properties().stacksTo(1))
     );
 
     // 🍕 Скибка піци з фторитовим ананасом
@@ -1221,7 +1248,8 @@ public class ItemRegistry {
                             .nutrition(8)
                             .saturationModifier(0.8f)
                             .build()),
-                    50
+                    50,
+                    () -> BlockRegistry.XP_BURGER_BLOCK.get()
             )
     );
 
@@ -1239,7 +1267,8 @@ public class ItemRegistry {
                             .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 600, 1), 1.0f)
                             .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 2400, 1), 1.0f)
                             .build()),
-                    250
+                    250,
+                    () -> BlockRegistry.GOLDEN_XP_BURGER_BLOCK.get()
             )
     );
 
@@ -1294,7 +1323,7 @@ public class ItemRegistry {
             "sunnarium_glass", TooltipOptions.name(AQUA)
     );
     public static final DeferredHolder<Item, Item> MINESTAR_LOGO = registerTooltip(
-            "minestar_logo", TooltipOptions.name(LIGHT_PURPLE)
+            "minestar_logo", TooltipOptions.nameAndLore(LIGHT_PURPLE, 1, LIGHT_PURPLE)
     );
     public static final DeferredHolder<Item, Item> ENRICHED_SUNNARIUM = ITEMS.register("enriched_sunnarium", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> ENRICHED_SUNNARIUM_MK2 = ITEMS.register("enriched_sunnarium_mk2", () -> new Item(new Item.Properties()));
@@ -1769,15 +1798,6 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, DrillModuleItem> DAMAGE_MODULE_V =
             module("damage_module_v", ModuleType.DAMAGE, 5, 3.00, 3.00);
 
-    // Deprecated: merged into the Speed modules. Kept registered so existing items and installed
-    // modules still load and work; left out of the creative tab, and never installable beside Speed.
-    public static final DeferredHolder<Item, DrillModuleItem> ATTACK_SPEED_MODULE_I =
-            module("attack_speed_module_i", ModuleType.ATTACK_SPEED, 1, 0.4, 1.1);
-    public static final DeferredHolder<Item, DrillModuleItem> ATTACK_SPEED_MODULE_II =
-            module("attack_speed_module_ii", ModuleType.ATTACK_SPEED, 2, 0.8, 1.2);
-    public static final DeferredHolder<Item, DrillModuleItem> ATTACK_SPEED_MODULE_III =
-            module("attack_speed_module_iii", ModuleType.ATTACK_SPEED, 3, 1.2, 1.3);
-
     // Cost factor 1.0: each extra mob a sweep reaches is charged half a hit on its own.
     public static final DeferredHolder<Item, DrillModuleItem> SWEEP_MODULE_I =
             module("sweep_module_i", ModuleType.SWEEP, 1, 1.5, 1.0);
@@ -1785,19 +1805,6 @@ public class ItemRegistry {
             module("sweep_module_ii", ModuleType.SWEEP, 2, 2.5, 1.0);
     public static final DeferredHolder<Item, DrillModuleItem> SWEEP_MODULE_III =
             module("sweep_module_iii", ModuleType.SWEEP, 3, 3.5, 1.0);
-
-    // DEPRECATED: merged into the Fortune/Looting modules above. Kept registered so existing stacks
-    // and already-installed modules load and keep working; no longer in the creative tab.
-    public static final DeferredHolder<Item, DrillModuleItem> LOOTING_MODULE_I =
-            module("looting_module_i", ModuleType.LOOTING, 1, 1, 1.1);
-    public static final DeferredHolder<Item, DrillModuleItem> LOOTING_MODULE_II =
-            module("looting_module_ii", ModuleType.LOOTING, 2, 2, 1.2);
-    public static final DeferredHolder<Item, DrillModuleItem> LOOTING_MODULE_III =
-            module("looting_module_iii", ModuleType.LOOTING, 3, 3, 1.3);
-    public static final DeferredHolder<Item, DrillModuleItem> LOOTING_MODULE_IV =
-            module("looting_module_iv", ModuleType.LOOTING, 4, 4, 1.4);
-    public static final DeferredHolder<Item, DrillModuleItem> LOOTING_MODULE_V =
-            module("looting_module_v", ModuleType.LOOTING, 5, 5, 1.5);
 
     public static final DeferredHolder<Item, DrillModuleItem> XP_MULTIPLIER_MODULE_I =
             module("xp_multiplier_module_i", ModuleType.XP_MULTIPLIER, 1, 1.5, 1.1);
@@ -2472,9 +2479,21 @@ public class ItemRegistry {
 
     public static final DeferredHolder<Item, Item> BISMUTH_LITHIUM_BATTERY = registerSimple("bismuth_lithium_battery", new Item.Properties() );
     public static final DeferredHolder<Item, Item> LITHIUM_SULFATE_DUST = registerSimple("lithium_sulfate_dust", new Item.Properties() );
+    public static final DeferredHolder<Item, Item> MODPACK_LOGO = registerTooltip(
+            "modpack_logo", TooltipOptions.nameAndLore(0xB7043B, 1, 0xB7043B)
+    );
 
 
     public static void register(IEventBus modBus) {
+        // The saber-only Attack Speed and Looting modules were merged into Speed and Fortune, which fit
+        // drills and sabers both. Their ids point at the replacement of the same tier, so stacks and
+        // modules already installed in a saber load as Speed/Fortune instead of turning into air.
+        for (String tier : List.of("i", "ii", "iii")) {
+            ITEMS.addAlias(RollMod.id("attack_speed_module_" + tier), RollMod.id("speed_module_" + tier));
+        }
+        for (String tier : List.of("i", "ii", "iii", "iv", "v")) {
+            ITEMS.addAlias(RollMod.id("looting_module_" + tier), RollMod.id("fortune_module_" + tier));
+        }
         ITEMS.register(modBus);
         CROPS.register(modBus);
     }

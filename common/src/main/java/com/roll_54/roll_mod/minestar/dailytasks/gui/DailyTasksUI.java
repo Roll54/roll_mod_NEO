@@ -28,6 +28,7 @@ import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskQuota;
 import com.roll_54.roll_mod.minestar.hub.gui.HubBadge;
 import com.roll_54.roll_mod.minestar.hub.gui.HubSection;
+import com.roll_54.roll_mod.minestar.hub.gui.HubSplit;
 import com.roll_54.roll_mod.minestar.dailytasks.api.TaskReward;
 import com.roll_54.roll_mod.network.packet.ClaimDailyBonusPacket;
 import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
@@ -71,7 +72,6 @@ public final class DailyTasksUI {
     public static final ResourceLocation UI_ID = RollMod.id("daily_tasks");
 
 
-    private static final int PADDING = 12;
     /**
      * Tall enough for the row's three stacked lines — name, bar, then the reward strip and Claim
      * side by side — with a little air between them. See {@link #row}.
@@ -80,9 +80,12 @@ public final class DailyTasksUI {
     private static final int ROW_GAP = 3;
     private static final int ICON = 32;
     private static final int CLAIM_W = 70;
-    /** The reroll button in the row's bottom-right corner: its icon, then the price. */
+    /**
+     * The reroll button in the row's bottom-right corner: its icon, then the price. The caption is
+     * sized for the longest translation of "free" — uk_ua's «Безкоштовно» — not for the price.
+     */
     private static final int REROLL_ICON = 12;
-    private static final int REROLL_TEXT_W = 26;
+    private static final int REROLL_TEXT_W = 64;
     private static final ResourceLocation REROLL_TEXTURE = RollMod.id("textures/gui/hub/daily/reroll.png");
     /** The gap between the stacked pieces of a row's middle column. */
     private static final int ROW_INNER_GAP = 4;
@@ -90,6 +93,9 @@ public final class DailyTasksUI {
     /** The all-complete bonus panel down the right, and the gap between it and the task column. */
     private static final int BONUS_W = 132;
     private static final int BONUS_GAP = 4;
+    /** How far the bonus panel and the task rows can be squeezed by the divider between them. */
+    private static final int BONUS_MIN_W = 100;
+    private static final int TASKS_MIN_W = 220;
 
     /** The bonus panel: its own reward icon, then the bottom strip's button. */
     private static final int BONUS_ICON = 18;
@@ -98,9 +104,9 @@ public final class DailyTasksUI {
     /** One cell of a reward strip, in the bonus panel and in every task row. */
     private static final int REWARD_ICON = 16;
 
-    /** The title row and the gap under it — see {@link #header}. */
-    private static final int HEADER_H = 12;
-    private static final int HEADER_GAP = 4;
+    /** The reset countdown in the shared title row — see {@link #header}. */
+    private static final int RESETS_H = 12;
+    private static final int RESETS_GAP = 4;
 
     private static final int COLOR_ROW = 0x40000000;
     private static final int COLOR_BUTTON = 0x80000000;
@@ -121,7 +127,7 @@ public final class DailyTasksUI {
         UIElement root = new UIElement();
         // Fills the hub's tab box, whatever size the hub window has been given.
         root.layout(l -> l.flexDirection(FlexDirection.COLUMN)
-                .widthPercent(100).heightPercent(100).paddingAll(PADDING));
+                .widthPercent(100).heightPercent(100).paddingAll(HubSection.TAB_PADDING));
 
         // This section already had a title row of its own, so it keeps it and only gains the I
         // button on the end.
@@ -150,7 +156,12 @@ public final class DailyTasksUI {
             tasks.addScrollViewChild(row(server, i));
         }
 
-        body.addChildren(tasks, bonusPanel(server));
+        // A divider between the rows and the bonus panel, like the list/info divider of the other
+        // tabs — here it is the panel on the right that keeps the width. It carries no sync value, so
+        // the panel's bindings keep their places.
+        UIElement bonus = bonusPanel(server);
+        body.addChildren(tasks, HubSplit.handleRight("daily_tasks", bonus, BONUS_W,
+                player.level().isClientSide(), BONUS_MIN_W, TASKS_MIN_W), bonus);
         root.addChild(body);
         // Last, so it covers the rows when opened.
         root.addChild(section.overlay());
@@ -160,23 +171,15 @@ public final class DailyTasksUI {
 
     /* ------------------------------------------------- header ------------------------------------------------- */
 
+    /** The shared title row (see {@link HubSection#header}), with the reset countdown beside the I. */
     private static UIElement header(@Nullable ServerPlayer server, HubSection.Info section) {
-        UIElement header = new UIElement();
-        header.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(HEADER_H)
-                .marginBottom(HEADER_GAP));
-
-        Label title = new Label();
-        title.setText(Component.translatable("gui.roll_mod.daily_tasks.title"));
-        title.layout(l -> l.flexGrow(1));
-        title.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
-
         // Seconds come from the server: the roll follows the server machine's clock, which is not
         // the viewer's. Only the formatting happens client-side.
         SimpleBinding<Integer> secondsLeft = intBinding(
                 () -> server == null ? 0 : (int) DailyTaskManager.secondsUntilNextRoll(), 0);
 
         Label resets = new Label();
-        resets.layout(l -> l.width(96));
+        resets.layout(l -> l.width(96).height(RESETS_H).marginRight(RESETS_GAP));
         resets.textStyle(t -> t.textAlignHorizontal(Horizontal.RIGHT)
                 .textAlignVertical(Vertical.CENTER)
                 .textColor(0xFFAAAAAA));
@@ -184,8 +187,7 @@ public final class DailyTasksUI {
         resets.addEventListener(UIEvents.TICK, e -> resets.setText(Component.translatable(
                 "gui.roll_mod.daily_tasks.resets_in", formatDuration(value(secondsLeft, 0)))));
 
-        header.addChildren(title, resets, section.button());
-        return header;
+        return HubSection.header(Component.translatable("gui.roll_mod.daily_tasks.title"), section, resets);
     }
 
     /* ---------------------------------------------- bonus panel ----------------------------------------------- */
@@ -212,7 +214,7 @@ public final class DailyTasksUI {
 
         UIElement panel = new UIElement();
         panel.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(BONUS_W).heightPercent(100)
-                .flexShrink(0).marginLeft(BONUS_GAP).paddingAll(3).alignItems(AlignItems.CENTER));
+                .flexShrink(0).paddingAll(3).alignItems(AlignItems.CENTER));
         panel.style(s -> s.background(new ColorRectTexture(COLOR_ROW)));
         panel.addSyncValue(rewardIndex.getSyncValue());
         panel.addSyncValue(completed.getSyncValue());
@@ -358,7 +360,7 @@ public final class DailyTasksUI {
 
         UIElement row = new UIElement();
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .marginBottom(ROW_GAP).paddingAll(3));
+                .marginBottom(ROW_GAP).paddingAll(3).paddingHorizontal(com.roll_54.roll_mod.minestar.hub.gui.HubSection.ROW_INSET));
         row.style(s -> s.background(new ColorRectTexture(COLOR_ROW)));
         // Collapsed rows keep their fixed-height children, so clip them to the row's own box.
         row.setOverflowVisible(false);

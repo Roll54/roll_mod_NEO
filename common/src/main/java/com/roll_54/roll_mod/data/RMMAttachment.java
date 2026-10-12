@@ -44,6 +44,16 @@ public class RMMAttachment {
             "tier", () -> AttachmentType.builder(() -> 0).serialize(Codec.INT).copyOnDeath().build()
     );
     /**
+     * Whether the player has accepted the starting screen — see
+     * {@link com.roll_54.roll_mod.minestar.welcome.WelcomeService}. {@code false} (the default, so
+     * every fresh player) means the screen opens on login; accepting it sets {@code true}.
+     * {@code /rollmod welcome reset} puts it back to {@code false}.
+     */
+    public static final Supplier<AttachmentType<Boolean>> NEW_PLAYER = ATTACHMENT_TYPES.register(
+            "new_player", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).copyOnDeath().build()
+    );
+
+    /**
      * Cosmetic item skins — <b>legacy, kept for one release to import old saves.</b>
      *
      * <p>This is no longer where cosmetics live. It serialised into {@code world/playerdata/}, which

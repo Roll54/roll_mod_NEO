@@ -1,8 +1,8 @@
 package com.roll_54.roll_mod.items.modulardrill.gui;
 
+import com.roll_54.roll_mod.minestar.theme.RollUi;
 import com.lowdragmc.lowdraglib2.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
-import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.data.Horizontal;
 import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
@@ -11,7 +11,6 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.ItemSlot;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Tab;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
-import com.lowdragmc.lowdraglib2.gui.ui.style.StylesheetManager;
 import com.roll_54.roll_mod.economy.vendingblock.gui.VendorUIHelper;
 import com.roll_54.roll_mod.items.modulardrill.DrillModuleHelper;
 import com.roll_54.roll_mod.items.modulardrill.ModularDrillItem;
@@ -147,7 +146,7 @@ public final class ModularDrillConfigUI {
         }
 
         return ModularUI.of(
-                UI.of(root, StylesheetManager.MC_MERGED, StylesheetManager.GDP_MERGED), player);
+                RollUi.of(player, root), player);
     }
 
     /** A page under the tab row; its children are laid out from its own top-left corner. */

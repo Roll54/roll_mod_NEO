@@ -1,8 +1,11 @@
 package com.roll_54.roll_mod.minestar.dailytasks.rewards;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.dailytasks.api.AutoDailyReward;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyReward;
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon;
@@ -43,6 +46,8 @@ public final class StarcoinsReward implements DailyReward {
 
     @Override
     public void grant(ServerPlayer player) {
-        CurrencyService.deposit(player, TYPE, AMOUNT, player.server);
+        CurrencyLedger.logged(CurrencyService.deposit(player, TYPE, AMOUNT, player.server,
+                CurrencyCause.player(player, LedgerReason.DAILY).withDetail("daily reward " + id())),
+                player.getUUID(), TYPE, AMOUNT, LedgerReason.DAILY);
     }
 }

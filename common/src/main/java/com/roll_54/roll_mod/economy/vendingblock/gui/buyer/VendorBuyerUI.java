@@ -1,8 +1,8 @@
 package com.roll_54.roll_mod.economy.vendingblock.gui.buyer;
 
+import com.roll_54.roll_mod.minestar.theme.RollUi;
 import com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
-import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.*;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
@@ -14,7 +14,6 @@ import com.roll_54.roll_mod.economy.vendingblock.network.BuyModePacket;
 import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.neoforge.network.PacketDistributor;
 import org.appliedenergistics.yoga.YogaAlign;
 import org.appliedenergistics.yoga.YogaFlexDirection;
 
@@ -30,7 +29,10 @@ public final class VendorBuyerUI {
   private static final int ROW_WIDTH = 232;
 
   public static ModularUI build(VendorBlockEntity be, Player player) {
-    UIElement root = VendorUIHelper.panel(PANEL_WIDTH, 180);
+    // The theme's panel surface (hub settings), not a fixed light-grey plate. Children are placed
+    // absolutely, so the theme's own padding is dropped.
+    UIElement root = VendorUIHelper.styledPanel(PANEL_WIDTH, 180);
+    root.layout(l -> l.paddingAll(0));
 
     Label title = new Label();
     title.setText(
@@ -40,15 +42,9 @@ public final class VendorBuyerUI {
                 : "menu.roll_mod.buy.title"));
     root.addChild(VendorUIHelper.abs(title, 8, 6, 130, 10));
 
-    // buy-mode toggle: any player can flip whether this vendor buys from / sells to players.
-    Label buyModeLabel = new Label();
-    buyModeLabel.setText(Component.translatable("menu.roll_mod.tooltip.buymode"));
-    root.addChild(VendorUIHelper.abs(buyModeLabel, PANEL_WIDTH - 116, 6, 80, 10));
-    Switch buyMode = new Switch();
-    buyMode.setOn(be.isBuyMode());
-    buyMode.setOnSwitchChanged(
-        on -> PacketDistributor.sendToServer(new BuyModePacket(be.getBlockPos(), on)));
-    root.addChild(VendorUIHelper.abs(buyMode, PANEL_WIDTH - 34, 4, 28, 14));
+    // No buy-mode switch here: this is the customer's screen, and only the owner (or the vendor
+    // key) may flip it — BuyModePacket refuses anyone else. The owner's switch is in the settings
+    // menu of VendorTradeUI.
 
     ScrollerView scroller = new ScrollerView();
     scroller.viewContainer(c -> c.layout(l -> l.flexDirection(YogaFlexDirection.COLUMN)));
@@ -61,7 +57,7 @@ public final class VendorBuyerUI {
     }
     root.addChild(scroller);
 
-    return ModularUI.of(UI.of(root), player);
+    return ModularUI.of(RollUi.of(player, root), player);
   }
 
   private static UIElement row(VendorBlockEntity be, Player player, Position position, int index) {

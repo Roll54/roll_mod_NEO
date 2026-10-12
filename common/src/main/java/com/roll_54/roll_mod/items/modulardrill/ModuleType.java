@@ -27,11 +27,7 @@ public enum ModuleType {
 
     // Saber modules.
     DAMAGE(ToolKind.SABER),
-    // Deprecated: merged into SPEED. Kept so existing items and installed modules still load.
-    ATTACK_SPEED(ToolKind.SABER),
     SWEEP(ToolKind.SABER),
-    // Deprecated: merged into FORTUNE. Kept so existing items and installed modules still load.
-    LOOTING(ToolKind.SABER),
     XP_MULTIPLIER(ToolKind.SABER),
     DROP_COLLECTOR(ToolKind.SABER),
     VAMPIRISM(ToolKind.SABER),

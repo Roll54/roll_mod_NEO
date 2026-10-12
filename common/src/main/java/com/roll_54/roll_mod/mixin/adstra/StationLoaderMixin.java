@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.mixin.adstra;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.roll_54.roll_mod.RollMod;
 import earth.terrarium.adastra.common.utils.radio.StationLoader;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,12 +18,8 @@ public abstract class StationLoaderMixin {
     // Ad Astra fetches its radio station list from https://adastra.terrarium.earth/stations.
     // We replace that web call with our own station list bundled inside the mod jar, so no
     // network request happens and StationLoader#init parses our {"stations":[...]} instead.
-    //
-    // TODO: the resource below does not exist yet, so this redirect currently returns null and
-    //  StationLoader#init bails on its own null check before ever touching STATIONS. The list stays
-    //  empty, and because ServerboundSetStationPacket gates on StationLoader#hasStation(url) —
-    //  an exact string match against that list — no station can be tuned at all. Either ship the
-    //  file or drop the mixin; a registered redirect with nothing behind it is worse than no mixin.
+    // ServerboundSetStationPacket gates on StationLoader#hasStation(url), an exact string match, so
+    // a station is tunable only if its url is in that file verbatim.
     //
     // TODO: decide whether this mixin is wanted at all. This Ad Astra build already reads a local
     //  list without us: StationLoader#init calls readLocalStations() first, which takes the system
@@ -49,6 +46,7 @@ public abstract class StationLoaderMixin {
     //  and the radio path never uploads. If we ever want the game to report what someone tuned to,
     //  that is our own HttpClient call, and the place that knows is the ServerboundSetStationPacket
     //  handler, not this class.
+
     @Unique
     private static final String STATIONS_RESOURCE = "/assets/roll_mod/sounds/endpoints_radio_moderntech.json";
 
@@ -60,11 +58,20 @@ public abstract class StationLoaderMixin {
             )
     )
     private static JsonObject roll_mod$loadBundledStations(String url) {
-        try (InputStream in = StationLoaderMixin.class.getResourceAsStream(STATIONS_RESOURCE)) {
-            if (in == null) return null;
+        // Must not be StationLoaderMixin.class: Mixin rewrites that literal to StationLoader.class once
+        // merged, which resolves the path inside Ad Astra's module and never finds our file.
+        try (InputStream in = RollMod.class.getResourceAsStream(STATIONS_RESOURCE)) {
+            if (in == null) {
+                RollMod.LOGGER.error("[radio] {} not found, Ad Astra station list will be empty", STATIONS_RESOURCE);
+                return null;
+            }
             String json = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-            return JsonParser.parseString(json).getAsJsonObject();
-        } catch (Exception ignored) {
+            JsonObject stations = JsonParser.parseString(json).getAsJsonObject();
+            RollMod.LOGGER.info("[radio] Loaded {} Ad Astra stations from {}",
+                    stations.getAsJsonArray("stations").size(), STATIONS_RESOURCE);
+            return stations;
+        } catch (Exception e) {
+            RollMod.LOGGER.error("[radio] Failed to read {}", STATIONS_RESOURCE, e);
             return null;
         }
     }

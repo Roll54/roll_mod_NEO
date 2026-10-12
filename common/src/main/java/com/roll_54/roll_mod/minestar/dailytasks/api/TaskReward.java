@@ -1,5 +1,8 @@
 package com.roll_54.roll_mod.minestar.dailytasks.api;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import net.minecraft.network.chat.Component;
@@ -67,7 +70,9 @@ public sealed interface TaskReward {
 
         @Override
         public void grant(ServerPlayer player) {
-            CurrencyService.deposit(player, type, amount, player.server);
+            CurrencyLedger.logged(CurrencyService.deposit(player, type, amount, player.server,
+                    CurrencyCause.player(player, LedgerReason.DAILY).withDetail("daily task reward")),
+                    player.getUUID(), type, amount, LedgerReason.DAILY);
         }
     }
 

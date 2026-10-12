@@ -4,8 +4,12 @@ import static com.roll_54.roll_mod.RollMod.LOGGER;
 import static com.roll_54.roll_mod.economy.currency.repository.CurrencyRepository.jdbi;
 import static com.roll_54.roll_mod.economy.currency.repository.CurrencyRepository.onDatabase;
 
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
+import com.roll_54.roll_mod.economy.currency.audit.CurrencyAudit;
+import com.roll_54.roll_mod.economy.currency.audit.CurrencyAudit.Op;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyOffer;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +25,9 @@ import org.jdbi.v3.core.statement.Query;
  * treats the deletion's affected-row count as the claim. Two players cannot both be paid by the same
  * offer that way, and no path can delete a row without paying the amount to somebody — an offer that
  * vanished on its own would be money destroyed.
+ *
+ * <p>Every method that moves money takes a {@link CurrencyCause} and is written to the audit log
+ * ({@link CurrencyAudit}), as in {@link CurrencyRepository}.
  *
  * <p>Offers outlive restarts, unlike teleport requests ({@code TpaService} keeps those in memory on
  * purpose). They have to: the money is already held, so forgetting one loses it.
@@ -69,7 +76,17 @@ public final class CurrencyOfferRepository {
    * connection dropped mid-pair — in which the money had left the sender with no row anywhere saying
    * who was owed it, and nothing afterwards could tell that from a spend.
    */
-  public static CompletableFuture<Hold> hold(CurrencyOffer offer) {
+  public static CompletableFuture<Hold> hold(CurrencyOffer offer, CurrencyCause cause) {
+    long id = CurrencyAudit.begin(Op.HOLD, offer.type(), offer.amount(), offer.sender(), null,
+        cause.withDetail(join(cause.detail(), "offer " + offer.id() + " to " + offer.recipientName())));
+    return CurrencyAudit.track(id, holdNow(offer), hold -> switch (hold) {
+      case HELD -> "OK";
+      case INSUFFICIENT -> "REFUSED";
+      case FAILED -> "FAILED";
+    });
+  }
+
+  private static CompletableFuture<Hold> holdNow(CurrencyOffer offer) {
     return onDatabase(
         "holdOffer",
         Hold.FAILED,
@@ -146,11 +163,41 @@ public final class CurrencyOfferRepository {
    * somebody else got there first — the row was already answered, or swept as expired — and in that
    * case nothing was paid.
    */
-  public static CompletableFuture<Optional<CurrencyOffer>> claim(UUID id, Payee payee) {
+  /**
+   * As {@link #claim(UUID, Payee)}. The amount and who is paid are only known once the row is read,
+   * so the request line names the offer and the result line names the payment.
+   */
+  public static CompletableFuture<Optional<CurrencyOffer>> claim(
+      UUID id, Payee payee, CurrencyCause cause) {
+    long audit = CurrencyAudit.begin(Op.CLAIM, null, 0, null, null,
+        cause.withDetail(join(cause.detail(), "offer " + id + " pays " + payee)));
+    return CurrencyAudit.track(audit, claimNow(id, payee), claimed -> claimed
+        .map(offer -> "OK paid " + offer.type().id() + " " + offer.amount() + " to "
+            + (payee == Payee.RECIPIENT ? offer.recipientName() + "(" + offer.recipient() + ")"
+                : offer.senderName() + "(" + offer.sender() + ")"))
+        .orElse("REFUSED (already answered or expired)"));
+  }
+
+  private static CompletableFuture<Optional<CurrencyOffer>> claimNow(UUID id, Payee payee) {
     return onDatabase(
-        "claimOffer",
-        Optional.empty(),
-        () -> jdbi().inTransaction(handle -> claimOne(handle, id, payee)));
+            "claimOffer",
+            Optional.<CurrencyOffer>empty(),
+            () -> jdbi().inTransaction(handle -> claimOne(handle, id, payee)))
+        .thenApply(
+            claimed -> {
+              // An accepted offer is the one ending that moved money between two players; a deny
+              // or expiry only put it back where it was, so it leaves no history.
+              if (payee == Payee.RECIPIENT) {
+                claimed.ifPresent(
+                    offer -> {
+                      CurrencyLedger.record(offer.sender(), offer.type(), -offer.amount(),
+                          LedgerReason.TRANSFER, null, 0, offer.recipient(), offer.recipientName());
+                      CurrencyLedger.record(offer.recipient(), offer.type(), offer.amount(),
+                          LedgerReason.TRANSFER, null, 0, offer.sender(), offer.senderName());
+                    });
+              }
+              return claimed;
+            });
   }
 
   /**
@@ -159,7 +206,20 @@ public final class CurrencyOfferRepository {
    * <p>One transaction per offer rather than one for the batch: a single unreadable row would
    * otherwise roll back the refunds of every other sender in it.
    */
-  public static CompletableFuture<List<CurrencyOffer>> claimExpired(long now) {
+  /** As {@link #claimExpired(long)}, with one audit line per offer refunded. */
+  public static CompletableFuture<List<CurrencyOffer>> claimExpired(long now, CurrencyCause cause) {
+    long audit = CurrencyAudit.begin(Op.CLAIM_EXPIRED, null, 0, null, null, cause);
+    return CurrencyAudit.track(audit, claimExpiredNow(now).whenComplete((refunded, error) -> {
+      if (refunded == null) return;
+      for (CurrencyOffer offer : refunded) {
+        CurrencyAudit.note(audit, "refunded offer " + offer.id() + ": +" + offer.amount() + " "
+            + offer.type().id() + " to " + offer.senderName() + "(" + offer.sender() + "), unanswered by "
+            + offer.recipientName() + "(" + offer.recipient() + ")");
+      }
+    }), refunded -> "OK refunded=" + refunded.size());
+  }
+
+  private static CompletableFuture<List<CurrencyOffer>> claimExpiredNow(long now) {
     return onDatabase(
         "claimExpiredOffers",
         List.of(),
@@ -254,6 +314,10 @@ public final class CurrencyOfferRepository {
         .stream()
         .filter(java.util.Objects::nonNull)
         .toList();
+  }
+
+  private static String join(String a, String b) {
+    return a == null || a.isBlank() ? b : a + "; " + b;
   }
 
   private static UUID uuid(String raw) {

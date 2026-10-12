@@ -2,13 +2,17 @@ package com.roll_54.roll_mod.economy;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.api.CurrencyOfferService;
+import com.roll_54.roll_mod.economy.api.MoneyRequestService;
+import com.roll_54.roll_mod.economy.money.MoneyViewers;
 import com.roll_54.roll_mod.economy.command.CurrencyCommand;
 import com.roll_54.roll_mod.economy.config.CurrencyConfig;
+import com.roll_54.roll_mod.economy.currency.audit.CurrencyAudit;
 import com.roll_54.roll_mod.economy.database.DatabaseManager;
 import com.roll_54.roll_mod.economy.database.SchemaMigrator;
 import com.roll_54.roll_mod.economy.plot.PlotService;
 import com.roll_54.roll_mod.economy.plot.PlotViewers;
 import com.roll_54.roll_mod.economy.plot.command.PlotCommand;
+import com.roll_54.roll_mod.economy.vendingblock.auction.AuctionLog;
 import com.roll_54.roll_mod.economy.vendingblock.auction.AuctionManager;
 import com.roll_54.roll_mod.economy.vendingblock.command.AuctionCommand;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,6 +21,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
@@ -76,17 +81,27 @@ public final class EconomyEvents {
     // Refunds payment offers nobody answered. It keeps its own counter, because a week-long
     // deadline does not want checking on the auctions' five-second beat.
     CurrencyOfferService.tickExpiry(event.getServer());
+    MoneyRequestService.tickExpiry(event.getServer());
   }
 
   @SubscribeEvent
   public static void onPlayerLogout(PlayerEvent.PlayerLoggedOutEvent event) {
     AuctionManager.removeViewer(event.getEntity().getUUID());
+    MoneyViewers.remove(event.getEntity().getUUID());
     PlotViewers.remove(event.getEntity().getUUID());
   }
 
   @SubscribeEvent
   public static void onServerStopping(ServerStoppingEvent event) {
     DatabaseManager.getInstance().shutdown();
+  }
+
+  /** The money audit log's last lines — results of the final queries — reach the file, and the
+   *  auction action log's with them. */
+  @SubscribeEvent
+  public static void onServerStopped(ServerStoppedEvent event) {
+    CurrencyAudit.flush();
+    AuctionLog.flush();
   }
 
   @SubscribeEvent

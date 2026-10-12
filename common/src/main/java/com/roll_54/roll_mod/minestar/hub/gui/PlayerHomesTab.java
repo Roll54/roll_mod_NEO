@@ -13,12 +13,17 @@ import com.lowdragmc.lowdraglib2.gui.ui.data.Vertical;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
+import com.lowdragmc.lowdraglib2.gui.ui.elements.Selector;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.TextField;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
+import com.lowdragmc.lowdraglib2.gui.ui.utils.UIElementProvider;
+import com.roll_54.roll_mod.minestar.friends.ClientFriendsCache;
+import com.roll_54.roll_mod.minestar.friends.FriendEntry;
 import com.roll_54.roll_mod.minestar.hub.home.ClientHomeCache;
 import com.roll_54.roll_mod.minestar.hub.home.HomeView;
 import com.roll_54.roll_mod.minestar.hub.home.PlayerHome;
+import com.roll_54.roll_mod.minestar.tpa.ClientTpaCache;
 import com.roll_54.roll_mod.network.packet.HomeActionPacket;
 import com.roll_54.roll_mod.util.LegacyText;
 import dev.vfyjxf.taffy.style.FlexDirection;
@@ -31,8 +36,10 @@ import net.neoforged.neoforge.network.PacketDistributor;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
 
@@ -56,7 +63,8 @@ public final class PlayerHomesTab {
     private static final int PADDING = 6;
 
     /** Wider than the warp list: an invite row carries two lines of text and two buttons. */
-    private static final int LIST_W = 160;
+    /** The same as the warps list: the travel tab flips between the two, and a jump in width read badly. */
+    private static final int LIST_W = TravelTab.LIST_W;
 
     private static final int ROW_H = 16;
     private static final int INVITE_ROW_H = 26;
@@ -85,31 +93,28 @@ public final class PlayerHomesTab {
     private static final int COLOR_LEGACY = 0xFFE04A3A;
 
     /**
-     * How far the buttons that change a home sit from the one that merely travels to it.
+     * How far delete and leave sit below the pin button in the Change window.
      *
-     * <p>Teleport is the button reached for constantly and delete and leave are the two that cannot
-     * be taken back, and until now they sat 3px apart — close enough that a list rebuild arriving
-     * between two clicks could put one under a cursor aimed at the other. Two button-heights of
-     * nothing is what makes that miss harmless.
+     * <p>They are the two that cannot be taken back, so they are kept clear of the harmless toggle
+     * above them — and behind a confirmation on top of that.
      */
-    private static final int EDIT_GAP = 32;
+    private static final int EDIT_GAP = 12;
+
+    /** The Change window: pin, delete or leave, and the invite picker, which can expand in place. */
+    private static final int CHANGE_W = 220;
+    private static final int CHANGE_H = 250;
 
     /** The Invite button's width; the player picker takes whatever is left of the row. */
     private static final int INVITE_W = 68;
 
-    /**
-     * How many names the picker shows before it scrolls.
-     *
-     * <p>Bounded rather than growing with the roster: the list expands the panel in place, and a
-     * server with hundreds of players would otherwise push everything below it off the screen.
-     */
-    private static final int PICKER_VISIBLE = 5;
+    /** The invite mode dropdown's width; the search field takes whatever is left of the row. */
+    private static final int INVITE_MODE_W = 62;
 
     /**
-     * The shortest the invite picker's list may be, in pixels. It is sized to its names, so with only
-     * one player to offer it collapsed to a single 16px row.
+     * How many names the picker shows before it scrolls. Fixed rather than sized to its names, so
+     * the window does not jump as a search narrows the list.
      */
-    private static final int PICKER_MIN_H = 32;
+    private static final int PICKER_VISIBLE = 5;
 
     /**
      * Vanilla's own ender-pearl file, for the one-click teleport on the owner's rows.
@@ -135,11 +140,23 @@ public final class PlayerHomesTab {
     private PlayerHomesTab() {}
 
     public static UIElement build(Player player) {
+        return build(player, true);
+    }
+
+    /**
+     * The list and the detail panel without the section's own title row and padding — what the
+     * travel tab shows under its Homes | Warps switch.
+     */
+    public static UIElement content(Player player) {
+        return build(player, false);
+    }
+
+    private static UIElement build(Player player, boolean titled) {
         // A column now, so the section title can sit above the list and detail panel. The old row
         // lives on as `body`, unchanged apart from taking its height from the leftover space.
         UIElement root = new UIElement();
         root.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).heightPercent(100)
-                .paddingAll(PADDING));
+                .paddingAll(titled ? PADDING : 0));
 
         HubSection.Info section = HubSection.info("homes");
 
@@ -149,7 +166,7 @@ public final class PlayerHomesTab {
         // nothing would pull it back to the leftover space under the header. A zero basis leaves the
         // grow as the only thing deciding the height, which is what the list scrolls inside.
         body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexBasis(0).flexGrow(1)
-                .gapColumn(PADDING));
+                .gapColumn(1));
 
         // Per-viewer client state, so it lives in the tree rather than crossing the wire.
         UUID[] selected = {null};
@@ -158,9 +175,8 @@ public final class PlayerHomesTab {
         // whenever a sync arrives — and a sync arrives every time anyone answers an invite. Held in
         // the builder it would be wiped mid-word.
         String[] inviteDraft = {""};
-        // Whether the invite picker is expanded. Held out here with the draft so it survives the
-        // panel being rebuilt, and cleared alongside it.
-        boolean[] pickerOpen = {false};
+        // The invite picker's mode and search text, held out here with the draft for the same reason.
+        InviteSearch inviteSearch = new InviteSearch();
 
         UIElement detail = new UIElement();
         detail.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexGrow(1).heightPercent(100)
@@ -178,7 +194,7 @@ public final class PlayerHomesTab {
             creating[0] = true;
             selected[0] = null;
             inviteDraft[0] = "";
-            pickerOpen[0] = false;
+            inviteSearch.reset();
         });
 
         String[] filter = {""};
@@ -198,12 +214,30 @@ public final class PlayerHomesTab {
         list.viewContainer(c -> c.layout(l -> l.widthPercent(100)));
 
         left.addChildren(create, search, list);
-        body.addChildren(left, detail);
+
+        // Everything that changes the chosen home rather than travelling to it — pin, delete or
+        // leave, invite — behind the detail panel's Change button, so the panel's one big target is
+        // Teleport. Filled for the selected home by the tick below while it is open.
+        HubConfirm confirmer = new HubConfirm();
+        UIElement[] changeBody = {null};
+        HubSection.Floating changeWindow = HubSection.popup(
+                Component.translatable("gui.roll_mod.hub.change.title"), CHANGE_W, CHANGE_H, content -> {
+                    content.layout(l -> l.flexDirection(FlexDirection.COLUMN));
+                    changeBody[0] = content;
+                }).windowed();
+        // The divider between the list and the panel: drag to resize, double-click to reset.
+        body.addChildren(left, HubSplit.handle(titled ? "homes" : TravelTab.SPLIT_KEY, left, LIST_W, player.level().isClientSide()), detail);
         // The panel last, so it covers the body when opened.
-        root.addChildren(HubSection.header("homes", section), body, section.overlay());
+        if (titled) {
+            root.addChildren(HubSection.header("homes", section), body, section.overlay());
+        } else {
+            root.addChildren(body);
+        }
+        root.addChildren(changeWindow.root(), confirmer.root());
 
         String[] listSignature = {null};
         String[] detailSignature = {null};
+        String[] changeSignature = {null};
 
         root.addEventListener(UIEvents.TICK, e -> {
             List<HomeView> homes = ClientHomeCache.HOMES;
@@ -220,27 +254,46 @@ public final class PlayerHomesTab {
             for (HomeView home : shown) {
                 rows.append(home.id()).append(home.relation().ordinal());
             }
-            String signature = shown.size() + ":" + rows + ":" + selected[0];
+            String signature = shown.size() + ":" + rows + ":" + selected[0] + ":" + HubPins.version(player);
             if (!signature.equals(listSignature[0])) {
                 listSignature[0] = signature;
-                rebuildList(list, shown, selected, creating, inviteDraft);
+                rebuildList(player, list, shown, selected, creating, inviteDraft);
             }
 
             // The roster is in the signature too, so the owner's "shared with" list repaints when
             // someone answers.
             HomeView current = find(homes, selected[0]);
-            // The picker's state is part of the signature: opening it, or choosing a name, changes
-            // what the panel shows and nothing else would trigger the rebuild.
-            String mode = creating[0]
-                    ? "create"
-                    : selected[0] + ":" + fingerprint(current) + ":" + pickerOpen[0] + ":" + inviteDraft[0];
+            String mode = creating[0] ? "create" : selected[0] + ":" + fingerprint(current);
             if (!mode.equals(detailSignature[0])) {
                 detailSignature[0] = mode;
                 detail.clearAllChildren();
                 if (creating[0]) {
                     buildCreateForm(detail, creating);
                 } else {
-                    buildDetail(player, detail, current, selected, creating, inviteDraft, pickerOpen);
+                    buildDetail(detail, current, selected, creating, () -> {
+                        inviteDraft[0] = "";
+                        inviteSearch.reset();
+                        changeSignature[0] = null;
+                        changeWindow.open();
+                    });
+                }
+            }
+
+            // The Change window follows the selection: it goes when the home does (deleted, left,
+            // another one picked), and repaints when the roster or a pin changes. The invite picker
+            // refills itself as the player types, so its state stays out of the signature — a
+            // rebuild per keystroke would take the search field's focus away.
+            if (changeWindow.isOpen()) {
+                if (current == null || creating[0] || !changeable(current)) {
+                    changeWindow.close();
+                } else {
+                    String change = current.id() + ":" + fingerprint(current) + ":" + HubPins.version(player);
+                    if (!change.equals(changeSignature[0])) {
+                        changeSignature[0] = change;
+                        changeBody[0].clearAllChildren();
+                        buildChange(player, changeBody[0], current, selected, inviteDraft, inviteSearch,
+                                confirmer);
+                    }
                 }
             }
         });
@@ -273,9 +326,20 @@ public final class PlayerHomesTab {
 
     /* --------------------------------------------- list --------------------------------------------- */
 
-    private static void rebuildList(ScrollerView list, List<HomeView> homes,
+    private static void rebuildList(Player player, ScrollerView list, List<HomeView> homes,
                                     UUID[] selected, boolean[] creating, String[] inviteDraft) {
         list.clearAllScrollViewChildren();
+
+        // The viewer's pins above everything, invites included: the player put them there. Only
+        // homes they can travel to can be pinned, and each shows once — here, not in its section.
+        List<HomeView> rest = new ArrayList<>(homes);
+        List<HomeView> pinned = HubPins.takePinned(player, HubWindowState.PinKind.HOMES, rest,
+                home -> changeable(home) ? home.id() : null);
+        if (!pinned.isEmpty()) {
+            addHeader(list, "gui.roll_mod.hub.pinned");
+            for (HomeView home : pinned) list.addScrollViewChild(homeRow(home, selected, creating, inviteDraft));
+        }
+        homes = rest;
 
         // Invites first: they are the only rows asking the player for something.
         addSection(list, homes, HomeView.Relation.INVITED, "gui.roll_mod.hub.homes.section.invites",
@@ -298,11 +362,7 @@ public final class PlayerHomesTab {
         }
         if (section.isEmpty()) return;
 
-        Label header = new Label();
-        header.setText(Component.translatable(headerKey).withStyle(ChatFormatting.DARK_GRAY));
-        header.layout(l -> l.widthPercent(100).height(LINE_H).marginBottom(1));
-        header.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
-        list.addScrollViewChild(header);
+        addHeader(list, headerKey);
 
         for (HomeView home : section) {
             list.addScrollViewChild(switch (relation) {
@@ -311,6 +371,19 @@ public final class PlayerHomesTab {
                 default -> homeRow(home, selected, creating, inviteDraft);
             });
         }
+    }
+
+    private static void addHeader(ScrollerView list, String headerKey) {
+        Label header = new Label();
+        header.setText(Component.translatable(headerKey).withStyle(ChatFormatting.DARK_GRAY));
+        header.layout(l -> l.widthPercent(100).height(LINE_H).marginBottom(1));
+        header.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        list.addScrollViewChild(header);
+    }
+
+    /** Homes the Change window applies to: the viewer's own and the ones they are a guest of. */
+    private static boolean changeable(HomeView home) {
+        return home.relation() == HomeView.Relation.OWNER || home.relation() == HomeView.Relation.GUEST;
     }
 
     /**
@@ -323,7 +396,7 @@ public final class PlayerHomesTab {
 
         UIElement row = new UIElement();
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .marginBottom(2).paddingAll(ROW_PADDING).gapColumn(3));
+                .marginBottom(2).paddingAll(ROW_PADDING).paddingHorizontal(HubSection.ROW_INSET).gapColumn(3));
         row.style(s -> s.background(new ColorRectTexture(
                 isSelected ? COLOR_ROW_SELECTED : COLOR_ROW)));
         row.addEventListener(UIEvents.CLICK, e -> {
@@ -423,7 +496,7 @@ public final class PlayerHomesTab {
     private static UIElement legacyRow(HomeView home) {
         UIElement row = new UIElement();
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .marginBottom(2).paddingAll(ROW_PADDING).gapColumn(3));
+                .marginBottom(2).paddingAll(ROW_PADDING).paddingHorizontal(HubSection.ROW_INSET).gapColumn(3));
         row.style(s -> s.background(new ColorRectTexture(COLOR_ROW)));
 
         Label name = new Label();
@@ -481,7 +554,7 @@ public final class PlayerHomesTab {
     private static UIElement inviteRow(HomeView home) {
         UIElement row = new UIElement();
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(INVITE_ROW_H)
-                .marginBottom(2).paddingAll(2).gapColumn(3));
+                .marginBottom(2).paddingAll(2).paddingHorizontal(HubSection.ROW_INSET).gapColumn(3));
         row.style(s -> s.background(new ColorRectTexture(COLOR_ROW)));
 
         row.addChild(ownerHead(home, INVITE_HEAD));
@@ -534,9 +607,8 @@ public final class PlayerHomesTab {
 
     /* -------------------------------------------- detail -------------------------------------------- */
 
-    private static void buildDetail(Player player, UIElement detail, @Nullable HomeView home,
-                                    UUID[] selected, boolean[] creating, String[] inviteDraft,
-                                    boolean[] pickerOpen) {
+    private static void buildDetail(UIElement detail, @Nullable HomeView home,
+                                    UUID[] selected, boolean[] creating, Runnable openChange) {
         if (home == null) {
             Label empty = new Label();
             empty.setText(Component.translatable("gui.roll_mod.hub.homes.none")
@@ -584,29 +656,14 @@ public final class PlayerHomesTab {
                 HomeActionPacket.teleport(home.id())));
         detail.addChild(teleport);
 
-        if (mine) {
-            Button delete = new Button();
-            delete.setText(Component.translatable("gui.roll_mod.hub.homes.delete"));
-            delete.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(EDIT_GAP));
-            delete.setOnClick(e -> {
-                PacketDistributor.sendToServer(HomeActionPacket.delete(home.id()));
-                selected[0] = null;
-            });
-            detail.addChild(delete);
-        } else {
-            Button leave = new Button();
-            leave.setText(Component.translatable("gui.roll_mod.hub.homes.leave"));
-            leave.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(EDIT_GAP));
-            leave.setOnClick(e -> {
-                PacketDistributor.sendToServer(HomeActionPacket.leave(home.id()));
-                selected[0] = null;
-            });
-            detail.addChild(leave);
+        // Pin, delete or leave, invite: everything that changes the home rather than going there.
+        if (changeable(home)) {
+            Button change = new Button();
+            change.setText(Component.translatable("gui.roll_mod.hub.change"));
+            change.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(3));
+            change.setOnClick(e -> openChange.run());
+            detail.addChild(change);
         }
-
-        // Below the destructive button and above Close, sharing Close's gap. Only the owner can
-        // invite, so a guest's panel goes straight from Leave to Close.
-        if (mine) detail.addChild(inviteBar(home, inviteDraft, pickerOpen));
 
         Button close = new Button();
         close.setText(Component.translatable("gui.roll_mod.hub.homes.close"));
@@ -618,7 +675,44 @@ public final class PlayerHomesTab {
         detail.addChild(close);
     }
 
-    /** Who the owner has let in. Letting somebody else in is {@link #inviteBar}, down at the foot. */
+    /**
+     * The Change window's body for {@code home}: the pin toggle, then delete (owner) or leave
+     * (guest), both confirmed, then the owner's invite picker.
+     */
+    private static void buildChange(Player player, UIElement body, HomeView home, UUID[] selected,
+                                    String[] inviteDraft, InviteSearch inviteSearch, HubConfirm confirmer) {
+        Label title = new Label();
+        title.setText(LegacyText.display(home.name()));
+        title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        body.addChild(title);
+
+        Button pin = HubPins.toggle(player, HubWindowState.PinKind.HOMES, home.id());
+        pin.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(3));
+        body.addChild(pin);
+
+        boolean mine = home.relation() == HomeView.Relation.OWNER;
+        Button drop = new Button();
+        drop.setText(Component.translatable(mine ? "gui.roll_mod.hub.homes.delete" : "gui.roll_mod.hub.homes.leave"));
+        drop.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(EDIT_GAP));
+        Component name = LegacyText.display(home.name());
+        drop.setOnClick(e -> confirmer.ask(
+                Component.translatable(mine ? "gui.roll_mod.hub.confirm.homeDelete" : "gui.roll_mod.hub.confirm.homeLeave", name),
+                Component.translatable(mine ? "gui.roll_mod.hub.confirm.homeDelete.button"
+                        : "gui.roll_mod.hub.confirm.homeLeave.button"),
+                () -> {
+                    PacketDistributor.sendToServer(mine
+                            ? HomeActionPacket.delete(home.id())
+                            : HomeActionPacket.leave(home.id()));
+                    if (home.id().equals(selected[0])) selected[0] = null;
+                }));
+        body.addChild(drop);
+
+        // Only the owner can let somebody else in.
+        if (mine) body.addChild(inviteBar(player, home, inviteDraft, inviteSearch));
+    }
+
+    /** Who the owner has let in. Letting somebody else in is {@link #inviteBar}, in the Change window. */
     private static void addRoster(UIElement detail, HomeView home) {
         Label header = new Label();
         header.setText(Component.translatable("gui.roll_mod.hub.homes.shared.header")
@@ -645,22 +739,56 @@ public final class PlayerHomesTab {
         }
     }
 
+    /** Where the invite picker draws its names from — the mode dropdown beside the search field. */
+    private enum InviteSource {
+        /** Everyone who has ever joined this server. */
+        ALL("gui.roll_mod.hub.homes.invite.mode.all"),
+        /** Players on this server right now. */
+        ONLINE("gui.roll_mod.hub.homes.invite.mode.online"),
+        /** The viewer's Minestar friends, online ones first. */
+        FRIENDS("gui.roll_mod.hub.homes.invite.mode.friends");
+
+        final String key;
+
+        InviteSource(String key) {
+            this.key = key;
+        }
+
+        Component title() {
+            return Component.translatable(key);
+        }
+    }
+
     /**
-     * The one control for letting somebody else in: a nickname to type and the button that sends it,
-     * side by side on a single row.
-     *
-     * <p>Lives at the foot of the panel with the other buttons rather than under the roster it
-     * belongs to, because it is an action and the roster above it is a fact. One row rather than two
-     * for the same reason: typing a name and sending it is one thing to do, not two.
-     *
-     * <p>Returns the element instead of adding it, so {@link #buildDetail} can place it in the
-     * button stack it builds — the roster is added while the panel is still filling from the top,
-     * and this is added after the bottom stack has been pushed down.
+     * The picker's search state, held by the tab rather than the window: the Change window is torn
+     * down and rebuilt whenever a sync arrives — and one arrives every time anyone answers an invite.
+     * Held in the builder, a half-typed search would be wiped mid-word.
      */
-    private static UIElement inviteBar(HomeView home, String[] inviteDraft, boolean[] pickerOpen) {
-        // The server refuses an invite over the cap anyway; replacing the field means the owner is
-        // told before they type a name in rather than after. Countable here because the roster the
-        // client already has carries the accepted flag — no extra field on the packet.
+    private static final class InviteSearch {
+        InviteSource source = InviteSource.ALL;
+        String query = "";
+
+        void reset() {
+            source = InviteSource.ALL;
+            query = "";
+        }
+    }
+
+    /**
+     * Letting somebody else in: a mode dropdown and a search field, the names they match, then who
+     * is chosen and the button that sends it.
+     *
+     * <p>Typing and switching modes refill the name list in place rather than rebuilding the window,
+     * so the field keeps its focus. A name typed that matches nobody listed can still be sent — the
+     * server resolves it ({@code PlayerLookup}), so a player who has never joined can be invited.
+     *
+     * <p>Lives in the Change window with the other edits rather than under the roster it belongs
+     * to, because it is an action and the roster is a fact.
+     */
+    private static UIElement inviteBar(Player player, HomeView home, String[] inviteDraft, InviteSearch search) {
+        // The server refuses an invite over the cap anyway; replacing the picker means the owner is
+        // told before they search rather than after. Countable here because the roster the client
+        // already has carries the accepted flag — no extra field on the packet.
         long pending = home.roster().stream().filter(share -> !share.accepted()).count();
         if (pending >= PlayerHome.MAX_PENDING_INVITES) {
             Label full = new Label();
@@ -671,101 +799,161 @@ public final class PlayerHomesTab {
             return full;
         }
 
-        List<String> candidates = invitable(home);
-
         UIElement column = new UIElement();
-        column.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).marginTop(3)
-                .heightAuto());
+        column.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).marginTop(6)
+                .heightAuto().gapRow(2));
 
-        UIElement row = new UIElement();
-        row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .gapColumn(3));
+        // Mode, then search. flexBasis(0) on the field, not flexGrow on its own: LdLib defaults
+        // flex-shrink to 0 and flex-basis to auto, so it would be measured by its own content and
+        // shove the dropdown off the row. HubInfoWindow's scroller needs the same for the same reason.
+        UIElement searchRow = new UIElement();
+        searchRow.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H).gapColumn(3));
+        Selector<InviteSource> mode = new Selector<>();
+        // Null-safe: setCandidateUIProvider re-renders the current value, and there is none yet.
+        mode.setCandidateUIProvider(UIElementProvider.text(m -> m == null ? Component.empty() : m.title()));
+        mode.setCandidates(List.of(InviteSource.values()));
+        mode.setSelected(search.source, false);
+        mode.layout(l -> l.width(INVITE_MODE_W).height(ROW_H).flexShrink(0));
+        hint(mode, "gui.roll_mod.hub.homes.invite.mode.tip");
+        TextField field = new TextField();
+        field.setText(search.query);
+        field.layout(l -> l.flexBasis(0).flexGrow(1).height(ROW_H));
+        hint(field, "gui.roll_mod.hub.homes.invite.search.tip");
+        searchRow.addChildren(mode, field);
 
-        Button choose = new Button();
-        choose.setText(inviteDraft[0].isEmpty()
-                ? Component.translatable("gui.roll_mod.hub.homes.invite.choose")
-                        .withStyle(ChatFormatting.DARK_GRAY)
-                : Component.literal(inviteDraft[0]));
-        // flexBasis(0), not flexGrow on its own: LdLib defaults flex-shrink to 0 and flex-basis to
-        // auto, so without it the element is measured by its own content and shoves the button off
-        // the end of the row. HubInfoWindow's scroller needs the same for the same reason.
-        choose.layout(l -> l.flexBasis(0).flexGrow(1).height(ROW_H));
-        // Nothing to choose from is not an error worth a dialog, but an opening-and-closing empty
-        // list would look like one, so the control simply refuses to open.
-        choose.setOnClick(e -> {
-            if (!candidates.isEmpty()) pickerOpen[0] = !pickerOpen[0];
-        });
+        ScrollerView names = new ScrollerView();
+        names.layout(l -> l.widthPercent(100).height(PICKER_VISIBLE * ROW_H));
+        names.scrollerStyle(sc -> sc.mode(ScrollerMode.VERTICAL)
+                .verticalScrollDisplay(ScrollDisplay.AUTO)
+                .horizontalScrollDisplay(ScrollDisplay.NEVER));
+        names.viewContainer(c -> c.layout(l -> l.widthPercent(100)));
+        names.style(sy -> sy.background(new ColorRectTexture(COLOR_PANEL)));
 
+        UIElement sendRow = new UIElement();
+        sendRow.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H).gapColumn(3));
+        Label chosen = new Label();
+        chosen.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
+        chosen.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
         Button send = new Button();
         send.setText(Component.translatable("gui.roll_mod.hub.homes.invite"));
-        send.layout(l -> l.width(INVITE_W).height(ROW_H));
-        send.setOnClick(e -> {
-            if (inviteDraft[0].isEmpty()) return;
-            PacketDistributor.sendToServer(HomeActionPacket.invite(home.id(), inviteDraft[0]));
-            inviteDraft[0] = "";
-            pickerOpen[0] = false;
-        });
+        send.layout(l -> l.width(INVITE_W).height(ROW_H).flexShrink(0));
+        sendRow.addChildren(chosen, send);
 
-        row.addChildren(choose, send);
-        column.addChild(row);
+        // Who Invite sends to: the picked name, else whatever is typed.
+        Runnable showChosen = () -> {
+            String target = inviteTarget(inviteDraft, search);
+            chosen.setText(target.isEmpty()
+                    ? Component.translatable("gui.roll_mod.hub.homes.invite.choose").withStyle(ChatFormatting.DARK_GRAY)
+                    : Component.literal(target).withStyle(ChatFormatting.YELLOW));
+        };
 
-        if (candidates.isEmpty()) {
-            Label none = new Label();
-            none.setText(Component.translatable("gui.roll_mod.hub.homes.invite.nobody")
-                    .withStyle(ChatFormatting.DARK_GRAY));
-            none.layout(l -> l.widthPercent(100).marginTop(2));
-            none.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
-            column.addChild(none);
-        } else if (pickerOpen[0]) {
-            // Expands in place rather than floating over the panel. A popup would have to be
-            // positioned against the window and raised above everything else; this is laid out by
-            // the same column as the rest of the panel and cannot end up detached from its button.
-            ScrollerView names = new ScrollerView();
-            names.layout(l -> l.widthPercent(100)
-                    .height(Math.max(PICKER_MIN_H, Math.min(candidates.size(), PICKER_VISIBLE) * ROW_H))
-                    .marginTop(2));
-            names.scrollerStyle(sc -> sc.mode(ScrollerMode.VERTICAL)
-                    .verticalScrollDisplay(ScrollDisplay.AUTO)
-                    .horizontalScrollDisplay(ScrollDisplay.NEVER));
-            names.viewContainer(c -> c.layout(l -> l.widthPercent(100)));
-            names.style(sy -> sy.background(new ColorRectTexture(COLOR_PANEL)));
-
+        Runnable[] refill = {null};
+        refill[0] = () -> {
+            names.clearAllScrollViewChildren();
+            names.clearLayoutCache();
+            List<String> candidates = invitable(player, home, search);
+            if (candidates.isEmpty()) {
+                Label none = new Label();
+                none.setText(Component.translatable(search.query.isEmpty() && search.source == InviteSource.ALL
+                        ? "gui.roll_mod.hub.homes.invite.nobody" : "gui.roll_mod.hub.homes.invite.noMatch")
+                        .withStyle(ChatFormatting.DARK_GRAY));
+                none.layout(l -> l.widthPercent(100).paddingAll(2));
+                none.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
+                names.addScrollViewChild(none);
+            }
             for (String candidate : candidates) {
                 Button option = new Button();
-                option.setText(Component.literal(candidate));
+                boolean picked = candidate.equalsIgnoreCase(inviteDraft[0]);
+                option.setText(picked
+                        ? Component.literal(candidate).withStyle(ChatFormatting.YELLOW)
+                        : Component.literal(candidate));
                 option.layout(l -> l.widthPercent(100).height(ROW_H));
                 option.setOnClick(e -> {
                     inviteDraft[0] = candidate;
-                    pickerOpen[0] = false;
+                    showChosen.run();
+                    refill[0].run();
                 });
                 names.addScrollViewChild(option);
             }
-            column.addChild(names);
-        }
+            showChosen.run();
+        };
 
+        field.setTextResponder(text -> {
+            search.query = text == null ? "" : text.strip();
+            // A new search drops a pick it no longer shows, so Invite never sends to someone hidden.
+            if (!inviteDraft[0].isEmpty() && !inviteDraft[0].toLowerCase(Locale.ROOT)
+                    .contains(search.query.toLowerCase(Locale.ROOT))) {
+                inviteDraft[0] = "";
+            }
+            refill[0].run();
+        });
+        mode.setOnValueChanged(m -> {
+            if (m == null) return;
+            search.source = m;
+            refill[0].run();
+        });
+        send.setOnClick(e -> {
+            String target = inviteTarget(inviteDraft, search);
+            if (target.isEmpty()) return;
+            PacketDistributor.sendToServer(HomeActionPacket.invite(home.id(), target));
+            inviteDraft[0] = "";
+            search.query = "";
+            field.setText("", false);
+            refill[0].run();
+        });
+        refill[0].run();
+
+        column.addChildren(searchRow, names, sendRow);
         return column;
     }
 
+    /** The picked name, else the search text when it is a plausible nickname. */
+    private static String inviteTarget(String[] inviteDraft, InviteSearch search) {
+        if (!inviteDraft[0].isEmpty()) return inviteDraft[0];
+        return search.query.matches("[A-Za-z0-9_]{3,16}") ? search.query : "";
+    }
+
     /**
-     * Everyone this server knows, minus anyone already on this home.
+     * The names {@code search} offers for this home: its mode's source, minus the viewer and anyone
+     * already on the roster, filtered by the search text — names that start with it first.
      *
-     * <p>Both halves come from data the client already holds: the roster arrives with the home, and
-     * the names with the same packet. Filtering here rather than server-side keeps it correct for
-     * <em>this</em> home without the server having to build a different roster per home.
-     *
-     * <p>Someone whose invite lapsed drops off the roster and reappears here, which is the point of
+     * <p>All of it comes from data the client already holds: the roster arrives with the home,
+     * known names with the same packet, online players and friends with the interactions syncs.
+     * Someone whose invite lapsed drops off the roster and reappears here, which is the point of
      * the invite having a lifetime at all.
      */
-    private static List<String> invitable(HomeView home) {
+    private static List<String> invitable(Player player, HomeView home, InviteSearch search) {
         Set<String> taken = new HashSet<>();
+        taken.add(player.getGameProfile().getName().toLowerCase(Locale.ROOT));
         for (HomeView.ShareView share : home.roster()) {
-            taken.add(share.name().toLowerCase());
+            taken.add(share.name().toLowerCase(Locale.ROOT));
         }
-        List<String> candidates = new ArrayList<>();
-        for (String name : ClientHomeCache.KNOWN_PLAYERS) {
-            if (!taken.contains(name.toLowerCase())) candidates.add(name);
+
+        List<String> source = new ArrayList<>();
+        switch (search.source) {
+            case ALL -> source.addAll(ClientHomeCache.KNOWN_PLAYERS);
+            case ONLINE -> {
+                source.addAll(ClientTpaCache.ONLINE.values());
+                source.sort(String.CASE_INSENSITIVE_ORDER);
+            }
+            case FRIENDS -> ClientFriendsCache.ENTRIES.stream()
+                    .sorted(Comparator.comparing((FriendEntry f) -> !f.online())
+                            .thenComparing(FriendEntry::name, String.CASE_INSENSITIVE_ORDER))
+                    .forEach(f -> source.add(f.name()));
         }
-        return candidates;
+
+        String query = search.query.toLowerCase(Locale.ROOT);
+        List<String> starts = new ArrayList<>();
+        List<String> contains = new ArrayList<>();
+        Set<String> seen = new HashSet<>();
+        for (String name : source) {
+            String lower = name.toLowerCase(Locale.ROOT);
+            if (taken.contains(lower) || !seen.add(lower)) continue;
+            if (lower.startsWith(query)) starts.add(name);
+            else if (lower.contains(query)) contains.add(name);
+        }
+        starts.addAll(contains);
+        return starts;
     }
 
     /* ------------------------------------------ create form ----------------------------------------- */

@@ -23,10 +23,35 @@ homes tab offers to bring across. Those files are never written to.
 | `letters.json` | Every staff letter still in date: text, rewards, who has accepted it | A letter is sent, withdrawn or accepted |
 | `moderation.log` | One line per mute, warning, ban, whitelist change, letter and letter command, with who did it | Append-only; never read back |
 | `tps.log` | One line each time the server drops below 15 TPS (rate-limited) | Append-only; never read back |
+| `logs/currency_logs.txt` | Two lines per money change — the request and its result — with who did it, the other side, the reason and the Java code that called | Append-only; never read back |
 
 Cooldown **durations** are ticks (20 = one second) everywhere — kit files, `/kit create`, the
 LuckPerms meta overrides. Cooldown **stamps** are epoch millis, because a tick count restarts with
 the server and would hand everyone a free round of kits after every reboot.
+
+## Money audit log
+
+`logs/currency_logs.txt` records every call that changes a balance: deposit, withdraw, set,
+transfer, wipe, and offer hold, claim and expiry. Reads (balances, leaderboards) are not logged. The
+lines are written by the currency repositories themselves, the layer every money API goes through,
+so nothing can move money without a line here.
+
+```
+[2026-10-04 12:00:00.123] #1042 REQ DEPOSIT main +250 target=Steve(uuid) initiator=PLAYER Alex(uuid) sender=Alex(uuid) reason=AUCTION_SALE caller=com.roll_54.roll_mod.economy.vendingblock.auction.AuctionManager.creditSeller:501 detail="sale 3x minecraft:diamond"
+[2026-10-04 12:00:00.131] #1042 RES OK
+```
+
+- `REQ` is written before the database is touched, so a failed or interrupted attempt is still on
+  record. The matching `RES` carries the same `#number`: `OK`, `REFUSED` (not enough money, offer
+  already answered), or `FAILED <exception>`.
+- `initiator` is who started it: `PLAYER` (with uuid), `CONSOLE` (the command source's name),
+  or `SYSTEM` (a named job such as `playtime`, `auction-expiry`, `offer-expiry`, `daily-tasks`).
+  The money API has no way to change a balance without saying which.
+- `sender` is the other side of the movement, when there is one (the buyer paying a seller, the
+  owner of a vending block, the sender of an offer).
+- `caller` is the first stack frame outside the money API: the class, method and line that asked.
+- A transfer shows `from=` / `to=`. A wipe or an expiry sweep shows `target=ALL`. A sweep adds one
+  `...` line per refunded offer.
 
 ## Bans
 

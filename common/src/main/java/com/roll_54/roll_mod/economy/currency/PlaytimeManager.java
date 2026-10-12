@@ -1,6 +1,9 @@
 package com.roll_54.roll_mod.economy.currency;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.config.CurrencyConfig;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
@@ -115,7 +118,10 @@ public final class PlaytimeManager {
    * (the client decides whether to actually show it, via its config toggle).
    */
   private static void grant(ServerPlayer player, CurrencyType type, long amount, boolean session) {
-    CurrencyService.deposit(player, type, amount, player.server)
+    CurrencyLedger.logged(CurrencyService.deposit(player, type, amount, player.server,
+                CurrencyCause.system("playtime", LedgerReason.PLAYTIME).withSender(player)
+                    .withDetail(session ? "session reward" : "playtime reward")),
+            player.getUUID(), type, amount, LedgerReason.PLAYTIME)
         .thenAcceptAsync(
             success -> {
               if (success) {

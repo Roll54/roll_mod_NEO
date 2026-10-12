@@ -1,7 +1,10 @@
 package com.roll_54.roll_mod.economy.api.ftb.reward;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
 import static com.roll_54.roll_mod.economy.api.ftb.reward.CurrencyRewardType.CURRENCY;
 
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import dev.ftb.mods.ftblibrary.config.ConfigGroup;
@@ -34,7 +37,10 @@ public class CurrencyReward extends Reward {
 
     // Team reward is handled by FTB internally — claim() is called
     // for the correct player(s)
-    CurrencyService.deposit(player, CurrencyType.MAIN, amount, player.server);
+    CurrencyLedger.logged(CurrencyService.deposit(player, CurrencyType.MAIN, amount, player.server,
+            CurrencyCause.player(player, LedgerReason.QUEST)
+                .withDetail("quest reward " + getCodeString() + " of quest " + getQuest().getCodeString())),
+        player.getUUID(), CurrencyType.MAIN, amount, LedgerReason.QUEST);
   }
 
   @Override

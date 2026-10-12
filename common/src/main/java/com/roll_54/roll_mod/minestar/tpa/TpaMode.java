@@ -20,6 +20,8 @@ public enum TpaMode {
     EVERYONE,
     TEAM_AND_ALLIES,
     TEAM_ONLY,
+    /** MINESTAR friends only — checked asynchronously, see {@code TpaService.request}. */
+    FRIENDS,
     NOBODY;
 
     /** What a player who has never opened the window is on, so nothing changes until they say so. */
@@ -40,6 +42,11 @@ public enum TpaMode {
     /** Whether this mode has nothing to work with unless FTB Teams is installed. */
     public boolean needsTeams() {
         return this == TEAM_ONLY || this == TEAM_AND_ALLIES;
+    }
+
+    /** Whether this mode has nothing to work with unless the MINESTAR friends service is reachable. */
+    public boolean needsFriends() {
+        return this == FRIENDS;
     }
 
     /** Parses a hand-written value; anything unrecognised reads as the default rather than failing. */

@@ -20,6 +20,11 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * the player was only ever needed to send the balance back to a client — so the uuid form works on
  * somebody who is not logged in, and syncs only if they turn out to be. That is what lets an admin
  * pay an offline player and an offer refund a sender who has since left.
+ *
+ * <p>Every call that changes a balance takes a {@link CurrencyCause} — who did it, the other side,
+ * why — and is written to {@code minestar/logs/currency_logs.txt} with the Java code that called it
+ * (by the repository underneath, so nothing is logged twice and nothing slips past). There is no
+ * way to change a balance without one.
  */
 public final class CurrencyService {
 
@@ -42,23 +47,23 @@ public final class CurrencyService {
   }
 
   public static CompletableFuture<Boolean> deposit(
-      MinecraftServer server, UUID uuid, CurrencyType type, long amount) {
+      MinecraftServer server, UUID uuid, CurrencyType type, long amount, CurrencyCause cause) {
     if (amount <= 0) return CompletableFuture.completedFuture(false);
-    return CurrencyRepository.addBalance(uuid, type, amount)
+    return CurrencyRepository.addBalance(uuid, type, amount, cause)
         .thenComposeAsync(success -> resync(server, uuid, type, success), server);
   }
 
   public static CompletableFuture<Boolean> withdraw(
-      MinecraftServer server, UUID uuid, CurrencyType type, long amount) {
+      MinecraftServer server, UUID uuid, CurrencyType type, long amount, CurrencyCause cause) {
     if (amount <= 0) return CompletableFuture.completedFuture(false);
-    return CurrencyRepository.withdraw(uuid, type, amount)
+    return CurrencyRepository.withdraw(uuid, type, amount, cause)
         .thenComposeAsync(success -> resync(server, uuid, type, success), server);
   }
 
   public static CompletableFuture<Boolean> set(
-      MinecraftServer server, UUID uuid, CurrencyType type, long amount) {
+      MinecraftServer server, UUID uuid, CurrencyType type, long amount, CurrencyCause cause) {
     long floored = Math.max(0L, amount);
-    return CurrencyRepository.setBalance(uuid, type, floored)
+    return CurrencyRepository.setBalance(uuid, type, floored, cause)
         .thenComposeAsync(success -> resync(server, uuid, type, success), server);
   }
 
@@ -97,12 +102,13 @@ public final class CurrencyService {
   }
 
   public static CompletableFuture<Boolean> deposit(
-      ServerPlayer player, CurrencyType type, long amount, MinecraftServer server) {
+      ServerPlayer player, CurrencyType type, long amount, MinecraftServer server,
+      CurrencyCause cause) {
     if (amount <= 0) {
       return CompletableFuture.completedFuture(false);
     }
 
-    return CurrencyRepository.addBalance(player.getUUID(), type, amount)
+    return CurrencyRepository.addBalance(player.getUUID(), type, amount, cause)
         .thenComposeAsync(
             success -> {
               if (!success) {
@@ -114,12 +120,12 @@ public final class CurrencyService {
   }
 
   public static CompletableFuture<Boolean> withdraw(
-      ServerPlayer player, CurrencyType type, long amount) {
+      ServerPlayer player, CurrencyType type, long amount, CurrencyCause cause) {
     if (amount <= 0) {
       return CompletableFuture.completedFuture(false);
     }
 
-    return CurrencyRepository.withdraw(player.getUUID(), type, amount)
+    return CurrencyRepository.withdraw(player.getUUID(), type, amount, cause)
         .thenComposeAsync(
             success -> {
               if (!success) {
@@ -131,10 +137,10 @@ public final class CurrencyService {
   }
 
   public static CompletableFuture<Boolean> set(
-      ServerPlayer player, CurrencyType type, long amount) {
+      ServerPlayer player, CurrencyType type, long amount, CurrencyCause cause) {
     if (amount < 0) amount = 0;
 
-    return CurrencyRepository.setBalance(player.getUUID(), type, amount)
+    return CurrencyRepository.setBalance(player.getUUID(), type, amount, cause)
         .thenComposeAsync(
             success -> {
               if (!success) {
@@ -146,13 +152,14 @@ public final class CurrencyService {
   }
 
   public static CompletableFuture<Boolean> transfer(
-      ServerPlayer from, ServerPlayer to, CurrencyType type, long amount, MinecraftServer server) {
+      ServerPlayer from, ServerPlayer to, CurrencyType type, long amount, MinecraftServer server,
+      CurrencyCause cause) {
     if (amount <= 0) return CompletableFuture.completedFuture(false);
     if (from.getUUID().equals(to.getUUID())) {
       return CompletableFuture.completedFuture(false);
     }
 
-    return CurrencyRepository.transfer(from.getUUID(), to.getUUID(), type, amount)
+    return CurrencyRepository.transfer(from.getUUID(), to.getUUID(), type, amount, cause)
         .thenComposeAsync(
             success -> {
               if (!success) {
@@ -162,6 +169,25 @@ public final class CurrencyService {
               return CompletableFuture.allOf(
                       syncPlayerCurrency(from, type), syncPlayerCurrency(to, type))
                   .thenApply(v -> true);
+            },
+            server);
+  }
+
+  /**
+   * Deletes every balance of {@code type} and tells everyone online theirs is now zero. Answers
+   * with the number of balances removed, or -1 when the wipe did not go through.
+   */
+  public static CompletableFuture<Integer> wipe(
+      MinecraftServer server, CurrencyType type, CurrencyCause cause) {
+    return CurrencyRepository.wipe(type, cause)
+        .thenApplyAsync(
+            removed -> {
+              if (removed >= 0) {
+                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                  PacketDistributor.sendToPlayer(player, new SyncBalancePayload(0L, type));
+                }
+              }
+              return removed;
             },
             server);
   }

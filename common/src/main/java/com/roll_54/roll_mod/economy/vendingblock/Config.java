@@ -178,6 +178,21 @@ public class Config {
             .translation("config.roll_mod.ah.maxListings")
             .defineInRange("ahMaxListings", 5, 1, 1000);
 
+    public static final ModConfigSpec.BooleanValue AH_SELLER_FEE_ENABLED =
+        BUILDER
+            .comment(
+                "Whether the Auction House keeps a cut of every sale (fixed price, buyout and won auctions).\nVending blocks never charge it.")
+            .translation("config.roll_mod.ah.sellerFeeEnabled")
+            .define("ahSellerFeeEnabled", true);
+
+    // Deliberately not range-checked: whatever is written here is used as is.
+    public static final ModConfigSpec.ConfigValue<Double> AH_SELLER_FEE =
+        BUILDER
+            .comment(
+                "Fraction of the sale price the Auction House keeps when ahSellerFeeEnabled is true.\n0.10 = 10%: an item sold for 1000 pays the seller 900. Not validated.")
+            .translation("config.roll_mod.ah.sellerFee")
+            .define("ahSellerFee", 0.10);
+
     public static final ModConfigSpec.LongValue AH_MIN_BID_INCREMENT =
         BUILDER
             .comment("Minimum amount a new bid must exceed the current highest bid by")

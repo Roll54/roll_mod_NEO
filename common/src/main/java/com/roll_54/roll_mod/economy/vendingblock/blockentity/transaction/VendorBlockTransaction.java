@@ -1,7 +1,10 @@
 package com.roll_54.roll_mod.economy.vendingblock.blockentity.transaction;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
 import static com.roll_54.roll_mod.RollMod.LOGGER;
 
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.currency.repository.CurrencyRepository;
@@ -64,11 +67,15 @@ public class VendorBlockTransaction {
     // Capture the payment mode now: the reversal below must undo exactly what was done,
     // even if an admin flips the vendor's flags during the DB roundtrip.
     boolean voidPayment = vendor.isDiscarding() || ownerId == null;
+    CurrencyCause cause = CurrencyCause.player(serverBuyer, LedgerReason.VENDOR_PURCHASE)
+        .withSender(ownerId, ownerName)
+        .withDetail("buy " + item(product) + " at vendor " + vendor.getBlockPos().toShortString()
+            + (voidPayment ? " (payment discarded)" : ""));
     CompletableFuture<Boolean> paymentFuture;
     if (voidPayment) {
-      paymentFuture = CurrencyRepository.withdraw(serverBuyer.getUUID(), CurrencyType.MAIN, price);
+      paymentFuture = CurrencyRepository.withdraw(serverBuyer.getUUID(), CurrencyType.MAIN, price, cause);
     } else {
-      paymentFuture = transfer(serverBuyer.getUUID(), ownerId, price);
+      paymentFuture = transfer(serverBuyer.getUUID(), ownerId, price, cause);
     }
 
     paymentFuture
@@ -87,13 +94,21 @@ public class VendorBlockTransaction {
               if (serverBuyer.hasDisconnected()
                   || vendor.isRemoved()
                   || vendor.purchasesLeft(position) < 1) {
-                refundPurchase(server, serverBuyer, ownerId, price, voidPayment);
+                refundPurchase(server, serverBuyer, ownerId, price, voidPayment, cause);
                 buyer.sendSystemMessage(Messages.vendorSold());
                 vendor.checkErrorState();
                 return;
               }
 
               giveProduct(buyer, vendor, position);
+
+              // History: the buyer paid; the owner was paid unless the payment went nowhere.
+              CurrencyLedger.record(serverBuyer.getUUID(), CurrencyType.MAIN, -price,
+                  LedgerReason.VENDOR_PURCHASE, product, product.getCount(), ownerId, ownerName);
+              if (!voidPayment) {
+                CurrencyLedger.record(ownerId, CurrencyType.MAIN, price, LedgerReason.VENDOR_SALE,
+                    product, product.getCount(), serverBuyer.getUUID(), buyerName);
+              }
 
               buyer.sendSystemMessage(
                   Messages.playerBoughtCurrency(
@@ -174,14 +189,19 @@ public class VendorBlockTransaction {
     /* ================= CURRENCY ================= */
     // Capture the payment mode now so the reversal below undoes exactly what was done.
     boolean printedPayment = vendor.isInfinite() || ownerId == null;
+    CurrencyCause cause = CurrencyCause.player(serverSeller, LedgerReason.VENDOR_SALE)
+        .withSender(ownerId, ownerName)
+        .withDetail("sell " + amount + "x " + net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(want.getItem())
+            + " at vendor " + vendor.getBlockPos().toShortString()
+            + (printedPayment ? " (payment printed)" : ""));
     CompletableFuture<Boolean> paymentFuture;
     if (printedPayment) {
       // Unlimited budget / no owner: print the payment to the seller.
       paymentFuture =
-          CurrencyRepository.addBalance(serverSeller.getUUID(), CurrencyType.MAIN, price);
+          CurrencyRepository.addBalance(serverSeller.getUUID(), CurrencyType.MAIN, price, cause);
     } else {
       // Owner pays the seller from their balance.
-      paymentFuture = transfer(ownerId, serverSeller.getUUID(), price);
+      paymentFuture = transfer(ownerId, serverSeller.getUUID(), price, cause);
     }
 
     paymentFuture
@@ -200,13 +220,22 @@ public class VendorBlockTransaction {
               if (serverSeller.hasDisconnected()
                   || vendor.isRemoved()
                   || VendorBlockInventory.countInPlayer(seller, want) < amount) {
-                reverseSellPayment(server, serverSeller, ownerId, price, printedPayment);
+                reverseSellPayment(server, serverSeller, ownerId, price, printedPayment, cause);
                 seller.sendSystemMessage(Messages.playerEmpty(want.getHoverName()));
                 vendor.checkErrorState();
                 return;
               }
 
               takeAndStore(seller, vendor, want, amount);
+
+              // History, buy mode: the player sold to the shop; its owner paid unless the
+              // payment was printed.
+              CurrencyLedger.record(serverSeller.getUUID(), CurrencyType.MAIN, price,
+                  LedgerReason.VENDOR_SALE, want, amount, ownerId, ownerName);
+              if (!printedPayment) {
+                CurrencyLedger.record(ownerId, CurrencyType.MAIN, -price, LedgerReason.VENDOR_PURCHASE,
+                    want, amount, serverSeller.getUUID(), sellerName);
+              }
 
               seller.sendSystemMessage(
                   Messages.playerSoldCurrency(amount, want.getHoverName(), ownerName, price));
@@ -271,11 +300,21 @@ public class VendorBlockTransaction {
     CurrencyService.get(player, CurrencyType.MAIN);
   }
 
-  public static CompletableFuture<Boolean> transfer(UUID from, UUID to, long amount) {
+  public static CompletableFuture<Boolean> transfer(UUID from, UUID to, long amount, CurrencyCause cause) {
     if (amount <= 0 || from.equals(to)) {
       return CompletableFuture.completedFuture(false);
     }
-    return CurrencyRepository.transfer(from, to, CurrencyType.MAIN, amount);
+    return CurrencyRepository.transfer(from, to, CurrencyType.MAIN, amount, cause);
+  }
+
+  /** {@code 3x minecraft:diamond}, for the audit log's detail. */
+  private static String item(ItemStack stack) {
+    return stack.getCount() + "x " + net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
+  }
+
+  /** The payment's own cause, as its reversal. */
+  private static CurrencyCause reversal(CurrencyCause payment, String why) {
+    return payment.withDetail("reversal: " + why + " (" + payment.detail() + ")");
   }
 
   /** Deduct one purchase worth from storage (unless infinite) and give the items to the buyer. */
@@ -309,11 +348,13 @@ public class VendorBlockTransaction {
 
   /** Undo a purchase payment after the goods turned out to be unavailable. */
   private static void refundPurchase(
-      MinecraftServer server, ServerPlayer buyer, UUID ownerId, long price, boolean voidPayment) {
+      MinecraftServer server, ServerPlayer buyer, UUID ownerId, long price, boolean voidPayment,
+      CurrencyCause payment) {
+    CurrencyCause cause = reversal(payment, "goods unavailable after payment");
     CompletableFuture<Boolean> refund =
         voidPayment
-            ? CurrencyRepository.addBalance(buyer.getUUID(), CurrencyType.MAIN, price)
-            : CurrencyRepository.transfer(ownerId, buyer.getUUID(), CurrencyType.MAIN, price);
+            ? CurrencyRepository.addBalance(buyer.getUUID(), CurrencyType.MAIN, price, cause)
+            : CurrencyRepository.transfer(ownerId, buyer.getUUID(), CurrencyType.MAIN, price, cause);
     refund.thenAcceptAsync(
         ok -> {
           if (!ok) {
@@ -336,11 +377,13 @@ public class VendorBlockTransaction {
       ServerPlayer seller,
       UUID ownerId,
       long price,
-      boolean printedPayment) {
+      boolean printedPayment,
+      CurrencyCause payment) {
+    CurrencyCause cause = reversal(payment, "seller's goods gone after payment");
     CompletableFuture<Boolean> reverse =
         printedPayment
-            ? CurrencyRepository.withdraw(seller.getUUID(), CurrencyType.MAIN, price)
-            : CurrencyRepository.transfer(seller.getUUID(), ownerId, CurrencyType.MAIN, price);
+            ? CurrencyRepository.withdraw(seller.getUUID(), CurrencyType.MAIN, price, cause)
+            : CurrencyRepository.transfer(seller.getUUID(), ownerId, CurrencyType.MAIN, price, cause);
     reverse.thenAcceptAsync(
         ok -> {
           if (!ok) {

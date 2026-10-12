@@ -94,6 +94,9 @@ final class HubWindow extends UIElement {
             if (e.button != 0 || e.target != handle) return;
             moved = false;
             if (maximized()) return;
+            // "Allow moving the hub" off in the settings: the window stays where it is. Resizing and
+            // maximizing are separate gestures and still work.
+            if (clientCopy && !HubWindowState.get().movable()) return;
             handle.startDrag(new DragMove(getLayoutX(), getLayoutY()), Icons.MOVE)
                     .setDragTexture(-DRAG_ICON / 2f, -DRAG_ICON / 2f, DRAG_ICON, DRAG_ICON);
             e.stopPropagation();

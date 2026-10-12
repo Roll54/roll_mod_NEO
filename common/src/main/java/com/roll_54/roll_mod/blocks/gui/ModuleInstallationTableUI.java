@@ -1,14 +1,13 @@
 package com.roll_54.roll_mod.blocks.gui;
 
+import com.roll_54.roll_mod.minestar.theme.RollUi;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
-import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ItemSlot;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
-import com.lowdragmc.lowdraglib2.gui.ui.style.StylesheetManager;
 import com.lowdragmc.lowdraglib2.gui.ui.styletemplate.Sprites;
 import com.roll_54.roll_mod.blocks.entity.ModuleInstallationTableBlockEntity;
 import com.roll_54.roll_mod.economy.vendingblock.gui.VendorUIHelper;
@@ -81,7 +80,7 @@ public final class ModuleInstallationTableUI {
         root.addChild(VendorUIHelper.playerInventory(INVENTORY_X, INVENTORY_Y));
 
         return ModularUI.of(
-                UI.of(root, StylesheetManager.MC_MERGED, StylesheetManager.GDP_MERGED), player);
+                RollUi.of(player, root), player);
     }
 
     /**

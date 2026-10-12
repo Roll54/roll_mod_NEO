@@ -15,6 +15,8 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.minestar.theme.UiTheme;
+import com.roll_54.roll_mod.minestar.theme.UiThemeState;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
@@ -53,6 +55,18 @@ import java.util.function.Consumer;
 public final class HubSection {
 
     /** The title row: tall enough for a line of text, with a gap under it. Matches DailyTasksUI. */
+    /**
+     * The inset every tab's root takes inside the hub's content box. Shared so the title row — and
+     * the I button at its end — sits in the same place on every tab.
+     */
+    public static final int TAB_PADDING = 6;
+
+    /**
+     * The left and right inset inside a tinted list row, so its first and last words — a rank, a
+     * name, a value — do not sit on the row's edge. Every hub list row takes it.
+     */
+    public static final int ROW_INSET = 5;
+
     private static final int HEADER_H = 12;
     private static final int HEADER_GAP = 4;
 
@@ -64,7 +78,13 @@ public final class HubSection {
     private static final int CLOSE_W = 44;
     private static final int CLOSE_H = 14;
 
+    /**
+     * The frame is the drag handle, so the padding is where a press grabs the window — wide enough
+     * to hit without aiming.
+     */
     private static final int PANEL_PADDING = 8;
+    /** The frame's drawn border: the visible part of the handle. */
+    private static final int FRAME = 2;
 
     /**
      * The window's size, inside the tab box — {@link HubUI#DEFAULT_CONTENT_W}x
@@ -78,8 +98,11 @@ public final class HubSection {
     private static final int PANEL_W = 280;
     private static final int PANEL_H = 190;
 
-    /** The title bar doubles as the drag handle, so it is tinted to look like one. */
-    private static final int TITLE_FILL = 0x30FFFFFF;
+    /** The mark before a popup's caption, when it has one: {@code exclamation_mark.png} is 7x7. */
+    private static final int TITLE_ICON = 7;
+
+    /** A hairline under the caption — no longer a handle, just a heading. */
+    private static final int TITLE_LINE = 0x40FFFFFF;
 
     /**
      * Nearly opaque, so the section behind it stops competing for attention while being read — the
@@ -111,6 +134,22 @@ public final class HubSection {
     public static void closeInfo() {
         if (FMLEnvironment.dist != Dist.CLIENT) return;
         ClientWindow.closeInfo();
+    }
+
+    /**
+     * Centres a button's caption both ways. A short button with no padding otherwise draws its text
+     * at the top of the box rather than in its middle.
+     */
+    public static Button centreCaption(Button button) {
+        button.text.layout(l -> l.widthPercent(100).heightPercent(100));
+        button.text.textStyle(t -> t.textAlignHorizontal(com.lowdragmc.lowdraglib2.gui.ui.data.Horizontal.CENTER)
+                .textAlignVertical(Vertical.CENTER));
+        return button;
+    }
+
+    /** Hides whichever in-hub floating panel is up — for a desktop window taking over. */
+    static void closeInHubPanel() {
+        closePanel();
     }
 
     /** The fallback half of {@link #closeInfo}, which the panel's own close button also wants. */
@@ -164,16 +203,29 @@ public final class HubSection {
      * section needs no second lang key.
      */
     public static UIElement header(String id, Info info, UIElement... extras) {
+        return header(title(id), info, extras);
+    }
+
+    /**
+     * The same title row with a caption of the tab's own, for a section whose heading reads
+     * differently from its bookmark's hover name. Everything else — height, gap, the I button's
+     * place — is the shared row, which is the point.
+     */
+    public static UIElement header(Component caption, Info info, UIElement... extras) {
         UIElement header = new UIElement();
         header.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(HEADER_H)
                 .marginBottom(HEADER_GAP));
 
         Label title = new Label();
-        title.setText(title(id));
+        title.setText(caption);
         title.layout(l -> l.flexGrow(1).height(HEADER_H));
         title.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(true));
 
         header.addChild(title);
+        // Unclipped: a control taller than the 12px row — a themed button wants 16 — overhangs it
+        // evenly instead of being cut off at the top. The row's own height, and with it every tab's
+        // alignment, stays the same. This also lets clicks reach the overhang.
+        header.setOverflowVisible(true);
         // Anything the tab wants beside the I button goes to its left, so the I stays where it is
         // on every tab — it is the one control in this row that is in the same place everywhere.
         for (UIElement extra : extras) {
@@ -195,7 +247,14 @@ public final class HubSection {
      */
     public static Info panel(Component title, IGuiTexture icon, Component tip,
                              int width, int height, Consumer<UIElement> body) {
-        Floating floating = floating(title, width, height, body);
+        return panel(title, icon, tip, width, height, false, body);
+    }
+
+    /** As above; {@code windowed} opens it as a desktop window of its own, see {@link Floating#windowed}. */
+    public static Info panel(Component title, IGuiTexture icon, Component tip,
+                             int width, int height, boolean windowed, Consumer<UIElement> body) {
+        Floating floating = floating(title, null, width, height, body);
+        if (windowed) floating.windowed();
 
         UIElement button = new UIElement();
         button.layout(l -> l.width(BUTTON).height(BUTTON).marginRight(BUTTON_GAP));
@@ -215,7 +274,12 @@ public final class HubSection {
      * here; it is positioned in that root's coordinates.
      */
     public static Floating popup(Component title, int width, int height, Consumer<UIElement> body) {
-        return floating(title, width, height, body);
+        return floating(title, null, width, height, body);
+    }
+
+    /** As {@link #popup}, with {@code icon} before the caption — the warning mark of {@link HubConfirm}. */
+    public static Floating popup(Component title, IGuiTexture icon, int width, int height, Consumer<UIElement> body) {
+        return floating(title, icon, width, height, body);
     }
 
     /**
@@ -230,14 +294,65 @@ public final class HubSection {
         private final float[] pos;
         private final int width;
         private final int height;
+        final Component title;
+        /** The mark before the caption, if any — carried into the desktop window's title bar too. */
+        @Nullable final IGuiTexture icon;
+        /** What the caller filled; moved into the desktop window while it is up, then back. */
+        final UIElement content;
+        private final Button closeButton;
         /** Whether it has been positioned yet. Until then it is centred on first open. */
         private boolean placed;
+        /** Opens as a desktop window of its own where the platform allows one — see {@link #windowed}. */
+        private boolean windowed;
+        /** Whether the window offers a close of its own; off when the body has a Cancel. */
+        boolean closable = true;
 
-        private Floating(UIElement root, float[] pos, int width, int height) {
+        private Floating(UIElement root, float[] pos, int width, int height, Component title,
+                         @Nullable IGuiTexture icon, UIElement content, Button closeButton) {
+            this.icon = icon;
             this.root = root;
             this.pos = pos;
             this.width = width;
             this.height = height;
+            this.title = title;
+            this.content = content;
+            this.closeButton = closeButton;
+        }
+
+        /**
+         * Opens it the way the info panel opens: an operating-system window of its own, which can be
+         * moved anywhere on the desktop and resized from its edges, with the in-hub panel as the
+         * fallback on a platform that gives no second window. Client-only behaviour; the server's
+         * copy of the tree never opens anything.
+         */
+        public Floating windowed() {
+            windowed = true;
+            return this;
+        }
+
+        /**
+         * No Close button, in the panel or on the window: for a body with a Cancel of its own,
+         * which does the same thing.
+         */
+        public Floating noCloseButton() {
+            closable = false;
+            closeButton.setDisplay(false);
+            return this;
+        }
+
+        int width() {
+            return width;
+        }
+
+        int height() {
+            return height;
+        }
+
+        /** Puts {@link #content} back in the in-hub panel, where it lives while no window has it. */
+        void reclaim() {
+            if (content.getParent() == root) return;
+            content.removeSelf();
+            root.addChildAt(content, 1);
         }
 
         /** Add this to the tab's root, last. */
@@ -246,11 +361,12 @@ public final class HubSection {
         }
 
         public boolean isOpen() {
-            return root.isDisplayed();
+            return root.isDisplayed() || (windowed && FMLEnvironment.dist == Dist.CLIENT && ClientPopup.isOpen(this));
         }
 
         /** Opens wherever it last was — centred, the first time. */
         public void open() {
+            if (windowed && FMLEnvironment.dist == Dist.CLIENT && ClientPopup.open(this)) return;
             if (!placed) {
                 centre(root, pos, width, height);
                 placed = true;
@@ -299,6 +415,7 @@ public final class HubSection {
 
         /** Closes this one; leaves any other window alone. */
         public void close() {
+            if (windowed && FMLEnvironment.dist == Dist.CLIENT) ClientPopup.close(this);
             if (openPanel == root) {
                 closePanel();
             } else {
@@ -307,7 +424,8 @@ public final class HubSection {
         }
     }
 
-    private static Floating floating(Component title, int width, int height, Consumer<UIElement> body) {
+    private static Floating floating(Component title, @Nullable IGuiTexture icon, int width, int height,
+                                     Consumer<UIElement> body) {
         // The default-size centre, which the server's copy keeps; the client re-centres against the
         // live tab size when it first opens. See Floating.open.
         float[] pos = {(HubUI.DEFAULT_CONTENT_W - width) / 2f, (HubUI.DEFAULT_CONTENT_H - height) / 2f};
@@ -316,20 +434,28 @@ public final class HubSection {
         panel.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
                 .left(pos[0]).top(pos[1]).width(width).height(height)
                 .flexDirection(FlexDirection.COLUMN).paddingAll(PANEL_PADDING));
-        panel.style(s -> s.background(new GuiTextureGroup(
-                new ColorRectTexture(PANEL_FILL), new ColorBorderTexture(1, PANEL_BORDER)))
-                .zIndex(PANEL_Z));
+        panel.style(s -> s.background(frame(panel)).zIndex(PANEL_Z));
         panel.setDisplay(false);
         // Swallows clicks landing on the panel itself, so a press meant for it cannot fall through
         // to the tab behind.
         panel.addEventListener(UIEvents.CLICK, e -> {});
 
-        Label caption = new Label();
-        caption.setText(title);
-        caption.layout(l -> l.widthPercent(100).height(HEADER_H).marginBottom(HEADER_GAP));
-        caption.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(true));
-        caption.style(s -> s.background(new ColorRectTexture(TITLE_FILL)));
-        drag(panel, caption, pos, width, height);
+        UIElement caption = new UIElement();
+        caption.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(HEADER_H)
+                .marginBottom(HEADER_GAP).gapColumn(3));
+        caption.style(s -> s.background(underline()));
+        if (icon != null) {
+            UIElement mark = new UIElement();
+            mark.layout(l -> l.width(TITLE_ICON).height(TITLE_ICON).flexShrink(0).marginTop((HEADER_H - TITLE_ICON) / 2f));
+            mark.style(s -> s.background(icon));
+            caption.addChild(mark);
+        }
+        Label captionText = new Label();
+        captionText.setText(title);
+        captionText.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
+        captionText.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(true));
+        caption.addChild(captionText);
+        drag(panel, pos, width, height);
         keepInsideWhileOpen(panel, pos, width, height);
 
         UIElement content = new UIElement();
@@ -343,7 +469,10 @@ public final class HubSection {
         close.setOnClick(e -> closePanel());
 
         panel.addChildren(caption, content, close);
-        return new Floating(panel, pos, width, height);
+        Floating floating = new Floating(panel, pos, width, height, title, icon, content, close);
+        // The panel's Close closes this floating, whichever way it is shown.
+        close.setOnClick(e -> floating.close());
+        return floating;
     }
 
     /* -------------------------------------------- the panel ------------------------------------------- */
@@ -374,9 +503,7 @@ public final class HubSection {
         panel.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
                 .left(pos[0]).top(pos[1]).width(PANEL_W).height(PANEL_H)
                 .flexDirection(FlexDirection.COLUMN).paddingAll(PANEL_PADDING));
-        panel.style(s -> s.background(new GuiTextureGroup(
-                new ColorRectTexture(PANEL_FILL), new ColorBorderTexture(1, PANEL_BORDER)))
-                .zIndex(PANEL_Z));
+        panel.style(s -> s.background(frame(panel)).zIndex(PANEL_Z));
         panel.setDisplay(false);
         // Swallows clicks landing on the window itself, so a press meant for it cannot fall through
         // to the list behind. Clicks outside it now reach the tab, which is the point of the window
@@ -388,9 +515,8 @@ public final class HubSection {
         title.layout(l -> l.widthPercent(100).height(HEADER_H).marginBottom(HEADER_GAP));
         title.textStyle(t -> t.font(HubInfo.FONT)
                 .textAlignVertical(Vertical.CENTER).textShadow(true));
-        // Tinted because it is the grab handle, and a handle nobody can see is a handle nobody uses.
-        title.style(s -> s.background(new ColorRectTexture(TITLE_FILL)));
-        drag(panel, title, pos, PANEL_W, PANEL_H);
+        title.style(s -> s.background(underline()));
+        drag(panel, pos, PANEL_W, PANEL_H);
         keepInsideWhileOpen(panel, pos, PANEL_W, PANEL_H);
 
         ScrollerView body = new ScrollerView();
@@ -445,8 +571,12 @@ public final class HubSection {
      * client-only type, and mouse events never fire there — so unlike {@link HubInfo} and
      * {@code PlayerPreviewElement} this needs no client-only holder class.
      */
-    private static void drag(UIElement panel, UIElement handle, float[] pos, int width, int height) {
+    private static void drag(UIElement panel, float[] pos, int width, int height) {
+        UIElement handle = panel;
         handle.addEventListener(UIEvents.MOUSE_DOWN, e -> {
+            // The frame only: a press on anything inside — a field, a button, the caption — is that
+            // child's, and only one landing on the panel's own padding grabs the window.
+            if (e.target != panel) return;
             handle.startDrag(new float[] {pos[0], pos[1]}, null);
             // As Scroller does: the grab must not also read as a press on the panel behind it.
             e.stopPropagation();
@@ -460,6 +590,45 @@ public final class HubSection {
             pos[1] = clampTo(origin[1] + (e.y - e.dragStartY), height, boundH(panel));
             panel.layout(l -> l.left(pos[0]).top(pos[1]));
         });
+    }
+
+    /* ------------------------------------------ theme ------------------------------------------- */
+
+    /**
+     * The window's fill and frame, in the theme picked in the hub's settings, re-read every frame so
+     * a theme change shows at once. The frame is the drag handle: it lights up in the theme's accent
+     * while the cursor is on it. The vanilla-looking themes, which have no palette, keep the grey.
+     */
+    private static IGuiTexture frame(UIElement panel) {
+        return IGuiTexture.dynamic(() -> {
+            UiTheme.Palette palette = UiThemeState.get().palette();
+            if (palette == null) {
+                return new GuiTextureGroup(new ColorRectTexture(PANEL_FILL),
+                        new ColorBorderTexture(FRAME, panel.isHover() ? 0xFFB0B0B0 : PANEL_BORDER));
+            }
+            int fill = (palette.raised() & 0x00FFFFFF) | 0xF0000000;
+            int border = panel.isHover() ? palette.accent() | 0xFF000000
+                    : (palette.accent() & 0x00FFFFFF) | 0x80000000;
+            return new GuiTextureGroup(new ColorRectTexture(fill), new ColorBorderTexture(FRAME, border));
+        });
+    }
+
+    /** The caption's hairline underneath, in the theme's accent. */
+    private static IGuiTexture underline() {
+        return IGuiTexture.dynamic(() -> {
+            UiTheme.Palette palette = UiThemeState.get().palette();
+            int color = palette == null ? TITLE_LINE : (palette.accent() & 0x00FFFFFF) | 0xA0000000;
+            return new UnderlineTexture(color);
+        });
+    }
+
+    /** A 1px line along the bottom edge of whatever it is drawn on. */
+    private record UnderlineTexture(int color) implements IGuiTexture {
+        @Override
+        public void draw(net.minecraft.client.gui.GuiGraphics graphics, float mouseX, float mouseY, float x, float y,
+                         float width, float height, float partialTicks) {
+            new ColorRectTexture(color).draw(graphics, mouseX, mouseY, x, y + height - 1, width, 1, partialTicks);
+        }
     }
 
     /* ------------------------------------------ bounds ------------------------------------------ */
@@ -541,7 +710,28 @@ public final class HubSection {
         private static void closeNow() {
             closePanel();
             HubInfoWindow.close();
+            HubPopupWindow.close();
         }
+    }
+
+    /** Isolated holder for the desktop-window route of {@link Floating#windowed}, as above. */
+    private static final class ClientPopup {
+        static boolean open(Floating floating) {
+            return HubPopupWindow.open(floating);
+        }
+
+        static boolean isOpen(Floating floating) {
+            return HubPopupWindow.isOpenFor(floating);
+        }
+
+        static void close(Floating floating) {
+            HubPopupWindow.closeIf(floating);
+        }
+    }
+
+    /** The themed fill and frame of a floating window, for the desktop window to wear too. */
+    static IGuiTexture frameFor(UIElement panel) {
+        return frame(panel);
     }
 
     /** {@code gui.roll_mod.hub.tab.<id>} — the caption the bookmark already uses. */

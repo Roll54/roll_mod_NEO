@@ -12,7 +12,14 @@
     "OverlayScreenNanoMixin",
     "crops.CropRequirementCategoryRecipeMixin",
     "skin.ItemRendererSkinMixin",
-    "skin.GeoArmorSkinMixin"
+    "skin.GeoArmorSkinMixin",
+    "storm.NetherPortalBlockParticleMixin",
+    "storm.PortalParticleColorMixin",
+    "theme.GuiGraphicsRecolorMixin",
+    "theme.AbstractContainerScreenLabelMixin",
+    "mi.MITextureManagerOverrideMixin",
+    "mi.MIClientForceRuntimeDatagenMixin",
+    "mi.MIForceRuntimeResourcesMixin"
   ],
   "injectors": {
     "defaultRequire": 1

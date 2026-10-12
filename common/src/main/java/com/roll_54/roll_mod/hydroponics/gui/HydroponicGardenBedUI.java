@@ -1,13 +1,13 @@
 package com.roll_54.roll_mod.hydroponics.gui;
 
+import com.roll_54.roll_mod.minestar.theme.RollUi;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
-import com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
-import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.data.FillDirection;
 import com.lowdragmc.lowdraglib2.gui.ui.data.Horizontal;
 import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
+import com.lowdragmc.lowdraglib2.gui.ui.data.Vertical;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ItemSlot;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ProgressBar;
@@ -15,8 +15,6 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.Slider;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Toggle;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
-import com.lowdragmc.lowdraglib2.gui.ui.style.StylesheetManager;
-import com.lowdragmc.lowdraglib2.gui.ui.styletemplate.Sprites;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.DataBindingBuilder;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.SimpleBinding;
 import com.roll_54.roll_mod.blocks.entity.HydroponicGardenBedBlockEntity;
@@ -26,12 +24,14 @@ import com.roll_54.roll_mod.hydroponics.HydroponicNodeData;
 import com.roll_54.roll_mod.hydroponics.HydroponicReagents;
 import com.roll_54.roll_mod.hydroponics.HydroponicSettings;
 import com.roll_54.roll_mod.registry.BlockRegistry;
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
@@ -69,7 +69,7 @@ import java.util.function.UnaryOperator;
 public final class HydroponicGardenBedUI {
 
     public static final int PANEL_WIDTH = 176;
-    public static final int PANEL_HEIGHT = 226;
+    public static final int PANEL_HEIGHT = 233;
 
     private static final int ICON_X = 8;
     private static final int SLIDER_X = 26;
@@ -91,32 +91,34 @@ public final class HydroponicGardenBedUI {
     private static final int LINE_X = 8;
     private static final int LINE_WIDTH = 160;
 
-    private static final int STATUS_Y = 82;
+    /** 3px below the nutrients slider, which ends at 82: at 82 the line sat right on the bar. */
+    private static final int STATUS_Y = 85;
     private static final int SLOT_SIZE = 18;
-    private static final int SLOT_Y = 94;
+    private static final int SLOT_Y = 97;
     private static final int SLOT_X_ACIDITY = 26;
     private static final int SLOT_X_WATER = 62;
     private static final int SLOT_X_FERTILIZER = 98;
 
     private static final int TOGGLE_X = 124;
-    private static final int TOGGLE_Y = 96;
+    private static final int TOGGLE_Y = 99;
     private static final int TOGGLE_WIDTH = 44;
     private static final int TOGGLE_HEIGHT = 14;
 
     private static final int BAR_WIDTH = 76;
-    private static final int BAR_HEIGHT = 10;
+    /** 12, not 10: the bar carries its name now, and a line of text needs 8px inside the 1px rim. */
+    private static final int BAR_HEIGHT = 12;
     private static final int BAR_LEFT_X = 8;
     private static final int BAR_RIGHT_X = 92;
-    private static final int BAR_TOP_Y = 116;
-    private static final int BAR_BOTTOM_Y = 130;
+    private static final int BAR_TOP_Y = 119;
+    private static final int BAR_BOTTOM_Y = 133;
 
     private static final int INVENTORY_X = 8;
-    private static final int INVENTORY_Y = 144;
+    private static final int INVENTORY_Y = 151;
 
-    // The gdp plate is nearly black, so every label needs a colour of its own — LdLib2 has no
-    // default light text and the stylesheets do not set one.
-    private static final int TEXT_PRIMARY = 0xFFE0E0E0;
-    private static final int TEXT_SECONDARY = 0xFFAAAAAA;
+    // Text, slots, sliders, the toggle and the bar frames take their look from the player's hub
+    // theme (RollUi), so nothing here sets a text colour or a control sprite. The colours below
+    // are the ones that carry meaning -- which reservoir a bar is, whether the node is supplied --
+    // and stay the same in every theme.
     private static final int COLOUR_SUPPLIED = 0xFF4CAF50;
     private static final int COLOUR_STARVED = 0xFFD05050;
     private static final int COLOUR_ENERGY = 0xFFE0B020;
@@ -157,10 +159,10 @@ public final class HydroponicGardenBedUI {
 
         root.addChild(VendorUIHelper.playerInventory(INVENTORY_X, INVENTORY_Y));
 
-        // mc first for the controls it styles (gdp defines none of them), gdp last so its panel
-        // rules win the tie. Nothing is inherited from the screen, so this list is the whole cascade.
+        // The player's theme (RollUi). Its MC choice is the old mc-then-gdp pair: mc for the
+        // controls it styles (gdp defines none of them), gdp last so its panel rules win the tie.
         return ModularUI.of(
-                UI.of(root, StylesheetManager.MC_MERGED, StylesheetManager.GDP_MERGED), player);
+                RollUi.of(player, root), player);
     }
 
     // ------------------------------------------------------------------ settings
@@ -187,17 +189,10 @@ public final class HydroponicGardenBedUI {
         slider.setRange(min, max);
         // Only the scroll wheel reads this; drag and track-click are snapped by hand below.
         slider.sliderStyle(style -> style.sliderStep(1f));
-        slider.track(track -> track.style(s -> s.backgroundTexture(Sprites.PROGRESS_CONTAINER)));
-        slider.fill(fill -> fill.style(s -> s.backgroundTexture(Sprites.PROGRESS_BAR)));
-        slider.handle(handle -> handle.buttonStyle(style -> style
-                .baseTexture(Sprites.RECT_RD_SOLID)
-                .hoverTexture(Sprites.RECT_RD_LIGHT)
-                .pressedTexture(Sprites.RECT_RD_LIGHT)));
         root.addChild(VendorUIHelper.abs(slider, SLIDER_X, y, SLIDER_WIDTH, CONTROL_HEIGHT));
 
         Label label = new Label();
-        label.textStyle(text -> text.textColor(TEXT_PRIMARY).textShadow(true)
-                .textAlignHorizontal(Horizontal.CENTER)
+        label.textStyle(text -> text.textAlignHorizontal(Horizontal.CENTER)
                 .adaptiveWidth(false).textWrap(TextWrap.HIDE));
         label.setAllowHitTest(false);
         // Above the bar, not across it: the handle used to sit on top of its own level name. The
@@ -246,23 +241,13 @@ public final class HydroponicGardenBedUI {
         boolean initial = settings(bed).enabled();
 
         Toggle toggle = new Toggle();
-        // RECT_RD_SOLID is the *brightest* plate in the gdp sheet (fill #47434F) and RECT_RD_LIGHT
-        // is darker (#2F2A34) -- "light" names its bevel, not its fill. Using the first as the base
-        // and the second as the mark made a stopped bed look lit and a working one look recessed,
-        // and left ON-idle pixel-identical to OFF-hovered. A dark socket plus a coloured mark says
-        // it outright. Set here rather than after setOn: setOn(false, ...) on a fresh Toggle is a
-        // no-op, so a style applied later would not reach the mark until the first click.
-        toggle.toggleStyle(style -> style
-                .baseTexture(Sprites.RECT_RD_DARK)
-                .hoverTexture(Sprites.RECT_RD_LIGHT)
-                .unmarkTexture(IGuiTexture.EMPTY)
-                .markTexture(new ColorRectTexture(COLOUR_SUPPLIED)));
+        // No toggleStyle: the socket and the on-mark are the theme's, like every other toggle the
+        // player sees in the hub.
         // 44px box minus the 12px square leaves ~28px of text, and "Stopped" alone is 40px, so
         // without a clamp the word ran off the panel edge. The mark colour carries the state; the
         // word is the confirmation.
         toggle.toggleLabel(label -> label.textStyle(
-                text -> text.textColor(TEXT_PRIMARY).textShadow(true)
-                        .adaptiveWidth(false).textWrap(TextWrap.HIDE)));
+                text -> text.adaptiveWidth(false).textWrap(TextWrap.HIDE)));
         // setOn(value) would notify, firing the change listener as the GUI opens and bouncing a
         // spurious write straight back at the server.
         toggle.setOn(initial, false);
@@ -352,6 +337,61 @@ public final class HydroponicGardenBedUI {
             status.textStyle(text -> text.textColor(supplied ? COLOUR_SUPPLIED : COLOUR_STARVED));
         });
         root.addChild(VendorUIHelper.abs(status, LINE_X, STATUS_Y, LINE_WIDTH, LINE_HEIGHT));
+
+        // Why it is starved. The buffers are server-only, so the reasons come over as a bitmask
+        // from the same HydroponicNode#shortfall that gates the real upkeep.
+        SimpleBinding<Integer> shortfall = DataBindingBuilder
+                .intValS2C(() -> {
+                    HydroponicNode node = bed.node();
+                    return node == null ? 0 : node.shortfall();
+                })
+                .initialValue(0)
+                .name("hydroponic_shortfall")
+                .build();
+        root.addSyncValue(shortfall.getSyncValue());
+        status.addEventListener(UIEvents.HOVER_TOOLTIPS, event -> {
+            if (bed.isSupplied()) {
+                return;
+            }
+            event.hoverTooltips = new HoverTooltips(
+                    shortfallLines(value(shortfall, 0), settings(bed)), null, null, null);
+            event.stopPropagation();
+        });
+    }
+
+    private static List<Component> shortfallLines(int mask, HydroponicSettings settings) {
+        List<Component> lines = new ArrayList<>();
+        lines.add(Component.translatable("gui.roll_mod.hydroponic.shortfall"));
+        String prefix = "gui.roll_mod.hydroponic.shortfall.";
+        if ((mask & HydroponicNode.SHORT_DISABLED) != 0) {
+            lines.add(Component.translatable(prefix + "disabled").withStyle(ChatFormatting.RED));
+        }
+        if ((mask & HydroponicNode.SHORT_ENERGY) != 0) {
+            lines.add(Component.translatable(prefix + "energy", HydroponicSettings.ENERGY_COST)
+                    .withStyle(ChatFormatting.RED));
+        }
+        if ((mask & HydroponicNode.SHORT_WATER) != 0) {
+            lines.add(Component.translatable(prefix + "water", settings.waterCost())
+                    .withStyle(ChatFormatting.RED));
+        }
+        if ((mask & HydroponicNode.SHORT_FERTILIZER) != 0) {
+            lines.add(Component.translatable(prefix + "fertilizer", settings.fertilizerCost())
+                    .withStyle(ChatFormatting.RED));
+        }
+        if ((mask & HydroponicNode.SHORT_ACID) != 0) {
+            lines.add(Component.translatable(prefix + "acid", Math.abs(settings.acidityDelta()))
+                    .withStyle(ChatFormatting.RED));
+        }
+        if ((mask & HydroponicNode.SHORT_BASE) != 0) {
+            lines.add(Component.translatable(prefix + "base", Math.abs(settings.acidityDelta()))
+                    .withStyle(ChatFormatting.RED));
+        }
+        // Nothing is short right now, yet this bed went without: the node had enough for some of
+        // its beds but ran dry before reaching this one.
+        if (mask == 0) {
+            lines.add(Component.translatable(prefix + "partial").withStyle(ChatFormatting.GOLD));
+        }
+        return lines;
     }
 
     private static void nodeSizeLine(UIElement root, HydroponicGardenBedBlockEntity bed) {
@@ -366,8 +406,7 @@ public final class HydroponicGardenBedUI {
         root.addSyncValue(size.getSyncValue());
 
         Label label = new Label();
-        label.textStyle(text -> text.textColor(TEXT_SECONDARY).textShadow(false)
-                .textAlignHorizontal(Horizontal.RIGHT)
+        label.textStyle(text -> text.textAlignHorizontal(Horizontal.RIGHT)
                 .adaptiveWidth(false).textWrap(TextWrap.HIDE));
         label.addEventListener(UIEvents.TICK, event -> label.setText(Component.translatable(
                 "gui.roll_mod.hydroponic.node_size",
@@ -393,7 +432,6 @@ public final class HydroponicGardenBedUI {
     private static void slot(UIElement root, HydroponicGardenBedBlockEntity bed,
                              HydroponicReagents.Kind kind, int x) {
         ItemSlot slot = new ItemSlot().bind(new HydroponicInputSlot(bed.inputs(), kind, 0, 0));
-        slot.style(s -> s.backgroundTexture(Sprites.RECT_DARK));
         root.addChild(VendorUIHelper.abs(slot, x, SLOT_Y, SLOT_SIZE, SLOT_SIZE));
     }
 
@@ -416,6 +454,7 @@ public final class HydroponicGardenBedUI {
         root.addSyncValue(cap.getSyncValue());
 
         ProgressBar bar = bar(colour);
+        bar.label(label -> label.setText(Component.translatable("gui.roll_mod.hydroponic." + key)));
         bar.addEventListener(UIEvents.TICK, event -> {
             long held = value(value, 0L);
             long total = value(cap, 0L);
@@ -442,8 +481,8 @@ public final class HydroponicGardenBedUI {
                 .build();
         root.addSyncValue(acidity.getSyncValue());
 
+        // No frame of its own: each half draws the theme's bar frame.
         UIElement container = new UIElement();
-        container.style(s -> s.backgroundTexture(Sprites.PROGRESS_CONTAINER));
 
         int half = BAR_WIDTH / 2;
         ProgressBar base = bar(COLOUR_BASE);
@@ -452,6 +491,12 @@ public final class HydroponicGardenBedUI {
 
         ProgressBar acid = bar(COLOUR_ACID);
         container.addChild(VendorUIHelper.abs(acid, half, 0, BAR_WIDTH - half, BAR_HEIGHT));
+
+        // One name across both halves, laid over them; each half's own label stays blank.
+        Label name = barLabel();
+        name.setText(Component.translatable("gui.roll_mod.hydroponic.acidity.short"));
+        name.setAllowHitTest(false);
+        container.addChild(VendorUIHelper.abs(name, 0, 0, BAR_WIDTH, BAR_HEIGHT));
 
         container.addEventListener(UIEvents.TICK, event -> {
             int stored = value(acidity, 0);
@@ -474,16 +519,33 @@ public final class HydroponicGardenBedUI {
      * A bar in a colour of its own. {@code paddingAll(1)} is not decoration: {@link ProgressBar}'s
      * constructor pads its container by 4 on every side, which leaves a 10px-tall bar with nothing
      * left to fill.
+     *
+     * <p>Its built-in label defaults to the literal "Label", so it is blanked here and the caller
+     * names the bar if it wants one.
      */
     private static ProgressBar bar(int colour) {
         ProgressBar bar = new ProgressBar();
         bar.setRange(0f, 1f);
-        bar.barContainer(container -> {
-            container.layout(l -> l.paddingAll(1));
-            container.style(s -> s.backgroundTexture(Sprites.PROGRESS_CONTAINER));
-        });
+        // The frame is the theme's; only the fill colour is ours.
+        bar.barContainer(container -> container.layout(l -> l.paddingAll(1)));
         bar.bar(fill -> fill.style(s -> s.backgroundTexture(new ColorRectTexture(colour))));
+        bar.label(label -> {
+            label.setText(Component.empty());
+            styleBarText(label);
+        });
         return bar;
+    }
+
+    /** A free-standing label in the same style as a bar's own, for laying over a composite bar. */
+    private static Label barLabel() {
+        Label label = new Label();
+        styleBarText(label);
+        return label;
+    }
+
+    private static void styleBarText(Label label) {
+        label.textStyle(text -> text.textAlignHorizontal(Horizontal.CENTER).textAlignVertical(Vertical.CENTER)
+                .adaptiveWidth(false).textWrap(TextWrap.HIDE));
     }
 
     /** LdLib2 has no tooltip setter; a hover is an event you answer. */

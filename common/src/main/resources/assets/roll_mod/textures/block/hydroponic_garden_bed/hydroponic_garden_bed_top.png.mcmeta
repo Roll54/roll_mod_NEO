@@ -1,0 +1,11 @@
+{
+  "fusion": {
+    "type": "connecting",
+    "layout": "full"
+  },
+  "animation": {
+    "width": 128,
+    "height": 96,
+    "frametime": 2
+  }
+}

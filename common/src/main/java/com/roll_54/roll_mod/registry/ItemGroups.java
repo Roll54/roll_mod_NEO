@@ -1,22 +1,43 @@
 package com.roll_54.roll_mod.registry;
 
-import aztech.modern_industrialization.MIComponents;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.blocks.SliceableFoodBlock;
+import com.roll_54.roll_mod.items.ComponentApplicatorItem;
+import com.roll_54.roll_mod.items.HerbicideItem;
+import com.roll_54.roll_mod.items.InjectionItem;
+import com.roll_54.roll_mod.items.NetheriteSteamDrillItem;
+import com.roll_54.roll_mod.items.armor.geckolib.SkinAnchorItem;
+import com.roll_54.roll_mod.items.electricItems.EnergyDrillItem;
+import com.roll_54.roll_mod.items.electricItems.EnergySwordItem;
+import com.roll_54.roll_mod.items.modulardrill.DrillModuleItem;
+import com.roll_54.roll_mod.util.TooltipManager;
+import dev.technici4n.grandpower.api.ISimpleEnergyItem;
+import umpaz.brewinandchewin.common.block.PizzaBlock;
+import vectorwing.farmersdelight.common.block.PieBlock;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ArmorItem;
+import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.item.component.ResolvableProfile;
-import net.minecraft.world.level.block.Block;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public final class ItemGroups {
@@ -24,222 +45,57 @@ public final class ItemGroups {
     public static final DeferredRegister<CreativeModeTab> TABS =
             DeferredRegister.create(Registries.CREATIVE_MODE_TAB, RollMod.MODID);
 
+    // Every roll_mod item is sorted by rule into one tab (see category()), so a newly registered item
+    // always shows up somewhere without editing this file. Anything no rule claims falls into MAIN.
+
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> MAIN = TABS.register(
             "main",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.main"))
                     .icon(ItemGroups::createCustomHeadIcon)
+                    .displayItems((params, out) -> fill(out, Category.MAIN))
+                    .build()
+    );
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> TOOLS_ARMOR = TABS.register(
+            "tools_armor",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.roll_mod.tools_armor"))
+                    .icon(() -> new ItemStack(ItemRegistry.METEORITE_PICKAXE.get()))
+                    .displayItems((params, out) -> fill(out, Category.TOOLS_ARMOR))
+                    .build()
+    );
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> FOOD = TABS.register(
+            "food",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.roll_mod.food"))
+                    .icon(() -> new ItemStack(ItemRegistry.SULFUR_BERRY_PIE.get()))
                     .displayItems((params, out) -> {
-
-
-                        // Hazmat_armor
-                        add(out, ItemRegistry.HAZMAT_HELMET);
-                        add(out, ItemRegistry.HAZMAT_CHESTPLATE);
-                        add(out, ItemRegistry.HAZMAT_LEGGINGS);
-                        add(out, ItemRegistry.HAZMAT_BOOTS);
-
-                        // Meteorite-GEAR
-                        add(out, ItemRegistry.METEORITE_METAL_INGOT);
-                        add(out, ItemRegistry.METEORITE_HELMET);
-                        add(out, ItemRegistry.METEORITE_CHESTPLATE);
-                        add(out, ItemRegistry.METEORITE_LEGGINGS);
-                        add(out, ItemRegistry.METEORITE_BOOTS);
-                        add(out, ItemRegistry.METEORITE_SWORD);
-                        add(out, ItemRegistry.METEORITE_PICKAXE);
-                        add(out, ItemRegistry.METEORITE_AXE);
-                        add(out, ItemRegistry.METEORITE_SHOVEL);
-                        add(out, ItemRegistry.METEORITE_HOE);
-                        add(out, ItemRegistry.METEORITE_METAL_PROSPECTOR_PICKAXE);
-
-                        // Bronze-GEAR
-                        add(out, ItemRegistry.BISMUTH_BRONZE_HELMET);
-                        add(out, ItemRegistry.BISMUTH_BRONZE_CHESTPLATE);
-                        add(out, ItemRegistry.BISMUTH_BRONZE_LEGGINGS);
-                        add(out, ItemRegistry.BISMUTH_BRONZE_BOOTS);
-                        add(out, ItemRegistry.BLACK_BRONZE_HELMET);
-                        add(out, ItemRegistry.BLACK_BRONZE_CHESTPLATE);
-                        add(out, ItemRegistry.BLACK_BRONZE_LEGGINGS);
-                        add(out, ItemRegistry.BLACK_BRONZE_BOOTS);
-                        add(out, ItemRegistry.STEEL_HELMET);
-                        add(out, ItemRegistry.STEEL_CHESTPLATE);
-                        add(out, ItemRegistry.STEEL_LEGGINGS);
-                        add(out, ItemRegistry.STEEL_BOOTS);
-                        add(out, ItemRegistry.BLACK_STEEL_HELMET);
-                        add(out, ItemRegistry.BLACK_STEEL_CHESTPLATE);
-                        add(out, ItemRegistry.BLACK_STEEL_LEGGINGS);
-                        add(out, ItemRegistry.BLACK_STEEL_BOOTS);
-                        add(out, ItemRegistry.BLACK_BRONZE_SWORD);
-                        add(out, ItemRegistry.BLACK_BRONZE_PICKAXE);
-                        add(out, ItemRegistry.BLACK_BRONZE_AXE);
-                        add(out, ItemRegistry.BLACK_BRONZE_SHOVEL);
-                        add(out, ItemRegistry.BLACK_BRONZE_HOE);
-                        add(out, ItemRegistry.BISMUTH_BRONZE_SWORD);
-                        add(out, ItemRegistry.BISMUTH_BRONZE_PICKAXE);
-                        add(out, ItemRegistry.BISMUTH_BRONZE_AXE);
-                        add(out, ItemRegistry.BISMUTH_BRONZE_SHOVEL);
-                        add(out, ItemRegistry.BISMUTH_BRONZE_HOE);
-                        add(out, ItemRegistry.BLACK_STEEL_SWORD);
-                        add(out, ItemRegistry.BLACK_STEEL_PICKAXE);
-                        add(out, ItemRegistry.BLACK_STEEL_AXE);
-                        add(out, ItemRegistry.BLACK_STEEL_SHOVEL);
-                        add(out, ItemRegistry.BLACK_STEEL_HOE);
-                        // Scanners
-                        add(out, ItemRegistry.LV_STORM_SCANNER);
-
-                        ItemStack lvScanner = new ItemStack(ItemRegistry.LV_STORM_SCANNER.get());
-                        lvScanner.set(MIComponents.ENERGY.get(), 1_000_000L);
-                        out.accept(lvScanner);
-
-                        add(out, ItemRegistry.HV_STORM_SCANNER);
-
-                        ItemStack hvScanner = new ItemStack(ItemRegistry.HV_STORM_SCANNER.get());
-                        hvScanner.set(MIComponents.ENERGY.get(), 10_000_000L);
-                        out.accept(hvScanner);
-
-                        //lunar clock
-                        add(out, ItemRegistry.LUNAR_PHASE_CLOCK);
-
-                        ItemStack lunarClock = new ItemStack(ItemRegistry.LUNAR_PHASE_CLOCK.get());
-                        lunarClock.set(MIComponents.ENERGY.get(), 5_000_000L);
-                        out.accept(lunarClock);
-
-                        //batteries
-                        add(out, ItemRegistry.REDSTONE_BATTERY);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.REDSTONE_BATTERY.get());
-                            full.set(MIComponents.ENERGY.get(), 1_000_000L);
-                            out.accept(full);
+                        // Edible crops live in ROLL_CROPS too; food is the one tab allowed to repeat them.
+                        for (Item item : modItems()) {
+                            Category c = categories().get(item);
+                            if (c == Category.FOOD || (c == Category.CROPS && isFood(item))) out.accept(item);
                         }
-
-                        add(out, ItemRegistry.ENERGIUM_BATTERY);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.ENERGIUM_BATTERY.get());
-                            full.set(MIComponents.ENERGY.get(), 10_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.LAPOTRON_BATTERY_T1);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.LAPOTRON_BATTERY_T1.get());
-                            full.set(MIComponents.ENERGY.get(), 1_000_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.LAPOTRON_BATTERY_T2);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.LAPOTRON_BATTERY_T2.get());
-                            full.set(MIComponents.ENERGY.get(), 50_000_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.LAPOTRON_BATTERY_T3);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.LAPOTRON_BATTERY_T3.get());
-                            full.set(MIComponents.ENERGY.get(), 500_000_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.ULTRA_BATTERY);
-                        {
-                            ItemStack full = new ItemStack(ItemRegistry.ULTRA_BATTERY.get());
-                            full.set(MIComponents.ENERGY.get(), 10_000_000_000_000L);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.PROSPECTOR_PICK_ITEM);
-
-                        // The old fixed sabers are deprecated and deliberately absent here — only
-                        // DEV_TAB still lists them. These are their modular replacements.
-                        for (var saber : java.util.List.of(
-                                ItemRegistry.LV_MODULAR_SABER, ItemRegistry.MV_MODULAR_SABER,
-                                ItemRegistry.HV_MODULAR_SABER, ItemRegistry.EV_MODULAR_SABER,
-                                ItemRegistry.IV_MODULAR_SABER)) {
-                            add(out, saber);
-                            ItemStack full = new ItemStack(saber.get());
-                            full.set(MIComponents.ENERGY.get(), saber.get().voltage().baseCapacity);
-                            out.accept(full);
-                        }
-
-                        // The old fixed drills are deprecated and deliberately absent here — only
-                        // DEV_TAB still lists them. These are their modular replacements.
-                        for (var drill : java.util.List.of(
-                                ItemRegistry.LV_MODULAR_DRILL, ItemRegistry.MV_MODULAR_DRILL,
-                                ItemRegistry.HV_MODULAR_DRILL, ItemRegistry.EV_MODULAR_DRILL,
-                                ItemRegistry.IV_MODULAR_DRILL)) {
-                            add(out, drill);
-                            ItemStack full = new ItemStack(drill.get());
-                            full.set(MIComponents.ENERGY.get(), drill.get().voltage().baseCapacity);
-                            out.accept(full);
-                        }
-
-                        add(out, ItemRegistry.SPEED_MODULE_I);
-                        add(out, ItemRegistry.SPEED_MODULE_II);
-                        add(out, ItemRegistry.SPEED_MODULE_III);
-                        add(out, ItemRegistry.SPEED_MODULE_IV);
-                        add(out, ItemRegistry.SILK_TOUCH_MODULE);
-                        add(out, ItemRegistry.FORTUNE_MODULE_I);
-                        add(out, ItemRegistry.FORTUNE_MODULE_II);
-                        add(out, ItemRegistry.FORTUNE_MODULE_III);
-                        add(out, ItemRegistry.FORTUNE_MODULE_IV);
-                        add(out, ItemRegistry.FORTUNE_MODULE_V);
-                        add(out, ItemRegistry.XP_REACTOR_MODULE);
-                        add(out, ItemRegistry.OVERCHARGE_MODULE);
-                        add(out, ItemRegistry.REACH_MODULE_I);
-                        add(out, ItemRegistry.REACH_MODULE_II);
-                        add(out, ItemRegistry.REACH_MODULE_III);
-                        add(out, ItemRegistry.BURN_MODULE);
-                        add(out, ItemRegistry.BATTERY_MODULE_I);
-                        add(out, ItemRegistry.BATTERY_MODULE_II);
-                        add(out, ItemRegistry.BATTERY_MODULE_III);
-                        add(out, ItemRegistry.BATTERY_MODULE_IV);
-                        add(out, ItemRegistry.AOE_MODULE_I);
-                        add(out, ItemRegistry.AOE_MODULE_II);
-                        add(out, ItemRegistry.AOE_MODULE_III);
-                        add(out, ItemRegistry.AOE_MODULE_IV);
-                        add(out, ItemRegistry.AOE_MODULE_V);
-                        add(out, ItemRegistry.SPEED_MODULE_V);
-                        add(out, ItemRegistry.BATTERY_MODULE_V);
-                        add(out, ItemRegistry.AUTO_SMELT_MODULE);
-                        add(out, ItemRegistry.TRASH_FILTER_MODULE);
-                        add(out, ItemRegistry.ECO_MODULE_I);
-                        add(out, ItemRegistry.ECO_MODULE_II);
-                        add(out, ItemRegistry.LAVA_SOLIDIFIER_MODULE);
-                        add(out, ItemRegistry.SPEAK_MODULE);
-
-                        // Saber modules; Battery, Eco, Speed, Fortune/Looting and the XP Reactor above
-                        // fit sabers too. The old Looting and Attack Speed modules are deprecated and left out.
-                        for (var module : java.util.List.of(
-                                ItemRegistry.DAMAGE_MODULE_I, ItemRegistry.DAMAGE_MODULE_II, ItemRegistry.DAMAGE_MODULE_III,
-                                ItemRegistry.DAMAGE_MODULE_IV, ItemRegistry.DAMAGE_MODULE_V,
-                                ItemRegistry.SWEEP_MODULE_I, ItemRegistry.SWEEP_MODULE_II, ItemRegistry.SWEEP_MODULE_III,
-                                ItemRegistry.XP_MULTIPLIER_MODULE_I, ItemRegistry.XP_MULTIPLIER_MODULE_II,
-                                ItemRegistry.XP_MULTIPLIER_MODULE_III,
-                                ItemRegistry.XP_MULTIPLIER_MODULE_IV, ItemRegistry.XP_MULTIPLIER_MODULE_V,
-                                ItemRegistry.DROP_COLLECTOR_MODULE,
-                                ItemRegistry.VAMPIRISM_MODULE_I, ItemRegistry.VAMPIRISM_MODULE_II,
-                                ItemRegistry.VAMPIRISM_MODULE_III,
-                                ItemRegistry.BEHEADING_MODULE_I, ItemRegistry.BEHEADING_MODULE_II,
-                                ItemRegistry.BEHEADING_MODULE_III,
-                                ItemRegistry.IRRADIATION_MODULE_I, ItemRegistry.IRRADIATION_MODULE_II,
-                                ItemRegistry.IRRADIATION_MODULE_III,
-                                ItemRegistry.METEORITE_MODULE)) {
-                            add(out, module);
-                        }
-
-                        out.accept(BlockRegistry.MODULE_INSTALLATION_TABLE.get().asItem());
-
-                        add(out, ItemRegistry.NETHERITE_STEAM_MINING_DRILL);
-
-                        add(out, ItemRegistry.SKIN_APPLICATOR);
-
-                        // Research Workbench
-                        out.accept(BlockRegistry.RESEARCH_WORKBENCH.get().asItem());
-
-                        // Hydroponic Garden Bed
-                        out.accept(BlockRegistry.HYDROPONIC_GARDEN_BED.get().asItem());
-                        add(out, ItemRegistry.BLUEPRINT_FIRE_RESISTANCE);
-
                     })
+                    .build()
+    );
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CRAFTING = TABS.register(
+            "crafting",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.roll_mod.crafting"))
+                    .icon(() -> new ItemStack(ItemRegistry.SUPER_CIRCUIT.get()))
+                    .displayItems((params, out) -> fill(out, Category.CRAFTING))
+                    .build()
+    );
+
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ADDONS = TABS.register(
+            "addons",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.roll_mod.addons"))
+                    .icon(() -> new ItemStack(ItemRegistry.GIGANTIC_CHROME_VANADIUM_STEEL_GAS_TANK.get()))
+                    .displayItems((params, out) -> fill(out, Category.ADDONS))
                     .build()
     );
 
@@ -248,62 +104,134 @@ public final class ItemGroups {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.roll_crops_tab"))
                     .icon(() -> new ItemStack(ItemRegistry.LATEX_DANDELION_FLOWER.get()))
-                    .displayItems((params, out) -> {
-                        for (DeferredHolder<Item, ? extends Item> entry : ItemRegistry.CROPS.getEntries()) {
-                            out.accept(entry.get());
-                        }
-                    })
+                    .displayItems((params, out) -> fill(out, Category.CROPS))
                     .build()
     );
 
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GENERATED_ORES_TAB = TABS.register(
+            "generated_ores",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.roll_mod.generated_ores"))
+                    .icon(() -> GeneratedOreRegistry.ITEMS.getEntries().stream().findFirst()
+                            .map(h -> new ItemStack(h.get()))
+                            .orElseGet(() -> new ItemStack(ItemRegistry.METEORITE_PICKAXE.get())))
+                    .displayItems((params, out) -> fill(out, Category.ORES))
+                    .build()
+    );
+
+    /** Everything, deprecated items included — the only tab that still lists those. */
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> DEV_TAB = TABS.register(
             "dev",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.dev"))
                     .icon(() -> new ItemStack(ItemRegistry.SULFUR_BERRY.get()))
                     .displayItems((params, out) -> {
-
-                        for (DeferredHolder<Item, ? extends Item> entry : ItemRegistry.ITEMS.getEntries()) {
-                            out.accept(entry.get());
-                        }
-                        for (DeferredHolder<Block, ? extends Block> entry : BlockRegistry.BLOCKS.getEntries()) {
-
-                            Block block = entry.get();
-                            Item item = block.asItem();
-                            if (item != Items.AIR) {
-                                out.accept(item);
-                            }
+                        for (Item item : modItems()) {
+                            out.accept(item);
                         }
                     })
                     .build()
     );
 
+    private enum Category { DEPRECATED, VENDING, ORES, ADDONS, CROPS, TOOLS_ARMOR, FOOD, CRAFTING, MAIN }
 
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> GENERATED_ORES_TAB = TABS.register(
-            "generated_ores",
-            () -> CreativeModeTab.builder()
-                    .title(Component.translatable("itemGroup.roll_mod.generated_ores"))
-                    .icon(() -> new ItemStack(ItemRegistry.METEORITE_PICKAXE.get()))
-                    .displayItems((params, out) -> {
-                        // All items from GeneratedOreRegistry
-                        for (DeferredHolder<Item, ? extends Item> entry : GeneratedOreRegistry.ITEMS.getEntries()) {
-                            out.accept(entry.get());
-                        }
+    /** Packages of other mods whose item types make an item an add-on item (Ad Astra gas tanks, cyberware). */
+    private static final List<String> ADDON_PACKAGES = List.of(
+            "earth.terrarium.adastra.", "com.perigrine3.createcybernetics.", "com.agricraft.");
 
-                        // All blocks from GeneratedOreRegistry
-                        for (DeferredHolder<Block, ? extends Block> entry : GeneratedOreRegistry.BLOCKS.getEntries()) {
-                            Block block = entry.get();
-                            Item item = block.asItem();
-                            if (item != Items.AIR) {
-                                out.accept(item);
-                            }
-                        }
-                    })
-                    .build()
-    );
+    private static Map<Item, Category> categories;
 
-    private static <T extends Item> void add(CreativeModeTab.Output out, DeferredHolder<Item, T> h) {
-        out.accept(h.get());
+    /** Every item in the roll_mod namespace with its tab, in registration order. Registries are frozen by now. */
+    private static synchronized Map<Item, Category> categories() {
+        if (categories == null) {
+            Set<Item> ores = items(GeneratedOreRegistry.ITEMS.getEntries());
+            Set<Item> vending = items(com.roll_54.roll_mod.economy.vendingblock.registry.ItemRegistry.ITEMS.getEntries());
+            Set<Item> crops = items(ItemRegistry.CROPS.getEntries());
+            Map<Item, Category> map = new LinkedHashMap<>();
+            for (Item item : BuiltInRegistries.ITEM) {
+                if (RollMod.MODID.equals(BuiltInRegistries.ITEM.getKey(item).getNamespace())) {
+                    map.put(item, category(item, ores, vending, crops));
+                }
+            }
+            categories = map;
+        }
+        return categories;
+    }
+
+    private static Collection<Item> modItems() {
+        return categories().keySet();
+    }
+
+    private static void fill(CreativeModeTab.Output out, Category category) {
+        for (Item item : modItems()) {
+            if (categories().get(item) != category) continue;
+            out.accept(item);
+            // Energy items also come fully charged, right after the empty one.
+            if (item instanceof ISimpleEnergyItem energy) {
+                ItemStack full = new ItemStack(item);
+                full.set(energy.getEnergyComponent(), energy.getEnergyCapacity(full));
+                out.accept(full);
+            }
+        }
+    }
+
+    private static Category category(Item item, Set<Item> ores, Set<Item> vending, Set<Item> crops) {
+        String path = BuiltInRegistries.ITEM.getKey(item).getPath();
+        if (isDeprecated(item)) return Category.DEPRECATED;
+        if (ores.contains(item)) return Category.ORES;
+        if (vending.contains(item)) return Category.VENDING; // listed by the economy tab
+        if (isAddon(item)) return Category.ADDONS;
+        if (crops.contains(item)) return Category.CROPS;
+        if (item instanceof TieredItem || item instanceof ArmorItem || item instanceof ISimpleEnergyItem
+                || item instanceof DrillModuleItem || item instanceof InjectionItem
+                || item instanceof ComponentApplicatorItem || item instanceof SkinAnchorItem
+                || item instanceof NetheriteSteamDrillItem) {
+            return Category.TOOLS_ARMOR;
+        }
+        if (isFood(item)) return Category.FOOD;
+        boolean plain = item.getClass() == Item.class || item.getClass() == TooltipManager.TooltipItem.class;
+        if (plain && !path.startsWith("research_") && !item.components().has(DataComponents.JUKEBOX_PLAYABLE)
+                && !path.equals("minestar_logo") && !path.equals("error_item")) {
+            return Category.CRAFTING;
+        }
+        return Category.MAIN;
+    }
+
+    private static boolean isFood(Item item) {
+        return item.components().has(DataComponents.FOOD)
+                || (item instanceof BlockItem block
+                        && (block.getBlock() instanceof SliceableFoodBlock || block.getBlock() instanceof PieBlock
+                        || block.getBlock() instanceof PizzaBlock));
+    }
+
+    /** Kept registered so existing stacks load, but replaced: only the ALL ITEMS tab shows these. */
+    private static boolean isDeprecated(Item item) {
+        return item instanceof EnergyDrillItem || item instanceof EnergySwordItem
+                || item == BlockRegistry.CROP_MANAGER.get().asItem();
+    }
+
+    private static boolean isAddon(Item item) {
+        if (item instanceof HerbicideItem) return true; // AgriCraft crop herbicides
+        for (Class<?> c = item.getClass(); c != null && c != Item.class; c = c.getSuperclass()) {
+            if (fromAddon(c)) return true;
+            for (Class<?> i : c.getInterfaces()) {
+                if (fromAddon(i)) return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean fromAddon(Class<?> c) {
+        for (String p : ADDON_PACKAGES) {
+            if (c.getName().startsWith(p)) return true;
+        }
+        return false;
+    }
+
+    private static Set<Item> items(Collection<? extends DeferredHolder<Item, ? extends Item>> entries) {
+        Set<Item> set = new HashSet<>();
+        for (DeferredHolder<Item, ? extends Item> h : entries) set.add(h.get());
+        return set;
     }
 
     public static void register(IEventBus modBus) {

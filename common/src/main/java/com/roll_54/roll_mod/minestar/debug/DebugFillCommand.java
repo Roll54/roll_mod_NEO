@@ -13,7 +13,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 /**
  * {@code /rollmod debug fill [player]} and {@code /rollmod debug clear [player]}: test content for
@@ -44,8 +44,9 @@ public final class DebugFillCommand {
     }
 
     private static int run(CommandSourceStack source, ServerPlayer target, String action,
-                           Function<ServerPlayer, List<String>> body) throws CommandSyntaxException {
-        List<String> lines = body.apply(target);
+                           BiFunction<CommandSourceStack, ServerPlayer, List<String>> body)
+            throws CommandSyntaxException {
+        List<String> lines = body.apply(source, target);
         source.sendSuccess(() -> Component.literal("[Debug] " + action + " for "
                 + target.getGameProfile().getName() + ":").withStyle(ChatFormatting.GOLD), true);
         for (String line : lines) {

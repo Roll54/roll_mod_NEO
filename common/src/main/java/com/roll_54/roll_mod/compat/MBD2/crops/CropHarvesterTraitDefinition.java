@@ -134,6 +134,10 @@ public class CropHarvesterTraitDefinition extends TraitDefinition implements IUI
     public static final String SETTINGS_TOGGLE = "settings_toggle";
 
     private static final int ROW_HEIGHT = 16;
+    /** How many switches {@link #createTraitUITemplate} lays out. */
+    private static final int SETTING_ROWS = 4;
+    /** The height those rows take; the hand-built settings window is sized from it. */
+    public static final int SETTINGS_ROWS_HEIGHT = SETTING_ROWS * ROW_HEIGHT;
     private static final int SWITCH_WIDTH = 20;
     private static final int SWITCH_HEIGHT = 10;
     private static final int LABEL_X = 4 + SWITCH_WIDTH + 4;

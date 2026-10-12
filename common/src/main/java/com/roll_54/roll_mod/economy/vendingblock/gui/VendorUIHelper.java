@@ -73,7 +73,11 @@ public final class VendorUIHelper {
    * so it is only applied on the client; {@code createUI} also runs on the dedicated server.
    */
   public static ItemSlot phantomSlot() {
-    ItemSlot slot = new ItemSlot();
+    return phantomSlot(new ItemSlot());
+  }
+
+  /** {@link #phantomSlot()} for a caller-supplied (e.g. subclassed) slot. */
+  public static <T extends ItemSlot> T phantomSlot(T slot) {
     if (FMLEnvironment.dist.isClient()) {
       slot.xeiPhantom();
     }
@@ -106,6 +110,23 @@ public final class VendorUIHelper {
     field.setText(initial);
     field.setTextResponder(responder);
     return field;
+  }
+
+  /**
+   * A money field that also takes arithmetic ({@code 832*30+90}, {@code 7^2}, {@code 392/20}); read
+   * it with {@link #parseExpr}. See {@link MoneyExpression}.
+   */
+  public static TextField exprField(String initial, Consumer<String> responder) {
+    TextField field = new TextField();
+    field.setTextRegexValidator(MoneyExpression.INPUT_REGEX);
+    field.setText(initial);
+    field.setTextResponder(responder);
+    return field;
+  }
+
+  /** The value of an {@link #exprField}'s text, or {@code fallback} when it does not evaluate. */
+  public static long parseExpr(String text, long fallback) {
+    return MoneyExpression.evaluate(text).orElse(fallback);
   }
 
   public static long parseLong(String text, long fallback) {

@@ -19,6 +19,7 @@
     "NanoSuitGravichestplateAbilityMixin",
     "PhantomSpawnerMixin",
     "PlayerAdvancementsMixin",
+    "PlayerListBroadcastMixin",
     "ShearsItemMixin",
     "SingleBlockCraftingMachinesMixin",
     "adstra.StationLoaderMixin",

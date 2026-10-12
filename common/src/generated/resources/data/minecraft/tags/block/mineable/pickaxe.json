@@ -5,7 +5,15 @@
     "roll_mod:hydroponic_garden_bed",
     "roll_mod:grinding_wheels",
     {
+      "id": "roll_mod:crop_manager_lv",
+      "required": false
+    },
+    {
       "id": "roll_mod:crop_manager_mk2",
+      "required": false
+    },
+    {
+      "id": "roll_mod:crop_manager_hv",
       "required": false
     },
     {

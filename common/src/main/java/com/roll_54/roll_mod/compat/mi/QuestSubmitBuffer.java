@@ -84,7 +84,13 @@ public final class QuestSubmitBuffer {
      */
     @SubscribeEvent
     public static void onServerStopping(ServerStoppingEvent event) {
-        flush();
+        try {
+            flush();
+        } catch (NullPointerException e) {
+            // FTB Quests may already have torn down its ServerQuestFile (INSTANCE is null) by the
+            // time this runs; there is nothing left to credit progress to, so the batch is dropped.
+            RollMod.LOGGER.debug("Dropping buffered quest progress: FTB Quests already unloaded", e);
+        }
         PENDING.clear();
         ticksSinceFlush = 0;
     }

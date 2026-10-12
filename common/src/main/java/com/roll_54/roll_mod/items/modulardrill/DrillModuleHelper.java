@@ -90,18 +90,12 @@ public final class DrillModuleHelper {
      *
      * <p>Silk Touch, Fortune and Auto-Smelt shape the drops in ways that fight each other, so Silk
      * Touch stands alone while Fortune+Smelt (multiply, then smelt) is the one legal pair; Burn
-     * voids the drops, so nothing that processes them may ride along. The deprecated Looting items
-     * still install into sabers, but never beside the merged Fortune/Looting module — the two
-     * levels would stack.
+     * voids the drops, so nothing that processes them may ride along.
      */
     public static Set<ModuleType> conflictsOf(ModuleType type) {
         return switch (type) {
             case SILK_TOUCH -> EnumSet.of(ModuleType.FORTUNE, ModuleType.SMELT, ModuleType.BURN);
-            case FORTUNE -> EnumSet.of(ModuleType.SILK_TOUCH, ModuleType.BURN, ModuleType.LOOTING);
-            case LOOTING -> EnumSet.of(ModuleType.FORTUNE);
-            // Same story for the deprecated Attack Speed items beside the merged Speed module.
-            case SPEED -> EnumSet.of(ModuleType.ATTACK_SPEED);
-            case ATTACK_SPEED -> EnumSet.of(ModuleType.SPEED);
+            case FORTUNE -> EnumSet.of(ModuleType.SILK_TOUCH, ModuleType.BURN);
             case SMELT -> EnumSet.of(ModuleType.SILK_TOUCH, ModuleType.BURN);
             case TRASH_FILTER -> EnumSet.of(ModuleType.BURN);
             case BURN -> EnumSet.of(ModuleType.SILK_TOUCH, ModuleType.FORTUNE, ModuleType.SMELT,

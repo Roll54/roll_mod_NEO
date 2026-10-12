@@ -1,0 +1,8 @@
+{
+  "parent": "brewinandchewin:block/pizza",
+  "textures": {
+    "top": "roll_mod:block/fluorite_pineapple_pizza_top",
+    "side": "roll_mod:block/fluorite_pineapple_pizza_outside",
+    "particle": "roll_mod:block/fluorite_pineapple_pizza_top"
+  }
+}

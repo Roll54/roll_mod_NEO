@@ -66,7 +66,6 @@ public abstract class MoneyShovingMixin {
       List<Component> tooltipLines = new ArrayList<>();
       TextColor serverColor = TextColor.fromRgb(0xB7043B);
 
-      // todo make case specific tooltip for uk_ua like 2 старкоіни, 1 старкоін, 0 старкоінів
 
       // 1 line
       Component currencyName =

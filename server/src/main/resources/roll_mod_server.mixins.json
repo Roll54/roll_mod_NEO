@@ -6,7 +6,6 @@
   "mixins": [
     "crash.MinecraftServerCrashGuardMixin",
     "minestar.MinestarConfigValidateMixin",
-    "minestar.PlayerListChatMixin",
     "prime.LivingEntityMixin",
     "prime.MixinLivingEntityPrimeFeature",
     "prime.MixinServerPlayerEntityPrimeFeature",

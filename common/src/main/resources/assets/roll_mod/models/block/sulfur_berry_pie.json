@@ -1,0 +1,8 @@
+{
+  "parent": "farmersdelight:block/template_pie",
+  "textures": {
+    "top": "roll_mod:block/sulfur_berry_pie_top",
+    "side": "roll_mod:block/sulfur_berry_pie_side",
+    "bottom": "roll_mod:block/sulfur_berry_pie_bottom"
+  }
+}

@@ -67,6 +67,13 @@ public class DailyTasksState extends SavedData {
      */
     public final Map<UUID, Integer> freeRerollsUsed = new HashMap<>();
 
+    /**
+     * How many task rewards each player has ever claimed — the "daily tasks done" leaderboard. Per
+     * player, like the payout itself. Never pruned and untouched by the day turning over or the
+     * money wipe: it lives as long as the world.
+     */
+    public final Map<UUID, Integer> tasksDone = new HashMap<>();
+
     /** One group's task set, bonus reward and progress for the day it was rolled on. */
     public static class GroupState {
         /**
@@ -235,6 +242,13 @@ public class DailyTasksState extends SavedData {
             CompoundTag e = freeRerolls.getCompound(i);
             s.freeRerollsUsed.put(e.getUUID("id"), e.getInt("used"));
         }
+
+        // Absent in saves written before the counter existed: reads back empty.
+        ListTag tasksDone = tag.getList("tasksDone", Tag.TAG_COMPOUND);
+        for (int i = 0; i < tasksDone.size(); i++) {
+            CompoundTag e = tasksDone.getCompound(i);
+            s.tasksDone.put(e.getUUID("id"), e.getInt("count"));
+        }
         return s;
     }
 
@@ -293,6 +307,15 @@ public class DailyTasksState extends SavedData {
             freeRerolls.add(e);
         });
         tag.put("freeRerollsUsed", freeRerolls);
+
+        ListTag tasksDoneList = new ListTag();
+        tasksDone.forEach((id, count) -> {
+            CompoundTag e = new CompoundTag();
+            e.putUUID("id", id);
+            e.putInt("count", count);
+            tasksDoneList.add(e);
+        });
+        tag.put("tasksDone", tasksDoneList);
         return tag;
     }
 

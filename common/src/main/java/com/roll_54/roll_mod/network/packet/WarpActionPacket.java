@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.network.packet;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.minestar.hub.QuestGate;
 import com.roll_54.roll_mod.minestar.hub.warp.Warp;
 import com.roll_54.roll_mod.minestar.hub.warp.WarpApproval;
 import com.roll_54.roll_mod.minestar.hub.warp.WarpData;
@@ -23,7 +24,7 @@ public record WarpActionPacket(Action action, UUID warp, String name, String des
         implements CustomPacketPayload {
 
     /** Append only: {@link #decode} indexes by ordinal. */
-    public enum Action { CREATE, DELETE, TELEPORT, CANCEL, SET_APPROVAL }
+    public enum Action { CREATE, DELETE, TELEPORT, CANCEL, SET_APPROVAL, EDIT, MOVE_HERE, SET_QUEST }
 
     public static final Type<WarpActionPacket> TYPE = new Type<>(RollMod.id("warp_action"));
 
@@ -64,6 +65,21 @@ public record WarpActionPacket(Action action, UUID warp, String name, String des
         return new WarpActionPacket(Action.SET_APPROVAL, warp, approval.id(), "", 0);
     }
 
+    /** A moderator's edit of name, description and price. */
+    public static WarpActionPacket edit(UUID warp, String name, String description, long price) {
+        return new WarpActionPacket(Action.EDIT, warp, clamp(name, Warp.MAX_NAME),
+                clamp(description, Warp.MAX_DESCRIPTION), price);
+    }
+
+    public static WarpActionPacket moveHere(UUID warp) {
+        return new WarpActionPacket(Action.MOVE_HERE, warp, "", "", 0);
+    }
+
+    /** The required quest, as FTB's 16-digit hex code in {@code name}; blank clears it. */
+    public static WarpActionPacket setQuest(UUID warp, long quest) {
+        return new WarpActionPacket(Action.SET_QUEST, warp, quest == 0 ? "" : QuestGate.code(quest), "", 0);
+    }
+
     public static WarpActionPacket cancel() {
         return new WarpActionPacket(Action.CANCEL, NONE, "", "", 0);
     }
@@ -94,13 +110,17 @@ public record WarpActionPacket(Action action, UUID warp, String name, String des
                 case CREATE -> WarpService.create(player, payload.name, payload.description, payload.price);
                 case DELETE -> WarpService.delete(player, payload.warp);
                 case TELEPORT -> WarpService.requestTeleport(player, payload.warp);
-                case CANCEL -> WarpService.cancel(player.getUUID());
-                case SET_APPROVAL -> {
+                case CANCEL -> WarpService.cancel(player);
+                case SET_APPROVAL, EDIT, MOVE_HERE, SET_QUEST -> {
                     // Re-checked here, not trusted from the tab being visible.
                     if (!WarpService.isModerator(player)) return;
                     Warp warp = WarpData.get(player.server).byId(payload.warp);
-                    if (warp != null) {
-                        WarpService.setApproval(player, warp, WarpApproval.byId(payload.name));
+                    if (warp == null) return;
+                    switch (payload.action) {
+                        case SET_APPROVAL -> WarpService.setApproval(player, warp, WarpApproval.byId(payload.name));
+                        case EDIT -> WarpService.edit(player, warp, payload.name, payload.description, payload.price);
+                        case MOVE_HERE -> WarpService.moveHere(player, warp);
+                        default -> WarpService.setRequiredQuest(player, warp, QuestGate.parse(payload.name));
                     }
                 }
             }

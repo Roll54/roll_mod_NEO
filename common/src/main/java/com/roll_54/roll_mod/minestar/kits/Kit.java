@@ -24,7 +24,22 @@ import java.util.Locale;
  * answer: no permission and no LuckPerms meta shortens or waives it, so what this file says is what
  * every player waits. Only the stamps in {@code kits/cooldowns.json} are epoch millis.
  */
-public record Kit(String name, long cooldownTicks, String permission, List<ItemStack> items) {
+public record Kit(String name, long cooldownTicks, String permission, List<ItemStack> items, String displayName) {
+
+    /** How long a display name may be, {@code &} colour codes included. */
+    public static final int MAX_DISPLAY = 48;
+
+    /** What players see the kit as: the name a moderator set, or the id when none was. */
+    public String title() {
+        return displayName == null || displayName.isBlank() ? name : displayName;
+    }
+
+    /** The same kit under another display name; blank clears it back to the id. */
+    public Kit withDisplayName(String display) {
+        String clean = display == null ? "" : display.strip();
+        if (clean.length() > MAX_DISPLAY) clean = clean.substring(0, MAX_DISPLAY);
+        return new Kit(name, cooldownTicks, permission, items, clean);
+    }
 
     /** What a kit may be called: a safe file name and a safe permission-node segment. */
     public static boolean validName(String name) {
@@ -53,6 +68,7 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
         json.addProperty("name", name);
         json.addProperty("cooldownTicks", cooldownTicks);
         json.addProperty("permission", permissionOrDefault());
+        if (displayName != null && !displayName.isBlank()) json.addProperty("displayName", displayName);
         json.add("items", array);
         return json;
     }
@@ -77,6 +93,8 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
 
         long cooldown = json.has("cooldownTicks") ? json.get("cooldownTicks").getAsLong() : 0L;
         String permission = json.has("permission") ? json.get("permission").getAsString() : "";
-        return new Kit(name, Math.max(0L, cooldown), permission, List.copyOf(items));
+        // Older files have no display name; the kit then shows as its id, as it always did.
+        String display = json.has("displayName") ? json.get("displayName").getAsString() : "";
+        return new Kit(name, Math.max(0L, cooldown), permission, List.copyOf(items), display);
     }
 }

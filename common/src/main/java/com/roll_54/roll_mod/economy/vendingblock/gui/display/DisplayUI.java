@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.economy.vendingblock.gui.display;
 
+import com.roll_54.roll_mod.minestar.theme.RollUi;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
-import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ItemSlot;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
@@ -19,7 +19,10 @@ public final class DisplayUI {
   private DisplayUI() {}
 
   public static ModularUI build(DisplayBlockEntity be, Player player) {
-    UIElement root = VendorUIHelper.panel(176, 166);
+    // The theme's panel surface (hub settings), not a fixed light-grey plate. Children are placed
+    // absolutely, so the theme's own padding is dropped.
+    UIElement root = VendorUIHelper.styledPanel(176, 166);
+    root.layout(l -> l.paddingAll(0));
 
     Label title = new Label();
     title.setText(Component.translatable("menu.roll_mod.display.settings"));
@@ -34,6 +37,6 @@ public final class DisplayUI {
 
     root.addChild(VendorUIHelper.playerInventory(8, 84));
 
-    return ModularUI.of(UI.of(root), player);
+    return ModularUI.of(RollUi.of(player, root), player);
   }
 }

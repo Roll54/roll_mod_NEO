@@ -62,9 +62,9 @@
 		"maxRadius": 25000,
 		// How many candidate positions are tried before /rtp gives up.
 		"maxTries": 100,
-		/* Candidates examined per server tick, per searching player. Only candidates that
-		   pass the no-chunk-load height and biome check cost a chunk, but that chunk may
-		   have to be generated, so raising this trades stutter for a faster answer.
+		/* Candidates examined per server tick, per searching player. These checks cost no
+		   chunk — at most one chunk is generated per player per tick regardless — so raising
+		   this only makes the search settle on a promising spot sooner.
 		*/
 		"triesPerTick": 2,
 		/* Wait between random teleports, in TICKS (20 = one second).
@@ -144,8 +144,24 @@
 		// HP multiplier
 		"MOB_HP_BUFF": 2.5
 	},
-	// Anvil tweaks: removing the 40-level 'Too Expensive!' cap.
+	// How the new modular drills, modular sabers, their modules and the Module Installation Table look.
+	"newItems": {
+		/* Show the new modular items as they really are: their textures, names and tooltips.
+		   False = every one of them shows the 'no texture yet' placeholder, the name
+		   'Unknown item' and no tooltip, for every player. Server-side and synced to clients;
+		   changes apply live, without a restart.
+		*/
+		"showNewItems": true
+	},
+	// Anvil tweaks: over-max enchantment transfer and removing the 40-level 'Too Expensive!' cap.
 	"anvil": {
+		/* Let an over-max enchantment on an anvil input carry into the result, e.g. a
+		   Sharpness VII book applied to a sword gives Sharpness VII. Combining never raises a
+		   level past max(enchantment max, highest input level): Sharpness V + Sharpness V is
+		   still Sharpness V, so books (and items) cannot be overchanted by combining.
+		   False = vanilla behavior (every combined level is clamped to the enchantment max).
+		*/
+		"overEnchant": true,
 		/* Remove the vanilla 'Too Expensive!' block at 40 levels so the anvil result is never
 		   greyed out for cost alone. Costs at or above the threshold are scaled exponentially
 		   instead (see expThreshold / expGrowth), so high-tier work stays possible but expensive.
@@ -168,5 +184,9 @@
 		"restrictedDimensions": [
 			"minecraft:the_nether"
 		]
+	},
+	"chat_changes": {
+		// Hide the advancement announcements in chat (challenges, see PlayerAdvancementsMixin).
+		"hideAdvancementMessages": false
 	}
 }

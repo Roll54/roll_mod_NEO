@@ -65,7 +65,7 @@ public final class LettersTab {
         ScrollerView list = scroller();
         // Fixed width: scroller() grows, which in this row would mean sideways.
         list.layout(l -> l.width(LIST_W).flexGrow(0).flexBasis(LIST_W).heightPercent(100));
-        list.viewPort(v -> v.layout(l -> l.paddingAll(2).paddingRight(6)));
+        list.viewPort(v -> v.layout(l -> l.paddingAll(2)));
 
         UIElement detail = new UIElement();
         detail.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexGrow(1).heightPercent(100)
@@ -74,8 +74,9 @@ public final class LettersTab {
 
         UIElement body = new UIElement();
         body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexBasis(0)
-                .flexGrow(1).gapColumn(PADDING));
-        body.addChildren(list, detail);
+                .flexGrow(1).gapColumn(1));
+        // The divider between the list and the panel: drag to resize, double-click to reset.
+        body.addChildren(list, HubSplit.handle("letters", list, LIST_W, player.level().isClientSide()), detail);
 
         root.addChildren(HubSection.header("letters", section), body, section.overlay());
 
@@ -131,7 +132,7 @@ public final class LettersTab {
             boolean isSelected = letter.id().equals(selected[0]);
             UIElement row = new UIElement();
             row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                    .marginBottom(2).paddingRight(TEXT_INSET).gapColumn(3));
+                    .marginBottom(2).paddingLeft(HubSection.ROW_INSET).paddingRight(Math.max(TEXT_INSET, HubSection.ROW_INSET)).gapColumn(3));
             row.style(s -> s.background(new ColorRectTexture(isSelected ? COLOR_ROW_SELECTED : COLOR_ROW)));
             row.addEventListener(UIEvents.CLICK, e -> selected[0] = letter.id());
             // Unread shows on the icon itself: the marked envelope, or the badge on a custom icon.

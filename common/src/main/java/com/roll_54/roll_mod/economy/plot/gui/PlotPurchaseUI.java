@@ -13,6 +13,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.TextField;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.economy.plot.PlotRegistry;
+import com.roll_54.roll_mod.minestar.hub.gui.HubConfirm;
 import com.roll_54.roll_mod.minestar.hub.gui.HubSection;
 import com.roll_54.roll_mod.economy.plot.PlotSnapshot;
 import com.roll_54.roll_mod.economy.plot.client.ClientPlotCache;
@@ -39,10 +40,7 @@ import org.appliedenergistics.yoga.YogaPositionType;
 public final class PlotPurchaseUI {
 
   private static final int MARGIN = 4;
-  private static final int TITLE_H = 16;
 
-  /** The I button, which fits inside the band TITLE_H already reserves. */
-  private static final int INFO = 12;
 
   /**
    * The dialog never gets narrower than this; the map takes what is left, up to the body's height,
@@ -59,6 +57,9 @@ public final class PlotPurchaseUI {
    */
   private static final int PANEL_COLOR = 0x40AEBAC6;
 
+  /** The dialog's panel, matching the info panels of the other tabs (TpaTab, FriendsTab, …). */
+  private static final int COLOR_DIALOG = 0x40000000;
+
   private static final int COLOR_AVAILABLE = 0x8000FF00; // transparent green
   private static final int COLOR_UNAFFORDABLE = 0x80FFFF00; // transparent yellow
   private static final int COLOR_MINE = 0x800080FF; // transparent blue
@@ -71,20 +72,14 @@ public final class PlotPurchaseUI {
     // Fills the tab box, whatever size the hub window has been given.
     UIElement root = new UIElement();
     root.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).heightPercent(100)
-        .paddingAll(MARGIN));
-    root.style(s -> s.backgroundTexture(new ColorRectTexture(PANEL_COLOR)));
+        .paddingAll(HubSection.TAB_PADDING));
+    // No tint of its own any more: the hub paints the same content panel behind every tab, and the
+    // plots' cool tint was the one tab that looked different. PANEL_COLOR is kept but unused.
 
     HubSection.Info section = HubSection.info("plots");
 
-    UIElement titleRow = new UIElement();
-    titleRow.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(TITLE_H)
-        .alignItems(AlignItems.CENTER).paddingLeft(4).flexShrink(0));
-    Label title = new Label();
-    title.setText(Component.translatable("menu.roll_mod.plot.title"));
-    title.layout(l -> l.flexGrow(1).height(12));
-    section.button().layout(l -> l.width(INFO).height(INFO).flexShrink(0));
-    titleRow.addChildren(title, section.button());
-    root.addChild(titleRow);
+    // The shared title row, so the title and the I button sit where every other tab has them.
+    root.addChild(HubSection.header(Component.translatable("menu.roll_mod.plot.title"), section));
 
     UIElement body = new UIElement();
     body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexBasis(0).flexGrow(1)
@@ -97,7 +92,8 @@ public final class PlotPurchaseUI {
     map.layout(l -> l.width(PlotRegistry.IMG_W).height(PlotRegistry.IMG_H).flexShrink(0));
 
     UIElement dialog = new UIElement();
-    dialog.style(s -> s.backgroundTexture(new ColorRectTexture(0xFF4A4A4A)));
+    // The same translucent panel every other tab's info side uses.
+    dialog.style(s -> s.backgroundTexture(new ColorRectTexture(COLOR_DIALOG)));
     dialog.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexBasis(0).flexGrow(1)
         .minWidth(DIALOG_MIN_W).heightPercent(100));
 
@@ -123,11 +119,15 @@ public final class PlotPurchaseUI {
     String[] confirmSellFor = {null}; // plot id currently awaiting sell-to-server confirmation
     Runnable[] rebuildDialog = {() -> {}};
 
+    // Selling land back is confirmed in a window of its own: you get only the starting price back.
+    HubConfirm confirmer = new HubConfirm();
+
     buildOverlays(map, selected, confirmSellFor, rebuildDialog);
-    buildDialog(dialog, selected, confirmSellFor, rebuildDialog);
+    buildDialog(dialog, selected, confirmSellFor, rebuildDialog, confirmer);
 
     // Last, so it covers the map and the dialog.
     root.addChild(section.overlay());
+    root.addChild(confirmer.root());
 
     return root;
   }
@@ -184,7 +184,8 @@ public final class PlotPurchaseUI {
   /* ------------------------------------------------- dialog ------------------------------------------------------ */
 
   private static void buildDialog(
-      UIElement dialog, String[] selected, String[] confirmSellFor, Runnable[] rebuildDialog) {
+      UIElement dialog, String[] selected, String[] confirmSellFor, Runnable[] rebuildDialog,
+      HubConfirm confirmer) {
     // A column of flow rows that scrolls when the window is too short for it — the sell
     // confirmation in particular is taller than the dialog at the smallest hub size.
     // flexBasis(0) and COLUMN for the reasons HubSection gives for its own scroller.
@@ -206,7 +207,7 @@ public final class PlotPurchaseUI {
             return;
           }
           switch (p.kind()) {
-            case MINE -> buildMine(content, p, confirmSellFor, rebuildDialog);
+            case MINE -> buildMine(content, p, confirmer);
             case OTHER_UNLISTED -> buildOwned(content, p);
             default -> buildBuy(content, p); // VACANT, OTHER_LISTED
           }
@@ -270,7 +271,7 @@ public final class PlotPurchaseUI {
 
   /** The viewer's own plot — resale listing controls plus sell-back-to-server (with a warning). */
   private static void buildMine(
-      ScrollerView content, PlotSnapshot p, String[] confirmSellFor, Runnable[] rebuildDialog) {
+      ScrollerView content, PlotSnapshot p, HubConfirm confirmer) {
     String id = p.id();
     addLabel(content, "menu.roll_mod.plot.yours", 0);
 
@@ -308,47 +309,21 @@ public final class PlotPurchaseUI {
       content.addScrollViewChild(button(unlist, 2));
     }
 
-    // Sell back to the server — two-step, because you only get the base starting price.
-    boolean confirming = id.equals(confirmSellFor[0]);
-    if (!confirming) {
-      Button sell = new Button();
-      sell.setText(
-          Component.translatable(
-              "menu.roll_mod.plot.sellToServer",
-              EnergyFormatUtils.formatEnergy(p.startingPrice())));
-      sell.setOnClick(
-          e -> {
-            confirmSellFor[0] = id;
-            rebuildDialog[0].run();
-          });
-      content.addScrollViewChild(button(sell, 16));
-    } else {
-      addText(
-          content,
-          Component.translatable(
-              "menu.roll_mod.plot.sellWarning",
-              EnergyFormatUtils.formatEnergy(p.startingPrice())),
-          12);
-
-      Button confirm = new Button();
-      confirm.setText(Component.translatable("menu.roll_mod.plot.sellConfirm"));
-      confirm.setOnClick(
-          e -> {
-            PacketDistributor.sendToServer(PlotActionPacket.sellToServer(id));
-            confirmSellFor[0] = null;
-            rebuildDialog[0].run();
-          });
-      content.addScrollViewChild(button(confirm, 4));
-
-      Button cancel = new Button();
-      cancel.setText(Component.translatable("menu.roll_mod.plot.cancel"));
-      cancel.setOnClick(
-          e -> {
-            confirmSellFor[0] = null;
-            rebuildDialog[0].run();
-          });
-      content.addScrollViewChild(button(cancel, 4));
-    }
+    // Sell back to the server, confirmed in a window: you only get the base starting price.
+    Button sell = new Button();
+    sell.setText(
+        Component.translatable(
+            "menu.roll_mod.plot.sellToServer",
+            EnergyFormatUtils.formatEnergy(p.startingPrice())));
+    sell.setOnClick(
+        e ->
+            confirmer.ask(
+                Component.translatable(
+                    "menu.roll_mod.plot.sellWarning",
+                    EnergyFormatUtils.formatEnergy(p.startingPrice())),
+                Component.translatable("menu.roll_mod.plot.sellConfirm"),
+                () -> PacketDistributor.sendToServer(PlotActionPacket.sellToServer(id))));
+    content.addScrollViewChild(button(sell, 16));
   }
 
   /** A full-width button, {@code marginTop} below the row above it. */

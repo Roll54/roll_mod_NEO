@@ -1,6 +1,9 @@
 package com.roll_54.roll_mod.minestar.letters;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.minestar.moderation.ModerationLog;
 import com.roll_54.roll_mod.minestar.moderation.ModerationPermissions;
@@ -88,14 +91,44 @@ public final class LetterService {
      */
     public static void sendSystem(MinecraftServer server, UUID recipient, String author, String title,
                                   String body, String icon, long lifetime) {
+        sendPersonal(server, recipient, author, title, body, icon, lifetime, List.of());
+    }
+
+    /**
+     * A personal letter with rewards — the Java way to write one, and what {@code /rollmod letter}
+     * and the shop deliveries go through. No permission check: the caller is the server itself, or a
+     * command that checked its source already. The rewards are attached as given, so a COMMAND
+     * reward here is trusted the way the caller is.
+     *
+     * <p>Delivered at once, with the usual "a letter arrived" line if the recipient is online.
+     * Returns the letter as stored.
+     */
+    public static Letter sendPersonal(MinecraftServer server, UUID recipient, String author, String title,
+                                      String body, String icon, long lifetime, List<LetterReward> rewards) {
+        return sendPersonal(server, recipient, author, title, body, icon, lifetime, rewards, true);
+    }
+
+    /**
+     * As above; {@code announce = false} skips the "a letter arrived" chat line, for a caller that
+     * says it its own way (the shop's "you got a new letter!").
+     */
+    public static Letter sendPersonal(MinecraftServer server, UUID recipient, String author, String title,
+                                      String body, String icon, long lifetime, List<LetterReward> rewards,
+                                      boolean announce) {
         long now = System.currentTimeMillis();
         Letter letter = new Letter(UUID.randomUUID(), clamp(title, Letter.MAX_TITLE),
                 clamp(body, Letter.MAX_BODY), clamp(author, 64), now, now,
-                lifetime <= 0L ? 0L : now + lifetime, List.of(), LetterIcon.clean(icon), Map.of(),
+                lifetime <= 0L ? 0L : now + lifetime, kept(rewards), LetterIcon.clean(icon), Map.of(),
                 recipient);
         LetterStore.put(server, letter);
-        ModerationLog.append("SYSTEM", "sent a letter to", recipient.toString(), "'" + letter.title() + "'");
-        deliver(server, letter);
+        ModerationLog.append(author, "sent a letter to", recipient.toString(),
+                "'" + letter.title() + "' with " + letter.rewards().size() + " reward(s)");
+        if (announce) {
+            deliver(server, letter);
+        } else {
+            changed(server);
+        }
+        return letter;
     }
 
     /**
@@ -194,7 +227,11 @@ public final class LetterService {
 
     private static void grant(ServerPlayer reader, Letter letter, LetterReward reward) {
         switch (reward.type()) {
-            case MONEY -> CurrencyService.deposit(reader, reward.currency(), reward.amount(), reader.server);
+            case MONEY -> CurrencyLedger.logged(
+                    CurrencyService.deposit(reader, reward.currency(), reward.amount(), reader.server,
+                            CurrencyCause.player(reader, LedgerReason.LETTER)
+                                    .withDetail("letter " + letter.id() + " from " + letter.author())),
+                    reader.getUUID(), reward.currency(), reward.amount(), LedgerReason.LETTER);
             case ITEM -> {
                 ItemStack copy = reward.item().copy();
                 if (!reader.getInventory().add(copy) && !copy.isEmpty()) {
@@ -203,15 +240,24 @@ public final class LetterService {
             }
             case COMMAND -> {
                 // As the reader, so @s is them; at level 4, because the letter's author was trusted
-                // with exactly that when they were given the letters permission. Output suppressed:
-                // the reader should see what the command does, not its console chatter.
-                CommandSourceStack source = reader.createCommandSourceStack()
+                // with exactly that when they were given the letters permission. A console reward
+                // runs from the server instead, %player% standing for the reader — how a shop
+                // product's commands always ran. Output suppressed either way: the reader should see
+                // what the command does, not its console chatter.
+                String name = reader.getGameProfile().getName();
+                CommandSourceStack source = (reward.console()
+                        ? reader.server.createCommandSourceStack()
+                        : reader.createCommandSourceStack())
                         .withPermission(4).withSuppressedOutput();
-                reader.server.getCommands().performPrefixedCommand(source, reward.command());
-                ModerationLog.append(letter.author(), "letter command ran for",
-                        reader.getGameProfile().getName(), "/" + reward.command());
-                RollMod.LOGGER.info("[Letters] '{}' ran /{} as {}.", letter.title(),
-                        reward.command(), reader.getGameProfile().getName());
+                for (int i = 0; i < reward.repeat(); i++) {
+                    for (String command : reward.commands()) {
+                        String line = reward.console() ? command.replace("%player%", name) : command;
+                        reader.server.getCommands().performPrefixedCommand(source, line);
+                        ModerationLog.append(letter.author(), "letter command ran for", name, "/" + line);
+                        RollMod.LOGGER.info("[Letters] '{}' ran /{} {} {}.", letter.title(), line,
+                                reward.console() ? "from the console for" : "as", name);
+                    }
+                }
             }
         }
     }

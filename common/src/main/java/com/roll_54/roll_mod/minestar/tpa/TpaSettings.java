@@ -63,6 +63,9 @@ public final class TpaSettings {
             case NOBODY -> false;
             case TEAM_ONLY -> TeamsFacade.get().sameParty(target, from.getUUID());
             case TEAM_AND_ALLIES -> TeamsFacade.get().trusted(target, from.getUUID());
+            // Friends come from MINESTAR asynchronously, so TpaService.request asks them itself and
+            // never reaches here for this mode; answering no is the safe fallback for any other caller.
+            case FRIENDS -> false;
         };
     }
 

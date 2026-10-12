@@ -42,6 +42,14 @@ public class NetworkHandler {
         CreateListingPacket.TYPE, CreateListingPacket.STREAM_CODEC, CreateListingPacket::handle);
     registrar.playToServer(
         AuctionActionPacket.TYPE, AuctionActionPacket.STREAM_CODEC, AuctionActionPacket::handle);
+    registrar.playToServer(
+        AuctionHistoryPackets.Request.TYPE,
+        AuctionHistoryPackets.Request.STREAM_CODEC,
+        AuctionHistoryPackets.Request::handle);
+    registrar.playToClient(
+        AuctionHistoryPackets.Sync.TYPE,
+        AuctionHistoryPackets.Sync.STREAM_CODEC,
+        AuctionHistoryPackets.Sync::handle);
 
     // Plot purchasing (roll_mod:shop_dim)
     registrar.playToClient(

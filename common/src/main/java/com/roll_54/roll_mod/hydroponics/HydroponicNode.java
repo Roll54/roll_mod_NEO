@@ -235,6 +235,47 @@ public class HydroponicNode {
         return taken;
     }
 
+    /** Reasons a bed goes unsupplied, as bits of {@link #shortfall()}. */
+    public static final int SHORT_DISABLED = 1;
+    public static final int SHORT_ENERGY = 1 << 1;
+    public static final int SHORT_WATER = 1 << 2;
+    public static final int SHORT_FERTILIZER = 1 << 3;
+    /** The acidic setting needs stored acid and there is not enough. */
+    public static final int SHORT_ACID = 1 << 4;
+    /** The alkaline setting needs stored base and there is not enough. */
+    public static final int SHORT_BASE = 1 << 5;
+
+    /**
+     * Everything that would stop one more bed being supplied right now, as {@code SHORT_*} bits;
+     * {@code 0} if a bed could pay its upkeep. Spends nothing. {@link #consumeOneBed()} gates on
+     * this, so the GUI's explanation and the real check cannot drift apart.
+     */
+    public int shortfall() {
+        if (!settings.enabled()) {
+            return SHORT_DISABLED;
+        }
+        int acidityDelta = settings.acidityDelta();
+        int mask = 0;
+        if (energy < HydroponicSettings.ENERGY_COST) {
+            mask |= SHORT_ENERGY;
+        }
+        if (water < settings.waterCost()) {
+            mask |= SHORT_WATER;
+        }
+        if (fertilizer < settings.fertilizerCost()) {
+            mask |= SHORT_FERTILIZER;
+        }
+        // An acidic setting eats stored acid, an alkaline one eats stored base; either way the
+        // buffer may not cross zero, so the reservoir must hold at least the whole step.
+        if (acidityDelta < 0 && acidity < -acidityDelta) {
+            mask |= SHORT_ACID;
+        }
+        if (acidityDelta > 0 && acidity > -acidityDelta) {
+            mask |= SHORT_BASE;
+        }
+        return mask;
+    }
+
     /**
      * Runs one bed's worth of upkeep against this node.
      *
@@ -244,35 +285,13 @@ public class HydroponicNode {
      * @return {@code true} if the bed is fully supplied this tick
      */
     public boolean consumeOneBed() {
-        if (!settings.enabled()) {
+        if (shortfall() != 0) {
             return false;
         }
-        int waterCost = settings.waterCost();
-        int fertilizerCost = settings.fertilizerCost();
-        int acidityDelta = settings.acidityDelta();
-
-        if (energy < HydroponicSettings.ENERGY_COST) {
-            return false;
-        }
-        if (water < waterCost) {
-            return false;
-        }
-        if (fertilizer < fertilizerCost) {
-            return false;
-        }
-        // An acidic setting eats stored acid, an alkaline one eats stored base; either way the
-        // buffer may not cross zero, so the reservoir must hold at least the whole step.
-        if (acidityDelta < 0 && acidity < -acidityDelta) {
-            return false;
-        }
-        if (acidityDelta > 0 && acidity > -acidityDelta) {
-            return false;
-        }
-
         energy -= HydroponicSettings.ENERGY_COST;
-        water -= waterCost;
-        fertilizer -= fertilizerCost;
-        acidity += acidityDelta;
+        water -= settings.waterCost();
+        fertilizer -= settings.fertilizerCost();
+        acidity += settings.acidityDelta();
         markChanged();
         return true;
     }

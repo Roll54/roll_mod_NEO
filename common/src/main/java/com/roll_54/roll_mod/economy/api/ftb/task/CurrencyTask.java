@@ -1,5 +1,8 @@
 package com.roll_54.roll_mod.economy.api.ftb.task;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import dev.ftb.mods.ftblibrary.config.ConfigGroup;
@@ -53,7 +56,10 @@ public class CurrencyTask extends Task {
               // Only credit progress once the money is actually taken: the balance above is
               // a stale read, and a failed withdraw (spent meanwhile, DB error) would
               // otherwise complete the quest for free.
-              CurrencyService.withdraw(player, CurrencyType.MAIN, take)
+              CurrencyLedger.logged(CurrencyService.withdraw(player, CurrencyType.MAIN, take,
+                      CurrencyCause.player(player, LedgerReason.QUEST)
+                          .withDetail("quest task " + getCodeString() + " of quest " + getQuest().getCodeString())),
+                      player.getUUID(), CurrencyType.MAIN, -take, LedgerReason.QUEST)
                   .thenAcceptAsync(
                       ok -> {
                         if (ok) teamData.addProgress(this, take);

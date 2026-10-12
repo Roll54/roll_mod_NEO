@@ -344,4 +344,11 @@ public class MyConfig extends Config {
     public int defaultPermLevel() {
         return 4;
     }
+
+    public ChatChanges chat_changes = new ChatChanges();
+
+    public static class ChatChanges extends ConfigSection {
+        @Comment("Hide the advancement announcements in chat (challenges, see PlayerAdvancementsMixin).")
+        public boolean hideAdvancementMessages = false;
+    }
 }

@@ -9,6 +9,8 @@ import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay;
 import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollerMode;
 import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
 import com.lowdragmc.lowdraglib2.gui.ui.data.Vertical;
+import com.lowdragmc.lowdraglib2.gui.ui.utils.UIElementProvider;
+import com.lowdragmc.lowdraglib2.gui.ui.elements.Selector;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
@@ -16,6 +18,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.Switch;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.TextField;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
+import com.roll_54.roll_mod.minestar.kits.ClientKitNamesCache;
 import com.roll_54.roll_mod.minestar.hub.warp.ClientWarpCache;
 import com.roll_54.roll_mod.minestar.letters.ClientLetterCache;
 import com.roll_54.roll_mod.minestar.letters.LetterView;
@@ -56,7 +59,7 @@ import java.util.function.Supplier;
 
 /**
  * The staff tab: players down the left, and on the right either the selected player's standing or
- * the warp queue, switched by the one mode button beside the live TPS readout.
+ * the warp queue, switched by the mode drop-down beside the live TPS readout.
  *
  * <p><b>Built for everyone.</b> {@code HubUI}'s tree has to be the same for every player on both
  * sides, so a non-moderator gets this tab too; they simply never see it, because {@code HubUI} hides
@@ -91,15 +94,18 @@ public final class ModerationTab {
     private static final int MODE_PLAYERS = 0;
     private static final int MODE_WARPS = 1;
     private static final int MODE_LETTERS = 2;
+    private static final int MODE_KITS = 3;
     private static final String[] MODE_KEYS = {
             "gui.roll_mod.hub.moderation.mode.players",
             "gui.roll_mod.hub.moderation.mode.warps",
-            "gui.roll_mod.hub.moderation.mode.letters"};
+            "gui.roll_mod.hub.moderation.mode.letters",
+            "gui.roll_mod.hub.moderation.mode.kits"};
     private static final int MODE_W = 110;
     private static final String[] SEARCH_KEYS = {
             "gui.roll_mod.hub.moderation.search.tip",
             "gui.roll_mod.hub.moderation.search.warps",
-            "gui.roll_mod.hub.moderation.search.letters"};
+            "gui.roll_mod.hub.moderation.search.letters",
+            "gui.roll_mod.hub.moderation.search.kits"};
 
     private ModerationTab() {}
 
@@ -114,6 +120,8 @@ public final class ModerationTab {
                 .paddingAll(PADDING));
 
         HubSection.Info section = HubSection.info("moderation");
+        // One "are you sure?" window for the actions that cannot be taken back lightly.
+        HubConfirm confirmer = new HubConfirm();
 
         // Per-viewer client state.
         int[] mode = {MODE_PLAYERS};
@@ -156,12 +164,21 @@ public final class ModerationTab {
                 .gapColumn(GAP));
         modeRow.addSyncValue(tps.getSyncValue());
 
-        // One button that steps through the modes. Letters is skipped for anyone who may not write
-        // them, so the cycle is only ever as long as what the viewer can actually do.
-        Button modeButton = new Button();
-        modeButton.layout(l -> l.width(MODE_W).height(ROW_H));
-        modeButton.setOnClick(e -> mode[0] = nextMode(mode[0]));
-        hint(modeButton, "gui.roll_mod.hub.moderation.mode.tip");
+        // A drop-down of the modes. Letters is only offered to those who may write them, Kits to those
+        // who may rename kits — the tick
+        // below keeps the list in step with that permission, so it only ever holds what the viewer
+        // can actually do. No sync value, so the candidates may differ between sides.
+        Selector<Integer> modeSelector = new Selector<>();
+        // Null-safe: setCandidateUIProvider re-renders the current value, and there is none yet.
+        modeSelector.setCandidateUIProvider(UIElementProvider.text(m -> m == null ? Component.empty()
+                : Component.translatable(MODE_KEYS[m])));
+        modeSelector.setCandidates(modes(ClientModerationCache.MAY_WRITE_LETTERS, ClientKitNamesCache.ALLOWED));
+        modeSelector.setSelected(MODE_PLAYERS, false);
+        modeSelector.layout(l -> l.width(MODE_W).height(ROW_H));
+        modeSelector.setOnValueChanged(m -> {
+            if (m != null) mode[0] = m;
+        });
+        hint(modeSelector, "gui.roll_mod.hub.moderation.mode.tip");
 
         Label tpsLabel = new Label();
         tpsLabel.layout(l -> l.flexGrow(1).height(ROW_H));
@@ -169,7 +186,7 @@ public final class ModerationTab {
                 .textAlignVertical(Vertical.CENTER).textShadow(true));
         hint(tpsLabel, "gui.roll_mod.hub.moderation.tps.tip");
 
-        modeRow.addChildren(modeButton, tpsLabel);
+        modeRow.addChildren(modeSelector, tpsLabel);
 
         // Both panes live in one box and are stacked on top of each other; the inactive one is
         // squashed to nothing. See the class javadoc for why not setDisplay.
@@ -180,7 +197,9 @@ public final class ModerationTab {
         UIElement playerPane = pane();
         UIElement warpPane = pane();
         LetterComposer composer = new LetterComposer(inventory);
-        stack.addChildren(playerPane, warpPane, composer.pane);
+        UIElement kitPane = pane();
+        KitNamesPanel kits = new KitNamesPanel(kitPane);
+        stack.addChildren(playerPane, warpPane, composer.pane, kitPane);
 
         right.addChildren(modeRow, stack);
 
@@ -199,8 +218,16 @@ public final class ModerationTab {
 
         Switch whitelistSwitch = new Switch();
         whitelistSwitch.layout(l -> l.width(26).height(ROW_H));
-        whitelistSwitch.setOnSwitchChanged(on ->
-                PacketDistributor.sendToServer(ModerationActionPacket.whitelist(on)));
+        // Not sent on the flip: the switch goes back to what the server says, and the change is sent
+        // only once it is confirmed — a whitelist switched by a stray click locks everyone out.
+        whitelistSwitch.setOnSwitchChanged(on -> {
+            whitelistSwitch.setOn(!on, false);
+            confirmer.ask(Component.translatable(on
+                            ? "gui.roll_mod.hub.confirm.whitelist.on" : "gui.roll_mod.hub.confirm.whitelist.off"),
+                    Component.translatable(on
+                            ? "gui.roll_mod.hub.confirm.whitelist.on.button" : "gui.roll_mod.hub.confirm.whitelist.off.button"),
+                    () -> PacketDistributor.sendToServer(ModerationActionPacket.whitelist(on)));
+        });
         hint(whitelistSwitch, "gui.roll_mod.hub.moderation.whitelist.tip");
 
         Label whitelistLabel = new Label();
@@ -232,25 +259,31 @@ public final class ModerationTab {
         UIElement warpActions = new UIElement();
         warpActions.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).gapRow(GAP));
 
-        warpPane.addChildren(warpDetail, warpActions);
+        // Shown instead of warpDetail while "Edit" is on.
+        WarpEditor warpEditor = new WarpEditor();
+        boolean[] editingWarp = {false};
+        warpEditor.box.setDisplay(false);
+
+        warpPane.addChildren(warpDetail, warpEditor.box, warpActions);
 
         /* -------------------------------------------- popups ------------------------------------------- */
 
-        Punish mute = punishPopup(Kind.MUTE);
-        Punish warn = punishPopup(Kind.WARN);
-        Punish ban = punishPopup(Kind.BAN);
+        Punish mute = punishPopup(Kind.MUTE, confirmer);
+        Punish warn = punishPopup(Kind.WARN, confirmer);
+        Punish ban = punishPopup(Kind.BAN, confirmer);
 
         /* --------------------------------------------- tree -------------------------------------------- */
 
         UIElement body = new UIElement();
         body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexBasis(0)
-                .flexGrow(1).gapColumn(PADDING));
-        body.addChildren(left, right);
+                .flexGrow(1).gapColumn(1));
+        // The divider between the list and the panel: drag to resize, double-click to reset.
+        body.addChildren(left, HubSplit.handle("moderation", left, LIST_W, player.level().isClientSide()), right);
 
         // Overlays last, so they cover everything.
         root.addChildren(HubSection.header("moderation", section), body,
                 section.overlay(), mute.floating.root(), warn.floating.root(), ban.floating.root(),
-                composer.popup.root());
+                composer.popup.root(), warpEditor.picker.popup.root(), confirmer.root());
 
         /* --------------------------------------------- tick -------------------------------------------- */
 
@@ -259,6 +292,8 @@ public final class ModerationTab {
         String[] warpSig = {null};
         int[] leftMode = {-1};
         int[] shownMode = {-1};
+        boolean[] lettersOffered = {ClientModerationCache.MAY_WRITE_LETTERS};
+        boolean[] kitsOffered = {ClientKitNamesCache.ALLOWED};
         int[] whitelistVersion = {-1};
 
         root.addEventListener(UIEvents.TICK, e -> {
@@ -273,6 +308,14 @@ public final class ModerationTab {
 
             // Lost the letters permission while in letters mode: fall back rather than strand them.
             if (!ClientModerationCache.MAY_WRITE_LETTERS && mode[0] == MODE_LETTERS) mode[0] = MODE_PLAYERS;
+            if (!ClientKitNamesCache.ALLOWED && mode[0] == MODE_KITS) mode[0] = MODE_PLAYERS;
+            if (lettersOffered[0] != ClientModerationCache.MAY_WRITE_LETTERS
+                    || kitsOffered[0] != ClientKitNamesCache.ALLOWED) {
+                lettersOffered[0] = ClientModerationCache.MAY_WRITE_LETTERS;
+                kitsOffered[0] = ClientKitNamesCache.ALLOWED;
+                modeSelector.setCandidates(modes(lettersOffered[0], kitsOffered[0]));
+                modeSelector.setSelected(mode[0], false);
+            }
 
             if (shownMode[0] != mode[0]) {
                 // A new mode starts clean: the search and the selections belonged to the old list.
@@ -281,15 +324,20 @@ public final class ModerationTab {
                     filter[0] = "";
                     selectedPlayer[0] = null;
                     selectedWarp[0] = null;
+                    kits.selected[0] = null;
+                    editingWarp[0] = false;
                 }
                 shownMode[0] = mode[0];
                 show(playerPane, mode[0] == MODE_PLAYERS);
                 show(warpPane, mode[0] == MODE_WARPS);
                 show(composer.pane, mode[0] == MODE_LETTERS);
-                modeButton.setText(Component.translatable("gui.roll_mod.hub.moderation.mode",
-                        Component.translatable(MODE_KEYS[mode[0]])));
+                show(kitPane, mode[0] == MODE_KITS);
+                if (!Integer.valueOf(mode[0]).equals(modeSelector.getValue())) {
+                    modeSelector.setSelected(mode[0], false);
+                }
             }
             composer.tick(mode[0] == MODE_LETTERS);
+            if (mode[0] == MODE_KITS) kits.tick();
 
             // Left list: whatever the mode is about.
             List<Warp> allWarps = ClientWarpCache.WARPS;
@@ -313,11 +361,19 @@ public final class ModerationTab {
                     sig.append(selectedWarp[0]).append('|');
                     for (Warp w : shown) {
                         sig.append(w.id()).append('/').append(w.approval().id()).append('/')
+                                .append(w.questLocked()).append('/')
                                 .append(w.reports().size()).append(';');
                     }
                     if (!sig.toString().equals(listSig[0])) {
                         listSig[0] = sig.toString();
                         rebuildWarps(players, shown, selectedWarp);
+                    }
+                }
+                case MODE_KITS -> {
+                    sig.append(ClientKitNamesCache.VERSION).append('|').append(kits.selected[0]);
+                    if (!sig.toString().equals(listSig[0])) {
+                        listSig[0] = sig.toString();
+                        KitNamesPanel.rebuildList(players, filter[0], kits.selected);
                     }
                 }
                 default -> {
@@ -363,27 +419,35 @@ public final class ModerationTab {
 
             // Warp detail and actions.
             Warp currentWarp = findWarp(allWarps, selectedWarp[0]);
-            String wSig = selectedWarp[0] + ":" + (currentWarp == null ? ""
+            String wSig = selectedWarp[0] + ":" + editingWarp[0] + ":" + (currentWarp == null ? ""
                     : currentWarp.approval().id() + "/" + currentWarp.reports().size() + "/"
-                            + currentWarp.visitorsToday() + "/" + currentWarp.visitsTotal());
+                            + currentWarp.visitorsToday() + "/" + currentWarp.visitsTotal() + "/"
+                            + currentWarp.name() + "/" + currentWarp.description() + "/" + currentWarp.price() + "/"
+                            + currentWarp.x() + "," + currentWarp.y() + "," + currentWarp.z() + "/"
+                            + currentWarp.requiredQuest());
             if (!wSig.equals(warpSig[0])) {
                 warpSig[0] = wSig;
                 warpDetail.clearAllChildren();
                 buildWarpDetail(warpDetail, currentWarp);
-                rebuildWarpActions(warpActions, currentWarp);
+                rebuildWarpActions(warpActions, currentWarp, confirmer, editingWarp);
             }
+            boolean editing = editingWarp[0] && currentWarp != null;
+            if (warpDetail.isDisplayed() == editing) {
+                warpDetail.setDisplay(!editing);
+                warpEditor.box.setDisplay(editing);
+            }
+            warpEditor.tick(currentWarp);
         });
 
         return root;
     }
 
-    /** Players → warps → letters → players, skipping letters for anyone who may not write them. */
-    private static int nextMode(int current) {
-        int next = (current + 1) % MODE_KEYS.length;
-        if (next == MODE_LETTERS && !ClientModerationCache.MAY_WRITE_LETTERS) {
-            next = (next + 1) % MODE_KEYS.length;
-        }
-        return next;
+    /** The modes the drop-down offers: letters only to those who may write them, kits to those who may rename them. */
+    private static List<Integer> modes(boolean letters, boolean kits) {
+        List<Integer> out = new ArrayList<>(List.of(MODE_PLAYERS, MODE_WARPS));
+        if (letters) out.add(MODE_LETTERS);
+        if (kits) out.add(MODE_KITS);
+        return out;
     }
 
     /* ------------------------------------------ player list ------------------------------------------- */
@@ -407,7 +471,7 @@ public final class ModerationTab {
 
             UIElement item = new UIElement();
             item.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                    .marginBottom(2).paddingHorizontal(3));
+                    .marginBottom(2).paddingHorizontal(HubSection.ROW_INSET));
             item.style(s -> s.background(new ColorRectTexture(
                     isSelected ? COLOR_ROW_SELECTED : COLOR_ROW)));
             // Clicking the selected row again clears it, which is also how the warp filter is lifted.
@@ -511,8 +575,10 @@ public final class ModerationTab {
         if (ClientModerationCache.MAY_BAN) {
             if (entry.banned(now)) {
                 actions.addChild(action("gui.roll_mod.hub.moderation.unban", () ->
-                        PacketDistributor.sendToServer(ModerationActionPacket.of(
-                                Action.UNBAN, row.id(), 0L, "", ""))));
+                        ban.confirmer.ask(Component.translatable("gui.roll_mod.hub.confirm.unban", row.name()),
+                                Component.translatable("gui.roll_mod.hub.confirm.unban.button"),
+                                () -> PacketDistributor.sendToServer(ModerationActionPacket.of(
+                                        Action.UNBAN, row.id(), 0L, "", "")))));
             } else {
                 actions.addChild(action("gui.roll_mod.hub.moderation.ban.button", () -> ban.open(row)));
             }
@@ -536,16 +602,21 @@ public final class ModerationTab {
 
             UIElement row = new UIElement();
             row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(MARK + 4)
-                    .marginBottom(2).paddingAll(2).gapColumn(GAP));
+                    .marginBottom(2).paddingAll(2).paddingHorizontal(HubSection.ROW_INSET).gapColumn(GAP));
             row.style(s -> s.background(new ColorRectTexture(
                     isSelected ? COLOR_ROW_SELECTED : COLOR_ROW)));
             row.addEventListener(UIEvents.CLICK, e -> selected[0] = warp.id());
 
             UIElement badge = new UIElement();
             badge.layout(l -> l.width(MARK).height(MARK));
-            badge.style(s -> s.background(warp.approval().icon()));
+            // Behind a quest: the lock, as in the players' list.
+            boolean gated = warp.questLocked();
+            badge.style(s -> s.background(gated ? WarpTab.LOCKED_ICON : warp.approval().icon()));
+            List<Component> tip = gated
+                    ? List.of(warp.approval().line(), WarpTab.questLine(warp))
+                    : List.of(warp.approval().line());
             badge.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
-                    List.of(warp.approval().line()), null, null, ItemStack.EMPTY));
+                    tip, null, null, ItemStack.EMPTY));
 
             MutableComponent text = Component.empty().append(LegacyText.display(warp.name()))
                     .append(Component.literal("  " + warp.ownerName()).withStyle(ChatFormatting.GRAY));
@@ -567,7 +638,8 @@ public final class ModerationTab {
      * The verdicts on one row, then Teleport and Delete — or a hint when nothing is selected. The
      * verdict the warp already has is greyed: nothing to press.
      */
-    private static void rebuildWarpActions(UIElement bar, @Nullable Warp warp) {
+    private static void rebuildWarpActions(UIElement bar, @Nullable Warp warp, HubConfirm confirmer,
+                                           boolean[] editing) {
         bar.clearAllChildren();
         if (warp == null) return;
         UIElement verdicts = actionRow();
@@ -580,10 +652,15 @@ public final class ModerationTab {
         }
         UIElement other = actionRow();
         other.addChildren(
+                action(editing[0] ? "gui.roll_mod.hub.moderation.warps.edit.done"
+                        : "gui.roll_mod.hub.moderation.warps.edit", () -> editing[0] = !editing[0]),
                 action("gui.roll_mod.hub.moderation.warps.teleport", () ->
                         PacketDistributor.sendToServer(WarpActionPacket.teleport(warp.id()))),
                 action("gui.roll_mod.hub.moderation.warps.delete", () ->
-                        PacketDistributor.sendToServer(WarpActionPacket.delete(warp.id()))));
+                        confirmer.ask(Component.translatable("gui.roll_mod.hub.confirm.warpDelete",
+                                        LegacyText.display(warp.name())),
+                                Component.translatable("gui.roll_mod.hub.confirm.warpDelete.button"),
+                                () -> PacketDistributor.sendToServer(WarpActionPacket.delete(warp.id())))));
         bar.addChildren(verdicts, other);
     }
 
@@ -621,6 +698,13 @@ public final class ModerationTab {
         if (!warp.moderator().isEmpty()) {
             detail.addChild(line(Component.translatable("gui.roll_mod.hub.moderation.warps.by",
                     Component.literal(warp.moderator()).withStyle(ChatFormatting.WHITE)), 0));
+        }
+        if (warp.questLocked()) {
+            Label quest = new Label();
+            quest.setText(WarpTab.questLine(warp));
+            quest.layout(l -> l.widthPercent(100).marginTop(2));
+            quest.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
+            detail.addChild(quest);
         }
 
         detail.addChild(line(Component.translatable("gui.roll_mod.hub.warp.owner",
@@ -711,7 +795,7 @@ public final class ModerationTab {
     private static UIElement letterRow(Component text, boolean selected, Runnable onClick, @Nullable String icon) {
         UIElement row = new UIElement();
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H).marginBottom(2)
-                .paddingHorizontal(icon == null ? 3 : 0).paddingRight(3).gapColumn(3));
+                .paddingHorizontal(icon == null ? HubSection.ROW_INSET : 0).paddingRight(HubSection.ROW_INSET).gapColumn(3));
         row.style(s -> s.background(new ColorRectTexture(selected ? COLOR_ROW_SELECTED : COLOR_ROW)));
         row.addEventListener(UIEvents.CLICK, e -> onClick.run());
         // Staff see what readers see, but never the unread mark: it would be about the moderator.
@@ -743,9 +827,11 @@ public final class ModerationTab {
         TextField note;
         ScrollerView rules;
         Button confirm;
+        final HubConfirm confirmer;
 
-        Punish(Kind kind) {
+        Punish(Kind kind, HubConfirm confirmer) {
             this.kind = kind;
+            this.confirmer = confirmer;
         }
 
         void open(ModerationRow row) {
@@ -803,14 +889,32 @@ public final class ModerationTab {
                 case WARN -> Action.WARN;
                 case BAN -> Action.BAN;
             };
-            PacketDistributor.sendToServer(ModerationActionPacket.of(action, row.id(), millis,
-                    RulesStore.join(chosenRules), note.getText()));
+            ModerationActionPacket packet = ModerationActionPacket.of(action, row.id(), millis,
+                    RulesStore.join(chosenRules), note.getText());
             floating.close();
+
+            // A ban — asked for, or the warning that tips into one — is confirmed in a window of its
+            // own first. Everything it sends was read above, so the form closing changes nothing.
+            boolean bans = kind == Kind.BAN
+                    || (kind == Kind.WARN && row.warns() + 1 >= ModerationService.WARNS_BEFORE_BAN);
+            if (!bans) {
+                PacketDistributor.sendToServer(packet);
+                return;
+            }
+            Component term = millis <= 0L
+                    ? Component.translatable("gui.roll_mod.hub.moderation.forever")
+                    : Component.literal(Durations.format(millis));
+            confirmer.ask(kind == Kind.BAN
+                            ? Component.translatable("gui.roll_mod.hub.confirm.ban", row.name(), term)
+                            : Component.translatable("gui.roll_mod.hub.confirm.warnBan", row.name(),
+                                    row.warns() + 1),
+                    Component.translatable("gui.roll_mod.hub.confirm.ban.button"),
+                    () -> PacketDistributor.sendToServer(packet));
         }
     }
 
-    private static Punish punishPopup(Kind kind) {
-        Punish p = new Punish(kind);
+    private static Punish punishPopup(Kind kind, HubConfirm confirmer) {
+        Punish p = new Punish(kind, confirmer);
         p.floating = HubSection.popup(
                 Component.translatable("gui.roll_mod.hub.moderation." + kind.name().toLowerCase()
                         + ".title"),

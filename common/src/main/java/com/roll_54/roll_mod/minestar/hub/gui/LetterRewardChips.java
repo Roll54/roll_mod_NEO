@@ -80,8 +80,12 @@ final class LetterRewardChips {
             case MONEY -> icon(MONEY_ICON, Component.translatable("gui.roll_mod.letters.reward.money",
                     Component.literal(String.valueOf(reward.amount())).withStyle(ChatFormatting.YELLOW),
                     Component.translatable("gui.roll_mod.letters.currency." + reward.currency().id())), tip);
-            case COMMAND -> icon(COMMAND_ICON, Component.translatable("gui.roll_mod.letters.reward.command",
-                    Component.literal("/" + reward.command()).withStyle(ChatFormatting.AQUA)), tip);
+            // A labelled command reward is a thing bought, not a command: its name, and how many.
+            case COMMAND -> icon(COMMAND_ICON, reward.label().isEmpty()
+                    ? Component.translatable("gui.roll_mod.letters.reward.command",
+                            Component.literal("/" + String.join(" ; /", reward.commands())).withStyle(ChatFormatting.AQUA))
+                    : Component.translatable("gui.roll_mod.letters.reward.product",
+                            Component.literal(reward.label()).withStyle(ChatFormatting.GOLD), reward.repeat()), tip);
         };
     }
 

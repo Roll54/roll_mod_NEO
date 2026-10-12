@@ -134,12 +134,17 @@ public final class KitService {
             return false;
         }
 
-        KitStore.put(player.server, new Kit(name, Math.max(0L, cooldownTicks), "", List.copyOf(items)));
+        // A recreated kit keeps the display name a moderator gave it: that is about the kit's place
+        // in the hub, not about what is in it.
+        Kit previous = KitStore.byName(player.server, name);
+        KitStore.put(player.server, new Kit(name, Math.max(0L, cooldownTicks), "", List.copyOf(items),
+                previous == null ? "" : previous.displayName()));
         // A recreated kit is a different kit; carrying the old waits over would be a trap.
         KitCooldowns.forget(name);
         player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.created",
                 name, items.size(), cooldownTicks));
         KitViewers.resync(player.server);
+        syncNames(player.server);
         return true;
     }
 
@@ -152,7 +157,49 @@ public final class KitService {
         KitCooldowns.forget(name);
         player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.deleted", name));
         KitViewers.resync(player.server);
+        syncNames(player.server);
         return true;
+    }
+
+    /** Who may give kits their display names: whoever may create and delete them. */
+    public static boolean mayRename(ServerPlayer player) {
+        return player.hasPermissions(2);
+    }
+
+    /**
+     * Sets the name players see a kit as, from the moderation tab. The id — file name, permission
+     * node, what {@code /rollmod kit} takes — stays as it is; blank goes back to showing the id.
+     */
+    public static boolean rename(ServerPlayer player, String rawName, String displayName) {
+        if (!mayRename(player)) return false;
+        Kit kit = KitStore.byName(player.server, rawName);
+        if (kit == null) {
+            refuse(player, "msg.roll_mod.kit.unknown", rawName);
+            return false;
+        }
+        Kit renamed = kit.withDisplayName(displayName);
+        KitStore.put(player.server, renamed);
+        player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.renamed", kit.name(),
+                com.roll_54.roll_mod.util.LegacyText.display(renamed.title())));
+        KitViewers.resync(player.server);
+        syncNames(player.server);
+        return true;
+    }
+
+    /** The full kit list with display names, to everyone online who may rename kits. */
+    public static void syncNames(net.minecraft.server.MinecraftServer server) {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) syncNamesTo(player);
+    }
+
+    public static void syncNamesTo(ServerPlayer player) {
+        if (!mayRename(player)) return;
+        List<com.roll_54.roll_mod.minestar.kits.ClientKitNamesCache.Entry> entries = new ArrayList<>();
+        for (Kit kit : KitStore.all(player.server)) {
+            entries.add(new com.roll_54.roll_mod.minestar.kits.ClientKitNamesCache.Entry(kit.name(),
+                    kit.displayName() == null ? "" : kit.displayName()));
+        }
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
+                new com.roll_54.roll_mod.network.packet.KitNamePackets.Sync(entries));
     }
 
     private static void refuse(ServerPlayer player, String key, Object... args) {

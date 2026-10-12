@@ -28,7 +28,23 @@ public class ShopReceiveCommand {
         );
     }
 
+    /** Checks the shop now; whatever is waiting arrives as letters ({@link ShopLetters}). */
     private static int execute(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
+        ServerPlayer player = context.getSource().getPlayerOrException();
+        player.sendSystemMessage(Component.literal("Перевірка придбаних предметів...").withStyle(ChatFormatting.GRAY));
+        ShopLetters.deliver(player, true);
+        return 1;
+    }
+
+    /**
+     * The old delivery: ran each product's commands on the spot.
+     *
+     * @deprecated replaced by letters ({@link ShopLetters}); kept, not deleted, per the project's
+     *             deprecation rule.
+     */
+    @Deprecated
+    @SuppressWarnings("unused")
+    private static int executeDirect(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer player = context.getSource().getPlayerOrException();
         player.sendSystemMessage(Component.literal("Перевірка придбаних предметів...").withStyle(ChatFormatting.GRAY));
         RollMod.LOGGER.info("[Shop Sync] Checking for pending products for player {}.", player.getName().getString());

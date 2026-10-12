@@ -4,6 +4,7 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon;
 import com.roll_54.roll_mod.items.modulardrill.NewItemVisibility;
 import com.roll_54.roll_mod.registry.ItemRegistry;
+import java.util.List;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.resources.ResourceLocation;
@@ -216,15 +217,16 @@ public class RolltemModelProvider extends ItemModelProvider {
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/basecyberware_leftarm_meteorite_metal"));
 
 
-        basicItem(ItemRegistry.FLUORITE_PINEAPPLE_SLICE.get());
-        basicItem(ItemRegistry.FLUORITE_PINEAPPLE_PIZZA_SLICE.get());
-        basicItem(ItemRegistry.BELL_PEPPER_SLICE_RUTILE.get());
-        basicItem(ItemRegistry.ROASTED_BELL_PEPPER_RUTILE.get());
-        basicItem(ItemRegistry.ROASTED_BELL_PEPPER_RUTILE_SLICE.get());
-        basicItem(ItemRegistry.STUFFED_BELL_PEPPER_RUTILE.get());
-        basicItem(ItemRegistry.MOJITO.get());
-        basicItem(ItemRegistry.XP_BURGER.get());
-        basicItem(ItemRegistry.GOLDEN_XP_BURGER.get());
+        foodItem(ItemRegistry.FLUORITE_PINEAPPLE_SLICE.get());
+        foodItem(ItemRegistry.FLUORITE_PINEAPPLE_PIZZA_SLICE.get());
+        foodItem(ItemRegistry.BELL_PEPPER_SLICE_RUTILE.get());
+        foodItem(ItemRegistry.ROASTED_BELL_PEPPER_RUTILE.get());
+        foodItem(ItemRegistry.ROASTED_BELL_PEPPER_RUTILE_SLICE.get());
+        foodItem(ItemRegistry.STUFFED_BELL_PEPPER_RUTILE.get());
+        foodItem(ItemRegistry.MOJITO.get());
+        // Flat in hand and GUI; the 3D burger is the placed block (models/block/xp_burger.json).
+        foodItem(ItemRegistry.XP_BURGER.get());
+        foodItem(ItemRegistry.GOLDEN_XP_BURGER.get());
 
 
         basicItem(ItemRegistry.DIAMOND_ALLOY_INGOT.get());
@@ -254,6 +256,7 @@ public class RolltemModelProvider extends ItemModelProvider {
 
         basicItem(ItemRegistry.LITHIUM_SULFATE_DUST.get());
         basicItem(ItemRegistry.BISMUTH_LITHIUM_BATTERY.get());
+        basicItem(ItemRegistry.MODPACK_LOGO.get());
 
         basicItem(ItemRegistry.BISMUTH_INGOT.get());
         basicItem(ItemRegistry.BISMUTH_PLATE.get());
@@ -268,12 +271,16 @@ public class RolltemModelProvider extends ItemModelProvider {
         rollToolItemModel(ItemRegistry.BISMUTH_BRONZE_BLOCKOGRIZ.get());
         rollToolItemModel(ItemRegistry.METEORITE_METAL_BLOCKOGRIZ.get());
 
-        // Modular drills wear the old drills' models: parenting inherits the visuals but not the
-        // parents' `overrides`, so the cake/beacon skin swaps stay behind with the old items.
-        hideable(withExistingParent("lv_modular_drill", modLoc("item/lv_mining_drill")));
-        hideable(withExistingParent("mv_modular_drill", modLoc("item/mv_mining_drill")));
-        hideable(withExistingParent("hv_modular_drill", modLoc("item/hv_mining_drill")));
-        hideable(withExistingParent("ev_modular_drill", modLoc("item/ev_mining_drill")));
+        toolTextureItem(ItemRegistry.GIGANTIC_CHROME_VANADIUM_STEEL_GAS_TANK.get());
+        toolTextureItem(ItemRegistry.ABSURDLY_BIG_INCOLOY_GAS_TANK.get());
+
+        // Modular drills: their own textures in item/tool, held like the old drills (item/handheld).
+        // IV has none drawn yet and still wears the old IV pickaxe's model; parenting inherits the
+        // visuals but not the parent's `overrides`, so its skin swaps stay behind with the old item.
+        for (String tier : List.of("lv", "mv", "hv", "ev")) {
+            hideable(withExistingParent(tier + "_modular_drill", mcLoc("item/handheld"))
+                    .texture("layer0", modLoc("item/tool/" + tier + "_modular_drill")));
+        }
         hideable(withExistingParent("iv_modular_drill", modLoc("item/iv_electric_pickaxe")));
 
         // Module textures live in item/tool/modules. HV speed is the one not drawn yet, so it is
@@ -319,17 +326,9 @@ public class RolltemModelProvider extends ItemModelProvider {
         hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_III.get()));
         hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_IV.get()));
         hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_V.get()));
-        hideable(pendingTextureItem(ItemRegistry.ATTACK_SPEED_MODULE_I.get()));
-        hideable(pendingTextureItem(ItemRegistry.ATTACK_SPEED_MODULE_II.get()));
-        hideable(pendingTextureItem(ItemRegistry.ATTACK_SPEED_MODULE_III.get()));
         hideable(pendingTextureItem(ItemRegistry.SWEEP_MODULE_I.get()));
         hideable(pendingTextureItem(ItemRegistry.SWEEP_MODULE_II.get()));
         hideable(pendingTextureItem(ItemRegistry.SWEEP_MODULE_III.get()));
-        hideable(pendingTextureItem(ItemRegistry.LOOTING_MODULE_I.get()));
-        hideable(pendingTextureItem(ItemRegistry.LOOTING_MODULE_II.get()));
-        hideable(pendingTextureItem(ItemRegistry.LOOTING_MODULE_III.get()));
-        hideable(pendingTextureItem(ItemRegistry.LOOTING_MODULE_IV.get()));
-        hideable(pendingTextureItem(ItemRegistry.LOOTING_MODULE_V.get()));
         hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_I.get()));
         hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_II.get()));
         hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_III.get()));
@@ -431,6 +430,14 @@ public class RolltemModelProvider extends ItemModelProvider {
     }
 
 
+    /** A flat item whose texture lives with the other food, in {@code textures/item/food/}. */
+    private ItemModelBuilder foodItem(Item item) {
+        ResourceLocation id = Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item));
+        return getBuilder(id.toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(id.getNamespace(), "item/food/" + id.getPath()));
+    }
+
     //мій апі для створення кропсів, я чуть чуть їбав всі текстури тикати в папку ітемів тому воно тут.
     ItemModelBuilder seedItemModel(Item item) {
         return this.seedItemModel((ResourceLocation) Objects.requireNonNull(BuiltInRegistries.ITEM.getKey(item)));
@@ -480,6 +487,14 @@ public class RolltemModelProvider extends ItemModelProvider {
                         "layer0",
                         modLoc("item/tool/normal/" + itemId.getPath())
                 );
+    }
+
+    // Flat item/generated model whose texture sits directly in item/tool.
+    private ItemModelBuilder toolTextureItem(Item item) {
+        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
+
+        return withExistingParent(itemId.getPath(), mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/tool/" + itemId.getPath()));
     }
 
     private ItemModelBuilder drillModuleItem(Item item) {

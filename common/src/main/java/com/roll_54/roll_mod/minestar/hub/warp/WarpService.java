@@ -1,10 +1,15 @@
 package com.roll_54.roll_mod.minestar.hub.warp;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.vendingblock.auction.LuckPermsCompat;
+import com.roll_54.roll_mod.minestar.hub.QuestGate;
 import com.roll_54.roll_mod.minestar.teleport.TeleportService;
+import com.roll_54.roll_mod.network.packet.TeleportCountdownPacket;
 import com.roll_54.roll_mod.util.LegacyText;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.registries.Registries;
@@ -14,6 +19,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -139,6 +145,49 @@ public final class WarpService {
         return true;
     }
 
+    /** A moderator's edit of a warp's name, description and price. */
+    public static boolean edit(ServerPlayer moderator, Warp warp, String name, String description, long price) {
+        if (name == null || name.isBlank()) {
+            moderator.sendSystemMessage(Component.translatable("msg.roll_mod.warp.nameEmpty")
+                    .withStyle(ChatFormatting.RED));
+            return false;
+        }
+        return save(moderator, warp.withDetails(name, description, price), "msg.roll_mod.warp.edited");
+    }
+
+    /** Moves a warp to where the moderator stands. */
+    public static boolean moveHere(ServerPlayer moderator, Warp warp) {
+        return save(moderator, warp.movedTo(moderator), "msg.roll_mod.warp.moved");
+    }
+
+    /**
+     * Sets, or with {@code 0} clears, the quest a visitor's team must have finished. Official warps
+     * only: a player's warp is theirs to share, and gating it is not moderation's call.
+     */
+    public static boolean setRequiredQuest(ServerPlayer moderator, Warp warp, long quest) {
+        if (quest != 0 && !warp.isAdmin()) {
+            moderator.sendSystemMessage(Component.translatable("msg.roll_mod.warp.questOfficialOnly")
+                    .withStyle(ChatFormatting.RED));
+            return false;
+        }
+        return save(moderator, warp.withRequiredQuest(quest), quest == 0
+                ? "msg.roll_mod.warp.questCleared" : "msg.roll_mod.warp.questSet");
+    }
+
+    private static boolean save(ServerPlayer moderator, Warp updated, String message) {
+        if (!WarpData.get(moderator.server).replace(updated)) return false;
+        moderator.sendSystemMessage(Component.translatable(message, LegacyText.display(updated.name()),
+                QuestGate.title(false, updated.requiredQuest())));
+        WarpViewers.resync(moderator.server);
+        return true;
+    }
+
+    /** Whether {@code player} may use a quest-gated warp: their team finished the quest, or they moderate. */
+    public static boolean questUnlocked(ServerPlayer player, Warp warp) {
+        return !warp.questLocked() || isModerator(player)
+                || QuestGate.isCompleted(player, warp.requiredQuest());
+    }
+
     /**
      * The line a blocked owner sees, in the project's warning pink. Shown both in chat when the
      * verdict lands and on the warp's own panel.
@@ -220,6 +269,13 @@ public final class WarpService {
             return;
         }
 
+        // An official warp behind a quest opens once the player's team has finished it.
+        if (!questUnlocked(player, warp)) {
+            player.sendSystemMessage(Component.translatable("msg.roll_mod.warp.questLocked",
+                    QuestGate.title(false, warp.requiredQuest())).withStyle(ChatFormatting.RED));
+            return;
+        }
+
         long price = priceFor(player, warp);
         if (price > 0) {
             CurrencyService.get(player, CurrencyType.MAIN).thenAcceptAsync(balance -> {
@@ -241,11 +297,6 @@ public final class WarpService {
     }
 
     private static void begin(ServerPlayer player, Warp warp) {
-        // Out of the hub and back to the world. Only here, never on a refusal: a player who cannot
-        // afford the trip keeps the list open to pick something else. It matters more for warps than
-        // for anything else in the hub — the countdown runs over the hotbar, which the hub covers.
-        player.closeContainer();
-
         // An official warp is staff-made and staff-vouched, so there is nothing for a countdown to
         // protect against and it travels at once; the bypass permission says the same about a rank.
         // Note that "instant" means no warm-up, not no latency: a priced one has already been
@@ -260,10 +311,18 @@ public final class WarpService {
             return;
         }
 
-        // No message here: the shared service puts the countdown over the hotbar from the very next
-        // tick, and the warp's name is already on the arrival line.
+        // The hub stays open through the warm-up: its countdown window shows the seconds the action
+        // bar would (the hub covers the hotbar) and offers Cancel. arrive() closes it. Outside the
+        // hub the action bar alone counts down, as before.
         UUID id = warp.id();
         TeleportService.schedule(player, WARMUP_SECONDS, arriving -> arrive(arriving, id));
+        PacketDistributor.sendToPlayer(player, new TeleportCountdownPacket(WARMUP_SECONDS, warp.name()));
+    }
+
+    /** The countdown window's Cancel: stops the warm-up and closes the window. */
+    public static void cancel(ServerPlayer player) {
+        cancel(player.getUUID());
+        PacketDistributor.sendToPlayer(player, TeleportCountdownPacket.stopped());
     }
 
     public static void cancel(UUID playerId) {
@@ -279,7 +338,13 @@ public final class WarpService {
 
         ServerLevel level = level(player.server, warp);
         if (level == null) return;
+        // Again on arrival: a moderator may have gated it during the warm-up.
+        if (!questUnlocked(player, warp)) return;
 
+        // Out of the hub and back to the world. Only here, never on a refusal: a player who cannot
+        // afford the trip keeps the list open to pick something else.
+        player.closeContainer();
+        PacketDistributor.sendToPlayer(player, TeleportCountdownPacket.stopped());
         TeleportService.teleport(player, level, warp.x(), warp.y(), warp.z(), warp.yaw(), warp.pitch());
         player.sendSystemMessage(Component.translatable("msg.roll_mod.warp.arrived", LegacyText.display(warp.name())));
 
@@ -297,15 +362,24 @@ public final class WarpService {
         if (price <= 0) return;
 
         ServerPlayer owner = player.server.getPlayerList().getPlayer(warp.owner());
+        CurrencyCause fee = CurrencyCause.player(player, LedgerReason.WARP)
+                .withSender(warp.owner(), warp.ownerName())
+                .withDetail("warp fee: " + LegacyText.plain(warp.name()));
         if (owner != null) {
-            CurrencyService.transfer(player, owner, CurrencyType.MAIN, price, player.server);
+            CurrencyLedger.logged(CurrencyLedger.logged(
+                            CurrencyService.transfer(player, owner, CurrencyType.MAIN, price, player.server, fee),
+                            player.getUUID(), CurrencyType.MAIN, -price, LedgerReason.WARP),
+                    owner.getUUID(), CurrencyType.MAIN, price, LedgerReason.WARP);
         } else {
             // The owner is offline, so there is no ServerPlayer to credit through the service.
             // Take the fee anyway and settle it against their stored balance directly.
-            CurrencyService.withdraw(player, CurrencyType.MAIN, price).thenAccept(ok -> {
+            CurrencyService.withdraw(player, CurrencyType.MAIN, price, fee).thenAccept(ok -> {
                 if (ok) {
-                    com.roll_54.roll_mod.economy.currency.repository.CurrencyRepository
-                            .addBalance(warp.owner(), CurrencyType.MAIN, price);
+                    CurrencyLedger.record(player.getUUID(), CurrencyType.MAIN, -price, LedgerReason.WARP);
+                    CurrencyLedger.logged(com.roll_54.roll_mod.economy.currency.repository.CurrencyRepository
+                            .addBalance(warp.owner(), CurrencyType.MAIN, price,
+                                    fee.withSender(player).withDetail(fee.detail() + " (owner offline)")),
+                            warp.owner(), CurrencyType.MAIN, price, LedgerReason.WARP);
                 }
             });
         }

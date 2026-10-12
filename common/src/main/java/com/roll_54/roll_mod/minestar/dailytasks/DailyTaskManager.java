@@ -1,6 +1,9 @@
 package com.roll_54.roll_mod.minestar.dailytasks;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.vendingblock.auction.LuckPermsCompat;
@@ -383,15 +386,21 @@ public final class DailyTaskManager {
 
         if (cost == 0) {
             if (applyReroll(player, state, gs, index)) {
-                state.freeRerollsUsed.merge(player.getUUID(), 1, Integer::sum);
+                int used = state.freeRerollsUsed.merge(player.getUUID(), 1, Integer::sum);
                 state.setDirty();
+                RollMod.LOGGER.info("[DailyTasks] {} used free reroll {} of {} today.",
+                        player.getGameProfile().getName(), used,
+                        LuckPermsCompat.dailyTaskFreeRerolls(player));
             }
             return;
         }
 
         if (!PENDING_REROLLS.add(player.getUUID())) return;
         String who = player.getGameProfile().getName();
-        CurrencyService.withdraw(player, CurrencyType.MAIN, cost)
+        CurrencyLedger.logged(CurrencyService.withdraw(player, CurrencyType.MAIN, cost,
+                                CurrencyCause.player(player, LedgerReason.DAILY)
+                                        .withDetail("paid reroll of slot " + index + " (" + taskId + ")")),
+                        player.getUUID(), CurrencyType.MAIN, -cost, LedgerReason.DAILY)
                 .thenAcceptAsync(ok -> {
                     PENDING_REROLLS.remove(player.getUUID());
                     if (!ok) {
@@ -405,7 +414,10 @@ public final class DailyTaskManager {
                             && now.taskIds.get(index).equals(taskId)
                             && now.rerolls[index] == rerolls && !now.completed[index];
                     if (!unchanged || !applyReroll(player, state(server), now, index)) {
-                        CurrencyService.deposit(player, CurrencyType.MAIN, cost, server);
+                        CurrencyLedger.logged(CurrencyService.deposit(player, CurrencyType.MAIN, cost, server,
+                                        CurrencyCause.system("daily-tasks", LedgerReason.DAILY).withSender(player)
+                                                .withDetail("refund: reroll of slot " + index + " moved")),
+                                player.getUUID(), CurrencyType.MAIN, cost, LedgerReason.DAILY);
                         RollMod.LOGGER.info("[DailyTasks] Refunded {} {} for a reroll of slot {} that moved.",
                                 who, cost, index);
                     }
@@ -414,7 +426,10 @@ public final class DailyTaskManager {
                     server.execute(() -> PENDING_REROLLS.remove(player.getUUID()));
                     RollMod.LOGGER.error("[DailyTasks] Paid reroll of slot {} for {} failed; refunding {}.",
                             index, who, cost, e);
-                    CurrencyService.deposit(player, CurrencyType.MAIN, cost, server);
+                    CurrencyLedger.logged(CurrencyService.deposit(player, CurrencyType.MAIN, cost, server,
+                                    CurrencyCause.system("daily-tasks", LedgerReason.DAILY).withSender(player)
+                                            .withDetail("refund: reroll of slot " + index + " failed")),
+                            player.getUUID(), CurrencyType.MAIN, cost, LedgerReason.DAILY);
                     return null;
                 });
     }
@@ -593,6 +608,7 @@ public final class DailyTaskManager {
         if (!gs.completed[index]) return ClaimResult.NOT_COMPLETED;
         if (!gs.claimedBy.get(index).add(player.getUUID())) return ClaimResult.ALREADY_CLAIMED;
 
+        state.tasksDone.merge(player.getUUID(), 1, Integer::sum);
         state.setDirty();
         DailyTaskStatus.markDirty();
         // The same draw the row has been advertising all day, plus the flat currency payout. Paid

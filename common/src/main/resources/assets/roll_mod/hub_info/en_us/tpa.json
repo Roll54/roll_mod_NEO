@@ -1,63 +1,27 @@
 {
   "lines": [
-    {
-      "text": "&fAsk another player to let you teleport to them, or to come to you. Nothing happens until they say yes."
-    },
-    {
-      "type": "space"
-    },
-    {
-      "text": "&e&lAsking"
-    },
-    {
-      "text": "&7Pick a name on the left. &b→&7 asks to go to them; &b←&7 asks them to come to you.",
-      "indent": 6
-    },
-    {
-      "text": "&7They see the request in this tab and as a line in chat with the two answers on it.",
-      "indent": 6
-    },
-    {
-      "text": "&7A request lapses after &e2 minutes&7 if nobody answers.",
-      "indent": 6
-    },
-    {
-      "type": "space"
-    },
-    {
-      "text": "&e&lAnswering"
-    },
-    {
-      "text": "&7Requests waiting on you are on the right. Accept starts a &a3 second countdown&7, then whoever is travelling arrives.",
-      "indent": 6
-    },
-    {
-      "text": "&7If the other player logs out or is gone by the time the countdown ends, nobody is moved.",
-      "indent": 6
-    },
-    {
-      "type": "space"
-    },
-    {
-      "text": "&e&lWho may ask"
-    },
-    {
-      "text": "&7The &fgear&7 at the top sets who may send you a request: anyone, your FTB party, your party and its allies, or no one.",
-      "indent": 6
-    },
-    {
-      "text": "&7A turned-away request is silent — the other player is told, you are not.",
-      "indent": 6
-    },
-    {
-      "text": "&7The two team settings need &fFTB Teams&7 on the server; without it they let nobody through.",
-      "indent": 6
-    },
-    {
-      "type": "space"
-    },
-    {
-      "text": "&8Commands: /tpa, /tpahere, /tpaccept, /tpdeny, /tpcancel, /tpamode"
-    }
+    { "text": "&fAsk another player to let you teleport to them, or to come to you. Nothing happens until they say yes." },
+    { "type": "space" },
+    { "text": "&e&lAsking" },
+    { "text": "&7Everyone online is listed on the left; the search box above narrows it by name. Each name has two buttons &8- hover them&7: the first is &fAsk to teleport to them&7, the second &fAsk them to come to you&7.", "indent": 6 },
+    { "text": "&7They see the request in this tab and as a line in chat with &a[Accept]&7 and &c[Deny]&7 on it. Your own requests are listed under &fAsked by you&7, with &fCancel&7 to take one back.", "indent": 6 },
+    { "text": "&7A request lapses after &e2 minutes&7 if nobody answers. Asking the same player again replaces the old request.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lAnswering" },
+    { "text": "&7Requests waiting on you are on the right under &fAsked of you&7, with &fAccept&7 and &fDeny&7.", "indent": 6 },
+    { "text": "&7If they asked to come to you, they arrive &binstantly&7 once you accept. If they asked you over, a &a3 second countdown&7 runs over your hotbar first, then you travel.", "indent": 6 },
+    { "text": "&7If the other player logs out or is gone by the time it fires, nobody is moved.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lWho may ask" },
+    { "text": "&7The &fsettings button&7 at the top sets who may send you a request: &fAnyone&7, &fMy team and allies&7, &fMy team only&7, or &fNo one&7.", "indent": 6 },
+    { "text": "&7A turned-away request is silent &8- the other player is told, you are not.", "indent": 6 },
+    { "text": "&7The two team settings need &fFTB Teams&7 on the server; without it they let nobody through.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lTeleport buttons" },
+    { "text": "&fRandom&7 drops you at a random safe spot in the world. Finding one can take a moment, then a &a3 second countdown&7 runs. It has a cooldown, which starts only once you arrive.", "indent": 6 },
+    { "text": "&fBack&7 returns you to where you were before your last teleport, or to where you died, after a &a3 second countdown&7.", "indent": 6 },
+    { "text": "&fSpawn&7 takes you to the world spawn &binstantly&7.", "indent": 6 },
+    { "type": "rule" },
+    { "text": "&8Commands: /tpa, /tpahere, /tpaccept, /tpdeny, /tpcancel, /tpamode, /rtp, /back, /spawn", "center": true }
   ]
 }

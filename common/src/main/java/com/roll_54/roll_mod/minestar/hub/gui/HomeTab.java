@@ -2,6 +2,8 @@ package com.roll_54.roll_mod.minestar.hub.gui;
 
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.minecraft.network.chat.MutableComponent;
+import com.roll_54.roll_mod.minestar.friends.ClientFriendsCache;
+import com.roll_54.roll_mod.minestar.friends.FriendDetail;
 import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.DataBindingBuilder;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.SimpleBinding;
@@ -69,10 +71,14 @@ public final class HomeTab {
         // A column now, so the section title can sit above what used to be the whole tab. The old
         // row lives on as `body`, unchanged apart from taking its height from the leftover space.
         UIElement root = new UIElement();
+        // The shared tab inset, so the title row lines up with every other tab; PADDING stays the
+        // gap between the columns.
         root.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).heightPercent(100)
-                .paddingAll(PADDING));
+                .paddingAll(HubSection.TAB_PADDING));
 
         HubSection.Info section = HubSection.info("home");
+        // The money history, from a button beside the I. Its panel is added last, like every overlay.
+        HubSection.Info history = HistoryPanel.build();
 
         UIElement body = new UIElement();
         body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexGrow(1)
@@ -82,10 +88,11 @@ public final class HomeTab {
         // Appended, never inserted: info() registers six positional bindings and anything placed
         // before it would shift every one of them. The kits panel registers none of its own.
         body.addChildren(preview(() -> section.overlay().isDisplayed()), info(player, server),
-                KitsPanel.build());
+                HomeSidePanel.build(player));
 
         // The panel last, so it covers the body when opened.
-        root.addChildren(HubSection.header("home", section), body, section.overlay());
+        root.addChildren(HubSection.header("home", section, history.button()), body, section.overlay(),
+                history.overlay());
         return root;
     }
 
@@ -104,6 +111,10 @@ public final class HomeTab {
     }
 
     /* -------------------------------------------- the info ------------------------------------------ */
+
+    /** Minestar's level pink, as the friends and interactions tabs show it. */
+    private static final int COLOR_LEVEL = 0xFF6EC7;
+    private static final int COLOR_STARCOINS = 0xFFD54F;
 
     private static UIElement info(Player player, @Nullable ServerPlayer server) {
         // One binding per value. Ints and Components only — the client resolves the wording itself.
@@ -135,6 +146,17 @@ public final class HomeTab {
         nickname.setText(Component.literal(player.getGameProfile().getName())
                 .withStyle(ChatFormatting.WHITE));
 
+        Label levelRow = row(column, null);
+        levelRow.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> {
+            FriendDetail own = ClientFriendsCache.DETAILS.get(player.getUUID());
+            e.hoverTooltips = new HoverTooltips(own == null
+                    ? List.of(Component.translatable("gui.roll_mod.hub.home.level.tip"))
+                    : List.of(Component.translatable("gui.roll_mod.hub.home.level.tip"),
+                            Component.translatable("gui.roll_mod.hub.friends.xp.next", own.xpToNext(), own.level() + 1),
+                            Component.translatable("gui.roll_mod.hub.friends.xp.progress",
+                                    own.levelXp(), own.levelXpNeeded()).withStyle(ChatFormatting.GRAY)),
+                    null, null, ItemStack.EMPTY);
+        });
         Label rankRow = row(column, "gui.roll_mod.hub.home.rank.tip");
         Label coinsRow = row(column, "gui.roll_mod.hub.home.starcoins.tip");
         UIElement coinsIcon = new UIElement();
@@ -151,10 +173,23 @@ public final class HomeTab {
         Label staffRow = wrappingRow(row(column, "gui.roll_mod.hub.home.staff.tip"));
 
         column.addEventListener(UIEvents.TICK, e -> {
-            rankRow.setText(Component.translatable("gui.roll_mod.hub.home.rank",
-                    value(rank, Component.empty())));
+            // Level and rank are the viewer's Minestar profile, fetched when the hub opened. Without
+            // one (no Minestar API — a dev world) the rank falls back to the server's own.
+            FriendDetail own = ClientFriendsCache.DETAILS.get(player.getUUID());
+            levelRow.setText(own == null ? Component.empty()
+                    : Component.translatable("gui.roll_mod.hub.home.level",
+                            Component.literal(String.valueOf(own.level())).withColor(COLOR_LEVEL)));
+            if (own != null && !own.groupName().isEmpty()) {
+                MutableComponent group = Component.literal(own.groupName());
+                if (own.groupColor() >= 0) group = group.withColor(own.groupColor());
+                rankRow.setText(Component.translatable("gui.roll_mod.hub.home.minestar_rank", group));
+            } else {
+                rankRow.setText(Component.translatable("gui.roll_mod.hub.home.rank",
+                        value(rank, Component.empty())));
+            }
             coinsRow.setText(Component.translatable("gui.roll_mod.hub.home.starcoins",
-                    EnergyFormatUtils.formatEnergy(ClientCurrencyHolder.get(CurrencyType.MAIN))));
+                    Component.literal(EnergyFormatUtils.formatEnergy(ClientCurrencyHolder.get(CurrencyType.MAIN)))
+                            .withColor(COLOR_STARCOINS)));
             questsRow.setText(Component.translatable("gui.roll_mod.hub.home.quests",
                     value(questsDone, 0), value(questsTotal, 0)));
             tierRow.setText(Component.translatable("gui.roll_mod.hub.home.tier",

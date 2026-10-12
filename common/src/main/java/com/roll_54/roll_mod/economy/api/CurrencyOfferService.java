@@ -1,10 +1,14 @@
 package com.roll_54.roll_mod.economy.api;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyOffer;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.currency.repository.CurrencyOfferRepository;
 import com.roll_54.roll_mod.economy.currency.repository.CurrencyOfferRepository.Payee;
+import com.roll_54.roll_mod.economy.money.MoneyViewers;
+import com.roll_54.roll_mod.minestar.interactions.InteractionSettings;
 import com.roll_54.roll_mod.util.PlayerLookup;
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +70,10 @@ public final class CurrencyOfferService {
             fail(sender, "command.rmc.pay.error.self");
             return;
         }
+        if (InteractionSettings.ignores(recipient.id(), sender.getUUID())) {
+            fail(sender, Component.translatable("command.rmc.pay.error.ignored", recipient.name()));
+            return;
+        }
 
         CurrencyOffer offer = new CurrencyOffer(UUID.randomUUID(),
                 sender.getUUID(), sender.getGameProfile().getName(),
@@ -74,12 +82,19 @@ public final class CurrencyOfferService {
 
         // The debit and the row go in together, so there is no moment where the money has left the
         // sender with nothing recording who is owed it. Nothing here needs a refund path.
-        CurrencyOfferRepository.hold(offer).thenAcceptAsync(held -> {
+        CurrencyCause cause = CurrencyCause.player(sender, LedgerReason.TRANSFER)
+                .withSender(recipient.id(), recipient.name()).withDetail("/rollmod money pay");
+        CurrencyOfferRepository.hold(offer, cause).thenAcceptAsync(held -> {
             switch (held) {
                 case HELD -> {
                     // The balance changed inside that transaction, so the client's copy is stale.
                     CurrencyService.get(server, sender.getUUID(), type);
+                    if (InteractionSettings.flags(offer.recipient(), offer.sender()).autoMoney()) {
+                        autoAccept(server, offer);
+                        return;
+                    }
                     announce(server, offer);
+                    MoneyViewers.changed(server, offer.sender(), offer.recipient());
                 }
                 case INSUFFICIENT -> fail(sender, Component.translatable(
                         "command.rmc.pay.error.insufficient", amount, name(type)));
@@ -88,6 +103,23 @@ public final class CurrencyOfferService {
                     RollMod.LOGGER.error("Could not hold {} {} for {}'s offer to {}",
                             amount, type.id(), offer.senderName(), offer.recipientName());
                 }
+            }
+        }, server);
+    }
+
+    /**
+     * The recipient said yes in advance to this sender's money: the offer is claimed as soon as it
+     * exists, whether or not they are online, and both ends are told as for an ordinary accept.
+     */
+    private static void autoAccept(MinecraftServer server, CurrencyOffer offer) {
+        CurrencyCause cause = CurrencyCause.system("auto-accept", LedgerReason.TRANSFER)
+                .withSender(offer.sender(), offer.senderName()).withDetail("accept (auto)");
+        CurrencyOfferRepository.claim(offer.id(), Payee.RECIPIENT, cause).thenAcceptAsync(claimed -> {
+            if (claimed.isPresent()) {
+                settled(server, claimed.get(), Payee.RECIPIENT);
+            } else {
+                // Gone between the hold and the claim — nothing to do but show it as it is.
+                MoneyViewers.changed(server, offer.sender(), offer.recipient());
             }
         }, server);
     }
@@ -134,11 +166,23 @@ public final class CurrencyOfferService {
         answer(recipient, senderName, Payee.SENDER);
     }
 
+    /** As {@link #accept}/{@link #deny}, for one exact offer — the hub's buttons. */
+    public static void answer(ServerPlayer recipient, UUID offerId, boolean accept) {
+        answer(recipient, null, offerId, accept ? Payee.RECIPIENT : Payee.SENDER);
+    }
+
     private static void answer(ServerPlayer recipient, @Nullable String senderName, Payee payee) {
+        answer(recipient, senderName, null, payee);
+    }
+
+    private static void answer(ServerPlayer recipient, @Nullable String senderName, @Nullable UUID offerId,
+                               Payee payee) {
         MinecraftServer server = recipient.server;
 
         incoming(recipient.getUUID()).thenAcceptAsync(offers -> {
-            Optional<CurrencyOffer> picked = pick(offers, senderName);
+            Optional<CurrencyOffer> picked = offerId != null
+                    ? offers.stream().filter(offer -> offer.id().equals(offerId)).findFirst()
+                    : pick(offers, senderName);
             if (picked.isEmpty()) {
                 fail(recipient, senderName == null
                         ? Component.translatable("command.rmc.offer.none")
@@ -147,7 +191,10 @@ public final class CurrencyOfferService {
             }
 
             CurrencyOffer offer = picked.get();
-            CurrencyOfferRepository.claim(offer.id(), payee).thenAcceptAsync(claimed -> {
+            CurrencyCause cause = CurrencyCause.player(recipient, LedgerReason.TRANSFER)
+                    .withSender(offer.sender(), offer.senderName())
+                    .withDetail(payee == Payee.RECIPIENT ? "accept" : "deny");
+            CurrencyOfferRepository.claim(offer.id(), payee, cause).thenAcceptAsync(claimed -> {
                 if (claimed.isEmpty()) {
                     // Answered or swept between the list and the claim. Nothing was paid, and
                     // saying so is better than a message about money that did not move.
@@ -168,6 +215,7 @@ public final class CurrencyOfferService {
     private static void settled(MinecraftServer server, CurrencyOffer offer, Payee payee) {
         CurrencyService.get(server, offer.recipient(), offer.type());
         CurrencyService.get(server, offer.sender(), offer.type());
+        MoneyViewers.changed(server, offer.sender(), offer.recipient());
 
         String suffix = payee == Payee.RECIPIENT ? "accepted" : "denied";
         tell(server, offer.recipient(), Component.translatable(
@@ -239,7 +287,8 @@ public final class CurrencyOfferService {
         sweepCounter = 0;
         if (!SWEEPING.compareAndSet(false, true)) return;
 
-        CurrencyOfferRepository.claimExpired(System.currentTimeMillis())
+        CurrencyOfferRepository.claimExpired(System.currentTimeMillis(),
+                        CurrencyCause.system("offer-expiry", LedgerReason.TRANSFER))
                 .whenCompleteAsync((refunded, error) -> {
                     SWEEPING.set(false);
                     if (error != null) {
@@ -248,6 +297,7 @@ public final class CurrencyOfferService {
                     }
                     for (CurrencyOffer offer : refunded) {
                         CurrencyService.get(server, offer.sender(), offer.type());
+                        MoneyViewers.changed(server, offer.sender(), offer.recipient());
                         tell(server, offer.sender(), Component.translatable(
                                 "command.rmc.offer.expired",
                                 offer.amount(), name(offer.type()), offer.recipientName()));

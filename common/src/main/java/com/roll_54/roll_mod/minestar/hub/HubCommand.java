@@ -7,12 +7,14 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
+import com.roll_54.roll_mod.economy.money.MoneyViewers;
 import com.roll_54.roll_mod.economy.plot.PlotViewers;
 import com.roll_54.roll_mod.economy.vendingblock.auction.AuctionManager;
 import com.roll_54.roll_mod.minestar.hub.home.HomeViewers;
 import com.roll_54.roll_mod.minestar.kits.KitViewers;
 import com.roll_54.roll_mod.minestar.op.OperatorViewers;
 import com.roll_54.roll_mod.minestar.tpa.TpaViewers;
+import com.roll_54.roll_mod.minestar.friends.FriendViewers;
 import com.roll_54.roll_mod.minestar.hub.gui.HubUI;
 import com.roll_54.roll_mod.minestar.hub.warp.WarpViewers;
 import net.minecraft.commands.CommandSourceStack;
@@ -43,7 +45,12 @@ public final class HubCommand {
                     ServerPlayer player = ctx.getSource().getPlayerOrException();
                     open(player);
                     return 1;
-                })));
+                })
+                        // Straight to the letters — what "you got a new letter" links to.
+                        .then(Commands.literal("letters").executes(ctx -> {
+                            open(ctx.getSource().getPlayerOrException(), HubUI.indexOf("letters"));
+                            return 1;
+                        }))));
     }
 
     /**
@@ -68,7 +75,13 @@ public final class HubCommand {
         // tab is a client-side click the server never sees — see HubUI's class javadoc.
         WarpViewers.add(player);
         KitViewers.add(player);
+        com.roll_54.roll_mod.minestar.kits.KitService.syncNamesTo(player);
         TpaViewers.add(player);
+        FriendViewers.add(player);
+        MoneyViewers.add(player);
+        com.roll_54.roll_mod.minestar.interactions.InteractionSettings.syncTo(player);
+        // The home tab's level and Minestar group are the viewer's own Minestar profile.
+        com.roll_54.roll_mod.minestar.friends.FriendsService.select(player, player.getUUID());
         OperatorViewers.add(player);
         ModerationViewers.add(player);
         LetterViewers.add(player);

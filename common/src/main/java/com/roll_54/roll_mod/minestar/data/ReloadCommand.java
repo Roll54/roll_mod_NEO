@@ -46,6 +46,7 @@ public final class ReloadCommand {
         MuteStore.reload();
         PlayerPositions.reload();
         TpaSettings.reload();
+        com.roll_54.roll_mod.minestar.interactions.InteractionSettings.reload();
         OperatorStore.reload();
         WarnStore.reload();
         BanStore.reload();

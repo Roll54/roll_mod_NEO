@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.economy.currency;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.api.CurrencyOfferService;
+import com.roll_54.roll_mod.economy.api.MoneyRequestService;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.database.DatabaseManager;
@@ -36,5 +37,6 @@ public final class PlayerJoinListener {
     // An offer stands for a week, so for anyone paid while they were away this is the first they
     // hear of it — and the line it prints carries the accept and deny buttons.
     CurrencyOfferService.greet(player);
+    MoneyRequestService.greet(player);
   }
 }

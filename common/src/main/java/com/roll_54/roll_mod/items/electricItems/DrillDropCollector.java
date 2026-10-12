@@ -168,6 +168,15 @@ public final class DrillDropCollector {
      * and drops at the player's feet whatever does not fit.
      */
     public static void giveToPlayer(ServerPlayer player, ItemStack stack) {
+        // Item entities must stay saveable: the stack codec rejects counts above 99, and the
+        // remainder that does not fit the inventory is dropped as a single entity.
+        int chunk = Math.max(1, Math.min(stack.getMaxStackSize(), 99));
+        while (!stack.isEmpty()) {
+            giveChunkToPlayer(player, stack.split(chunk));
+        }
+    }
+
+    private static void giveChunkToPlayer(ServerPlayer player, ItemStack stack) {
         var itemEntity = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), stack);
         // Picked up right away, and backpacks ignore entities that are still on pickup delay.
         itemEntity.setNoPickUpDelay();

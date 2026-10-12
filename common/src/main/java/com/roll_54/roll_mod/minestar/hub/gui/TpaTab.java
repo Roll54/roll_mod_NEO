@@ -10,23 +10,19 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.TextField;
-import com.lowdragmc.lowdraglib2.gui.ui.elements.Toggle;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.tpa.ClientTpaCache;
-import com.roll_54.roll_mod.minestar.tpa.TpaMode;
 import com.roll_54.roll_mod.minestar.tpa.TpaRequest;
 import com.roll_54.roll_mod.network.packet.TeleportActionPacket;
 import com.roll_54.roll_mod.network.packet.TpaActionPacket;
-import com.roll_54.roll_mod.network.packet.TpaModePacket;
 import com.roll_54.roll_mod.util.Durations;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 import java.util.ArrayList;
@@ -66,9 +62,6 @@ public final class TpaTab {
     private static final int COLOR_ROW = 0x30FFFFFF;
 
     /** Four rows, a caption and a close button — no more than that has to fit. */
-    private static final int SETTINGS_W = 220;
-    private static final int SETTINGS_H = 130;
-    private static final int MODE_ROW_H = 16;
 
     private TpaTab() {}
 
@@ -79,23 +72,13 @@ public final class TpaTab {
 
         HubSection.Info section = HubSection.info("tpa");
 
-        // Built unconditionally, like everything else in the hub: the rows are the same on both
-        // sides, and which one is marked comes from the server in the tick below.
-        Toggle[] modes = new Toggle[TpaMode.values().length];
-        HubSection.Info settings = HubSection.panel(
-                Component.translatable("gui.roll_mod.hub.tpa.settings.title"),
-                SpriteTexture.of(RollMod.id("textures/gui/hub/teleportation/settings.png")),
-                Component.translatable("gui.roll_mod.hub.tpa.settings.tip"),
-                SETTINGS_W, SETTINGS_H,
-                content -> buildModes(content, modes));
-
         UIElement body = new UIElement();
         // flexBasis(0), not flexGrow alone: LdLib defaults flex-shrink to 0 and flex-basis to auto,
         // so the body's base size would be its own content — the whole roster, however long — and
         // nothing would pull it back to the leftover space under the header. Without the zero basis
         // the scrollers inside never overflow, so the online list cannot scroll.
         body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexBasis(0).flexGrow(1)
-                .gapColumn(PADDING));
+                .gapColumn(1));
 
         // The filter is per-viewer client state, so it lives in the tree rather than on the wire.
         String[] filter = {""};
@@ -133,27 +116,15 @@ public final class TpaTab {
         // so the requests scroller above them still takes everything that is left.
         detail.addChildren(requests, trips());
 
-        body.addChildren(left, detail);
-        // Both panels last, and the settings one after the explanation: whichever is open sits over
-        // the tab, and only one of them ever is.
-        root.addChildren(HubSection.header("tpa", section, settings.button()), body,
-                section.overlay(), settings.overlay());
+        // The divider between the list and the panel: drag to resize, double-click to reset.
+        body.addChildren(left, HubSplit.handle("tpa", left, LIST_W, player.level().isClientSide()), detail);
+        // Who may send requests is set in the hub's general settings (SettingsTab).
+        root.addChildren(HubSection.header("tpa", section), body, section.overlay());
 
         String[] rosterSignature = {null};
         String[] requestSignature = {null};
-        TpaMode[] shownMode = {null};
 
         root.addEventListener(UIEvents.TICK, e -> {
-            // From the tab root, not from inside the panel: a panel that is hidden stops ticking,
-            // and the mark has to be right by the time it is opened.
-            TpaMode mode = ClientTpaCache.MODE;
-            if (mode != shownMode[0]) {
-                shownMode[0] = mode;
-                for (int i = 0; i < modes.length; i++) {
-                    if (modes[i] != null) modes[i].setOn(TpaMode.values()[i] == mode, false);
-                }
-            }
-
             Map<UUID, String> roster = ClientTpaCache.ONLINE;
             List<Map.Entry<UUID, String>> shown = matching(roster, filter[0]);
 
@@ -204,51 +175,6 @@ public final class TpaTab {
         });
 
         return root;
-    }
-
-    /* ------------------------------------------- settings ------------------------------------------- */
-
-    /**
-     * One row per mode, in a group so exactly one is ever marked.
-     *
-     * <p>A click only sends the packet; the mark moves when the server says so, so a refused change
-     * never leaves the window claiming something that is not true.
-     */
-    private static void buildModes(UIElement content, Toggle[] rows) {
-        Toggle.ToggleGroup group = new Toggle.ToggleGroup().setAllowEmpty(false);
-
-        TpaMode[] values = TpaMode.values();
-        for (int i = 0; i < values.length; i++) {
-            TpaMode mode = values[i];
-
-            Toggle row = new Toggle();
-            row.setToggleGroup(group);
-            row.setText(mode.title());
-            row.layout(l -> l.widthPercent(100).height(MODE_ROW_H));
-            row.setOnToggleChanged(on -> {
-                if (on) PacketDistributor.sendToServer(TpaModePacket.of(mode));
-            });
-            row.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
-                    tooltip(mode), null, null, ItemStack.EMPTY));
-
-            rows[i] = row;
-            content.addChild(row);
-        }
-    }
-
-    /**
-     * What a mode means, plus a warning when it cannot mean anything.
-     *
-     * <p>The FTB Teams check is inside the listener rather than in the builder on purpose: the tree
-     * is built on both sides and must not vary, but a hover only ever happens on a client.
-     */
-    private static List<Component> tooltip(TpaMode mode) {
-        if (mode.needsTeams() && !ModList.get().isLoaded("ftbteams")) {
-            return List.of(mode.description(),
-                    Component.translatable("gui.roll_mod.hub.tpa.settings.needsTeams")
-                            .withStyle(ChatFormatting.RED));
-        }
-        return List.of(mode.description());
     }
 
     /* --------------------------------------------- rows --------------------------------------------- */
@@ -349,7 +275,7 @@ public final class TpaTab {
     private static UIElement row() {
         UIElement row = new UIElement();
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .marginBottom(2).paddingAll(1).gapColumn(3));
+                .marginBottom(2).paddingAll(1).paddingHorizontal(HubSection.ROW_INSET).gapColumn(3));
         row.style(s -> s.background(new ColorRectTexture(COLOR_ROW)));
         return row;
     }
@@ -381,7 +307,7 @@ public final class TpaTab {
      * and "asked by you": the panel now holds two different things, and without it the buttons read
      * as part of the request list rather than as their own thing.
      */
-    private static UIElement trips() {
+    static UIElement trips() {
         UIElement column = new UIElement();
         // An explicit height rather than letting it measure: LdLib defaults flex-shrink to 0, so a
         // content-sized sibling of the requests scroller would be free to push it about.
@@ -413,7 +339,7 @@ public final class TpaTab {
      * this did while the icon was the whole label — stretches a 16x16 file across the button's
      * full box, and these buttons are much wider than they are tall.
      */
-    private static Button trip(String key, TeleportActionPacket.Action action, String texture) {
+    static Button trip(String key, TeleportActionPacket.Action action, String texture) {
         Button button = new Button();
         button.layout(l -> l.flexBasis(0).flexGrow(1).height(TRIP_H));
         button.setText(Component.translatable(key));

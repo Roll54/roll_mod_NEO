@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "servings=3": {
+      "model": "roll_mod:block/fluorite_pineapple_pizza"
+    },
+    "servings=2": {
+      "model": "roll_mod:block/fluorite_pineapple_pizza_slice1"
+    },
+    "servings=1": {
+      "model": "roll_mod:block/fluorite_pineapple_pizza_slice2"
+    },
+    "servings=0": {
+      "model": "roll_mod:block/fluorite_pineapple_pizza_slice3"
+    }
+  }
+}

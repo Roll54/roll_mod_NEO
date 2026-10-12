@@ -6,6 +6,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
+import net.minecraft.commands.CommandSourceStack;
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.vendingblock.auction.AuctionData;
 import com.roll_54.roll_mod.economy.vendingblock.auction.AuctionListing;
@@ -99,7 +102,7 @@ final class DebugFill {
     /* ============================================= fill ============================================= */
 
     /** Fills everything for {@code p} and returns one line per system, for the command's reply. */
-    static List<String> fill(ServerPlayer p) {
+    static List<String> fill(CommandSourceStack source, ServerPlayer p) {
         MinecraftServer server = p.server;
         DebugLedger ledger = DebugLedger.load(p.getUUID());
         List<String> report = new ArrayList<>();
@@ -122,7 +125,7 @@ final class DebugFill {
         }
 
         // Async: the old balance is only known once the database answers, so it records itself.
-        currency(p);
+        currency(source, p);
         report.add("currency: set to " + TEST_BALANCE + " (old balance saved)");
         return report;
     }
@@ -191,13 +194,13 @@ final class DebugFill {
                 warp = new Warp(warp.id(), warp.owner(), warp.ownerName(), warp.name(), warp.description(),
                         warp.dimension(), warp.x() + i * 6, warp.y(), warp.z() - i * 6, warp.yaw(), warp.pitch(),
                         warp.price(), warp.created(), approval, BY, reports, Set.copyOf(visitors), today,
-                        visitors.size() * 3L);
+                        visitors.size() * 3L, 0);
             } else {
                 int owner = 30 + i % 5;
                 warp = new Warp(UUID.randomUUID(), fake(owner), fakeName(owner), name, description, dim,
                         p.getX() - i * 6, p.getY(), p.getZ() + i * 6, p.getYRot(), 0,
                         price, now - i * HOUR, approval, BY, reports, Set.copyOf(visitors), today,
-                        visitors.size() * 3L + i);
+                        visitors.size() * 3L + i, 0);
             }
             data.add(warp);
             ledger.add("warps", warp.id());
@@ -336,11 +339,11 @@ final class DebugFill {
         MinecraftServer server = p.server;
         long now = System.currentTimeMillis();
         List<Kit> kits = List.of(
-                new Kit("debug_kit_1", 20L * 60, "", List.of(new ItemStack(Items.BREAD, 4))),
+                new Kit("debug_kit_1", 20L * 60, "", List.of(new ItemStack(Items.BREAD, 4)), ""),
                 new Kit("debug_kit_2", 20L * 60 * 60, "",
-                        List.of(new ItemStack(Items.TORCH, 16), new ItemStack(Items.STICK, 4))),
+                        List.of(new ItemStack(Items.TORCH, 16), new ItemStack(Items.STICK, 4)), ""),
                 new Kit("debug_kit_3", 20L * 60 * 60 * 24, "",
-                        List.of(new ItemStack(Items.APPLE, 2), new ItemStack(Items.DIRT, 8))));
+                        List.of(new ItemStack(Items.APPLE, 2), new ItemStack(Items.DIRT, 8)), ""));
         for (int i = 0; i < kits.size(); i++) {
             Kit kit = kits.get(i);
             KitStore.put(server, kit);
@@ -396,14 +399,15 @@ final class DebugFill {
         return done + " tasks completed, bonus claimable (whole party)";
     }
 
-    private static void currency(ServerPlayer p) {
+    private static void currency(CommandSourceStack source, ServerPlayer p) {
         MinecraftServer server = p.server;
         UUID target = p.getUUID();
         CurrencyService.get(server, target, CurrencyType.MAIN).thenAccept(old -> {
             DebugLedger ledger = DebugLedger.load(target);
             ledger.prior("balance", new JsonPrimitive(old));
             ledger.save();
-            CurrencyService.set(server, target, CurrencyType.MAIN, TEST_BALANCE);
+            CurrencyService.set(server, target, CurrencyType.MAIN, TEST_BALANCE,
+                    CurrencyCause.command(source, LedgerReason.ADMIN).withDetail("/rollmod debug fill: test balance"));
         }).exceptionally(e -> {
             RollMod.LOGGER.error("[Debug] could not read {}'s balance; left it alone", target, e);
             return null;
@@ -413,7 +417,7 @@ final class DebugFill {
     /* ============================================= clear ============================================ */
 
     /** Undoes everything the ledger holds for {@code p}. Returns one line per system. */
-    static List<String> clear(ServerPlayer p) {
+    static List<String> clear(CommandSourceStack source, ServerPlayer p) {
         MinecraftServer server = p.server;
         UUID target = p.getUUID();
         DebugLedger ledger = DebugLedger.load(target);
@@ -486,7 +490,8 @@ final class DebugFill {
 
         JsonElement balance = ledger.prior("balance");
         if (balance != null) {
-            CurrencyService.set(server, target, CurrencyType.MAIN, balance.getAsLong());
+            CurrencyService.set(server, target, CurrencyType.MAIN, balance.getAsLong(),
+                    CurrencyCause.command(source, LedgerReason.ADMIN).withDetail("/rollmod debug clear: balance restored"));
             report.add("currency: restored to " + balance.getAsLong());
         }
 

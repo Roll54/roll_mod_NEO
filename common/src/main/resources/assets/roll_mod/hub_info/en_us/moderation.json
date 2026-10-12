@@ -1,75 +1,36 @@
 {
   "lines": [
-    {
-      "text": "&fStaff tools. Only operators and ranks with a moderation permission see this tab."
-    },
-    {
-      "type": "space"
-    },
-    {
-      "text": "&e&lPlayers"
-    },
-    {
-      "text": "&7Everyone online, then everyone banned. &6⚠N&7 is warnings, &eM&7 muted, &4B&7 banned.",
-      "indent": 6
-    },
-    {
-      "text": "&7Pick a name to see their standing and act on it. Click it again to clear the pick.",
-      "indent": 6
-    },
-    {
-      "text": "&7Mute and warn need the player online. Ban works offline too.",
-      "indent": 6
-    },
-    {
-      "type": "space"
-    },
-    {
-      "text": "&e&lWarnings"
-    },
-    {
-      "text": "&7Warnings never expire. The &c3rd&7 warning — and every one after — bans for a day. The warn form tells you before you confirm.",
-      "indent": 6
-    },
-    {
-      "type": "space"
-    },
-    {
-      "text": "&e&lDurations"
-    },
-    {
-      "text": "&7Type &b30m&7, &b2h&7, &b1d&7, &b1w&7 or combine them (&b1d12h&7). &b0&7 means no end.",
-      "indent": 6
-    },
-    {
-      "type": "space"
-    },
-    {
-      "text": "&e&lWarps"
-    },
-    {
-      "text": "&7Approve, reject, make official or delete. With a player picked, only their warps are listed.",
-      "indent": 6
-    },
-    {
-      "type": "space"
-    },
-    {
-      "text": "&e&lWhitelist"
-    },
-    {
-      "text": "&7Closing the server kicks everyone who is not staff. The message is what they see.",
-      "indent": 6
-    },
-    {
-      "type": "space"
-    },
-    {
-      "text": "&e&lTPS"
-    },
-    {
-      "text": "&7Live server speed. Below &c15&7 every staff member gets a chat alert.",
-      "indent": 6
-    }
+    { "text": "&fStaff tools. Only operators and ranks with a moderation permission see this tab." },
+    { "type": "space" },
+    { "text": "&e&lModes" },
+    { "text": "&7The drop-down at the top switches the list on the left between &fPlayers&7, &fWarps&7 and &fLetters&7. The search box above it filters whichever list is showing.", "indent": 6 },
+    { "text": "&fLetters&7 is only offered to staff who may write them.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lPlayers" },
+    { "text": "&7Everyone online, then everyone banned. &6⚠N&7 is warnings, &eM&7 muted, &4B&7 banned.", "indent": 6 },
+    { "text": "&7Pick a name to see their standing and act on it. Click it again to clear the pick.", "indent": 6 },
+    { "text": "&fMute&7 and &fWarn&7 only appear while the player is online. &fBan&7 and &fUnban&7 work offline too, but only for staff allowed to ban.", "indent": 6 },
+    { "text": "&7Each form lets you tick the rules broken &8- several at once &7- and add a note. The note goes into the log and is shown with a ban.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lWarnings" },
+    { "text": "&7Warnings never expire. The &c3rd&7 warning - and every one after - bans for a day. The warn form tells you before you confirm.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lDurations" },
+    { "text": "&7Type &b30m&7, &b2h&7, &b1d&7, &b1w&7 or combine them (&b1d12h&7). A bare number is minutes. &b0&7 means no end.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lWarps" },
+    { "text": "&7Search by name or owner. Pick a warp to see its owner, location, &creports&7 and visits.", "indent": 6 },
+    { "text": "&7Set its verdict with &fApprove&7, &fReject&7, &fOfficial&7 or &fReset&7, go there with &fTeleport&7, or &fDelete&7 it.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lLetters" },
+    { "text": "&f+ New letter&7 writes to every player: a title, an optional send delay, how long it stays up, an icon and the text. Press &f+&7 to attach money, an item or a command. An item is only copied from your inventory.", "indent": 6 },
+    { "text": "&fSend to all&7 sends it now, or &fSchedule&7 when a delay is set.", "indent": 6 },
+    { "text": "&7Sent letters are grouped Due, Active and Expired. Open one to &fSave&7 changes, &fWithdraw&7 it or &fSend as new&7. Changes only reach players who have not accepted it yet.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lWhitelist" },
+    { "text": "&7Under the player panel, for staff allowed to ban. Closing the server kicks everyone who is not staff. Type the message they see and press &fSave&7.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lTPS" },
+    { "text": "&7Live server speed - &a20&7 is perfect. Below &c15&7 every staff member gets a chat alert.", "indent": 6 }
   ]
 }

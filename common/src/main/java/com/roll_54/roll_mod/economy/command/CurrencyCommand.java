@@ -1,5 +1,7 @@
 package com.roll_54.roll_mod.economy.command;
 
+import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
+import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
 import static com.roll_54.roll_mod.RollMod.LOGGER;
 
 import com.mojang.authlib.GameProfile;
@@ -10,7 +12,9 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyOfferService;
+import com.roll_54.roll_mod.economy.api.MoneyRequestService;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyOffer;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
@@ -104,6 +108,25 @@ public final class CurrencyCommand {
                     .then(answer("accept", true))
                     .then(answer("deny", false))
 
+                    // ===== /rollmod money request <player> <amount> =====
+                    // Asking to be paid. Nothing is held; the payer's coins move only when they
+                    // agree. See MoneyRequestService.
+                    .then(
+                        Commands.literal("request")
+                            .then(
+                                Commands.argument("player", StringArgumentType.word())
+                                    .suggests(PLAYERS)
+                                    .then(
+                                        Commands.argument("amount", LongArgumentType.longArg(1))
+                                            .executes(CurrencyCommand::requestMoney))))
+
+                    // ===== /rollmod money requests =====
+                    .then(Commands.literal("requests").executes(CurrencyCommand::listRequests))
+
+                    // ===== /rollmod money payrequest|refuse [player] =====
+                    .then(answerRequest("payrequest", true))
+                    .then(answerRequest("refuse", false))
+
                     // ===== /rollmod money top [type] =====
                     .then(
                         Commands.literal("top")
@@ -129,7 +152,22 @@ public final class CurrencyCommand {
                             .requires(source -> source.hasPermission(2)) // OP level 2
                             .then(adminOp("set", Mode.SET, 0))
                             .then(adminOp("add", Mode.ADD, 1))
-                            .then(adminOp("take", Mode.TAKE, 1)))));
+                            .then(adminOp("take", Mode.TAKE, 1))
+                            // ===== /rollmod money admin wipe =====
+                            // Every main balance, everyone's. Op alone is not enough: only the
+                            // one account below may run it, and never from the console.
+                            .then(
+                                Commands.literal("wipe")
+                                    .requires(CurrencyCommand::isWipeOwner)
+                                    .executes(CurrencyCommand::wipeMain)))));
+  }
+
+  /** The only player allowed to wipe balances. */
+  private static final UUID WIPE_OWNER = UUID.fromString("ded6989b-9ddf-4ba6-b576-aab0f39a2bbc");
+
+  private static boolean isWipeOwner(CommandSourceStack source) {
+    return source.getEntity() instanceof ServerPlayer player
+        && player.getUUID().equals(WIPE_OWNER);
   }
 
   /** One of the two answers to an offer, which differ only in where the money ends up. */
@@ -142,6 +180,16 @@ public final class CurrencyCommand {
                 .executes(
                     ctx ->
                         answerOffer(ctx, StringArgumentType.getString(ctx, "player"), accept)));
+  }
+
+  private static LiteralArgumentBuilder<CommandSourceStack> answerRequest(String literal, boolean pay) {
+    return Commands.literal(literal)
+        .executes(ctx -> answerRequest(ctx, null, pay))
+        .then(
+            Commands.argument("player", StringArgumentType.word())
+                .suggests(PLAYERS)
+                .executes(
+                    ctx -> answerRequest(ctx, StringArgumentType.getString(ctx, "player"), pay)));
   }
 
   /** One admin operation. {@code minimum} is 0 for set, which may legitimately zero a balance. */
@@ -197,6 +245,43 @@ public final class CurrencyCommand {
     } catch (Exception e) {
       return 0;
     }
+    return 1;
+  }
+
+  /* --------------------------------------- requests -------------------------------------- */
+
+  /** Asks the named player for money. They are looked up whether or not they are online. */
+  private static int requestMoney(CommandContext<CommandSourceStack> ctx) {
+    try {
+      ServerPlayer requester = ctx.getSource().getPlayerOrException();
+      String name = StringArgumentType.getString(ctx, "player");
+      long amount = LongArgumentType.getLong(ctx, "amount");
+      resolve(
+          ctx,
+          name,
+          profile -> MoneyRequestService.request(requester, profile, CurrencyType.MAIN, amount));
+    } catch (CommandSyntaxException e) {
+      return 0;
+    }
+    return 1;
+  }
+
+  private static int answerRequest(
+      CommandContext<CommandSourceStack> ctx, String requesterName, boolean pay) {
+    ServerPlayer player = ctx.getSource().getPlayer();
+    if (player == null) return 0;
+    if (pay) {
+      MoneyRequestService.pay(player, requesterName);
+    } else {
+      MoneyRequestService.refuse(player, requesterName);
+    }
+    return 1;
+  }
+
+  private static int listRequests(CommandContext<CommandSourceStack> ctx) {
+    ServerPlayer player = ctx.getSource().getPlayer();
+    if (player == null) return 0;
+    MoneyRequestService.list(player);
     return 1;
   }
 
@@ -352,6 +437,8 @@ public final class CurrencyCommand {
     CurrencyType type = CurrencyTypeArgument.getCurrencyType(ctx, "type");
     long amount = LongArgumentType.getLong(ctx, "amount");
     MinecraftServer server = ctx.getSource().getServer();
+    CurrencyCause cause = CurrencyCause.command(ctx.getSource(), LedgerReason.ADMIN)
+        .withDetail("/rollmod money " + mode.name().toLowerCase(java.util.Locale.ROOT) + " " + name);
 
     resolve(
         ctx,
@@ -359,24 +446,54 @@ public final class CurrencyCommand {
         profile -> {
           switch (mode) {
             case SET ->
-                CurrencyService.set(server, profile.id(), type, amount)
+                CurrencyService.set(server, profile.id(), type, amount, cause)
                     .thenAcceptAsync(
                         success -> sendFeedback(ctx, profile, "set", amount, type, success),
                         server);
 
             case ADD ->
-                CurrencyService.deposit(server, profile.id(), type, amount)
+                CurrencyLedger.logged(CurrencyService.deposit(server, profile.id(), type, amount, cause),
+                        profile.id(), type, amount, LedgerReason.ADMIN)
                     .thenAcceptAsync(
                         success -> sendFeedback(ctx, profile, "add", amount, type, success),
                         server);
 
             case TAKE ->
-                CurrencyService.withdraw(server, profile.id(), type, amount)
+                CurrencyLedger.logged(CurrencyService.withdraw(server, profile.id(), type, amount, cause),
+                        profile.id(), type, -amount, LedgerReason.ADMIN)
                     .thenAcceptAsync(
                         success -> sendFeedback(ctx, profile, "take", amount, type, success),
                         server);
           }
         });
+    return 1;
+  }
+
+  private static int wipeMain(CommandContext<CommandSourceStack> ctx) {
+    MinecraftServer server = ctx.getSource().getServer();
+    CurrencyService.wipe(server, CurrencyType.MAIN,
+            CurrencyCause.command(ctx.getSource(), LedgerReason.ADMIN).withDetail("/rollmod money admin wipe"))
+        .thenAcceptAsync(
+            removed -> {
+              if (removed < 0) {
+                ctx.getSource()
+                    .sendFailure(Component.translatable("command.rmc.admin.wipe.failed"));
+                return;
+              }
+              LOGGER.warn(
+                  "{} wiped {} main balances",
+                  ctx.getSource().getTextName(),
+                  removed);
+              // A new season: the money history and the top-earners board start over with it.
+              CurrencyLedger.wipe(CurrencyType.MAIN)
+                  .thenAccept(rows -> LOGGER.warn("Wiped {} main money history rows", rows));
+              com.roll_54.roll_mod.minestar.leaderboard.LeaderboardService.invalidate();
+              ctx.getSource()
+                  .sendSuccess(
+                      () -> Component.translatable("command.rmc.admin.wipe.success", removed),
+                      true);
+            },
+            server);
     return 1;
   }
 

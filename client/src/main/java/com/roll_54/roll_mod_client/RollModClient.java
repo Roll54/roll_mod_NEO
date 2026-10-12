@@ -150,6 +150,21 @@ public final class RollModClient {
         }
 
         @SubscribeEvent
+        public static void registerClientExtensions(net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent event) {
+            event.registerItem(new net.neoforged.neoforge.client.extensions.common.IClientItemExtensions() {
+                private net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer renderer;
+
+                @Override
+                public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    if (renderer == null) {
+                        renderer = new com.roll_54.roll_mod_client.client.gecko.block.ModuleInstallationTableItemRenderer();
+                    }
+                    return renderer;
+                }
+            }, com.roll_54.roll_mod.registry.BlockRegistry.MODULE_INSTALLATION_TABLE.get().asItem());
+        }
+
+        @SubscribeEvent
         public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
             event.registerLayerDefinition(TinyRocketModel.LAYER_LOCATION, TinyRocketModel::createBodyLayer);
             event.registerLayerDefinition(SmallRocketModel.LAYER_LOCATION, SmallRocketModel::createBodyLayer);

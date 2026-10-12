@@ -15,10 +15,13 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.TextField;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.minestar.hub.QuestGate;
 import com.roll_54.roll_mod.minestar.hub.warp.ClientWarpCache;
 import com.roll_54.roll_mod.minestar.hub.warp.Warp;
 import com.roll_54.roll_mod.minestar.hub.warp.WarpApproval;
 import com.roll_54.roll_mod.minestar.hub.warp.WarpService;
+import com.roll_54.roll_mod.minestar.moderation.ClientModerationCache;
+import com.roll_54.roll_mod.minestar.teleport.ClientTeleportCache;
 import com.roll_54.roll_mod.network.packet.WarpActionPacket;
 import com.roll_54.roll_mod.util.LegacyText;
 import dev.vfyjxf.taffy.style.FlexDirection;
@@ -46,7 +49,8 @@ import java.util.UUID;
 public final class WarpTab {
 
     private static final int PADDING = 6;
-    private static final int LIST_W = 130;
+    /** The same as the homes list — see {@link TravelTab#LIST_W}. */
+    private static final int LIST_W = TravelTab.LIST_W;
     private static final int ROW_H = 16;
     private static final int LINE_H = 12;
 
@@ -82,6 +86,12 @@ public final class WarpTab {
      */
     private static final int GROUP_GAP = 4;
 
+    /** The Change window: a title, the pin toggle and the owner's delete. */
+    private static final int CHANGE_W = 200;
+    private static final int CHANGE_H = 110;
+    private static final int COUNTDOWN_W = 200;
+    private static final int COUNTDOWN_H = 90;
+
     private static final int COLOR_PANEL = 0x40000000;
     private static final int COLOR_ROW = 0x30FFFFFF;
     private static final int COLOR_ROW_SELECTED = 0x60FFFFFF;
@@ -89,17 +99,31 @@ public final class WarpTab {
     private WarpTab() {}
 
     public static UIElement build(Player player) {
+        return build(player, true);
+    }
+
+    /**
+     * The list and the detail panel without the section's own title row and padding — what the
+     * travel tab shows under its Homes | Warps switch.
+     */
+    public static UIElement content(Player player) {
+        return build(player, false);
+    }
+
+    private static UIElement build(Player player, boolean titled) {
         // A column now, so the section title can sit above the list and detail panel. The old row
         // lives on as `body`, unchanged apart from taking its height from the leftover space.
         UIElement root = new UIElement();
         root.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).heightPercent(100)
-                .paddingAll(PADDING));
+                .paddingAll(titled ? PADDING : 0));
 
         HubSection.Info section = HubSection.info("warps");
 
         UIElement body = new UIElement();
-        body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexGrow(1)
-                .gapColumn(PADDING));
+        // flexBasis(0), not flexGrow alone: with LdLib's auto basis the body (and the list in it)
+        // would be as tall as every warp together, so the scroller would never overflow or scroll.
+        body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexBasis(0).flexGrow(1)
+                .gapColumn(1));
 
         // Selection and mode are per-viewer client state, so they live in the tree, not the packet.
         UUID[] selected = {null};
@@ -132,22 +156,75 @@ public final class WarpTab {
         hint(search, "gui.roll_mod.hub.warp.search.tip");
 
         ScrollerView list = new ScrollerView();
-        list.layout(l -> l.widthPercent(100).flexGrow(1));
+        list.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
         list.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
         list.viewContainer(c -> c.layout(l -> l.widthPercent(100)));
 
         left.addChildren(create, search, list);
-        body.addChildren(left, detail);
+        // The divider between the list and the panel: drag to resize, double-click to reset.
+        body.addChildren(left, HubSplit.handle(titled ? "warps" : TravelTab.SPLIT_KEY, left, LIST_W, player.level().isClientSide()), detail);
         // The panel last, so it covers the body when opened.
-        root.addChildren(HubSection.header("warps", section), body, section.overlay());
+        // Deleting a warp cannot be undone, so it asks first.
+        HubConfirm confirmer = new HubConfirm();
+        // A locked warp answers in a window rather than in chat, which the hub covers.
+        HubNotice notice = new HubNotice(Component.translatable("gui.roll_mod.hub.warp.locked.title"));
+
+        // Pin and, for the owner, delete: what changes a warp rather than travelling to it. Filled
+        // for the selected warp by the tick below while it is open.
+        UIElement[] changeBody = {null};
+        HubSection.Floating changeWindow = HubSection.popup(
+                Component.translatable("gui.roll_mod.hub.change.title"), CHANGE_W, CHANGE_H, content -> {
+                    content.layout(l -> l.flexDirection(FlexDirection.COLUMN));
+                    changeBody[0] = content;
+                }).windowed();
+
+        // The warm-up, counted down where the player is looking: the server keeps the hub open
+        // through it now (see WarpService.begin) and closes it on arrival.
+        Label countdownText = new Label();
+        HubSection.Floating countdown = HubSection.popup(
+                Component.translatable("gui.roll_mod.hub.warp.countdown.title"), COUNTDOWN_W, COUNTDOWN_H, content -> {
+                    content.layout(l -> l.flexDirection(FlexDirection.COLUMN).gapRow(4));
+                    countdownText.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
+                    countdownText.textStyle(t -> t.textWrap(TextWrap.WRAP).textAlignHorizontal(Horizontal.CENTER));
+                    Button cancel = new Button();
+                    cancel.setText(Component.translatable("gui.roll_mod.hub.warp.countdown.cancel"));
+                    cancel.layout(l -> l.widthPercent(100).height(ROW_H).flexShrink(0));
+                    cancel.setOnClick(e -> PacketDistributor.sendToServer(WarpActionPacket.cancel()));
+                    content.addChildren(countdownText, cancel);
+                }).windowed().noCloseButton();
+
+        if (titled) {
+            root.addChildren(HubSection.header("warps", section), body, section.overlay());
+        } else {
+            root.addChildren(body);
+        }
+        root.addChildren(changeWindow.root(), countdown.root(), notice.root(), confirmer.root());
 
         String[] listSignature = {null};
         String[] detailSignature = {null};
+        String[] changeSignature = {null};
+        boolean[] countingDown = {false};
 
         root.addEventListener(UIEvents.TICK, e -> {
             List<Warp> warps = ClientWarpCache.WARPS;
+
+            // Opened when a warm-up starts and closed when it ends — arrival, Cancel, or a refusal
+            // on arrival — but only ever by this listener, so it never closes a window it did not open.
+            if (ClientTeleportCache.active()) {
+                if (!countingDown[0]) {
+                    countingDown[0] = true;
+                    countdown.open();
+                }
+                countdownText.setText(Component.translatable("gui.roll_mod.hub.warp.countdown.text",
+                        LegacyText.display(ClientTeleportCache.DESTINATION),
+                        Component.literal(String.valueOf(ClientTeleportCache.secondsLeft()))
+                                .withStyle(ChatFormatting.GREEN, ChatFormatting.BOLD)));
+            } else if (countingDown[0]) {
+                countingDown[0] = false;
+                countdown.close();
+            }
 
             // The server refuses a warp over the cap anyway; hiding the button means the player is
             // told before they fill the form in rather than after.
@@ -159,13 +236,16 @@ public final class WarpTab {
             // Approval and the visitor count are in the signature because both are visible on a
             // row: approval as its dot, visitors as the order the server sorted the list into.
             // Keyed on ids alone, a moderator's verdict and a new arrival both went unnoticed.
+            // The name and the lock too: a moderator can rename a warp or put it behind a quest, and
+            // the player's team finishing that quest opens it.
             String signature = shown.size() + ":" + shown.stream()
-                    .map(w -> w.id() + "/" + w.approval().id() + "/" + w.visitorsToday())
+                    .map(w -> w.id() + "/" + w.approval().id() + "/" + w.visitorsToday() + "/" + w.name()
+                            + "/" + w.questLocked() + "/" + locked(player, w))
                     .reduce("", String::concat)
-                    + ":" + selected[0];
+                    + ":" + selected[0] + ":" + HubPins.version(player);
             if (!signature.equals(listSignature[0])) {
                 listSignature[0] = signature;
-                rebuildList(list, shown, selected, creating);
+                rebuildList(player, list, shown, selected, creating);
             }
 
             Warp current = find(warps, selected[0]);
@@ -177,19 +257,50 @@ public final class WarpTab {
             // panel is open relabels the button on the next frame.
             String mode = creating[0] ? "create" : selected[0] + ":"
                     + (current == null ? "" : current.approval().id() + "/"
-                            + current.visitorsToday() + "/" + current.visitsTotal());
+                            + current.visitorsToday() + "/" + current.visitsTotal() + "/"
+                            // Moderators can now edit these, and gate the warp behind a quest.
+                            + current.name() + "/" + current.description() + "/" + current.price() + "/"
+                            + current.x() + "," + current.y() + "," + current.z() + "/"
+                            + current.requiredQuest() + "/" + locked(player, current));
             if (!mode.equals(detailSignature[0])) {
                 detailSignature[0] = mode;
                 detail.clearAllChildren();
                 if (creating[0]) {
                     buildCreateForm(player, detail, creating);
                 } else {
-                    buildDetail(player, detail, current, selected, creating);
+                    buildDetail(player, detail, current, selected, creating, notice, () -> {
+                        changeSignature[0] = null;
+                        changeWindow.open();
+                    });
+                }
+            }
+
+            // The Change window follows the selection, and goes with the warp.
+            if (changeWindow.isOpen()) {
+                if (current == null || creating[0]) {
+                    changeWindow.close();
+                } else {
+                    String change = current.id() + ":" + current.name() + ":" + HubPins.version(player);
+                    if (!change.equals(changeSignature[0])) {
+                        changeSignature[0] = change;
+                        changeBody[0].clearAllChildren();
+                        buildChange(player, changeBody[0], current, selected, confirmer);
+                    }
                 }
             }
         });
 
         return root;
+    }
+
+    /** The badge of every warp behind a quest. */
+    static final com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture LOCKED_ICON = SpriteTexture.of(
+            RollMod.id("textures/gui/hub/teleportation/warp/locked_warp_by_quest.png"));
+
+    /** "Requires the quest: <title>". */
+    static Component questLine(Warp warp) {
+        return Component.translatable("gui.roll_mod.hub.warp.quest",
+                QuestGate.title(true, warp.requiredQuest()).copy().withStyle(ChatFormatting.YELLOW));
     }
 
     /** The warps a search matches, by name or owner. An empty search matches everything. */
@@ -207,57 +318,89 @@ public final class WarpTab {
 
     /* --------------------------------------------- list --------------------------------------------- */
 
-    private static void rebuildList(ScrollerView list, List<Warp> warps,
+    /**
+     * Whether {@code player} is kept out by the warp's quest. Display only — the server decides
+     * ({@code WarpService.questUnlocked}). Moderators pass, as they do there.
+     */
+    static boolean locked(Player player, Warp warp) {
+        return warp.questLocked() && !ClientModerationCache.ALLOWED
+                && !QuestGate.isCompleted(player, warp.requiredQuest());
+    }
+
+    private static void rebuildList(Player player, ScrollerView list, List<Warp> warps,
                                     UUID[] selected, boolean[] creating) {
         list.clearAllScrollViewChildren();
         // Rendered in the order it arrived. Official first and then the busiest is decided by
         // WarpData.sorted() on the server, which is the side that owns the visit counts — sorting
         // again here would only be a second opinion that could disagree with the detail panel.
-        for (Warp warp : warps) {
-            boolean isSelected = warp.id().equals(selected[0]);
-
-            // A row is a container rather than a bare Label so the status badge has somewhere to sit:
-            // the badge opens the row at a fixed width and the name takes the slack, which is what
-            // keeps every name starting in the same column.
-            UIElement row = new UIElement();
-            row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(LIST_ROW_H)
-                    .marginBottom(2).paddingAll(2).gapColumn(3));
-            row.style(s -> s.background(new ColorRectTexture(
-                    isSelected ? COLOR_ROW_SELECTED : COLOR_ROW)));
-            // On the container, not the name: a click on the mark still selects the row, because
-            // LdLib walks up from whatever was hit.
-            row.addEventListener(UIEvents.CLICK, e -> {
-                selected[0] = warp.id();
-                creating[0] = false;
-            });
-
-            // Moderation at a glance, so a player picking somewhere to go does not have to open each
-            // one to find out — and, for an Official warp, so that being pinned to the top is not the
-            // only thing saying so, which says nothing once the list is scrolled. One badge per row
-            // rather than a badge here and a colour chip at the far end: the status is one fact, and
-            // splitting it across the row made the chip read as decoration.
-            UIElement badge = new UIElement();
-            badge.layout(l -> l.width(MARK).height(MARK));
-            badge.style(s -> s.background(warp.approval().icon()));
-            badge.addEventListener(UIEvents.HOVER_TOOLTIPS,
-                    e -> e.hoverTooltips = new HoverTooltips(
-                            List.of(warp.approval().line()), null, null, ItemStack.EMPTY));
-            row.addChild(badge);
-
-            Label name = new Label();
-            name.setText(LegacyText.display(warp.name()));
-            name.layout(l -> l.flexGrow(1).height(MARK));
-            name.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
-            row.addChild(name);
-
-            list.addScrollViewChild(row);
+        // The viewer's own pins go above all of it, each shown once.
+        List<Warp> rest = new java.util.ArrayList<>(warps);
+        List<Warp> pinned = HubPins.takePinned(player, HubWindowState.PinKind.WARPS, rest, Warp::id);
+        if (!pinned.isEmpty()) {
+            list.addScrollViewChild(heading("gui.roll_mod.hub.pinned"));
+            for (Warp warp : pinned) list.addScrollViewChild(warpRow(warp, selected, creating));
+            if (!rest.isEmpty()) list.addScrollViewChild(heading("gui.roll_mod.hub.warp.section.all"));
         }
+        for (Warp warp : rest) list.addScrollViewChild(warpRow(warp, selected, creating));
+    }
+
+    private static Label heading(String key) {
+        Label header = new Label();
+        header.setText(Component.translatable(key).withStyle(ChatFormatting.DARK_GRAY));
+        header.layout(l -> l.widthPercent(100).height(LINE_H).marginBottom(1));
+        header.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        return header;
+    }
+
+    private static UIElement warpRow(Warp warp, UUID[] selected, boolean[] creating) {
+        boolean isSelected = warp.id().equals(selected[0]);
+
+        // A row is a container rather than a bare Label so the status badge has somewhere to sit:
+        // the badge opens the row at a fixed width and the name takes the slack, which is what
+        // keeps every name starting in the same column.
+        UIElement row = new UIElement();
+        row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(LIST_ROW_H)
+                .marginBottom(2).paddingAll(2).paddingHorizontal(HubSection.ROW_INSET).gapColumn(3));
+        row.style(s -> s.background(new ColorRectTexture(
+                isSelected ? COLOR_ROW_SELECTED : COLOR_ROW)));
+        // On the container, not the name: a click on the mark still selects the row, because
+        // LdLib walks up from whatever was hit.
+        row.addEventListener(UIEvents.CLICK, e -> {
+            selected[0] = warp.id();
+            creating[0] = false;
+        });
+
+        // Moderation at a glance, so a player picking somewhere to go does not have to open each
+        // one to find out — and, for an Official warp, so that being pinned to the top is not the
+        // only thing saying so, which says nothing once the list is scrolled. One badge per row
+        // rather than a badge here and a colour chip at the far end: the status is one fact, and
+        // splitting it across the row made the chip read as decoration.
+        UIElement badge = new UIElement();
+        badge.layout(l -> l.width(MARK).height(MARK));
+        // A warp behind a quest always wears the lock, finished or not, and says which quest.
+        boolean gated = warp.questLocked();
+        badge.style(s -> s.background(gated ? LOCKED_ICON : warp.approval().icon()));
+        List<Component> tip = gated
+                ? List.of(warp.approval().line(), questLine(warp))
+                : List.of(warp.approval().line());
+        badge.addEventListener(UIEvents.HOVER_TOOLTIPS,
+                e -> e.hoverTooltips = new HoverTooltips(tip, null, null, ItemStack.EMPTY));
+        row.addChild(badge);
+
+        Label name = new Label();
+        name.setText(LegacyText.display(warp.name()));
+        name.layout(l -> l.flexGrow(1).height(MARK));
+        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        row.addChild(name);
+
+        return row;
     }
 
     /* -------------------------------------------- detail -------------------------------------------- */
 
     private static void buildDetail(Player player, UIElement detail, @Nullable Warp warp,
-                                    UUID[] selected, boolean[] creating) {
+                                    UUID[] selected, boolean[] creating, HubNotice notice,
+                                    Runnable openChange) {
         if (warp == null) {
             Label empty = new Label();
             empty.setText(Component.translatable("gui.roll_mod.hub.warp.none")
@@ -278,6 +421,14 @@ public final class WarpTab {
         // Directly under the name, because it is the thing worth knowing before deciding to go —
         // buried under the coordinates it read as a footnote.
         addApprovalLine(player, detail, warp);
+        boolean locked = locked(player, warp);
+        if (warp.questLocked()) {
+            Label quest = new Label();
+            quest.setText(questLine(warp).copy().withStyle(locked ? ChatFormatting.RED : ChatFormatting.GREEN));
+            quest.layout(l -> l.widthPercent(100).marginBottom(2));
+            quest.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
+            detail.addChild(quest);
+        }
 
         // Where this warp is. The gap goes on whichever line opens the group rather than on `owner`
         // itself: an official warp names no creator — it belongs to the server, and who typed the
@@ -313,19 +464,24 @@ public final class WarpTab {
                 : Component.translatable("gui.roll_mod.hub.warp.teleport",
                         WarpService.WARMUP_SECONDS));
         teleport.layout(l -> l.widthPercent(100).height(ROW_H).marginTopAuto());
-        teleport.setOnClick(e -> PacketDistributor.sendToServer(
-                WarpActionPacket.teleport(warp.id())));
+        // Clickable even when locked: a locked warp answers with the server's own chat line in a
+        // window, rather than a greyed button that does not say why. The server still decides.
+        teleport.setOnClick(e -> {
+            Component refusal = refusal(player, warp);
+            if (refusal != null) {
+                notice.show(refusal);
+            } else {
+                PacketDistributor.sendToServer(WarpActionPacket.teleport(warp.id()));
+            }
+        });
 
         detail.addChildren(description, teleport);
 
-        if (warp.owner().equals(player.getUUID())) {
-            Button delete = new Button();
-            delete.setText(Component.translatable("gui.roll_mod.hub.warp.delete"));
-            delete.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(3));
-            delete.setOnClick(e -> PacketDistributor.sendToServer(
-                    WarpActionPacket.delete(warp.id())));
-            detail.addChild(delete);
-        }
+        Button change = new Button();
+        change.setText(Component.translatable("gui.roll_mod.hub.change"));
+        change.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(3));
+        change.setOnClick(e -> openChange.run());
+        detail.addChild(change);
 
         // Last, because `teleport` pins itself to the bottom with marginTopAuto and everything
         // added after it stacks below. Clearing the selection is all this does: the TICK guard sees
@@ -339,6 +495,52 @@ public final class WarpTab {
             creating[0] = false;
         });
         detail.addChild(close);
+    }
+
+    /**
+     * What the server would refuse this teleport with, word for word as its chat line
+     * ({@code WarpService.requestTeleport}), or null when it should go through. Only the two locks
+     * the client can see; balance and a missing dimension are still answered in chat.
+     */
+    @Nullable
+    private static Component refusal(Player player, Warp warp) {
+        if (!warp.canTeleport(player.getUUID())) {
+            return Component.translatable("msg.roll_mod.warp.blocked").withStyle(ChatFormatting.RED);
+        }
+        if (locked(player, warp)) {
+            return Component.translatable("msg.roll_mod.warp.questLocked",
+                    QuestGate.title(false, warp.requiredQuest())).withStyle(ChatFormatting.RED);
+        }
+        return null;
+    }
+
+    /** The Change window's body: the pin toggle, and the owner's confirmed delete. */
+    private static void buildChange(Player player, UIElement body, Warp warp, UUID[] selected,
+                                    HubConfirm confirmer) {
+        Label title = new Label();
+        title.setText(LegacyText.display(warp.name()));
+        title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        body.addChild(title);
+
+        Button pin = HubPins.toggle(player, HubWindowState.PinKind.WARPS, warp.id());
+        pin.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(3));
+        body.addChild(pin);
+
+        if (warp.owner().equals(player.getUUID())) {
+            Button delete = new Button();
+            delete.setText(Component.translatable("gui.roll_mod.hub.warp.delete"));
+            // Clear of the harmless toggle above it, as on homes.
+            delete.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(12));
+            delete.setOnClick(e -> confirmer.ask(
+                    Component.translatable("gui.roll_mod.hub.confirm.warpDelete", LegacyText.display(warp.name())),
+                    Component.translatable("gui.roll_mod.hub.confirm.warpDelete.button"),
+                    () -> {
+                        PacketDistributor.sendToServer(WarpActionPacket.delete(warp.id()));
+                        if (warp.id().equals(selected[0])) selected[0] = null;
+                    }));
+            body.addChild(delete);
+        }
     }
 
     /**

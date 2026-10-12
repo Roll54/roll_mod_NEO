@@ -1,7 +1,7 @@
 {
   "lines": [
     {
-      "text": "&fLetters from the server staff: news, apologies, gifts."
+      "text": "&fLetters from the server staff: news, apologies, gifts. Some are sent to everyone, some only to you."
     },
     {
       "type": "space"
@@ -10,11 +10,15 @@
       "text": "&e&lReading"
     },
     {
-      "text": "&7Unread letters have a &6●&7. The hub button in your inventory shows a dot while any are waiting.",
+      "text": "&7Pick a letter in the list to open it. Opening the tab lands on your newest unread letter. A long title scrolls when you hover its row.",
       "indent": 6
     },
     {
-      "text": "&7The whole letter is always shown, including what is attached.",
+      "text": "&7An unread letter has a &6marked&7 icon, and the Letters tab and the hub button in your inventory show a mark while any are waiting.",
+      "indent": 6
+    },
+    {
+      "text": "&7Under the title you see who wrote it, when, and how long until it &cexpires&7. The whole letter is always shown, including what is attached &8- hover an attachment for details.",
       "indent": 6
     },
     {
@@ -24,11 +28,15 @@
       "text": "&e&lAccepting"
     },
     {
-      "text": "&7Press &aAccept&7 to take what is attached: money goes to your balance, items to your inventory (dropped at your feet if it is full).",
+      "text": "&7Press &aAccept&7 to take what is attached: money goes to your balance, items to your inventory (dropped at your feet if it is full), and a command attachment runs for you.",
       "indent": 6
     },
     {
-      "text": "&7Each letter can be accepted once. Letters disappear when they expire.",
+      "text": "&7A letter with nothing attached has &fMark as read&7 instead.",
+      "indent": 6
+    },
+    {
+      "text": "&7Each letter can be accepted once. It stays in your list afterwards, and letters disappear when they expire &8- so accept gifts in time.",
       "indent": 6
     }
   ]

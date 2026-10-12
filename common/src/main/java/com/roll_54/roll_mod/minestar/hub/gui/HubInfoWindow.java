@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.minestar.hub.gui;
 
+import com.roll_54.roll_mod.minestar.theme.RollUi;
 import com.lowdragmc.lowdraglib2.client.window.OsWindowManager;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.Icons;
@@ -12,7 +13,6 @@ import com.lowdragmc.lowdraglib2.gui.ui.data.Vertical;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
-import com.lowdragmc.lowdraglib2.gui.ui.style.StylesheetManager;
 import com.lowdragmc.lowdraglib2.gui.ui.window.ModularUIWindow;
 import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.FlexDirection;
@@ -40,10 +40,10 @@ import javax.annotation.Nullable;
  * at any more was the alternative, and an always-on-top window is exactly the wrong thing to leave
  * lying around.
  *
- * <p>The size is fixed rather than resizable, so the prose column is the one it was written for; the
- * body scrolls instead of growing. {@link ModularUIWindow#setResizable} is what turns the drag-edge
- * gesture off — the window is undecorated, so the platform offers no resize border of its own and
- * that gesture is the only way it could have been resized.
+ * <p>Opens at {@link #WIDTH}x{@link #HEIGHT} and can then be resized from its edges — the window is
+ * undecorated, so that drag-edge gesture, switched on by {@link ModularUIWindow#setResizable}, is the
+ * only resize there is. Every line wraps to the window's width, so the prose reflows as it is resized,
+ * and the body scrolls when the text outgrows the height.
  *
  * <p>The body is filled <em>before</em> the window opens, not lazily afterwards. That is not a
  * micro-optimisation, it is the fix for the scrolling: {@code ScrollerView} sizes its scroll bars
@@ -54,8 +54,8 @@ import javax.annotation.Nullable;
 @OnlyIn(Dist.CLIENT)
 public final class HubInfoWindow {
 
-    /** Fixed, not a starting point: a narrow column of prose, tall enough to be worth scrolling. */
-    private static final int WIDTH = 250;
+    /** The size it opens at; the player can resize it from there. */
+    private static final int WIDTH = 400;
     private static final int HEIGHT = 400;
 
     private static final int TITLE_H = 14;
@@ -136,11 +136,11 @@ public final class HubInfoWindow {
 
         root.addChildren(titleBar, body);
 
-        // The modern theme by name, as the debugger does: a window has no screen behind it to inherit
-        // a stylesheet from, so without this the scroll bar and button would come up unstyled.
+        // The player's theme by name: a window has no screen behind it to inherit a stylesheet from,
+        // so without this the scroll bar and button would come up unstyled. Client-only, so the
+        // client's theme is the right one — see RollUi.
         ModularUIWindow window = new ModularUIWindow(
-                ModularUI.of(UI.of(root,
-                        StylesheetManager.INSTANCE.getStylesheet(StylesheetManager.MODERN))),
+                ModularUI.of(UI.of(root, RollUi.sheets())),
                 title.getString());
         // The whole bar, label included — isOverDragArea walks up from whatever was hit.
         window.setDragArea(titleBar);
@@ -159,7 +159,7 @@ public final class HubInfoWindow {
         // Both only bite on a window that is already up, which is why they follow the open rather
         // than preceding it. Always-on-top is a no-op on a platform that has no such attribute
         // (Wayland); the window is simply an ordinary one there.
-        window.setResizable(false);
+        window.setResizable(true);
         window.setAlwaysOnTop(true);
 
         current = window;

@@ -47,7 +47,7 @@ dependencies {
 //    implementation "curse.maven:ftb-library-forge-404465:${ftb_library_file}"
 
     implementation files("jars/luckperms-neoforge.jar")
-    implementation files("jars/minestar-neoforge-1.1.0-all.jar")
+    implementation files("jars/minestar-neoforge-1.5.0-all.jar")
     runtimeOnly files("jars/tab.jar")
 
     // compileOnly: needed so GasTankItemMixin can reference StorageIO in its @WrapOperation

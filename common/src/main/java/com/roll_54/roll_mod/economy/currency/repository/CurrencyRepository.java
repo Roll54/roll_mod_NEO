@@ -2,6 +2,9 @@ package com.roll_54.roll_mod.economy.currency.repository;
 
 import static com.roll_54.roll_mod.RollMod.LOGGER;
 
+import com.roll_54.roll_mod.economy.api.CurrencyCause;
+import com.roll_54.roll_mod.economy.currency.audit.CurrencyAudit;
+import com.roll_54.roll_mod.economy.currency.audit.CurrencyAudit.Op;
 import com.roll_54.roll_mod.economy.currency.model.BalanceEntry;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.database.DatabaseManager;
@@ -14,6 +17,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 import org.jdbi.v3.core.Jdbi;
 
+/**
+ * The {@code currency_balances} table.
+ *
+ * <p>Every method that changes a balance takes a {@link CurrencyCause} and writes its request and
+ * result to the audit log ({@link CurrencyAudit}) — this is the floor every money API stands on, so
+ * nothing can move money past it unrecorded.
+ */
 public final class CurrencyRepository {
 
   /** So a session without a database logs the reason once instead of once per query. */
@@ -84,7 +94,13 @@ public final class CurrencyRepository {
                             .orElse(0L)));
   }
 
-  public static CompletableFuture<Boolean> setBalance(UUID uuid, CurrencyType type, long amount) {
+  public static CompletableFuture<Boolean> setBalance(
+      UUID uuid, CurrencyType type, long amount, CurrencyCause cause) {
+    long id = CurrencyAudit.begin(Op.SET, type, amount, uuid, null, cause);
+    return CurrencyAudit.track(id, setBalanceNow(uuid, type, amount), CurrencyAudit::ok);
+  }
+
+  private static CompletableFuture<Boolean> setBalanceNow(UUID uuid, CurrencyType type, long amount) {
     return onDatabase(
         "setBalance",
         false,
@@ -106,7 +122,13 @@ public final class CurrencyRepository {
                             > 0));
   }
 
-  public static CompletableFuture<Boolean> addBalance(UUID uuid, CurrencyType type, long amount) {
+  public static CompletableFuture<Boolean> addBalance(
+      UUID uuid, CurrencyType type, long amount, CurrencyCause cause) {
+    long id = CurrencyAudit.begin(Op.DEPOSIT, type, amount, uuid, null, cause);
+    return CurrencyAudit.track(id, addBalanceNow(uuid, type, amount), CurrencyAudit::ok);
+  }
+
+  private static CompletableFuture<Boolean> addBalanceNow(UUID uuid, CurrencyType type, long amount) {
     if (amount == 0) return CompletableFuture.completedFuture(true);
     return onDatabase(
         "addBalance",
@@ -129,7 +151,13 @@ public final class CurrencyRepository {
                             > 0));
   }
 
-  public static CompletableFuture<Boolean> withdraw(UUID uuid, CurrencyType type, long amount) {
+  public static CompletableFuture<Boolean> withdraw(
+      UUID uuid, CurrencyType type, long amount, CurrencyCause cause) {
+    long id = CurrencyAudit.begin(Op.WITHDRAW, type, amount, uuid, null, cause);
+    return CurrencyAudit.track(id, withdrawNow(uuid, type, amount), CurrencyAudit::ok);
+  }
+
+  private static CompletableFuture<Boolean> withdrawNow(UUID uuid, CurrencyType type, long amount) {
     if (amount <= 0) return CompletableFuture.completedFuture(false);
     return onDatabase(
         "withdraw",
@@ -155,6 +183,12 @@ public final class CurrencyRepository {
   }
 
   public static CompletableFuture<Boolean> transfer(
+      UUID from, UUID to, CurrencyType type, long amount, CurrencyCause cause) {
+    long id = CurrencyAudit.begin(Op.TRANSFER, type, amount, from, to, cause);
+    return CurrencyAudit.track(id, transferNow(from, to, type, amount), CurrencyAudit::ok);
+  }
+
+  private static CompletableFuture<Boolean> transferNow(
       UUID from, UUID to, CurrencyType type, long amount) {
     if (amount <= 0 || from.equals(to)) return CompletableFuture.completedFuture(false);
     return onDatabase(
@@ -195,6 +229,77 @@ public final class CurrencyRepository {
 
                       return true;
                     }));
+  }
+
+  /**
+   * Deletes every balance of {@code type}, and every unanswered offer of it with them. An offer
+   * holds money out of its sender's balance and refunds it on expiry, so leaving the offers would
+   * hand part of the wiped money back. Answers with the number of balances removed, or -1 when the
+   * wipe did not go through.
+   */
+  public static CompletableFuture<Integer> wipe(CurrencyType type, CurrencyCause cause) {
+    long id = CurrencyAudit.begin(Op.WIPE, type, 0, null, null, cause);
+    return CurrencyAudit.track(id, wipeNow(type),
+        removed -> removed >= 0 ? "OK removed=" + removed : "FAILED");
+  }
+
+  private static CompletableFuture<Integer> wipeNow(CurrencyType type) {
+    return onDatabase(
+        "wipe",
+        -1,
+        () ->
+            jdbi()
+                .inTransaction(
+                    handle -> {
+                      handle
+                          .createUpdate("DELETE FROM currency_offers WHERE type = :type")
+                          .bind("type", type.id())
+                          .execute();
+                      return handle
+                          .createUpdate("DELETE FROM currency_balances WHERE type = :type")
+                          .bind("type", type.id())
+                          .execute();
+                    }));
+  }
+
+  /** The {@code limit} largest balances of a currency, largest first — the leaderboard's "richest". */
+  public static CompletableFuture<List<BalanceEntry>> getTop(CurrencyType type, int limit) {
+    return onDatabase(
+        "getTop",
+        List.of(),
+        () ->
+            jdbi()
+                .withHandle(
+                    handle ->
+                        handle
+                            .createQuery(
+                                "SELECT uuid, balance FROM currency_balances"
+                                    + " WHERE type = :type AND balance > 0"
+                                    + " ORDER BY balance DESC LIMIT :limit")
+                            .bind("type", type.id())
+                            .bind("limit", limit)
+                            .mapTo(BalanceEntry.class)
+                            .list()));
+  }
+
+  /** 1 + how many balances of the currency are larger than {@code balance}: that balance's rank. */
+  public static CompletableFuture<Long> rankOf(CurrencyType type, long balance) {
+    return onDatabase(
+        "rankOf",
+        0L,
+        () ->
+            jdbi()
+                    .withHandle(
+                        handle ->
+                            handle
+                                .createQuery(
+                                    "SELECT COUNT(*) FROM currency_balances"
+                                        + " WHERE type = :type AND balance > :balance")
+                                .bind("type", type.id())
+                                .bind("balance", balance)
+                                .mapTo(Long.class)
+                                .one())
+                + 1);
   }
 
   public static CompletableFuture<List<BalanceEntry>> getTop10(CurrencyType type) {

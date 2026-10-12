@@ -9,11 +9,11 @@ import net.minecraft.world.item.ItemStack;
  * <p>The whole item list would be a packet per kit per resync for something the player only sees on
  * hover, so this carries the first stack as an icon and the count of the rest.
  */
-public record KitView(String name, ItemStack icon, int itemCount, long remainingMillis) {
+public record KitView(String name, ItemStack icon, int itemCount, long remainingMillis, String title) {
 
     public static KitView of(Kit kit, long remainingMillis) {
         ItemStack icon = kit.items().isEmpty() ? ItemStack.EMPTY : kit.items().get(0).copy();
-        return new KitView(kit.name(), icon, kit.items().size(), remainingMillis);
+        return new KitView(kit.name(), icon, kit.items().size(), remainingMillis, kit.title());
     }
 
     public boolean ready() {
@@ -25,10 +25,11 @@ public record KitView(String name, ItemStack icon, int itemCount, long remaining
         ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, icon);
         buf.writeVarInt(itemCount);
         buf.writeVarLong(Math.max(0L, remainingMillis));
+        buf.writeUtf(title, 128);
     }
 
     public static KitView decode(RegistryFriendlyByteBuf buf) {
         return new KitView(buf.readUtf(32), ItemStack.OPTIONAL_STREAM_CODEC.decode(buf),
-                buf.readVarInt(), buf.readVarLong());
+                buf.readVarInt(), buf.readVarLong(), buf.readUtf(128));
     }
 }

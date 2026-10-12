@@ -19,13 +19,13 @@ import net.minecraft.server.level.ServerPlayer;
  * configured GitHub repo into {@code kubejs/server_scripts}, then schedules a reload after
  * the configured delay (warning players first).
  *
- * <p>Sub-commands:
+ * <p>Sub-commands, all plain snake_case words:
  * <ul>
- *   <li>{@code --force} — same copy, but reload immediately with no grace period or warning.</li>
- *   <li>{@code time <duration>} — schedule the reload after a custom delay (e.g. {@code 30s},
- *       {@code 5m}, {@code 1h}, {@code 1h30m}) instead of the configured default.</li>
- *   <li>{@code no_reload} — copy the scripts but never reload; reload manually afterwards.</li>
- *   <li>{@code message} — don't copy anything; just broadcast the red reload-warning title.</li>
+ *   <li>{@code force} — copy, then reload immediately; no warning.</li>
+ *   <li>{@code no_reload} — copy only: no reload and no title for players.</li>
+ *   <li>{@code time <duration>} — like the bare command, but reload after a custom delay
+ *       (e.g. {@code 30s}, {@code 5m}, {@code 1h30m}) instead of the configured default.</li>
+ *   <li>{@code message} — don't copy anything; show every player the red reload-warning title for 30s.</li>
  * </ul>
  *
  * Restricted to the nicknames in {@link MyConfig.GitUpdater#allowedPlayers} (default
@@ -43,17 +43,14 @@ public class GitCopyCommand {
                                         // Bare command: reload after the configured delay, warning players.
                                         .executes(ctx -> execute(ctx,
                                                 GitScriptUpdater.ReloadMode.scheduled(MyConfig.INSTANCE.gitUpdater.reloadDelaySeconds)))
-                                        .then(Commands.literal("--force")
+                                        .then(Commands.literal("force")
                                                 .executes(ctx -> execute(ctx, GitScriptUpdater.ReloadMode.immediate())))
                                         .then(Commands.literal("no_reload")
                                                 .executes(ctx -> execute(ctx, GitScriptUpdater.ReloadMode.none())))
                                         .then(Commands.literal("time")
                                                 .then(Commands.argument("duration", StringArgumentType.word())
                                                         .executes(GitCopyCommand::executeTimed)))
-                                        // "message" broadcasts the warning; "massage" is a friendly alias.
                                         .then(Commands.literal("message")
-                                                .executes(GitCopyCommand::broadcastWarningOnly))
-                                        .then(Commands.literal("massage")
                                                 .executes(GitCopyCommand::broadcastWarningOnly))
                                 )
                         )
@@ -103,7 +100,7 @@ public class GitCopyCommand {
         return execute(ctx, GitScriptUpdater.ReloadMode.scheduled(seconds));
     }
 
-    /** {@code message} / {@code massage} — broadcast the red reload warning only. */
+    /** {@code message} — broadcast the red reload warning only. */
     private static int broadcastWarningOnly(CommandContext<CommandSourceStack> ctx) {
         CommandSourceStack source = ctx.getSource();
         if (!isAllowedPlayer(source)) {

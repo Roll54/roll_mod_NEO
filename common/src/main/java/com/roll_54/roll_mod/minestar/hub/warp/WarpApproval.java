@@ -52,7 +52,7 @@ public enum WarpApproval {
 
     /**
      * The sprite this state wears in the warp list's left-hand slot, from
-     * {@code assets/roll_mod/textures/gui/hub/warp/<id>.png}.
+     * {@code assets/roll_mod/textures/gui/hub/teleportation/warp/<id>.png}.
      *
      * <p>Shape rather than colour is what carries the meaning here, so the four states stay apart for
      * a player who cannot tell the four {@link #color()}s from each other; the tint is a second,
@@ -73,7 +73,7 @@ public enum WarpApproval {
      * See {@code HubUI.HubTab.texture()}.
      */
     public IGuiTexture icon() {
-        return SpriteTexture.of(RollMod.id("textures/gui/hub/warp/" + id + ".png"));
+        return SpriteTexture.of(RollMod.id("textures/gui/hub/teleportation/warp/" + id + ".png"));
     }
 
     /** {@code gui.roll_mod.hub.warp.approval.<id>} — the line shown on the warp's detail panel. */

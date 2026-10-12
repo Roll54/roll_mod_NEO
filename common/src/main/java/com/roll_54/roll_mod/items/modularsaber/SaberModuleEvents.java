@@ -65,10 +65,8 @@ public final class SaberModuleEvents {
         ItemStack stack = event.getStack();
         if (!(stack.getItem() instanceof ModularSaberItem saber) || !saber.isLive(stack)) return;
         if (!event.isTargetting(Enchantments.LOOTING)) return;
-        // The Fortune/Looting module's level (or a deprecated Looting module's — never both), plus
-        // the Meteorite module's one on top.
+        // The Fortune/Looting module's level, plus the Meteorite module's one on top.
         int level = (int) DrillModuleHelper.value(stack, ModuleType.FORTUNE)
-                + (int) DrillModuleHelper.value(stack, ModuleType.LOOTING)
                 + (DrillModuleHelper.get(stack).has(ModuleType.METEORITE) ? ModularSaberItem.METEORITE_LOOTING : 0);
         if (level <= 0) return;
         event.getHolder(Enchantments.LOOTING).ifPresent(holder -> event.getEnchantments().upgrade(holder, level));

@@ -19,7 +19,11 @@ import com.roll_54.roll_mod.minestar.op.OperatorEntry;
 import com.roll_54.roll_mod.network.packet.OperatorTogglePacket;
 import com.roll_54.roll_mod.network.packet.KitActionPacket;
 import com.roll_54.roll_mod.util.Durations;
+import com.roll_54.roll_mod.util.LegacyText;
+import dev.vfyjxf.taffy.style.AlignContent;
+import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.FlexDirection;
+import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
@@ -56,6 +60,7 @@ public final class KitsPanel {
     private static final int BUTTON_H = 14;
     private static final int GAP = 4;
     private static final int SWITCH_W = 28;
+    private static final int TILE_H = ICON + BUTTON_H + 2 + 4;
 
     /** How much of the column the switchboard takes once there is one to show. */
     private static final int OPERATORS_H = 76;
@@ -83,7 +88,9 @@ public final class KitsPanel {
         list.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
-        list.viewContainer(c -> c.layout(l -> l.widthPercent(100)));
+        // Tiles, one to a row.
+        list.viewContainer(c -> c.layout(l -> l.widthPercent(100).flexDirection(FlexDirection.COLUMN)
+                .gapRow(GAP)));
 
         Label empty = new Label();
         empty.setText(Component.translatable("gui.roll_mod.hub.kits.none")
@@ -114,7 +121,7 @@ public final class KitsPanel {
             list.clearAllScrollViewChildren();
             list.clearLayoutCache();
             for (KitView kit : kits) {
-                list.addScrollViewChild(row(kit));
+                list.addScrollViewChild(tile(kit));
             }
         });
 
@@ -194,41 +201,53 @@ public final class KitsPanel {
     }
 
     /** One kit: its first item as the icon, its name, and the claim button or the wait. */
-    private static UIElement row(KitView kit) {
-        UIElement row = new UIElement();
-        row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .marginBottom(2).paddingAll(1).gapColumn(3));
-        row.style(s -> s.background(new ColorRectTexture(COLOR_ROW)));
+    /**
+     * One kit as a tile, the full width of the column: its icon and name on the first line, from the
+     * left, and the claim button under them — a fixed size, centred, not stretched across the tile.
+     * The name is the one a moderator gave it ({@code Kit#title}), falling back to the id; the full
+     * name and item count are on hover, since a long name is cut to the tile's width.
+     */
+    private static UIElement tile(KitView kit) {
+        UIElement tile = new UIElement();
+        tile.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).height(TILE_H).flexShrink(0)
+                .alignItems(AlignItems.CENTER).justifyContent(AlignContent.CENTER)
+                .paddingHorizontal(HubSection.ROW_INSET).paddingVertical(2).gapRow(2));
+        tile.style(s -> s.background(new ColorRectTexture(COLOR_ROW)));
 
-        UIElement icon = new UIElement();
-        icon.layout(l -> l.width(ICON).height(ICON));
+        UIElement head = new UIElement();
+        // The icon where the name starts, both on the left; only the button below is centred.
+        head.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ICON).gapColumn(3)
+                .alignItems(AlignItems.CENTER));
         if (!kit.icon().isEmpty()) {
+            UIElement icon = new UIElement();
+            icon.layout(l -> l.width(ICON).height(ICON).flexShrink(0));
             icon.style(s -> s.background(new ItemStackTexture(kit.icon())));
+            head.addChild(icon);
         }
-
         Label name = new Label();
-        name.setText(Component.literal(kit.name()));
+        name.setText(LegacyText.display(kit.title()));
         name.layout(l -> l.flexBasis(0).flexGrow(1).height(ICON));
-        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
+        head.addChild(name);
 
         long remaining = ClientKitCache.remainingMillis(kit);
-
         Button claim = new Button();
         claim.setText(remaining > 0
                 ? Component.literal(Durations.format(remaining)).withStyle(ChatFormatting.GRAY)
                 : Component.translatable("gui.roll_mod.hub.kits.claim"));
-        claim.layout(l -> l.width(BUTTON_W).height(BUTTON_H));
+        claim.layout(l -> l.width(BUTTON_W).height(BUTTON_H).flexGrow(0).flexShrink(0).paddingAll(0));
+        HubSection.centreCaption(claim);
         if (remaining <= 0) {
             claim.setOnClick(e -> PacketDistributor.sendToServer(KitActionPacket.claim(kit.name())));
         }
 
-        row.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
-                List.of(Component.literal(kit.name()),
+        tile.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
+                List.of(LegacyText.display(kit.title()),
                         Component.translatable("gui.roll_mod.hub.kits.items", kit.itemCount())
                                 .withStyle(ChatFormatting.GRAY)),
                 null, null, ItemStack.EMPTY));
 
-        row.addChildren(icon, name, claim);
-        return row;
+        tile.addChildren(head, claim);
+        return tile;
     }
 }

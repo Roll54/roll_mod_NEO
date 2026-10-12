@@ -18,7 +18,8 @@ import net.neoforged.neoforge.items.IItemHandlerModifiable;
  */
 public class VendorStorage implements IItemHandlerModifiable {
 
-  public static final int SLOTS = 27;
+  /** A double chest's worth. Was 27; saves from then load with the new slots empty. */
+  public static final int SLOTS = 54;
   public static final int CAP = 1000;
 
   private final ItemStack[] stacks = new ItemStack[SLOTS]; // in-memory, count up to CAP

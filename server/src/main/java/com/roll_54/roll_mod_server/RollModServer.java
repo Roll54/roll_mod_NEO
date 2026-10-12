@@ -1,5 +1,7 @@
 package com.roll_54.roll_mod_server;
 
+import com.roll_54.roll_mod.minestar.friends.FriendsProvider;
+import com.roll_54.roll_mod_server.minestar.MinestarFriendsProvider;
 import com.roll_54.roll_mod.RollMod;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
@@ -15,6 +17,8 @@ public final class RollModServer {
     public static final String MODID = "roll_mod_server";
 
     public RollModServer(ModContainer container) {
+        // The hub's friends tab lives in :common, which cannot see the Minestar client; this jar can.
+        FriendsProvider.set(new MinestarFriendsProvider());
         RollMod.LOGGER.info("[{}] init complete.", MODID);
     }
 }

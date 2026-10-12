@@ -7,6 +7,14 @@ import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
 import com.roll_54.roll_mod.network.packet.RerollDailyTaskPacket;
 import com.roll_54.roll_mod.network.packet.DailyTaskToastPacket;
 import com.roll_54.roll_mod.network.packet.OpenHubPacket;
+import com.roll_54.roll_mod.network.packet.WelcomeResponsePacket;
+import com.roll_54.roll_mod.network.packet.FriendActionPacket;
+import com.roll_54.roll_mod.network.packet.ChatChannelPacket;
+import com.roll_54.roll_mod.network.packet.HistoryPackets;
+import com.roll_54.roll_mod.network.packet.LeaderboardPackets;
+import com.roll_54.roll_mod.network.packet.SkinPackets;
+import com.roll_54.roll_mod.network.packet.SyncFriendDetailPacket;
+import com.roll_54.roll_mod.network.packet.SyncFriendsPacket;
 import com.roll_54.roll_mod.network.packet.drill.DrillThrottlePacket;
 import com.roll_54.roll_mod.network.packet.drill.DrillVolumePacket;
 import com.roll_54.roll_mod.network.packet.drill.DrillTrashFilterPacket;
@@ -23,11 +31,17 @@ import com.roll_54.roll_mod.network.packet.SyncLettersPacket;
 import com.roll_54.roll_mod.network.packet.LetterComposePacket;
 import com.roll_54.roll_mod.network.packet.LetterAcceptPacket;
 import com.roll_54.roll_mod.network.packet.SyncTpaPacket;
+import com.roll_54.roll_mod.network.packet.MoneyActionPacket;
+import com.roll_54.roll_mod.network.packet.InteractionSettingPacket;
+import com.roll_54.roll_mod.network.packet.KitNamePackets;
+import com.roll_54.roll_mod.network.packet.SyncInteractionSettingsPacket;
+import com.roll_54.roll_mod.network.packet.SyncMoneyPacket;
 import com.roll_54.roll_mod.network.packet.TeleportActionPacket;
 import com.roll_54.roll_mod.network.packet.TpaActionPacket;
 import com.roll_54.roll_mod.network.packet.TpaModePacket;
 import com.roll_54.roll_mod.network.packet.SyncHomesPacket;
 import com.roll_54.roll_mod.network.packet.SyncWarpsPacket;
+import com.roll_54.roll_mod.network.packet.TeleportCountdownPacket;
 import com.roll_54.roll_mod.network.packet.WarpActionPacket;
 import com.roll_54.roll_mod.network.packet.PacketLaunchRocket;
 import com.roll_54.roll_mod.network.packet.armor.MultiProtectingGraviChestItemPacket;
@@ -75,6 +89,61 @@ public class NetworkHandler {
                 OpenHubPacket::handle
         );
         registrar.playToServer(
+                WelcomeResponsePacket.TYPE,
+                WelcomeResponsePacket.STREAM_CODEC,
+                WelcomeResponsePacket::handle
+        );
+        registrar.playToClient(
+                ChatChannelPacket.TYPE,
+                ChatChannelPacket.STREAM_CODEC,
+                ChatChannelPacket::handle
+        );
+        registrar.playToServer(
+                LeaderboardPackets.Request.TYPE,
+                LeaderboardPackets.Request.STREAM_CODEC,
+                LeaderboardPackets.Request::handle
+        );
+        registrar.playToClient(
+                LeaderboardPackets.Sync.TYPE,
+                LeaderboardPackets.Sync.STREAM_CODEC,
+                LeaderboardPackets.Sync::handle
+        );
+        registrar.playToServer(
+                SkinPackets.Request.TYPE,
+                SkinPackets.Request.STREAM_CODEC,
+                SkinPackets.Request::handle
+        );
+        registrar.playToClient(
+                SkinPackets.Sync.TYPE,
+                SkinPackets.Sync.STREAM_CODEC,
+                SkinPackets.Sync::handle
+        );
+        registrar.playToServer(
+                HistoryPackets.Request.TYPE,
+                HistoryPackets.Request.STREAM_CODEC,
+                HistoryPackets.Request::handle
+        );
+        registrar.playToClient(
+                HistoryPackets.Sync.TYPE,
+                HistoryPackets.Sync.STREAM_CODEC,
+                HistoryPackets.Sync::handle
+        );
+        registrar.playToServer(
+                FriendActionPacket.TYPE,
+                FriendActionPacket.STREAM_CODEC,
+                FriendActionPacket::handle
+        );
+        registrar.playToClient(
+                SyncFriendsPacket.TYPE,
+                SyncFriendsPacket.STREAM_CODEC,
+                SyncFriendsPacket::handle
+        );
+        registrar.playToClient(
+                SyncFriendDetailPacket.TYPE,
+                SyncFriendDetailPacket.STREAM_CODEC,
+                SyncFriendDetailPacket::handle
+        );
+        registrar.playToServer(
                 DrillThrottlePacket.TYPE,
                 DrillThrottlePacket.STREAM_CODEC,
                 DrillThrottlePacket::handle
@@ -104,6 +173,11 @@ public class NetworkHandler {
                 SyncWarpsPacket.STREAM_CODEC,
                 SyncWarpsPacket::handle
         );
+        registrar.playToClient(
+                TeleportCountdownPacket.TYPE,
+                TeleportCountdownPacket.STREAM_CODEC,
+                TeleportCountdownPacket::handle
+        );
         registrar.playToServer(
                 HomeActionPacket.TYPE,
                 HomeActionPacket.STREAM_CODEC,
@@ -113,6 +187,11 @@ public class NetworkHandler {
                 SyncHomesPacket.TYPE,
                 SyncHomesPacket.STREAM_CODEC,
                 SyncHomesPacket::handle
+        );
+        registrar.playToClient(
+                com.roll_54.roll_mod.netherstorm.SyncStormPacket.TYPE,
+                com.roll_54.roll_mod.netherstorm.SyncStormPacket.STREAM_CODEC,
+                com.roll_54.roll_mod.netherstorm.SyncStormPacket::handle
         );
         registrar.playToClient(
                 DailyTaskToastPacket.TYPE,
@@ -165,6 +244,36 @@ public class NetworkHandler {
                 SyncTpaPacket.TYPE,
                 SyncTpaPacket.STREAM_CODEC,
                 SyncTpaPacket::handle
+        );
+        registrar.playToClient(
+                KitNamePackets.Sync.TYPE,
+                KitNamePackets.Sync.STREAM_CODEC,
+                KitNamePackets.Sync::handle
+        );
+        registrar.playToServer(
+                KitNamePackets.Rename.TYPE,
+                KitNamePackets.Rename.STREAM_CODEC,
+                KitNamePackets.Rename::handle
+        );
+        registrar.playToServer(
+                InteractionSettingPacket.TYPE,
+                InteractionSettingPacket.STREAM_CODEC,
+                InteractionSettingPacket::handle
+        );
+        registrar.playToClient(
+                SyncInteractionSettingsPacket.TYPE,
+                SyncInteractionSettingsPacket.STREAM_CODEC,
+                SyncInteractionSettingsPacket::handle
+        );
+        registrar.playToServer(
+                MoneyActionPacket.TYPE,
+                MoneyActionPacket.STREAM_CODEC,
+                MoneyActionPacket::handle
+        );
+        registrar.playToClient(
+                SyncMoneyPacket.TYPE,
+                SyncMoneyPacket.STREAM_CODEC,
+                SyncMoneyPacket::handle
         );
         registrar.playToServer(
                 OperatorTogglePacket.TYPE,

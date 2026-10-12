@@ -1,7 +1,7 @@
 package com.roll_54.roll_mod.economy.vendingblock.gui.admin;
 
+import com.roll_54.roll_mod.minestar.theme.RollUi;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
-import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Switch;
@@ -25,7 +25,10 @@ public final class VendorAdminUI {
   private VendorAdminUI() {}
 
   public static ModularUI build(VendorBlockEntity be, Player player) {
-    UIElement root = VendorUIHelper.panel(176, 166);
+    // The theme's panel surface (hub settings), not a fixed light-grey plate. Children are placed
+    // absolutely, so the theme's own padding is dropped.
+    UIElement root = VendorUIHelper.styledPanel(176, 166);
+    root.layout(l -> l.paddingAll(0));
 
     Label title = new Label();
     title.setText(Component.translatable("menu.roll_mod.admin.settings"));
@@ -79,6 +82,6 @@ public final class VendorAdminUI {
     root.addChild(VendorUIHelper.abs(facadeLabel, 8, 106, 60, 10));
     root.addChild(VendorUIHelper.facadeSlot(be, 70, 104));
 
-    return ModularUI.of(UI.of(root), player);
+    return ModularUI.of(RollUi.of(player, root), player);
   }
 }

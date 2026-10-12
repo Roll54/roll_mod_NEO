@@ -146,6 +146,11 @@ public class Messages {
     return Component.translatable("msg.roll_mod.ah.sold", count, item, buyer, price);
   }
 
+  /** The seller's line under {@link #ahSold}: what actually reached them, and the house's cut. */
+  public static Component ahSellerFee(long payout, long fee) {
+    return Component.translatable("msg.roll_mod.ah.sellerFee", payout, fee);
+  }
+
   public static Component ahBidPlaced(Component item, long amount) {
     return Component.translatable("msg.roll_mod.ah.bidPlaced", amount, item);
   }

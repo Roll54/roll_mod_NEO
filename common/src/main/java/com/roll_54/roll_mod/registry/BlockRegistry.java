@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.registry;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.blocks.*;
+import vectorwing.farmersdelight.common.block.PieBlock;
 import com.roll_54.roll_mod.blocks.regenblock.RegenBlock;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -11,6 +12,7 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
@@ -172,7 +174,8 @@ public class BlockRegistry {
             "module_installation_table",
             () -> new ModuleInstallationTableBlock(BlockBehaviour.Properties.of()
                     .strength(2.5F)
-                    .sound(SoundType.METAL)));
+                    .sound(SoundType.METAL)
+                    .noOcclusion()));
 
     public static final DeferredBlock<Block> GRINDING_WHEELS = BLOCKS.register(
             "grinding_wheels",
@@ -208,6 +211,37 @@ public class BlockRegistry {
             });
         }
     }
+
+    // Farmer's Delight-style placed dishes: eaten a quarter at a time, or sliced with a knife.
+    // Block items are ItemRegistry.FLUORITE_PINEAPPLE_PIZZA / SULFUR_BERRY_PIE.
+    // Brewin' and Chewin''s pizza block and models (brewinandchewin:block/pizza*), serving our slice;
+    // textures in textures/block/test.
+    public static final DeferredBlock<Block> FLUORITE_PINEAPPLE_PIZZA = BLOCKS.register(
+            "fluorite_pineapple_pizza",
+            () -> new BnCPizzaBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAKE),
+                    () -> ItemRegistry.FLUORITE_PINEAPPLE_PIZZA_SLICE.get())
+    );
+
+    // Farmer's Delight's PieBlock and pie model templates (farmersdelight:block/template_pie*): eat a
+    // quarter with an empty hand, cut one off with a knife. Textures in textures/block/test.
+    public static final DeferredBlock<Block> SULFUR_BERRY_PIE_BLOCK = BLOCKS.register(
+            "sulfur_berry_pie",
+            () -> new PieBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAKE),
+                    () -> ItemRegistry.SULFUR_BERRY_PIE_SLICE.get())
+    );
+
+    // XP burgers served on a plate: sneak-right-click the burger item onto a block, right-click to eat
+    // it in place (food + XP), right-click the plate left behind to take it back as a bowl.
+    public static final DeferredBlock<Block> XP_BURGER_BLOCK = BLOCKS.register(
+            "xp_burger",
+            () -> new PlatedFoodBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAKE),
+                    () -> ItemRegistry.XP_BURGER.get(), 10)
+    );
+    public static final DeferredBlock<Block> GOLDEN_XP_BURGER_BLOCK = BLOCKS.register(
+            "golden_xp_burger",
+            () -> new PlatedFoodBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.CAKE),
+                    () -> ItemRegistry.GOLDEN_XP_BURGER.get(), 10)
+    );
 
     public static final DeferredBlock<Block> HUERI_STATUE = BLOCKS.register(
             "hueri_statue",

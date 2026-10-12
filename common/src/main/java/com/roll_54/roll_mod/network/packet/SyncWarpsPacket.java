@@ -52,6 +52,7 @@ public record SyncWarpsPacket(List<Warp> warps, int limit) implements CustomPack
             buf.writeVarInt(warp.reports().size());
             buf.writeVarInt(warp.visitorsToday());
             buf.writeVarLong(warp.visitsTotal());
+            buf.writeLong(warp.requiredQuest());
         }
     }
 
@@ -74,6 +75,7 @@ public record SyncWarpsPacket(List<Warp> warps, int limit) implements CustomPack
             int reportCount = buf.readVarInt();
             int visitorCount = buf.readVarInt();
             long visitsTotal = buf.readVarLong();
+            long requiredQuest = buf.readLong();
 
             // The client only ever asks how many reports there are, so stand in that many synthetic
             // ids rather than sending real ones — a report is between the reporter and moderation.
@@ -81,7 +83,7 @@ public record SyncWarpsPacket(List<Warp> warps, int limit) implements CustomPack
             // Warp.visitorsToday() reports the number the server sent instead of zeroing it.
             warps.add(new Warp(id, owner, ownerName, name, description, dimension, x, y, z,
                     yaw, pitch, price, created, approval, moderator, synthetic(reportCount),
-                    synthetic(visitorCount), DailyTaskManager.currentPeriodDay(), visitsTotal));
+                    synthetic(visitorCount), DailyTaskManager.currentPeriodDay(), visitsTotal, requiredQuest));
         }
         return new SyncWarpsPacket(warps, limit);
     }

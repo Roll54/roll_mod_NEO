@@ -5,26 +5,38 @@ import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.data.Horizontal;
 import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay;
 import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollerMode;
+import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.*;
 import com.lowdragmc.lowdraglib2.gui.ui.data.Vertical;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.economy.util.EnergyFormatUtils;
+import com.roll_54.roll_mod.economy.vendingblock.Config;
 import com.roll_54.roll_mod.economy.vendingblock.auction.AuctionData;
+import com.roll_54.roll_mod.economy.vendingblock.auction.AuctionManager;
+import com.roll_54.roll_mod.economy.vendingblock.auction.AuctionHistoryEntry;
 import com.roll_54.roll_mod.economy.vendingblock.auction.AuctionListing;
 import com.roll_54.roll_mod.economy.vendingblock.client.ClientAuctionCache;
+import com.roll_54.roll_mod.economy.vendingblock.client.ClientAuctionHistoryCache;
+import com.roll_54.roll_mod.economy.vendingblock.gui.MoneyExpression;
 import com.roll_54.roll_mod.economy.vendingblock.gui.VendorUIHelper;
 import com.roll_54.roll_mod.minestar.hub.gui.HubSection;
 import com.roll_54.roll_mod.minestar.hub.gui.HubUI;
 import com.roll_54.roll_mod.economy.vendingblock.network.AuctionActionPacket;
+import com.roll_54.roll_mod.economy.vendingblock.network.AuctionHistoryPackets;
 import com.roll_54.roll_mod.economy.vendingblock.network.CreateListingPacket;
 import dev.vfyjxf.taffy.style.AlignContent;
 import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import dev.vfyjxf.taffy.style.FlexWrap;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -32,12 +44,14 @@ import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
- * The {@code /rollmod ah} GUI. A single {@link ModularUI} hosting four sub-panels toggled via
- * {@code setDisplay} (browse grid, listing detail, create form, collection). Data is read from
+ * The {@code /rollmod ah} GUI. A single {@link ModularUI} hosting five sub-panels toggled via
+ * {@code setDisplay} (browse grid, listing detail, create form, collection, history). Data is read from
  * {@link ClientAuctionCache} on the client and {@link AuctionData} on the (logical) server, since
  * {@code createUI} runs on both sides. All mutating actions are addressed by listing UUID through
  * {@link AuctionActionPacket}/{@link CreateListingPacket}, so client-side filtering/pagination
- * never has to match the server's element tree.
+ * never has to match the server's element tree. The history panel is client-only data
+ * ({@link ClientAuctionHistoryCache}, fetched by {@link AuctionHistoryPackets}) and holds no sync
+ * value, so its rows may differ between the two trees freely.
  *
  * <p>Laid out in flex rows and columns against whatever size the hub window has, not in pixels:
  * the browse grid gains columns and rows as the window grows, and the other three panels scroll
@@ -45,9 +59,11 @@ import net.neoforged.neoforge.network.PacketDistributor;
  */
 public final class AuctionUI {
 
-  private static final int EDGE = 8;          // panel-edge inset
-  private static final int INSET = EDGE * 2;  // content inset, one step further in
-  private static final int HEADER_H = 24;     // title row and its two buttons
+  // Both measured inside the root's shared HubSection.TAB_PADDING (6), so the content sits where it
+  // did before the root took that inset: 6 + 2 = the old 8, 6 + 10 = the old 16.
+  private static final int EDGE = 2;          // panel-edge inset
+  private static final int INSET = 10;        // content inset, one step further in
+  private static final int HEADER_H = 16;     // the shared title row (12) and the gap under it (4)
 
   private static final int SLOT = VendorUIHelper.SLOT_SIZE;
   private static final int LINE_H = 12;
@@ -59,9 +75,13 @@ public final class AuctionUI {
    */
   private static final int SORT_W = 120;
   private static final int HEAD_BTN_W = 56;
+  /**
+   * The header buttons keep a full button's height and overhang the shared 12px title row by
+   * {@link #HEAD_BTN_OVERHANG} above and below — at 12 the theme's own padding cut the caption off.
+   */
+  private static final int HEAD_BTN_H = 16;
+  private static final int HEAD_BTN_OVERHANG = (HEAD_BTN_H - 12) / 2;
 
-  /** The I button. */
-  private static final int INFO = 12;
 
   private static final int GRID_X = 12;
   private static final int PAGER_H = 24;
@@ -76,6 +96,18 @@ public final class AuctionUI {
 
   /** Fits "Вибрати предмет" (~88px) with the Button's own padding on top. */
   private static final int PICK_BTN_W = 110;
+  private static final int LOT_PRICE_COLOR = 0x1AC960;
+
+  /** History rows: one line each, the columns sized for the default 460px window. */
+  private static final int HIST_ROW_H = 20;
+  private static final int HIST_DATE_W = 80;
+  private static final int HIST_ACTION_W = 84;
+  private static final int HIST_PRICE_W = 60;
+  private static final int HIST_OTHER_W = 70;
+  private static final int HIST_ROW_COLOR = 0x30FFFFFF;
+  /** The reader's own clock, which is what "when did I sell that" means to them. */
+  private static final DateTimeFormatter HIST_DATE =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(ZoneId.systemDefault());
 
   private AuctionUI() {}
 
@@ -96,7 +128,8 @@ public final class AuctionUI {
     // Fills the tab box, but with no background of its own: the hub already paints the window frame
     // and the dark content panel behind every tab, and a panel here only washed over them.
     UIElement root = new UIElement();
-    root.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).heightPercent(100));
+    root.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).heightPercent(100)
+        .paddingAll(HubSection.TAB_PADDING));
 
     HubSection.Info section = HubSection.info("auction");
 
@@ -104,46 +137,53 @@ public final class AuctionUI {
     UIElement detail = new UIElement();
     UIElement create = new UIElement();
     UIElement collection = new UIElement();
-    // The four share the body; only one is displayed, and a hidden one leaves the layout.
-    for (UIElement panel : List.of(browse, detail, create, collection)) {
+    UIElement history = new UIElement();
+    // The five share the body; only one is displayed, and a hidden one leaves the layout.
+    for (UIElement panel : List.of(browse, detail, create, collection, history)) {
       panel.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)
           .flexBasis(0).flexGrow(1));
     }
 
+    int[] shown = {-1};
     IntConsumer select =
         idx -> {
           browse.setDisplay(idx == 0);
           detail.setDisplay(idx == 1);
           create.setDisplay(idx == 2);
           collection.setDisplay(idx == 3);
+          history.setDisplay(idx == 4);
           // The create form is the only place an item has to be picked up, so it is the only place
           // the inventory is on screen.
           showInventory.accept(idx == 2);
+          // Opening the history fetches it afresh: the one from the last opening is stale by the
+          // next sale. Client only — the server's copy of the tree has no one to answer.
+          if (idx == 4 && shown[0] != 4 && player.level().isClientSide) requestHistory();
+          shown[0] = idx;
         };
 
-    // Title on the left, then the two panel buttons, then the I button in the far corner where
-    // every other section has it.
-    UIElement header = row(HEADER_H);
-    header.layout(l -> l.paddingHorizontal(EDGE).flexShrink(0));
-
-    Label title = new Label();
-    title.setText(Component.translatable("menu.roll_mod.ah.title"));
-    title.layout(l -> l.flexGrow(1).height(LINE_H));
-    title.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
-
+    // The shared title row (HubSection.header): title on the left, the two panel buttons, then the
+    // I button in the corner where every other section has it. The buttons are sized to the row.
     Button createBtn = new Button();
     createBtn.setText(Component.translatable("menu.roll_mod.ah.create"));
     createBtn.setOnClick(e -> select.accept(2));
-    createBtn.layout(l -> l.width(HEAD_BTN_W).height(FIELD_H).marginRight(4));
+    createBtn.layout(l -> l.width(HEAD_BTN_W).height(HEAD_BTN_H).flexShrink(0)
+        .marginTop(-HEAD_BTN_OVERHANG).marginBottom(-HEAD_BTN_OVERHANG).marginRight(4));
 
     Button collectionBtn = new Button();
     collectionBtn.setText(Component.translatable("menu.roll_mod.ah.collection"));
     collectionBtn.setOnClick(e -> select.accept(3));
-    collectionBtn.layout(l -> l.width(HEAD_BTN_W).height(FIELD_H).marginRight(4));
+    collectionBtn.layout(l -> l.width(HEAD_BTN_W).height(HEAD_BTN_H).flexShrink(0)
+        .marginTop(-HEAD_BTN_OVERHANG).marginBottom(-HEAD_BTN_OVERHANG).marginRight(4));
 
-    section.button().layout(l -> l.width(INFO).height(INFO).flexShrink(0));
-    header.addChildren(title, createBtn, collectionBtn, section.button());
-    root.addChild(header);
+    Button historyBtn = new Button();
+    historyBtn.setText(Component.translatable("gui.roll_mod.auction.history.button"));
+    historyBtn.setOnClick(e -> select.accept(4));
+    historyBtn.layout(l -> l.width(HEAD_BTN_W).height(HEAD_BTN_H).flexShrink(0)
+        .marginTop(-HEAD_BTN_OVERHANG).marginBottom(-HEAD_BTN_OVERHANG).marginRight(4));
+
+    root.addChild(HubSection.header(
+        Component.translatable("menu.roll_mod.ah.title"), section, createBtn, collectionBtn,
+        historyBtn));
 
     UUID[] selected = {null};
     Runnable[] rebuildDetail = {() -> {}};
@@ -152,15 +192,16 @@ public final class AuctionUI {
     buildDetail(player, detail, select, selected, rebuildDetail);
     buildCreate(player, create, select);
     buildCollection(player, collection, select);
+    buildHistory(player, history, select);
 
     select.accept(0);
 
     UIElement body = new UIElement();
     body.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)
         .flexBasis(0).flexGrow(1));
-    body.addChildren(browse, detail, create, collection);
+    body.addChildren(browse, detail, create, collection, history);
     root.addChild(body);
-    // Last, so it covers whichever of the four panels is on screen.
+    // Last, so it covers whichever of the five panels is on screen.
     root.addChild(section.overlay());
     // The player inventory lives on the hub window, under the content box.
     return root;
@@ -320,7 +361,17 @@ public final class AuctionUI {
           grid.clearLayoutCache();
           for (int i = start; i < end; i++) {
             AuctionListing l = list.get(i);
-            ItemSlot itemSlot = VendorUIHelper.phantomSlot();
+            // The item's tooltip as it is, name first, with the lot's price on the line under it.
+            ItemSlot itemSlot =
+                VendorUIHelper.phantomSlot(
+                    new ItemSlot() {
+                      @Override
+                      public List<Component> getFullTooltipTexts(boolean showItemTooltips) {
+                        List<Component> lines = new java.util.ArrayList<>(super.getFullTooltipTexts(showItemTooltips));
+                        lines.add(Math.min(1, lines.size()), lotPriceLine(l));
+                        return lines;
+                      }
+                    });
             itemSlot.setItem(l.item.copy());
             UUID lid = l.id;
             itemSlot.addEventListener(
@@ -389,7 +440,7 @@ public final class AuctionUI {
           item.setItem(l.item.copy());
           item.layout(l2 -> l2.width(SLOT).height(SLOT).flexShrink(0).marginRight(6));
           Label name = new Label();
-          name.setText(Component.literal(l.item.getCount() + "x ").append(l.item.getHoverName()));
+          name.setText(Component.literal(l.item.getCount() + "x ").append(defaultName(l.item)));
           name.layout(l2 -> l2.flexGrow(1).height(LINE_H));
           name.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
           itemRow.addChildren(item, name);
@@ -403,11 +454,7 @@ public final class AuctionUI {
           content.addScrollViewChild(time);
 
           if (!l.bidding) {
-            content.addScrollViewChild(line(
-                Component.translatable(
-                    "menu.roll_mod.ah.price",
-                    EnergyFormatUtils.formatEnergy(l.fixedPrice)),
-                8));
+            content.addScrollViewChild(line(lotPriceLine(l), 8));
 
             Button buy = new Button();
             buy.setText(Component.translatable("menu.roll_mod.buy.button"));
@@ -423,33 +470,32 @@ public final class AuctionUI {
             actions.addChild(buy);
             content.addScrollViewChild(actions);
           } else {
-            content.addScrollViewChild(line(
-                Component.translatable(
-                    l.hasBids()
-                        ? "menu.roll_mod.ah.currentBid"
-                        : "menu.roll_mod.ah.startBid",
-                    EnergyFormatUtils.formatEnergy(l.displayPrice())),
-                8));
+            content.addScrollViewChild(line(lotPriceLine(l), 8));
 
             long minNext = l.minNextBid(1);
-            TextField bidField = VendorUIHelper.intField(Long.toString(minNext), t -> {});
+            Label bidPreview = new Label();
+            bidPreview.layout(l2 -> l2.flexGrow(1).height(FIELD_H).marginLeft(6));
+            bidPreview.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+            TextField bidField =
+                VendorUIHelper.exprField(
+                    Long.toString(minNext), t -> bidPreview.setText(exprPreview(t)));
             bidField.layout(l2 -> l2.width(70).height(FIELD_H).marginRight(6));
 
             Button placeBid = new Button();
             placeBid.setText(Component.translatable("menu.roll_mod.ah.bid"));
             placeBid.setOnClick(
                 e -> {
-                  long amount = VendorUIHelper.parseLong(bidField.getText(), 0);
+                  long amount = VendorUIHelper.parseExpr(bidField.getText(), 0);
                   if (amount > 0) {
                     PacketDistributor.sendToServer(
                         new AuctionActionPacket(AuctionActionPacket.Action.BID, l.id, amount));
                   }
                 });
-            placeBid.layout(l2 -> l2.width(70).height(BTN_H));
+            placeBid.layout(l2 -> l2.width(90).height(BTN_H));
 
             UIElement bidRow = row(BTN_H);
             bidRow.layout(l2 -> l2.marginTop(10));
-            bidRow.addChildren(bidField, placeBid);
+            bidRow.addChildren(bidField, placeBid, bidPreview);
             content.addScrollViewChild(bidRow);
           }
 
@@ -590,9 +636,32 @@ public final class AuctionUI {
     UIElement fixedGroup = new UIElement();
     fixedGroup.layout(l -> l.flexDirection(FlexDirection.COLUMN).marginTop(8).flexShrink(0));
     Label priceLabel = fieldLabel(Component.translatable("menu.roll_mod.ah.priceField"), 120);
-    TextField priceField = VendorUIHelper.intField("1", t -> {});
-    priceField.layout(l -> l.width(100).height(FIELD_H).marginTop(2));
-    fixedGroup.addChildren(priceLabel, priceField);
+    // The Auction House's cut and what the seller nets, beside the field and kept in step with it.
+    Label payoutLabel = new Label();
+    payoutLabel.layout(l -> l.flexGrow(1).height(FIELD_H).marginLeft(6));
+    payoutLabel.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+    // A typed expression shows what it came to ahead of the fee, so "832*30+90" is checkable
+    // before listing rather than after.
+    Consumer<String> updatePayout =
+        t -> {
+          OptionalLong value = MoneyExpression.evaluate(t);
+          if (value.isEmpty() && !t.isBlank()) {
+            payoutLabel.setText(exprPreview(t));
+            return;
+          }
+          Component payout = payoutText(value.orElse(0));
+          payoutLabel.setText(
+              MoneyExpression.isPlain(t) || t.isBlank()
+                  ? payout
+                  : Component.empty().append(exprPreview(t)).append(" · ").append(payout));
+        };
+    TextField priceField = VendorUIHelper.exprField("1", updatePayout);
+    priceField.layout(l -> l.width(100).height(FIELD_H).flexShrink(0));
+    updatePayout.accept(priceField.getText());
+    UIElement priceRow = row(FIELD_H);
+    priceRow.layout(l -> l.marginTop(2));
+    priceRow.addChildren(priceField, payoutLabel);
+    fixedGroup.addChildren(priceLabel, priceRow);
 
     // Bidding fields: start and buyout side by side.
     UIElement bidGroup = new UIElement();
@@ -600,15 +669,19 @@ public final class AuctionUI {
     UIElement startCol = new UIElement();
     startCol.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(110));
     Label startLabel = fieldLabel(Component.translatable("menu.roll_mod.ah.startField"), 90);
-    TextField startField = VendorUIHelper.intField("1", t -> {});
+    Label startPreview = previewLabel();
+    TextField startField =
+        VendorUIHelper.exprField("1", t -> startPreview.setText(exprPreview(t)));
     startField.layout(l -> l.width(90).height(FIELD_H).marginTop(2));
-    startCol.addChildren(startLabel, startField);
+    startCol.addChildren(startLabel, startField, startPreview);
     UIElement buyoutCol = new UIElement();
     buyoutCol.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(110));
     Label buyoutLabel = fieldLabel(Component.translatable("menu.roll_mod.ah.buyoutField"), 110);
-    TextField buyoutField = VendorUIHelper.intField("0", t -> {});
+    Label buyoutPreview = previewLabel();
+    TextField buyoutField =
+        VendorUIHelper.exprField("0", t -> buyoutPreview.setText(exprPreview(t)));
     buyoutField.layout(l -> l.width(90).height(FIELD_H).marginTop(2));
-    buyoutCol.addChildren(buyoutLabel, buyoutField);
+    buyoutCol.addChildren(buyoutLabel, buyoutField, buyoutPreview);
     bidGroup.addChildren(startCol, buyoutCol);
     bidGroup.setDisplay(false);
 
@@ -634,9 +707,11 @@ public final class AuctionUI {
           int quantity = (int) Math.max(1, VendorUIHelper.parseLong(qty.getText(), 1));
           ItemStack toList = picked.copyWithCount(quantity);
           boolean bidding = type.isOn();
-          long fixed = Math.max(0, VendorUIHelper.parseLong(priceField.getText(), 0));
-          long startPrice = Math.max(0, VendorUIHelper.parseLong(startField.getText(), 0));
-          long buyout = Math.max(0, VendorUIHelper.parseLong(buyoutField.getText(), 0));
+          // An expression that does not evaluate sends 0, which the server refuses as an invalid
+          // price — never a guess at what the player meant.
+          long fixed = VendorUIHelper.parseExpr(priceField.getText(), 0);
+          long startPrice = VendorUIHelper.parseExpr(startField.getText(), 0);
+          long buyout = VendorUIHelper.parseExpr(buyoutField.getText(), 0);
           int days = (int) Math.max(1, VendorUIHelper.parseLong(daysField.getText(), 1));
           PacketDistributor.sendToServer(
               new CreateListingPacket(toList, bidding, fixed, startPrice, buyout, days));
@@ -655,6 +730,45 @@ public final class AuctionUI {
     buttons.addChildren(list, back);
 
     form.addScrollViewChildren(itemRow, pickHint, fixedGroup, bidGroup, daysGroup, buttons);
+  }
+
+  /**
+   * "Fee 10% · You get 900" for a lot priced at {@code price}. Reads the server config, which
+   * NeoForge syncs to the client, and the same {@link AuctionManager#sellerPayout} the sale pays by.
+   */
+  private static Component payoutText(long price) {
+    String payout = EnergyFormatUtils.formatEnergy(AuctionManager.sellerPayout(price));
+    if (!Config.Server.AH_SELLER_FEE_ENABLED.get()) {
+      return Component.translatable("menu.roll_mod.ah.payout.noFee", payout)
+          .withStyle(ChatFormatting.GRAY);
+    }
+    String percent =
+        java.math.BigDecimal.valueOf(Config.Server.AH_SELLER_FEE.get())
+            .movePointRight(2)
+            .stripTrailingZeros()
+            .toPlainString();
+    return Component.translatable("menu.roll_mod.ah.payout", percent, payout)
+        .withStyle(ChatFormatting.GRAY);
+  }
+
+  /** The line under an expression field that shows what it came to. */
+  private static Label previewLabel() {
+    Label label = new Label();
+    label.layout(l -> l.width(110).height(LINE_H));
+    label.textStyle(t -> t.textWrap(TextWrap.HIDE));
+    return label;
+  }
+
+  /**
+   * "= 25050" under a money field holding arithmetic, red "invalid" when it does not evaluate, and
+   * nothing for a plain number — there is nothing to show for "100" but "100" again.
+   */
+  private static Component exprPreview(String text) {
+    if (text == null || text.isBlank() || MoneyExpression.isPlain(text)) return Component.empty();
+    OptionalLong value = MoneyExpression.evaluate(text);
+    return value.isPresent()
+        ? Component.literal("= " + value.getAsLong()).withStyle(ChatFormatting.GRAY)
+        : Component.translatable("menu.roll_mod.ah.expr.invalid").withStyle(ChatFormatting.RED);
   }
 
   private static Label fieldLabel(Component text, int width) {
@@ -715,6 +829,136 @@ public final class AuctionUI {
     panel.addChild(footer);
   }
 
+  /* -------------------------------------------------- history ---------------------------------------------------- */
+
+  /**
+   * The player's own auction history: the newest hundred rows of {@code auction_history}, one line
+   * each — when, what happened, the item, the money, the other side.
+   *
+   * <p>Built the same on both sides, with no sync value: the rows come from {@link
+   * ClientAuctionHistoryCache}, and on the server's copy of the tree the list simply stays empty.
+   * Rebuilt on the tick the cache's version moves, like the hub's money history.
+   */
+  private static void buildHistory(Player player, UIElement panel, IntConsumer select) {
+    ScrollerView list = scroller();
+    list.layout(l -> l.marginTop(4).marginHorizontal(EDGE).widthAuto());
+    list.viewPort(v -> v.layout(l -> l.paddingAll(0)));
+    panel.addChild(list);
+
+    Button refresh = new Button();
+    refresh.setText(Component.literal("⟳"));
+    refresh.setOnClick(e -> requestHistory());
+    refresh.layout(l -> l.width(FIELD_H + 4).height(FIELD_H).flexShrink(0).marginRight(10));
+
+    Button back = new Button();
+    back.setText(Component.translatable("menu.roll_mod.ah.back"));
+    back.setOnClick(e -> select.accept(0));
+    back.layout(l -> l.width(60).height(FIELD_H));
+
+    UIElement footer = row(FIELD_H + 10);
+    footer.layout(l -> l.paddingHorizontal(EDGE));
+    footer.addChildren(refresh, back);
+    panel.addChild(footer);
+
+    boolean client = player.level().isClientSide;
+    int[] shownVersion = {Integer.MIN_VALUE};
+    list.addEventListener(
+        UIEvents.TICK,
+        e -> {
+          int version = client ? ClientAuctionHistoryCache.VERSION : 0;
+          if (version == shownVersion[0]) return;
+          shownVersion[0] = version;
+          list.clearAllScrollViewChildren();
+          list.clearLayoutCache();
+          List<AuctionHistoryEntry> entries =
+              client ? ClientAuctionHistoryCache.ENTRIES : List.of();
+          if (client && !ClientAuctionHistoryCache.LOADED) {
+            list.addScrollViewChild(historyNote("gui.roll_mod.auction.history.loading"));
+          } else if (entries.isEmpty()) {
+            list.addScrollViewChild(historyNote("gui.roll_mod.auction.history.empty"));
+          } else {
+            for (AuctionHistoryEntry entry : entries) list.addScrollViewChild(historyRow(entry));
+          }
+        });
+  }
+
+  /** Asks the server for the player's auction history; the answer lands in the client cache. */
+  private static void requestHistory() {
+    PacketDistributor.sendToServer(new AuctionHistoryPackets.Request());
+  }
+
+  /** {@code 2026-10-08 12:00 | Sold | [icon] Diamond x3 | 900 | Alex} */
+  private static UIElement historyRow(AuctionHistoryEntry entry) {
+    UIElement row = new UIElement();
+    row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(HIST_ROW_H)
+        .alignItems(AlignItems.CENTER).flexShrink(0).marginBottom(2)
+        .paddingHorizontal(com.roll_54.roll_mod.minestar.hub.gui.HubSection.ROW_INSET)
+        .gapColumn(6));
+    row.style(s -> s.background(
+        new com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture(HIST_ROW_COLOR)));
+
+    Component date =
+        Component.literal(HIST_DATE.format(Instant.ofEpochMilli(entry.at())))
+            .withStyle(ChatFormatting.DARK_GRAY);
+    Component action = entry.action().title();
+
+    // The id resolves to air for an item this build no longer has; the row then shows the id itself.
+    ResourceLocation id = entry.item().isEmpty() ? null : ResourceLocation.tryParse(entry.item());
+    ItemStack icon =
+        id == null ? ItemStack.EMPTY : new ItemStack(BuiltInRegistries.ITEM.get(id));
+    Component itemName =
+        icon.isEmpty()
+            ? Component.literal(entry.item().isEmpty() ? "-" : entry.item())
+            : icon.getHoverName().copy();
+    Component what =
+        Component.empty().append(itemName)
+            .append(Component.literal(entry.count() > 0 ? " x" + entry.count() : ""))
+            .withStyle(ChatFormatting.WHITE);
+    Component price =
+        entry.price() > 0
+            ? Component.literal(EnergyFormatUtils.formatEnergy(entry.price())).withColor(LOT_PRICE_COLOR)
+            : Component.literal("-").withStyle(ChatFormatting.DARK_GRAY);
+    Component other =
+        Component.literal(entry.otherName().isEmpty() ? "-" : entry.otherName())
+            .withStyle(ChatFormatting.AQUA);
+
+    ItemSlot slot = VendorUIHelper.phantomSlot();
+    slot.setItem(icon);
+    slot.layout(l -> l.width(18).height(18).flexShrink(0));
+
+    row.addChildren(
+        historyCell(date, HIST_DATE_W, Horizontal.LEFT),
+        historyCell(action, HIST_ACTION_W, Horizontal.LEFT),
+        slot,
+        historyCell(what, 0, Horizontal.LEFT),
+        historyCell(price, HIST_PRICE_W, Horizontal.RIGHT),
+        historyCell(other, HIST_OTHER_W, Horizontal.LEFT));
+    // The full line on hover, for the rows the window is too narrow to show whole.
+    row.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips =
+        new com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips(
+            List.of(action, what, price, other, date), null, null, ItemStack.EMPTY));
+    return row;
+  }
+
+  /** One column of a history row; {@code width} 0 takes whatever the fixed columns leave. */
+  private static Label historyCell(Component text, int width, Horizontal align) {
+    Label label = new Label();
+    label.setText(text);
+    if (width > 0) label.layout(l -> l.width(width).heightPercent(100).flexShrink(0));
+    else label.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
+    label.textStyle(t -> t.textAlignHorizontal(align).textAlignVertical(Vertical.CENTER)
+        .textWrap(TextWrap.HIDE));
+    return label;
+  }
+
+  private static Label historyNote(String key) {
+    Label label = new Label();
+    label.setText(Component.translatable(key).withStyle(ChatFormatting.GRAY));
+    label.layout(l -> l.widthPercent(100).height(HIST_ROW_H));
+    label.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+    return label;
+  }
+
   /* -------------------------------------------------- data ------------------------------------------------------- */
 
   private static List<AuctionListing> listings(Player player) {
@@ -758,6 +1002,22 @@ public final class AuctionUI {
       case 2 -> Component.translatable("menu.roll_mod.ah.sort.time");
       default -> Component.translatable("menu.roll_mod.ah.sort.newest");
     };
+  }
+
+  /** The lot's price: "Price:" in white, the starcoins it takes in {@link #LOT_PRICE_COLOR}. */
+  private static Component lotPriceLine(AuctionListing l) {
+    String key =
+        !l.bidding
+            ? "menu.roll_mod.ah.price"
+            : l.hasBids() ? "menu.roll_mod.ah.currentBid" : "menu.roll_mod.ah.startBid";
+    return Component.translatable(key,
+            Component.literal(EnergyFormatUtils.formatEnergy(l.displayPrice())).withColor(LOT_PRICE_COLOR))
+        .withStyle(ChatFormatting.WHITE);
+  }
+
+  /** The item's own name, ignoring an anvil rename, in its rarity's colour as vanilla shows it. */
+  private static Component defaultName(ItemStack stack) {
+    return stack.getItem().getName(stack).copy().withStyle(stack.getRarity().getStyleModifier());
   }
 
   private static Component remainingText(AuctionListing l) {

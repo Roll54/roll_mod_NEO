@@ -15,6 +15,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib.animatable.GeoBlockEntity;
+import software.bernie.geckolib.animatable.instance.AnimatableInstanceCache;
+import software.bernie.geckolib.animation.AnimatableManager;
+import software.bernie.geckolib.util.GeckoLibUtil;
 
 /**
  * The Module Installation Table's inside: a single slot for the drill being worked on.
@@ -23,7 +27,9 @@ import org.jetbrains.annotations.Nullable;
  * component, and the GUI's module slots are windows into that component, so a drill picked up
  * mid-session takes its modules with it and nothing is left behind to dupe or lose.
  */
-public class ModuleInstallationTableBlockEntity extends BlockEntity {
+public class ModuleInstallationTableBlockEntity extends BlockEntity implements GeoBlockEntity {
+
+    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     public final ItemStackHandler inventory = new ItemStackHandler(1) {
         @Override
@@ -104,5 +110,15 @@ public class ModuleInstallationTableBlockEntity extends BlockEntity {
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
         return saveWithoutMetadata(registries);
+    }
+
+    @Override
+    public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
+        // No animations - static geo model only
+    }
+
+    @Override
+    public AnimatableInstanceCache getAnimatableInstanceCache() {
+        return this.cache;
     }
 }

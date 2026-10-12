@@ -1,19 +1,20 @@
 package com.roll_54.roll_mod.minestar.hub.gui;
 
+import com.roll_54.roll_mod.minestar.theme.RollUi;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.DataBindingBuilder;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.SimpleBinding;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
-import com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.Icons;
 import com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
-import com.lowdragmc.lowdraglib2.gui.ui.UI;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
+import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay;
+import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollerMode;
+import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Tab;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
-import com.lowdragmc.lowdraglib2.gui.ui.styletemplate.MCSprites;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.moderation.ClientModerationCache;
 import com.roll_54.roll_mod.minestar.moderation.ClientPlayerStatusCache;
@@ -114,6 +115,13 @@ public final class HubUI {
     private static final int WINDOW_BTN_GAP = 2;
 
     /**
+     * How much of the top band the window controls take — back, maximize, reset and settings, from
+     * the window's right edge — measured from the header's own edge, plus a gap. A top bookmark strip
+     * stops short of it, so a bookmark scrolled to the end is never drawn under a control.
+     */
+    private static final int CONTROLS_W = BACK_INSET_X + 4 + 4 * BACK_BTN + 3 * WINDOW_BTN_GAP - PADDING + TAB_GAP;
+
+    /**
      * Breathing room at the top of the content box, so an embedded screen does not start flush
      * against the tab strip. The box grows by the same amount rather than eating into it, so no tab
      * loses its bottom 6px.
@@ -127,54 +135,6 @@ public final class HubUI {
     private static final int INVENTORY_GAP = 4;
 
     private static final int COLOR_CONTENT = 0x40000000;
-
-    /**
-     * The bookmarks, as boxes closed on all four sides.
-     *
-     * <p>Not one of LdLib2's {@code TAB_*} sprites, because none of them can be: every tab sprite in
-     * every LdLib atlas is deliberately open on its bottom edge, which is what lets a vanilla
-     * bookmark bleed into the panel under it. {@code RECT_THIN} is the closed box LdLib2 itself
-     * reaches for when it wants a tab that is a box — see {@code ResourceView tab:host} in its
-     * {@code mc.lss}.
-     *
-     * <p>Built from the atlas rather than taken from {@link MCSprites#RECT_THIN}. {@code
-     * MCSprites.init} reflectively replaces every one of that class's texture fields at
-     * resource-load time, so holding one in a field of our own is a race with load order and cannot
-     * be recoloured; {@link MCSprites#MC} is a plain {@code ResourceLocation} and is left alone.
-     */
-    private static final int TAB_SPRITE_U = 48;
-    private static final int TAB_SPRITE_V = 0;
-    private static final int TAB_SPRITE = 16;
-    private static final int TAB_SPRITE_BORDER = 3;
-
-    /**
-     * How far the box is dimmed. {@code RECT_THIN}'s face is the near-white vanilla panel
-     * (0xC6C6C6), which against this window reads as a bright plate; at 0x70 it becomes part of the
-     * dark UI. Same dimming the bookmark sprite needed before it.
-     */
-    private static final int TAB_DIM = 0xFF707070;
-
-    private static IGuiTexture tabBox() {
-        return SpriteTexture.of(MCSprites.MC)
-                .setSprite(TAB_SPRITE_U, TAB_SPRITE_V, TAB_SPRITE, TAB_SPRITE)
-                .setBorder(TAB_SPRITE_BORDER)
-                .setColor(TAB_DIM);
-    }
-
-    /** Every tab that is not the current one, and the same box under the cursor. */
-    private static final IGuiTexture TAB_BASE = tabBox();
-
-    /**
-     * The selected bookmark: the same box, taking the content section's own colour, so the tab reads
-     * as belonging to the panel it opens onto. That is the whole of the selected cue now — with the
-     * box closed at the bottom there is no seam left to leave open.
-     *
-     * <p>The fill goes <em>over</em> the box, not under it. {@code RECT_THIN}'s face is opaque and
-     * {@code Tab} draws its style texture across the element's full bounds, so anything painted
-     * beneath would simply be covered.
-     */
-    private static final IGuiTexture TAB_SELECTED =
-            new GuiTextureGroup(tabBox(), new ColorRectTexture(COLOR_CONTENT));
 
     /**
      * One tab.
@@ -247,26 +207,45 @@ public final class HubUI {
             // The only tab that wants the inventory, and only while its create form is open.
             // Still an item: hub/ has no auction artwork yet.
             HubTab.flagged("auction", icon("auction"), AuctionUI::buildRoot, HubBadge::auctionPending),
-            new HubTab("warps", icon("warp"), (player, inventory) -> WarpTab.build(player)),
+            // Deprecated: merged into "travel" (TABS[12]), as tpa/friends into "interactions".
+            new HubTab("warps", icon("teleportation/warp"), (player, inventory) -> WarpTab.build(player), () -> false,
+                    () -> false),
             new HubTab("plots", icon("land_market"),
                     (player, inventory) -> PlotPurchaseUI.buildRoot(player)),
-            HubTab.flagged("homes", icon("home"),
-                    (player, inventory) -> PlayerHomesTab.build(player), HubBadge::homeInvitePending),
+            // Deprecated: merged into "travel", as "warps" above.
+            new HubTab("homes", icon("home"),
+                    (player, inventory) -> PlayerHomesTab.build(player), () -> false, HubBadge::homeInvitePending),
             // tp_icon, not the tpa arrow the rows wear: the tab is the whole section — asking,
             // answering and the argument-less trips — and the row button's own icon on the tab read
             // as if the tab were just the one action.
-            HubTab.flagged("tpa", icon("teleportation/tp_icon"),
-                    (player, inventory) -> TpaTab.build(player), HubBadge::tpaPending),
+            // Deprecated: merged into "interactions" (TABS[11]). Still built — the tree is
+            // positional — but its bookmark never shows; see clampTab for where its index goes.
+            new HubTab("tpa", icon("teleportation/tp_icon"),
+                    (player, inventory) -> TpaTab.build(player), () -> false, HubBadge::tpaPending),
             // TODO(art): placeholder icon — drop a real textures/gui/hub/moderation.png in and
             // change the name here; nothing else needs to move.
-            new HubTab("moderation", icon("warp/admin"),
+            new HubTab("moderation", icon("teleportation/warp/admin"),
                     ModerationTab::build,
                     () -> ClientModerationCache.ALLOWED, HubBadge::moderationPending),
             // The envelope carries its own mark while something is unread (letter_new.png), so this
             // bookmark takes no HubBadge on top — it would be the same mark twice.
             new HubTab("letters",
                     IGuiTexture.dynamic(() -> LetterIcons.envelope(ClientPlayerStatusCache.UNREAD_LETTERS > 0)),
-                    (player, inventory) -> LettersTab.build(player)));
+                    (player, inventory) -> LettersTab.build(player)),
+            // Deprecated: merged into "interactions", as "tpa" above.
+            new HubTab("friends", icon("friends"),
+                    (player, inventory) -> FriendsTab.build(player), () -> false,
+                    () -> !com.roll_54.roll_mod.minestar.friends.ClientFriendsCache.INCOMING.isEmpty()),
+            new HubTab("leaderboards", icon("leaderboard/leaderboard"),
+                    (player, inventory) -> LeaderboardTab.build(player)),
+            // Teleports and friends in one: everyone you can reach on the left, the chosen player's
+            // profile and every action on them — teleport, friendship, money — on the right.
+            HubTab.flagged("interactions", icon("friends"),
+                    (player, inventory) -> PlayerInteractionsTab.build(player),
+                    HubBadge::interactionsPending),
+            // Homes and warps in one: every place there is to go, behind a Homes | Warps switch.
+            HubTab.flagged("travel", icon("home"),
+                    (player, inventory) -> TravelTab.build(player), HubBadge::homeInvitePending));
 
     /**
      * Header order, as indices into {@link #TABS}. Purely visual: the content slots are still built
@@ -274,7 +253,7 @@ public final class HubUI {
      * having to be inserted second. {@link #indexOf} keeps returning tree indices, which is what
      * every caller passes to {@code HubCommand.open}.
      */
-    private static final List<Integer> DISPLAY_ORDER = List.of(0, 5, 6, 1, 2, 3, 4, 8, 7);
+    private static final List<Integer> DISPLAY_ORDER = List.of(0, 12, 11, 10, 1, 2, 4, 8, 7, 6, 9, 3, 5);
 
     static {
         // Appending a tab and forgetting this list would silently hide it; fail at class-load
@@ -299,7 +278,30 @@ public final class HubUI {
      * so the number arriving at {@code HubCommand.open} is whatever a client chose to send.
      */
     public static int clampTab(int tab) {
-        return tab < 0 || tab >= TABS.size() ? 0 : tab;
+        if (tab < 0 || tab >= TABS.size()) return 0;
+        // The merged-away tabs: a remembered index, or an old caller, lands on their successor.
+        if (tab == TPA || tab == FRIENDS) return INTERACTIONS;
+        if (tab == HOMES || tab == WARPS) return TRAVEL;
+        return tab;
+    }
+
+    private static final int TPA = indexOf("tpa");
+    private static final int FRIENDS = indexOf("friends");
+    private static final int INTERACTIONS = indexOf("interactions");
+    private static final int HOMES = indexOf("homes");
+    private static final int WARPS = indexOf("warps");
+    private static final int TRAVEL = indexOf("travel");
+
+    /**
+     * A tab switch asked for from inside the hub — a leaderboard row opening the interactions tab.
+     * Client copy only: tab selection is a client-side click the server never sees, and this is the
+     * same thing done by code. {@code -1} when nothing is pending.
+     */
+    private static int pendingSwitch = -1;
+
+    /** Shows the tab with this id on the next client tick, as if its bookmark had been clicked. */
+    public static void switchTo(String id) {
+        pendingSwitch = clampTab(indexOf(id));
     }
 
     /**
@@ -312,6 +314,17 @@ public final class HubUI {
      * {@code 0} means, so a restart starts on the home tab.
      */
     private static int lastTab = 0;
+
+    /**
+     * The tab on screen right now, while the hub is open. Client copy only, like {@link #lastTab};
+     * the settings popup reopens the hub on it after a layout change.
+     */
+    private static int liveTab = 0;
+
+    /** The tab on screen right now — see {@link #liveTab}. */
+    public static int liveTab() {
+        return liveTab;
+    }
 
     /** The remembered tab, or {@code 0} if the hub has not been closed yet this session. */
     public static int lastTab() {
@@ -328,7 +341,7 @@ public final class HubUI {
         // on every screen init — opening, resizing the game window, changing the GUI scale — so it is
         // also where the window is pulled back onto a screen that got smaller. Client only: the
         // server's copy is never initialised against a screen.
-        return ModularUI.of(UI.of(root, screen -> {
+        return ModularUI.of(RollUi.of(player, root, screen -> {
             window[0].fit(screen.getWidth(), screen.getHeight());
             return screen;
         }), player);
@@ -377,16 +390,63 @@ public final class HubUI {
         windowOut[0] = window;
         window.setId(WINDOW_ID);
         window.layout(l -> l.flexDirection(FlexDirection.COLUMN).paddingAll(PADDING));
-        window.style(s -> s.background(MCSprites.BORDER));
+        // The theme's panel surface rather than a fixed sprite, so the frame follows the theme picked
+        // in HubSettings. The inline padding above still wins over the class's own.
+        window.addClass("panel_bg");
         root.addChild(window);
+
+        // Which edge the bookmarks sit along — the player's choice in the settings popup. Client copy
+        // only; the server's copy keeps the top. The bookmark strip holds no sync value, so moving it
+        // around the window does not move any binding in the content.
+        HubTabSide side = player.level().isClientSide() ? HubWindowState.get().tabSide() : HubTabSide.TOP;
 
         // Flush against the panel rather than sunk into it: the tabs are closed boxes now, so they
         // have no open foot to hide and nothing to be continuous with.
         UIElement header = new UIElement();
-        header.layout(l -> l.flexDirection(FlexDirection.ROW).height(TAB_H).flexShrink(0)
-                .gapColumn(TAB_GAP));
-        // The title bar of the window: drag its empty stretch to move, double-click to maximize.
-        window.dragBy(header);
+        // The bookmarks themselves: one line that scrolls (mouse wheel) when the window is too short
+        // or too narrow for all of them, rather than wrapping into a second line. Bars hidden: one
+        // would eat into the bookmarks' own 22px; the selected bookmark is scrolled into view below.
+        // The view port loses LdLib's default border and 5px padding, so the strip looks as before.
+        // A zero basis on the main axis, so the strip takes the header's length rather than its
+        // content's — otherwise it would never measure an overflow to scroll.
+        ScrollerView tabStrip = new ScrollerView();
+        tabStrip.scrollerStyle(st -> st.mode(side.vertical() ? ScrollerMode.VERTICAL : ScrollerMode.HORIZONTAL)
+                .verticalScrollDisplay(ScrollDisplay.NEVER)
+                .horizontalScrollDisplay(ScrollDisplay.NEVER));
+        tabStrip.viewPort(v -> v.layout(l -> l.paddingAll(0)
+                        .flexDirection(side.vertical() ? FlexDirection.COLUMN : FlexDirection.ROW))
+                .style(st -> st.background(IGuiTexture.EMPTY)));
+        tabStrip.style(st -> st.background(IGuiTexture.EMPTY));
+        if (side.vertical()) {
+            // A column down the side, as long as the window lets it be.
+            header.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(TAB_W).flexShrink(0));
+            tabStrip.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1).flexShrink(1));
+            tabStrip.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN)
+                    .widthPercent(100).gapRow(TAB_GAP)));
+        } else {
+            header.layout(l -> l.flexDirection(FlexDirection.ROW).height(TAB_H).flexShrink(0));
+            tabStrip.layout(l -> l.heightPercent(100).flexBasis(0).flexGrow(1).flexShrink(1));
+            // On top the strip shares the band with the window controls; stop short of them.
+            if (side == HubTabSide.TOP) tabStrip.layout(l -> l.marginRight(CONTROLS_W));
+            tabStrip.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.ROW)
+                    .heightPercent(100).gapColumn(TAB_GAP)));
+        }
+        header.addChild(tabStrip);
+        // The title bar of the window: drag its empty stretch to move, double-click to maximize. With
+        // the bookmarks on top it is the bookmark strip itself; on any other side it is an empty band
+        // of the same height, which also keeps the window controls in their corner clear of the tabs.
+        UIElement titleBar = side == HubTabSide.TOP ? header : new UIElement();
+        if (titleBar != header) {
+            titleBar.layout(l -> l.widthPercent(100).height(TAB_H).flexShrink(0));
+        }
+        window.dragBy(titleBar);
+        // The strip now fills the top band, so its empty stretch is the strip's, not the header's:
+        // let that move the window too.
+        if (titleBar == header) {
+            window.dragBy(tabStrip);
+            window.dragBy(tabStrip.viewPort);
+            window.dragBy(tabStrip.viewContainer);
+        }
         // Unclipped, so a tab can never be trimmed by its own row. It also gates hit-testing, so
         // turning it off would newly clip clicks to the header's content rect.
         //
@@ -445,8 +505,10 @@ public final class HubUI {
         }
 
         // Applies the arriving tab's standing inventory request.
+        boolean clientCopy = player.level().isClientSide();
         IntConsumer onSelected = idx -> {
             currentTab[0] = idx;
+            if (clientCopy) liveTab = idx;
             inventory.setDisplay(idx >= 0 && idx < wantsInventory.length && wantsInventory[idx]);
         };
 
@@ -460,9 +522,10 @@ public final class HubUI {
             Tab tab = new Tab();
             // Icon only: the caption is dropped and the name moves to the hover tooltip.
             tab.text.setDisplay(false);
-            // Square, and exactly the header's height. The 3px padding leaves a 16x16 content box,
-            // which is the icon's own size, so the icon centres itself on both axes.
-            tab.layout(l -> l.width(TAB_W).height(TAB_H).paddingAll(3));
+            // Square, and exactly the header's height. No padding: the icon is placed absolutely in
+            // the middle below, so a theme's tab:host padding (some add extra at the bottom, made for
+            // a top strip) cannot push it off centre — the gap is the same on all four sides.
+            tab.layout(l -> l.width(TAB_W).height(TAB_H).paddingAll(0).flexShrink(0));
             // Start hidden if it is not for this viewer, rather than showing until the first TICK
             // below catches up — that gap is long enough to see the bookmark blink.
             if (FMLEnvironment.dist == Dist.CLIENT && !spec.visible().getAsBoolean()) {
@@ -470,7 +533,9 @@ public final class HubUI {
             }
 
             UIElement icon = new UIElement();
-            icon.layout(l -> l.width(TAB_ICON).height(TAB_ICON));
+            icon.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
+                    .left((TAB_W - TAB_ICON) / 2f).top((TAB_H - TAB_ICON) / 2f)
+                    .width(TAB_ICON).height(TAB_ICON));
             icon.style(s -> s.background(spec.texture()));
             tab.addChild(icon);
 
@@ -489,22 +554,45 @@ public final class HubUI {
             // cursor over the icon too.
             tab.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
                     List.of(spec.title()), null, null, ItemStack.EMPTY));
-            // Base and hover are the same box; only selection changes the look. See TAB_SELECTED.
-            tab.tabStyle(s -> s.baseTexture(TAB_BASE)
-                    .hoverTexture(TAB_BASE)
-                    .selectedTexture(TAB_SELECTED));
+            // Closed boxes in the theme's colours on every side, the top included — see HubTabBox.
+            // The themes' own tab art is open at one edge, made for a top strip only, so the same
+            // closed bookmark everywhere keeps the tabs consistent whichever side they are on.
+            tab.tabStyle(s -> s.baseTexture(HubTabBox.BASE).hoverTexture(HubTabBox.HOVER)
+                    .selectedTexture(HubTabBox.SELECTED));
             // Tab carries no click listener of its own; TabView normally supplies one.
             tab.addEventListener(UIEvents.CLICK, e -> select(tabs, slots, onSelected, index));
 
             tabs.set(index, tab);
-            header.addChild(tab);
+            tabStrip.addScrollViewChild(tab);
         }
 
         // Header first, panel under it. Nothing overlaps any more, so the order is just the order
         // they are read in.
-        window.addChildren(header, content);
+        // The content and the inventory under it, as one block the bookmarks are placed around.
+        UIElement body = new UIElement();
+        body.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexBasis(0).flexGrow(1).flexShrink(1));
+        // Beside a column of bookmarks it shares the row's width and takes its full height; under a
+        // row of them it takes the full width and shares the window's height.
+        if (side.vertical()) body.layout(l -> l.heightPercent(100));
+        else body.layout(l -> l.widthPercent(100));
+        switch (side) {
+            case TOP -> window.addChildren(header, body);
+            case BOTTOM -> {
+                header.layout(l -> l.marginTop(TAB_GAP));
+                window.addChildren(titleBar, body, header);
+            }
+            case LEFT, RIGHT -> {
+                UIElement middle = new UIElement();
+                middle.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexBasis(0)
+                        .flexGrow(1).flexShrink(1).gapColumn(TAB_GAP));
+                if (side == HubTabSide.LEFT) middle.addChildren(header, body);
+                else middle.addChildren(body, header);
+                window.addChildren(titleBar, middle);
+            }
+        }
+        body.addChild(content);
 
-        window.addChild(inventory);
+        body.addChild(inventory);
 
         // The way out and the window controls, pinned to the window rather than parked at the end
         // of the tab row — see back(). Last, and lifted by a z-index of their own, so they stay
@@ -512,11 +600,16 @@ public final class HubUI {
         // unconditionally and on both sides, like everything else in this tree: only their click
         // behaviour is client-side, and an element that existed on one side only would shift every
         // positional binding after it — see the class javadoc.
+        HubSettings settings = new HubSettings(player);
+        // The gear opens the settings popup: theme, the force switch and the chat buttons.
+        window.addChild(windowButton(3, () -> Icons.SETTINGS, "settings", settings::toggle));
         window.addChild(windowButton(2, () -> Icons.REPLAY, "reset", window::reset));
         window.addChild(windowButton(1,
                 () -> window.maximized() ? Icons.WINDOW_RESTORE : Icons.WINDOW_MAXIMIZE,
                 null, window::toggleMaximize));
         window.addChild(back());
+        // Last of all: a modal over the whole window, controls included.
+        window.addChild(settings.root());
 
         // With the window no longer covering the screen, a click beside it lands on the bare host.
         // Vanilla drops a carried stack on a click outside the GUI, but it measures "outside" against
@@ -541,7 +634,13 @@ public final class HubUI {
             if (FMLEnvironment.dist == Dist.CLIENT) lastTab = currentTab[0];
             // Moves and resizes save as they finish; this only catches anything still pending.
             if (player.level().isClientSide()) HubWindowState.get().save();
-            HubSection.closeInfo();
+            // The desktop windows may outlive the screen if the player asked for that in settings;
+            // the in-hub panels go with it either way, being part of it.
+            // Only the client copy decides: in single player the integrated server's copy shares this
+            // JVM and would otherwise close them regardless of the setting.
+            if (player.level().isClientSide() && HubWindowState.get().closeWindowsWithHub()) {
+                HubSection.closeInfo();
+            }
         });
 
         // Honour the tab the command asked for, once, as soon as the value arrives.
@@ -552,8 +651,15 @@ public final class HubUI {
         // row closes up rather than leaving a hole.
         // Client only: the dedicated server has no client caches to ask, and its copy's bookmarks
         // are never drawn.
+        int[] shownTab = {-1};
         root.addEventListener(UIEvents.TICK, e -> {
             if (FMLEnvironment.dist != Dist.CLIENT) return;
+            // Whatever selected it — a click, the command, a tab going away — the bookmark on screen
+            // is scrolled into the strip's view. Delayed, so it measures after the layout settles.
+            if (shownTab[0] != currentTab[0]) {
+                shownTab[0] = currentTab[0];
+                tabStrip.scrollToChildDelayed(tabs.get(currentTab[0]));
+            }
             // Being on the home tab is seeing the mute it shows, which clears its mark here and on
             // the inventory button.
             if (currentTab[0] == HOME) ClientPlayerStatusCache.acknowledgeStanding();
@@ -565,17 +671,25 @@ public final class HubUI {
                 UIElement badge = badges.get(i);
                 if (badge != null && badge.isDisplayed() != flagged) badge.setDisplay(flagged);
                 // Standing on a tab that just went away: back to the first one.
-                if (!visible && currentTab[0] == i) select(tabs, slots, onSelected, 0);
+                if (!visible && currentTab[0] == i) select(tabs, slots, onSelected, clampTab(i) != i ? clampTab(i) : 0);
             }
         });
 
         root.addEventListener(UIEvents.TICK, e -> {
+            // A switch asked for by code on this client (see switchTo). Checked before the
+            // requested tab below so it is never starved by it.
+            if (clientCopy && pendingSwitch >= 0) {
+                int target = pendingSwitch;
+                pendingSwitch = -1;
+                if (target < slots.size()) select(tabs, slots, onSelected, target);
+            }
             if (applied[0]) return;
             Integer wanted = requestedTab.getSyncValue().getValue();
             if (wanted == null) return;
             applied[0] = true;
-            if (wanted > 0 && wanted < slots.size()) {
-                select(tabs, slots, onSelected, wanted);
+            int tab = clampTab(wanted);
+            if (tab > 0 && tab < slots.size()) {
+                select(tabs, slots, onSelected, tab);
             }
         });
 

@@ -30,7 +30,8 @@ public class SchemaMigrator {
    * feed the scripts to Flyway by name instead. ADD EVERY NEW MIGRATION FILE HERE.
    */
   private static final List<String> MIGRATIONS =
-      List.of("V1__Initial_setup.sql", "V2__Currency_offers.sql");
+      List.of("V1__Initial_setup.sql", "V2__Currency_offers.sql", "V3__Currency_ledger.sql",
+          "V4__Money_requests.sql", "V5__Auction_history.sql");
 
   public static CompletableFuture<Void> migrate() {
     ExecutorService executor = DatabaseManager.getInstance().getExecutor();

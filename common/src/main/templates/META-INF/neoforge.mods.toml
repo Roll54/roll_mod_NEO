@@ -119,12 +119,23 @@ versionRange = "[0,)"
 ordering = "AFTER"
 side = "BOTH"
 
-# Farmer's Delight adds the daily cooking tasks. Optional; the range is where the mixin targets were
-# checked (CookingPotResultSlot, CookingPotBlock.useItemOn, SkilletItem's finishUsingItem lambda).
+# Farmer's Delight: the sulfur berry pie is its PieBlock with its pie model templates, so it is
+# required (Brewin' and Chewin' below needs it anyway). It also backs the daily cooking tasks; the range
+# is where those mixin targets were checked (CookingPotResultSlot, CookingPotBlock.useItemOn,
+# SkilletItem's finishUsingItem lambda).
 [[dependencies."${mod_id}"]]
 modId = "farmersdelight"
-type = "optional"
+type = "required"
 versionRange = "[1.3.2,)"
+ordering = "NONE"
+side = "BOTH"
+
+# Brewin' and Chewin': the fluorite pineapple pizza is its PizzaBlock (BnCPizzaBlock) and uses its
+# block models, so it is required. The range is the version the block and models were read from: 4.5.0.
+[[dependencies."${mod_id}"]]
+modId = "brewinandchewin"
+type = "required"
+versionRange = "[4.5.0,)"
 ordering = "NONE"
 side = "BOTH"
 

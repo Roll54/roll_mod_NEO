@@ -27,12 +27,14 @@ import java.util.UUID;
  *                      cannot inflate the popularity ranking
  * @param visitorsDay   the period {@link #visitors} was collected in — see {@link #visitorsToday()}
  * @param visitsTotal   completed arrivals all-time, counting repeat trips but never the owner's
+ * @param requiredQuest the FTB Quests quest a visitor's team must have finished, {@code 0} for none.
+ *                      Only moderators set it, and only on official warps — see {@code QuestGate}
  */
 public record Warp(UUID id, UUID owner, String ownerName, String name, String description,
                    ResourceLocation dimension, double x, double y, double z,
                    float yaw, float pitch, long price, long created,
                    WarpApproval approval, String moderator, Set<UUID> reports,
-                   Set<UUID> visitors, long visitorsDay, long visitsTotal) {
+                   Set<UUID> visitors, long visitorsDay, long visitsTotal, long requiredQuest) {
 
     /** The longest name and description the create form will accept, and the server enforces. */
     public static final int MAX_NAME = 24;
@@ -47,18 +49,42 @@ public record Warp(UUID id, UUID owner, String ownerName, String name, String de
                 player.getYRot(), player.getXRot(),
                 Math.max(0, price), System.currentTimeMillis(),
                 WarpApproval.NOT_YET, "", Set.of(),
-                Set.of(), DailyTaskManager.currentPeriodDay(), 0);
+                Set.of(), DailyTaskManager.currentPeriodDay(), 0, 0);
     }
 
     public Warp withApproval(WarpApproval approval, String moderator) {
         return new Warp(id, owner, ownerName, name, description, dimension, x, y, z, yaw, pitch,
-                price, created, approval, moderator, reports, visitors, visitorsDay, visitsTotal);
+                price, created, approval, moderator, reports, visitors, visitorsDay, visitsTotal, requiredQuest);
+    }
+
+    /** A moderator's edit of what visitors see and pay. */
+    public Warp withDetails(String name, String description, long price) {
+        return new Warp(id, owner, ownerName, trim(name, MAX_NAME), trim(description, MAX_DESCRIPTION),
+                dimension, x, y, z, yaw, pitch, Math.max(0, price), created, approval, moderator,
+                reports, visitors, visitorsDay, visitsTotal, requiredQuest);
+    }
+
+    /** The warp moved to where {@code player} stands, facing as they face. */
+    public Warp movedTo(ServerPlayer player) {
+        return new Warp(id, owner, ownerName, name, description, player.level().dimension().location(),
+                player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot(),
+                price, created, approval, moderator, reports, visitors, visitorsDay, visitsTotal, requiredQuest);
+    }
+
+    public Warp withRequiredQuest(long quest) {
+        return new Warp(id, owner, ownerName, name, description, dimension, x, y, z, yaw, pitch,
+                price, created, approval, moderator, reports, visitors, visitorsDay, visitsTotal, quest);
+    }
+
+    /** Whether reaching it needs a quest. Only official warps can be gated. */
+    public boolean questLocked() {
+        return requiredQuest != 0 && isAdmin();
     }
 
     public Warp withReports(Set<UUID> reports) {
         return new Warp(id, owner, ownerName, name, description, dimension, x, y, z, yaw, pitch,
                 price, created, approval, moderator, Set.copyOf(reports),
-                visitors, visitorsDay, visitsTotal);
+                visitors, visitorsDay, visitsTotal, requiredQuest);
     }
 
     /* ------------------------------------------- popularity ------------------------------------------ */
@@ -95,7 +121,7 @@ public record Warp(UUID id, UUID owner, String ownerName, String name, String de
 
         return new Warp(id, owner, ownerName, name, description, dimension, x, y, z, yaw, pitch,
                 price, created, approval, moderator, reports,
-                Set.copyOf(updated), today, visitsTotal + 1);
+                Set.copyOf(updated), today, visitsTotal + 1, requiredQuest);
     }
 
     /** Only the owner may travel to a warp moderation has blocked. */
@@ -146,6 +172,7 @@ public record Warp(UUID id, UUID owner, String ownerName, String name, String de
         tag.put("visitors", ids(visitors));
         tag.putLong("visitorsDay", visitorsDay);
         tag.putLong("visitsTotal", visitsTotal);
+        tag.putLong("requiredQuest", requiredQuest);
         return tag;
     }
 
@@ -160,7 +187,8 @@ public record Warp(UUID id, UUID owner, String ownerName, String name, String de
                 tag.getLong("price"), tag.getLong("created"),
                 WarpApproval.byId(tag.getString("approval")), tag.getString("moderator"),
                 uuids(tag, "reports"),
-                uuids(tag, "visitors"), tag.getLong("visitorsDay"), tag.getLong("visitsTotal"));
+                uuids(tag, "visitors"), tag.getLong("visitorsDay"), tag.getLong("visitsTotal"),
+                tag.getLong("requiredQuest"));
     }
 
     private static ListTag ids(Set<UUID> set) {

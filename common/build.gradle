@@ -136,6 +136,8 @@ dependencies {
     // mixins in compat/farmersdelight name its classes, their config is required = false, and
     // neoforge.mods.toml lists it as optional.
     implementation files("jars/FarmersDelight-1.21.1-1.3.2.jar")
+    // additional food mod, used for pizza model implementation
+    implementation "curse.maven:brewin-and-chewin-637808:8309583"
 
     // Currency balances live in an external SQL database, and this is the only module that names
     // the driver stack — CurrencyRepository, DatabaseManager and SchemaMigrator all reference

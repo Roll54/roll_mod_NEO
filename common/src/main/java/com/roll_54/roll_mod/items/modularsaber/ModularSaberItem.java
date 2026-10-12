@@ -281,10 +281,9 @@ public class ModularSaberItem extends Item implements ISimpleEnergyItem, OneStat
                 ? voltage.baseDamage * DrillModuleHelper.factor(stack, ModuleType.DAMAGE)
                         + (DrillModuleHelper.get(stack).has(ModuleType.METEORITE) ? METEORITE_DAMAGE : 0)
                 : DAMAGE_OFF;
-        // The merged Speed module, or a deprecated Attack Speed one still installed; never both.
+        // The Speed module's saber value: added attack speed.
         double speed = BASE_ATTACK_SPEED + (live
                 ? DrillModuleHelper.saberValue(stack, ModuleType.SPEED)
-                        + DrillModuleHelper.value(stack, ModuleType.ATTACK_SPEED)
                 : 0);
         return ItemAttributeModifiers.builder()
                 .add(Attributes.ATTACK_DAMAGE,

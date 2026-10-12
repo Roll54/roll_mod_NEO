@@ -12,7 +12,8 @@ import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 
 /**
- * Ctrl + mouse scroll on a held modular drill adjusts its speed throttle.
+ * Ctrl + mouse scroll on a held modular drill adjusts its speed throttle; adding Shift takes
+ * {@link #SHIFT_STEP}-sized steps for climbing through overcharge quickly.
  *
  * <p>The event is cancelled so the hotbar does not also scroll — Ctrl+scroll means the throttle
  * and nothing else while a modular drill is in hand. The delta travels as a relative nudge and
@@ -23,6 +24,8 @@ public final class DrillScrollHandler {
 
     /** Throttle percent per scroll notch. */
     private static final int STEP = 5;
+    /** Throttle percent per scroll notch with Shift held. */
+    private static final int SHIFT_STEP = 100;
 
     private DrillScrollHandler() {}
 
@@ -37,6 +40,6 @@ public final class DrillScrollHandler {
         if (notches == 0) return;
 
         event.setCanceled(true);
-        PacketDistributor.sendToServer(new DrillThrottlePacket(notches * STEP));
+        PacketDistributor.sendToServer(new DrillThrottlePacket(notches * (Screen.hasShiftDown() ? SHIFT_STEP : STEP)));
     }
 }

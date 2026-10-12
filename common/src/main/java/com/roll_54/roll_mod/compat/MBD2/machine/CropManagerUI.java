@@ -18,11 +18,11 @@ import net.minecraft.resources.ResourceLocation;
 import org.appliedenergistics.yoga.YogaPositionType;
 
 /**
- * The Crop Manager Mk2's default GUI, built as an LdLib2 element tree.
+ * The Crop Managers' default GUI, built as an LdLib2 element tree. Every tier shares it.
  *
  * <pre>
  *   +----------------------------------------------+
- *   |  Crop Manager Mk2                            |
+ *   |  <machine name>                              |
  *   |   [][][][][][]           +--------+          |
  *   |   [][][][][][]           |  HERB  |          |
  *   |   [][][][][][]           +--------+          |
@@ -63,11 +63,16 @@ public final class CropManagerUI {
     private static final ResourceLocation GEAR_ICON =
             RollMod.id("textures/gui/hub/teleportation/settings.png");
     private static final int SETTINGS_WIDTH = 104;
-    private static final int SETTINGS_HEIGHT = 78;
+    /** Where the switch rows start, under the window's title. */
+    private static final int SETTINGS_ROWS_Y = 16;
+    /**
+     * Sized from the rows rather than hard-coded: at 78 the window was 2px shorter than its four
+     * rows, and the themes' rounded frames ate the rest, so the last switch was cut off.
+     */
+    private static final int SETTINGS_HEIGHT =
+            SETTINGS_ROWS_Y + CropHarvesterTraitDefinition.SETTINGS_ROWS_HEIGHT + 6;
     /** Above the slots so the panel, which overhangs the main window, is drawn over anything behind it. */
     private static final int SETTINGS_Z = 200;
-    /** Light enough to read on the gdp plate, which is nearly black. */
-    private static final int TEXT_PRIMARY = 0xFFE0E0E0;
 
     private CropManagerUI() {}
 
@@ -83,10 +88,11 @@ public final class CropManagerUI {
         // The settings window hangs off the right edge of the panel; without this it is clipped away.
         root.style(style -> style.overflowVisible(true));
 
+        // Text colours are left to the stylesheet throughout, so the player's theme can set them.
         Label title = new Label();
-        title.setText("Crop Manager Mk2");
+        // Placeholder: MBD2 writes the tier's own name into ui:machine_name when the screen opens.
+        title.setText("Crop Manager");
         title.setId("ui:machine_name");
-        title.textStyle(text -> text.textColor(TEXT_PRIMARY).textShadow(true));
         root.addChild(VendorUIHelper.abs(title, 8, 6, 160, 10));
 
         for (int index = 0; index < GRID_COLUMNS * GRID_ROWS; index++) {
@@ -113,7 +119,8 @@ public final class CropManagerUI {
         root.addChild(gearButton(harvester));
 
         // mc first for the controls it styles (gdp defines none of them), gdp last so its panel and
-        // border rules win the tie — the order LDLib2's own editor layers this sheet in.
+        // border rules win the tie — the order LDLib2's own editor layers this sheet in. Only the
+        // fallback: a player's screen has these swapped for their theme (CropManagerThemeHandler).
         return UITemplate.of(root, StylesheetManager.MC_MERGED, StylesheetManager.GDP_MERGED);
     }
 
@@ -138,12 +145,11 @@ public final class CropManagerUI {
 
         Label title = new Label();
         title.setText(Component.translatable("gui.roll_mod.crop_manager.settings"));
-        title.textStyle(text -> text.textColor(TEXT_PRIMARY).textShadow(true));
         panel.addChild(VendorUIHelper.abs(title, 4, 4, SETTINGS_WIDTH - 8, 10));
 
         UIElement rows = new UIElement();
         rows.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
-                .left(0).top(16).width(SETTINGS_WIDTH).height(SETTINGS_HEIGHT - 16));
+                .left(0).top(SETTINGS_ROWS_Y).width(SETTINGS_WIDTH).height(SETTINGS_HEIGHT - SETTINGS_ROWS_Y));
         harvester.createTraitUITemplate(rows);
         panel.addChild(rows);
 

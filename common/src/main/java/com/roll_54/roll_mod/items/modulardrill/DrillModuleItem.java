@@ -21,8 +21,8 @@ import java.util.Set;
  *
  * <p>{@code value} means something different per type: speed multiplier for SPEED, fortune level
  * for FORTUNE, added blocks of reach for REACH, capacity multiplier for BATTERY, area radius for
- * AOE. On a saber: damage multiplier for DAMAGE, added attack speed for ATTACK_SPEED, radius for
- * SWEEP, level for LOOTING and IRRADIATION, XP multiplier for XP_MULTIPLIER, and a fraction for
+ * AOE. On a saber: damage multiplier for DAMAGE, radius for SWEEP, level for IRRADIATION, XP
+ * multiplier for XP_MULTIPLIER, and a fraction for
  * VAMPIRISM (of damage healed) and BEHEADING (chance of a head). Unused otherwise.
  *
  * <p>{@code costFactor} multiplies the tool's energy cost while the module is installed — per
@@ -199,8 +199,8 @@ public class DrillModuleItem extends Item {
             case AOE -> (int) value * 2 + 1;
             case FORTUNE, REACH -> (int) value;
             case BATTERY, DAMAGE -> Math.round((value - 1.0) * 100);
-            case SPEED, ATTACK_SPEED, SWEEP, XP_MULTIPLIER -> value;
-            case LOOTING, IRRADIATION -> (int) value;
+            case SPEED, SWEEP, XP_MULTIPLIER -> value;
+            case IRRADIATION -> (int) value;
             case VAMPIRISM, BEHEADING -> Math.round(value * 100);
             default -> "";
         };

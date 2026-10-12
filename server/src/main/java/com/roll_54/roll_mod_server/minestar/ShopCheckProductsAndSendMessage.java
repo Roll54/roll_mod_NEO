@@ -10,6 +10,13 @@ import java.util.concurrent.TimeUnit;
 import static ua.com.minestar.Minestar.minestar;
 
 
+/**
+ * The login notice that pointed at {@code /shop-receive}.
+ *
+ * @deprecated purchases are delivered as letters by {@link ShopLetters}; nothing calls this any
+ *             more. Kept, not deleted, per the project's deprecation rule.
+ */
+@Deprecated
 public final class ShopCheckProductsAndSendMessage {
 
     private ShopCheckProductsAndSendMessage() {}

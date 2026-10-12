@@ -46,9 +46,9 @@ public final class GitScriptUpdater {
     /**
      * What to do about {@code /reload} after the scripts have been copied.
      * <ul>
-     *   <li>{@link Kind#IMMEDIATE} — reload right away, no warning (the old {@code --force}).</li>
+     *   <li>{@link Kind#IMMEDIATE} — reload right away, no warning ({@code force}).</li>
      *   <li>{@link Kind#SCHEDULED} — reload after {@code delaySeconds}, warning players first.</li>
-     *   <li>{@link Kind#NONE} — copy only, never reload; the player reloads manually.</li>
+     *   <li>{@link Kind#NONE} — copy only: no reload and no warning title ({@code no_reload}).</li>
      * </ul>
      */
     public record ReloadMode(Kind kind, int delaySeconds) {
@@ -115,22 +115,20 @@ public final class GitScriptUpdater {
                             replaceContents(target, extracted);
                             cleanupTemp(extracted);
 
-                            initiator.sendSystemMessage(
-                                    Component.translatable("message.roll_mod.git.copied")
-                                            .withStyle(ChatFormatting.GREEN));
+                            // One line for the initiator, saying what happens next.
+                            initiator.sendSystemMessage((reload.kind() == ReloadMode.Kind.SCHEDULED
+                                    ? Component.translatable("message.roll_mod.git.copied_scheduled",
+                                            formatDelay(reload.delaySeconds()))
+                                    : Component.translatable("message.roll_mod.git.copied"))
+                                    .withStyle(ChatFormatting.GREEN));
 
                             switch (reload.kind()) {
                                 case IMMEDIATE ->
                                         // Already on the server thread — reload right away, no warning.
                                         performReload(server);
                                 case SCHEDULED -> scheduleReload(server, reload.delaySeconds());
-                                case NONE -> {
-                                    // Scripts copied but no reload requested — tell the player to reload manually.
-                                    initiator.sendSystemMessage(
-                                            Component.translatable("message.roll_mod.git.copied_no_reload")
-                                                    .withStyle(ChatFormatting.GREEN));
-                                    BUSY.set(false);
-                                }
+                                // Copy only: the "copied" line above is the initiator's only feedback.
+                                case NONE -> BUSY.set(false);
                             }
                         } catch (IOException e) {
                             RollMod.LOGGER.error("[git_copy] file swap failed", e);
@@ -325,15 +323,25 @@ public final class GitScriptUpdater {
         Component subtitle = Component.translatable("message.roll_mod.git.reload_warning_subtitle")
                 .withStyle(ChatFormatting.RED);
 
-        // fadeIn=10t, stay=200t (10s), fadeOut=20t
+        // fadeIn=10t, stay=600t (30s), fadeOut=20t
         ClientboundSetTitlesAnimationPacket timing =
-                new ClientboundSetTitlesAnimationPacket(10, 200, 20);
+                new ClientboundSetTitlesAnimationPacket(10, 600, 20);
 
         for (ServerPlayer p : server.getPlayerList().getPlayers()) {
             p.connection.send(timing);
             p.connection.send(new ClientboundSetSubtitleTextPacket(subtitle));
             p.connection.send(new ClientboundSetTitleTextPacket(title));
         }
+    }
+
+    /** "5m", "1h30m", "45s" — the same units {@code time <duration>} accepts. */
+    private static String formatDelay(int seconds) {
+        int h = seconds / 3600, m = seconds % 3600 / 60, sec = seconds % 60;
+        StringBuilder out = new StringBuilder();
+        if (h > 0) out.append(h).append('h');
+        if (m > 0) out.append(m).append('m');
+        if (sec > 0 || out.isEmpty()) out.append(sec).append('s');
+        return out.toString();
     }
 
     private static void sendFail(ServerPlayer initiator, String reason) {
