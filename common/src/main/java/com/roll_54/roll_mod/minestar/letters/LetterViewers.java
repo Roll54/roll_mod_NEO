@@ -45,12 +45,15 @@ public final class LetterViewers {
     public static void syncTo(ServerPlayer player) {
         // Staff get every letter, due and expired too — it is their list to manage. The reader tab
         // filters those back out on the client, by the same visible() test. Nobody, staff included,
-        // is sent a personal letter addressed to someone else.
-        List<Letter> letters = ModerationPermissions.canWriteLetters(player)
+        // is sent a personal letter addressed to someone else. A broadcast the reader deleted is
+        // left out for players; staff still get it, flagged, because it is theirs to manage.
+        boolean staff = ModerationPermissions.canWriteLetters(player);
+        List<Letter> letters = staff
                 ? LetterStore.all(player.server)
                 : LetterStore.visible(player.server);
         List<LetterView> views = letters.stream()
                 .filter(letter -> letter.isFor(player.getUUID()))
+                .filter(letter -> staff || !letter.dismissedBy(player.getUUID()))
                 .map(letter -> LetterView.of(letter, player.getUUID()))
                 .toList();
         PacketDistributor.sendToPlayer(player, new SyncLettersPacket(views));

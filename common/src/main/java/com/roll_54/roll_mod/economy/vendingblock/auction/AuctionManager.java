@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.economy.vendingblock.auction;
 
+import com.roll_54.roll_mod.economy.minprice.MinPriceService;
 import com.roll_54.roll_mod.economy.currency.ledger.LedgerReason;
 import com.roll_54.roll_mod.economy.currency.repository.AuctionHistory;
 import com.roll_54.roll_mod.economy.currency.repository.CurrencyLedger;
@@ -110,6 +111,14 @@ public final class AuctionManager {
         player.sendSystemMessage(Messages.ahInvalidPrice());
         return;
       }
+    }
+
+    // A bid listing can end at its start price, so that is the price that has to clear the floor.
+    var belowFloor =
+        MinPriceService.check(player, item, item.getCount(), bidding ? startPrice : fixedPrice);
+    if (belowFloor.isPresent()) {
+      player.sendSystemMessage(belowFloor.get());
+      return;
     }
 
     int wanted = item.getCount();

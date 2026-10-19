@@ -52,6 +52,9 @@ public final class ReloadCommand {
         BanStore.reload();
         WhitelistStore.reload();
         LetterStore.reload();
+        com.roll_54.roll_mod.minestar.deathlog.DeathLogStore.reload();
+        com.roll_54.roll_mod.minestar.radio.RadioSettings.reload();
+        com.roll_54.roll_mod.minestar.radio.RadioService.markDirty();
         LetterViewers.resync(source.getServer());
 
         // Operators are applied as well as re-read: the file is the authority, so reloading it has

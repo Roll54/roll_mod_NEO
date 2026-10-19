@@ -13,10 +13,13 @@ import java.util.UUID;
  *
  * <p>{@code personal} marks a letter addressed to this reader alone — a server notice. The reader
  * tab shows it like any other; the staff composer leaves it out, it is not theirs to manage.
+ *
+ * <p>{@code dismissed} marks a broadcast this reader deleted from their list. Only staff are sent
+ * those — they still manage it in the moderation tab — and the reader tab filters them out.
  */
 public record LetterView(UUID id, String title, String body, String author, long createdAt, long sendAt,
                          long expiresAt, List<LetterReward> rewards, String icon, boolean accepted,
-                         int acceptedCount, boolean personal) {
+                         int acceptedCount, boolean personal, boolean dismissed) {
 
     /** The same test {@link Letter#visible} makes, on the client's clock. */
     public boolean visible(long now) {
@@ -34,7 +37,8 @@ public record LetterView(UUID id, String title, String body, String author, long
     public static LetterView of(Letter letter, UUID reader) {
         return new LetterView(letter.id(), letter.title(), letter.body(), letter.author(),
                 letter.createdAt(), letter.sendAt(), letter.expiresAt(), letter.rewards(), letter.icon(),
-                letter.acceptedBy(reader), letter.accepted().size(), letter.recipient() != null);
+                letter.acceptedBy(reader), letter.accepted().size(), letter.recipient() != null,
+                letter.dismissedBy(reader));
     }
 
     public void encode(RegistryFriendlyByteBuf buf) {
@@ -52,6 +56,7 @@ public record LetterView(UUID id, String title, String body, String author, long
         buf.writeBoolean(accepted);
         buf.writeVarInt(acceptedCount);
         buf.writeBoolean(personal);
+        buf.writeBoolean(dismissed);
     }
 
     public static LetterView decode(RegistryFriendlyByteBuf buf) {
@@ -67,6 +72,6 @@ public record LetterView(UUID id, String title, String body, String author, long
         for (int i = 0; i < count; i++) rewards.add(LetterReward.decode(buf));
         String icon = buf.readUtf(LetterIcon.MAX);
         return new LetterView(id, title, body, author, created, sendAt, expires, List.copyOf(rewards),
-                icon, buf.readBoolean(), buf.readVarInt(), buf.readBoolean());
+                icon, buf.readBoolean(), buf.readVarInt(), buf.readBoolean(), buf.readBoolean());
     }
 }

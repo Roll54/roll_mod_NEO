@@ -2,6 +2,9 @@ package com.roll_54.roll_mod.network;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.network.CurrencyNetworking;
+import com.roll_54.roll_mod.network.packet.DeathLogPackets;
+import com.roll_54.roll_mod.network.packet.InvSeePackets;
+import com.roll_54.roll_mod.network.packet.RadioPackets;
 import com.roll_54.roll_mod.network.packet.ClaimDailyBonusPacket;
 import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
 import com.roll_54.roll_mod.network.packet.RerollDailyTaskPacket;
@@ -30,6 +33,7 @@ import com.roll_54.roll_mod.network.packet.ModerationActionPacket;
 import com.roll_54.roll_mod.network.packet.SyncLettersPacket;
 import com.roll_54.roll_mod.network.packet.LetterComposePacket;
 import com.roll_54.roll_mod.network.packet.LetterAcceptPacket;
+import com.roll_54.roll_mod.network.packet.LetterDismissPacket;
 import com.roll_54.roll_mod.network.packet.SyncTpaPacket;
 import com.roll_54.roll_mod.network.packet.MoneyActionPacket;
 import com.roll_54.roll_mod.network.packet.InteractionSettingPacket;
@@ -275,6 +279,11 @@ public class NetworkHandler {
                 SyncMoneyPacket.STREAM_CODEC,
                 SyncMoneyPacket::handle
         );
+        registrar.playToClient(
+                com.roll_54.roll_mod.economy.minprice.SyncMinPricesPacket.TYPE,
+                com.roll_54.roll_mod.economy.minprice.SyncMinPricesPacket.STREAM_CODEC,
+                com.roll_54.roll_mod.economy.minprice.SyncMinPricesPacket::handle
+        );
         registrar.playToServer(
                 OperatorTogglePacket.TYPE,
                 OperatorTogglePacket.STREAM_CODEC,
@@ -300,6 +309,61 @@ public class NetworkHandler {
                 ModerationActionPacket.STREAM_CODEC,
                 ModerationActionPacket::handle
         );
+        registrar.playToServer(
+                RadioPackets.Tune.TYPE,
+                RadioPackets.Tune.STREAM_CODEC,
+                RadioPackets.Tune::handle
+        );
+        registrar.playToClient(
+                RadioPackets.Sync.TYPE,
+                RadioPackets.Sync.STREAM_CODEC,
+                RadioPackets.Sync::handle
+        );
+        registrar.playToClient(
+                RadioPackets.Broadcasts.TYPE,
+                RadioPackets.Broadcasts.STREAM_CODEC,
+                RadioPackets.Broadcasts::handle
+        );
+        registrar.playToServer(
+                InvSeePackets.Open.TYPE,
+                InvSeePackets.Open.STREAM_CODEC,
+                InvSeePackets.Open::handle
+        );
+        registrar.playToServer(
+                InvSeePackets.Back.TYPE,
+                InvSeePackets.Back.STREAM_CODEC,
+                InvSeePackets.Back::handle
+        );
+        registrar.playToClient(
+                InvSeePackets.Layout.TYPE,
+                InvSeePackets.Layout.STREAM_CODEC,
+                InvSeePackets.Layout::handle
+        );
+        registrar.playToServer(
+                DeathLogPackets.Request.TYPE,
+                DeathLogPackets.Request.STREAM_CODEC,
+                DeathLogPackets.Request::handle
+        );
+        registrar.playToServer(
+                DeathLogPackets.Act.TYPE,
+                DeathLogPackets.Act.STREAM_CODEC,
+                DeathLogPackets.Act::handle
+        );
+        registrar.playToClient(
+                DeathLogPackets.Index.TYPE,
+                DeathLogPackets.Index.STREAM_CODEC,
+                DeathLogPackets.Index::handle
+        );
+        registrar.playToClient(
+                DeathLogPackets.Deaths.TYPE,
+                DeathLogPackets.Deaths.STREAM_CODEC,
+                DeathLogPackets.Deaths::handle
+        );
+        registrar.playToClient(
+                DeathLogPackets.Detail.TYPE,
+                DeathLogPackets.Detail.STREAM_CODEC,
+                DeathLogPackets.Detail::handle
+        );
         registrar.playToClient(
                 SyncLettersPacket.TYPE,
                 SyncLettersPacket.STREAM_CODEC,
@@ -314,6 +378,11 @@ public class NetworkHandler {
                 LetterAcceptPacket.TYPE,
                 LetterAcceptPacket.STREAM_CODEC,
                 LetterAcceptPacket::handle
+        );
+        registrar.playToServer(
+                LetterDismissPacket.TYPE,
+                LetterDismissPacket.STREAM_CODEC,
+                LetterDismissPacket::handle
         );
 
         // The economy's payloads keep their own lists, but share this registrar: NeoForge allows a

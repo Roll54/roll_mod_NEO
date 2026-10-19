@@ -213,6 +213,30 @@ public class MyConfig extends Config {
     }
 
 
+    public ChunkGuardSettings chunkGuard = new ChunkGuardSettings();
+
+    public static class ChunkGuardSettings extends ConfigSection {
+        // Plain fields, not Validated*: :server reads these and can't see fzzy_config's types.
+        @Comment("""
+            Freeze a chunk (no entity, block entity, scheduled, random ticks or natural spawning) when something
+            ticking inside it throws, instead of crashing the server. Stays frozen until '/rollmod admin chunkfreeze unfreeze'
+            or a restart.
+            """)
+        public boolean freezeOnCrash = true;
+
+        @Comment("Non-player entities in one chunk at which the chunk gets frozen. 0 = disabled.")
+        @ValidatedInt.Restrict(min = 0, max = 100_000)
+        public int entityLimit = 200;
+
+        @Comment("An overload-frozen chunk resumes ticking once its non-player entity count drops below this.")
+        @ValidatedInt.Restrict(min = 0, max = 100_000)
+        public int resumeBelow = 150;
+
+        @Comment("How often (in ticks) entity counts per chunk are rescanned.")
+        @ValidatedInt.Restrict(min = 1, max = 1200)
+        public int scanIntervalTicks = 20;
+    }
+
     @Comment("Settings for Nether Storm behaviour")
     public StormSettings storm = new StormSettings();
 
@@ -304,6 +328,21 @@ public class MyConfig extends Config {
     }
 
 
+    @Comment("Create Cybernetics tweaks.")
+    public CreateCyberneticsSettings createCybernetics = new CreateCyberneticsSettings();
+
+    public static class CreateCyberneticsSettings extends ConfigSection {
+
+        @Comment("""
+                Whether the Ripper counts as a hostile mob. It is a Monster by class, so vanilla treats
+                it as one: it blocks sleeping nearby, despawns on Peaceful, is attacked by iron and
+                snow golems and full conduits, wakes foxes and plays on the Hostile sound slider.
+                False = none of that applies; it still fights back when hurt.
+                True = vanilla behavior. Changes apply live, without a restart.
+                """)
+        public ValidatedBoolean ripperHostile = new ValidatedBoolean(false);
+    }
+
     public SolarPanelOptions solarPanelOptions = new SolarPanelOptions();
 
     public static class SolarPanelOptions extends ConfigSection {
@@ -350,5 +389,38 @@ public class MyConfig extends Config {
     public static class ChatChanges extends ConfigSection {
         @Comment("Hide the advancement announcements in chat (challenges, see PlayerAdvancementsMixin).")
         public boolean hideAdvancementMessages = false;
+    }
+
+    @Comment("The moderation tab's death log: what a player carried when they died.")
+    public DeathLogSettings deathlog = new DeathLogSettings();
+
+    public static class DeathLogSettings extends ConfigSection {
+        @Comment("Record player deaths at all. Off stops new records; old ones stay readable.")
+        public ValidatedBoolean enabled = new ValidatedBoolean(true);
+        @Comment("Deaths kept per player, newest first. Older ones are deleted as new ones arrive.")
+        public ValidatedInt maxPerPlayer = new ValidatedInt(30, 500, 1);
+    }
+
+    @Comment("How long letters the server sends by itself stay in the player's list before they expire. Unaccepted attachments are lost with them.")
+    public LetterSettings letters = new LetterSettings();
+
+    public static class LetterSettings extends ConfigSection {
+        @Comment("Hours a Minestar shop delivery letter waits to be accepted. 0 = never expires.")
+        public ValidatedInt shopLifetimeHours = new ValidatedInt(24, 24 * 365, 0);
+        @Comment("Hours a death-log letter (items of a death returned or retrieved by staff that did not fit the inventory) waits to be accepted. 0 = never expires.")
+        public ValidatedInt deathLogLifetimeHours = new ValidatedInt(72, 24 * 365, 0);
+
+        /** {@link #shopLifetimeHours} in millis, {@code 0} for never — what {@code LetterService} takes. */
+        public long shopLifetime() {
+            return hours(shopLifetimeHours.get());
+        }
+
+        public long deathLogLifetime() {
+            return hours(deathLogLifetimeHours.get());
+        }
+
+        private static long hours(int hours) {
+            return Math.max(0, hours) * 60L * 60L * 1000L;
+        }
     }
 }

@@ -152,6 +152,11 @@ public class ChatHandler {
                 .filter(player -> player.distanceToSqr(sender) <= LOCAL_RADIUS_SQUARED)
                 .collect(Collectors.toList());
 
+        if (sender.isSpectator()) {
+            handleSpectatorLocalChat(sender, content, nearbyPlayers);
+            return;
+        }
+
         if (nearbyPlayers.size() <= 1) {
             Component noFoundNearbyPlayers;
             noFoundNearbyPlayers = Component.translatable("msg.roll_mod.chat.local.nobody").withStyle(ChatFormatting.GRAY);
@@ -174,6 +179,29 @@ public class ChatHandler {
         logLocal(sender, content, nearbyPlayers);
     }
 
+
+    /**
+     * A spectator's local message is silent: it reaches no player in survival or creative, only the
+     * spectators in range — the sender included — and to them it shows in yellow, tagged silent. The
+     * sender is warned that nobody heard them, since nobody playing did.
+     */
+    private static void handleSpectatorLocalChat(ServerPlayer sender, String content, List<ServerPlayer> nearbyPlayers) {
+        List<ServerPlayer> spectators = nearbyPlayers.stream().filter(ServerPlayer::isSpectator).collect(Collectors.toList());
+
+        Component messageComponent = Component.literal("")
+                .append(Component.translatable("msg.roll_mod.chat.local.silent_tag").withStyle(ChatFormatting.GOLD))
+                .append(Component.literal(" "))
+                .append(lpPrefix(sender))
+                .append(sender.getDisplayName())
+                .append(Component.literal(": ").withStyle(ChatFormatting.YELLOW))
+                .append(Component.literal(content).withStyle(ChatFormatting.YELLOW));
+
+        spectators.forEach(player -> ChatChannels.deliver(player, ChatChannel.LOCAL, messageComponent, sender.getUUID()));
+        ChatChannels.deliver(sender, ChatChannel.LOCAL,
+                Component.translatable("msg.roll_mod.chat.local.spectator_nobody").withStyle(ChatFormatting.GRAY));
+
+        logLocalSpectator(sender, content, spectators);
+    }
 
     /**
      * The player's LuckPerms prefix as a Component, parsed as MiniMessage, or an empty Component when
@@ -209,6 +237,16 @@ public class ChatHandler {
         Vec3 pos = sender.position();
 
         String logMessage = String.format(Locale.US, "[LOCAL] %s (%s) @%s pos=%.1f %.1f %.1f -> \"%s\" recipients=[%s]",
+                sender.getGameProfile().getName(), sender.getUUID(), sender.level().dimension().location(),
+                pos.x, pos.y, pos.z, message, recList);
+        RollMod.LOGGER.info(logMessage);
+    }
+
+    private static void logLocalSpectator(ServerPlayer sender, String message, List<ServerPlayer> recipients) {
+        String recList = recipients.stream().map(p -> p.getGameProfile().getName()).collect(Collectors.joining(", "));
+        Vec3 pos = sender.position();
+
+        String logMessage = String.format(Locale.US, "[LOCAL] %s (%s) @%s pos=%.1f %.1f %.1f -> \"%s\" SPECTATOR_SILENT recipients=[%s]",
                 sender.getGameProfile().getName(), sender.getUUID(), sender.level().dimension().location(),
                 pos.x, pos.y, pos.z, message, recList);
         RollMod.LOGGER.info(logMessage);

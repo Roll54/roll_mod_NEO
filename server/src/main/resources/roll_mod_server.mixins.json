@@ -4,7 +4,10 @@
   "package": "com.roll_54.roll_mod_server.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "crash.ChunkFreezeLevelMixin",
+    "crash.ChunkFreezeServerLevelMixin",
     "crash.MinecraftServerCrashGuardMixin",
+    "crash.MinecraftServerLevelTickGuardMixin",
     "minestar.MinestarConfigValidateMixin",
     "prime.LivingEntityMixin",
     "prime.MixinLivingEntityPrimeFeature",

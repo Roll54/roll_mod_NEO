@@ -12,10 +12,14 @@
     "adstra.NanoArmorMixin",
     "adstra.OxygenApiImplMixin",
     "CommandSourceStackAccessor",
+    "SmithingTransformRecipeAccessor",
     "CommandBlockLoggingMixin",
     "GraviChestPlateItemMixin",
     "MIKeyMapInvoker",
+    "mi.FluidPipeDrainGuardMixin",
+    "mi.FluidPipeFillGuardMixin",
     "MinecartCommandBlockLoggingMixin",
+    "MinecraftServerStatusMixin",
     "NanoSuitGravichestplateAbilityMixin",
     "PhantomSpawnerMixin",
     "PlayerAdvancementsMixin",
@@ -45,7 +49,11 @@
     "crops.AgriPlantMixin",
     "crops.RakeItemMixin",
     "crops.AgriSeedItemMixin",
-    "MutiblockMachinesMixin"
+    "MutiblockMachinesMixin",
+    "hostility.ConduitBlockEntityMixin",
+    "hostility.FoxAlertableEntitiesSelectorMixin",
+    "hostility.IronGolemMixin",
+    "hostility.SnowGolemMixin"
   ],
   "injectors": {
     "defaultRequire": 1

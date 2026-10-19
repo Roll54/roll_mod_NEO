@@ -20,9 +20,12 @@ homes tab offers to bring across. Those files are never written to.
 | `warns.json` | Per player: their name, and every warning ever given | A warning is issued |
 | `bans.json` | Per player: `until` (0 = permanent), `by`, `rule`, `reason`, `name` | A ban is issued or lifted |
 | `whitelist.json` | Whether the server is closed, and the message it closes with | The toggle is flipped |
+| `deathlog/<uuid>.json` | One player's last deaths (newest first, `deathlog.maxPerPlayer` in the config): when, where, the cause, every inventory slot, worn curios, the full Create Cybernetics state, and each restore | The player dies, a moderator restores a death |
+| `deathlog/index.json` | `{ "<player uuid>": { name, deaths, lastDeath } }` — the moderation tab's player list; rebuilt from the player files if deleted | Alongside the player file |
 | `letters.json` | Every staff letter still in date: text, rewards, who has accepted it | A letter is sent, withdrawn or accepted |
 | `moderation.log` | One line per mute, warning, ban, whitelist change, letter and letter command, with who did it | Append-only; never read back |
 | `tps.log` | One line each time the server drops below 15 TPS (rate-limited) | Append-only; never read back |
+| `chunk_freeze.log` | One line each time a chunk is frozen (overload or crash), resumes, or is unfrozen by command — chunk and block coords, dimension, why (see `server-crash-protection.md`) | Append-only; never read back |
 | `logs/currency_logs.txt` | Two lines per money change — the request and its result — with who did it, the other side, the reason and the Java code that called | Append-only; never read back |
 
 Cooldown **durations** are ticks (20 = one second) everywhere — kit files, `/kit create`, the

@@ -18,6 +18,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.Switch;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.TextField;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
+import com.roll_54.roll_mod.minestar.deathlog.ClientDeathLogCache;
 import com.roll_54.roll_mod.minestar.kits.ClientKitNamesCache;
 import com.roll_54.roll_mod.minestar.hub.warp.ClientWarpCache;
 import com.roll_54.roll_mod.minestar.letters.ClientLetterCache;
@@ -31,6 +32,8 @@ import com.roll_54.roll_mod.minestar.moderation.ModerationService;
 import com.roll_54.roll_mod.minestar.moderation.Rule;
 import com.roll_54.roll_mod.minestar.moderation.RulesStore;
 import com.roll_54.roll_mod.minestar.moderation.TpsMonitor;
+import com.roll_54.roll_mod.minestar.moderation.invsee.InvSeeLayout;
+import com.roll_54.roll_mod.network.packet.InvSeePackets;
 import com.roll_54.roll_mod.network.packet.ModerationActionPacket;
 import com.roll_54.roll_mod.network.packet.ModerationActionPacket.Action;
 import com.roll_54.roll_mod.network.packet.WarpActionPacket;
@@ -43,6 +46,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.appliedenergistics.yoga.YogaPositionType;
 
@@ -95,17 +99,29 @@ public final class ModerationTab {
     private static final int MODE_WARPS = 1;
     private static final int MODE_LETTERS = 2;
     private static final int MODE_KITS = 3;
+    private static final int MODE_DEATHS = 4;
     private static final String[] MODE_KEYS = {
             "gui.roll_mod.hub.moderation.mode.players",
             "gui.roll_mod.hub.moderation.mode.warps",
             "gui.roll_mod.hub.moderation.mode.letters",
-            "gui.roll_mod.hub.moderation.mode.kits"};
+            "gui.roll_mod.hub.moderation.mode.kits",
+            "gui.roll_mod.hub.moderation.mode.deaths"};
     private static final int MODE_W = 110;
+
+    /** The player list's presence filter, cycled by its button. */
+    private static final int PRESENCE_ALL = 0;
+    private static final int PRESENCE_ONLINE = 1;
+    private static final int PRESENCE_OFFLINE = 2;
+    private static final String[] PRESENCE_KEYS = {
+            "gui.roll_mod.hub.moderation.filter.all",
+            "gui.roll_mod.hub.moderation.filter.online",
+            "gui.roll_mod.hub.moderation.filter.offline"};
     private static final String[] SEARCH_KEYS = {
             "gui.roll_mod.hub.moderation.search.tip",
             "gui.roll_mod.hub.moderation.search.warps",
             "gui.roll_mod.hub.moderation.search.letters",
-            "gui.roll_mod.hub.moderation.search.kits"};
+            "gui.roll_mod.hub.moderation.search.kits",
+            "gui.roll_mod.hub.moderation.search.deaths"};
 
     private ModerationTab() {}
 
@@ -128,6 +144,10 @@ public final class ModerationTab {
         UUID[] selectedPlayer = {null};
         UUID[] selectedWarp = {null};
         String[] filter = {""};
+        // The player list's own filters, kept across mode switches: who is shown by presence, and
+        // whether only those with a record are.
+        int[] presence = {PRESENCE_ALL};
+        boolean[] punishedOnly = {false};
 
         /* ---------------------------------------- left: players ---------------------------------------- */
 
@@ -144,7 +164,33 @@ public final class ModerationTab {
                 List.of(Component.translatable(SEARCH_KEYS[mode[0]])), null, null, ItemStack.EMPTY));
 
         ScrollerView players = scroller();
-        left.addChildren(search, players);
+
+        // Players-mode filters, under the search: a presence cycle (all, online, offline) and a
+        // "punished" toggle. Squashed to nothing in the other modes — height, not setDisplay, as the
+        // panes are. Client state only, so no sync value.
+        UIElement filters = new UIElement();
+        filters.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
+                .gapColumn(GAP));
+        filters.setOverflowVisible(false);
+        Button presenceButton = new Button();
+        presenceButton.layout(l -> l.flexGrow(1).flexBasis(0).height(ROW_H));
+        presenceButton.setText(presenceLabel(presence[0]));
+        presenceButton.setOnClick(e -> {
+            presence[0] = (presence[0] + 1) % PRESENCE_KEYS.length;
+            presenceButton.setText(presenceLabel(presence[0]));
+        });
+        hint(presenceButton, "gui.roll_mod.hub.moderation.filter.presence.tip");
+        Button punishedButton = new Button();
+        punishedButton.layout(l -> l.flexGrow(1).flexBasis(0).height(ROW_H));
+        punishedButton.setText(punishedLabel(false));
+        punishedButton.setOnClick(e -> {
+            punishedOnly[0] = !punishedOnly[0];
+            punishedButton.setText(punishedLabel(punishedOnly[0]));
+        });
+        hint(punishedButton, "gui.roll_mod.hub.moderation.filter.punished.tip");
+        filters.addChildren(presenceButton, punishedButton);
+
+        left.addChildren(search, filters, players);
 
         /* ---------------------------------------- right: modes ----------------------------------------- */
 
@@ -172,7 +218,8 @@ public final class ModerationTab {
         // Null-safe: setCandidateUIProvider re-renders the current value, and there is none yet.
         modeSelector.setCandidateUIProvider(UIElementProvider.text(m -> m == null ? Component.empty()
                 : Component.translatable(MODE_KEYS[m])));
-        modeSelector.setCandidates(modes(ClientModerationCache.MAY_WRITE_LETTERS, ClientKitNamesCache.ALLOWED));
+        modeSelector.setCandidates(modes(ClientModerationCache.MAY_WRITE_LETTERS, ClientKitNamesCache.ALLOWED,
+                ClientModerationCache.MAY_DEATHLOG));
         modeSelector.setSelected(MODE_PLAYERS, false);
         modeSelector.layout(l -> l.width(MODE_W).height(ROW_H));
         modeSelector.setOnValueChanged(m -> {
@@ -199,7 +246,9 @@ public final class ModerationTab {
         LetterComposer composer = new LetterComposer(inventory);
         UIElement kitPane = pane();
         KitNamesPanel kits = new KitNamesPanel(kitPane);
-        stack.addChildren(playerPane, warpPane, composer.pane, kitPane);
+        UIElement deathPane = pane();
+        DeathLogPanel deaths = new DeathLogPanel(deathPane, confirmer, player.level().isClientSide());
+        stack.addChildren(playerPane, warpPane, composer.pane, kitPane, deathPane);
 
         right.addChildren(modeRow, stack);
 
@@ -294,6 +343,7 @@ public final class ModerationTab {
         int[] shownMode = {-1};
         boolean[] lettersOffered = {ClientModerationCache.MAY_WRITE_LETTERS};
         boolean[] kitsOffered = {ClientKitNamesCache.ALLOWED};
+        boolean[] deathsOffered = {ClientModerationCache.MAY_DEATHLOG};
         int[] whitelistVersion = {-1};
 
         root.addEventListener(UIEvents.TICK, e -> {
@@ -309,11 +359,14 @@ public final class ModerationTab {
             // Lost the letters permission while in letters mode: fall back rather than strand them.
             if (!ClientModerationCache.MAY_WRITE_LETTERS && mode[0] == MODE_LETTERS) mode[0] = MODE_PLAYERS;
             if (!ClientKitNamesCache.ALLOWED && mode[0] == MODE_KITS) mode[0] = MODE_PLAYERS;
+            if (!ClientModerationCache.MAY_DEATHLOG && mode[0] == MODE_DEATHS) mode[0] = MODE_PLAYERS;
             if (lettersOffered[0] != ClientModerationCache.MAY_WRITE_LETTERS
-                    || kitsOffered[0] != ClientKitNamesCache.ALLOWED) {
+                    || kitsOffered[0] != ClientKitNamesCache.ALLOWED
+                    || deathsOffered[0] != ClientModerationCache.MAY_DEATHLOG) {
                 lettersOffered[0] = ClientModerationCache.MAY_WRITE_LETTERS;
                 kitsOffered[0] = ClientKitNamesCache.ALLOWED;
-                modeSelector.setCandidates(modes(lettersOffered[0], kitsOffered[0]));
+                deathsOffered[0] = ClientModerationCache.MAY_DEATHLOG;
+                modeSelector.setCandidates(modes(lettersOffered[0], kitsOffered[0], deathsOffered[0]));
                 modeSelector.setSelected(mode[0], false);
             }
 
@@ -328,24 +381,32 @@ public final class ModerationTab {
                     editingWarp[0] = false;
                 }
                 shownMode[0] = mode[0];
+                boolean playersMode = mode[0] == MODE_PLAYERS;
+                filters.layout(l -> l.height(playersMode ? ROW_H : 0));
                 show(playerPane, mode[0] == MODE_PLAYERS);
                 show(warpPane, mode[0] == MODE_WARPS);
                 show(composer.pane, mode[0] == MODE_LETTERS);
                 show(kitPane, mode[0] == MODE_KITS);
+                show(deathPane, mode[0] == MODE_DEATHS);
+                if (mode[0] == MODE_DEATHS) deaths.enter();
                 if (!Integer.valueOf(mode[0]).equals(modeSelector.getValue())) {
                     modeSelector.setSelected(mode[0], false);
                 }
             }
             composer.tick(mode[0] == MODE_LETTERS);
             if (mode[0] == MODE_KITS) kits.tick();
+            if (mode[0] == MODE_DEATHS) deaths.tick();
 
             // Left list: whatever the mode is about.
             List<Warp> allWarps = ClientWarpCache.WARPS;
             StringBuilder sig = new StringBuilder().append(mode[0]).append('|').append(filter[0]).append('|');
             switch (mode[0]) {
                 case MODE_PLAYERS -> {
-                    List<ClientModerationCache.Row> shown = matching(rows, filter[0]);
-                    sig.append(selectedPlayer[0]).append('|');
+                    List<ClientModerationCache.Row> shown = matching(rows, filter[0], presence[0],
+                            punishedOnly[0], now);
+                    sig.append(selectedPlayer[0]).append('|').append(presence[0])
+                            .append(punishedOnly[0] ? 'p' : '_').append('|').append(ClientModerationCache.MAY_INV_SEE)
+                            .append(ClientModerationCache.MAY_INV_EDIT).append('|');
                     for (ClientModerationCache.Row row : shown) {
                         sig.append(row.row().id()).append(row.row().online() ? '+' : '-')
                                 .append(row.row().warns()).append(row.muted(now) ? 'm' : '_')
@@ -353,7 +414,8 @@ public final class ModerationTab {
                     }
                     if (!sig.toString().equals(listSig[0])) {
                         listSig[0] = sig.toString();
-                        rebuildPlayers(players, shown, now, selectedPlayer);
+                        rebuildPlayers(players, shown, now, selectedPlayer, filter[0],
+                                presence[0] != PRESENCE_ONLINE, confirmer);
                     }
                 }
                 case MODE_WARPS -> {
@@ -376,6 +438,13 @@ public final class ModerationTab {
                         KitNamesPanel.rebuildList(players, filter[0], kits.selected);
                     }
                 }
+                case MODE_DEATHS -> {
+                    sig.append(ClientDeathLogCache.VERSION).append('|').append(deaths.victim[0]);
+                    if (!sig.toString().equals(listSig[0])) {
+                        listSig[0] = sig.toString();
+                        DeathLogPanel.rebuildVictims(players, filter[0], deaths.victim);
+                    }
+                }
                 default -> {
                     // Minutes, not seconds: rows show times of day, and the only thing the clock
                     // changes on its own is a letter crossing into "expired".
@@ -392,7 +461,8 @@ public final class ModerationTab {
             // once a second rather than every frame.
             ClientModerationCache.Row current = find(rows, selectedPlayer[0]);
             String dSig = ClientModerationCache.VERSION + ":" + selectedPlayer[0] + ":"
-                    + (current == null ? "" : now / 1000L) + ":" + ClientModerationCache.MAY_BAN;
+                    + (current == null ? "" : now / 1000L) + ":" + ClientModerationCache.MAY_BAN
+                    + ":" + ClientModerationCache.MAY_INV_SEE + ":" + ClientModerationCache.MAY_INV_EDIT;
             if (!dSig.equals(detailSig[0])) {
                 detailSig[0] = dSig;
                 detail.clearAllChildren();
@@ -442,29 +512,67 @@ public final class ModerationTab {
         return root;
     }
 
-    /** The modes the drop-down offers: letters only to those who may write them, kits to those who may rename them. */
-    private static List<Integer> modes(boolean letters, boolean kits) {
+    /**
+     * The modes the drop-down offers: letters only to those who may write them, kits to those who may
+     * rename them, deaths to those who may restore them.
+     */
+    private static List<Integer> modes(boolean letters, boolean kits, boolean deaths) {
         List<Integer> out = new ArrayList<>(List.of(MODE_PLAYERS, MODE_WARPS));
         if (letters) out.add(MODE_LETTERS);
         if (kits) out.add(MODE_KITS);
+        if (deaths) out.add(MODE_DEATHS);
         return out;
     }
 
     /* ------------------------------------------ player list ------------------------------------------- */
 
     private static List<ClientModerationCache.Row> matching(List<ClientModerationCache.Row> rows,
-                                                            String filter) {
-        if (filter.isEmpty()) return rows;
+                                                            String filter, int presence,
+                                                            boolean punishedOnly, long now) {
+        if (filter.isEmpty() && presence == PRESENCE_ALL && !punishedOnly) return rows;
         List<ClientModerationCache.Row> matches = new ArrayList<>();
         for (ClientModerationCache.Row row : rows) {
-            if (row.row().name().toLowerCase().contains(filter)) matches.add(row);
+            if (!filter.isEmpty() && !row.row().name().toLowerCase().contains(filter)) continue;
+            if (presence == PRESENCE_ONLINE && !row.row().online()) continue;
+            if (presence == PRESENCE_OFFLINE && row.row().online()) continue;
+            if (punishedOnly && !punished(row, now)) continue;
+            matches.add(row);
         }
         return matches;
     }
 
+    /** Has a record: at least one warning, or a mute or ban still running. */
+    private static boolean punished(ClientModerationCache.Row row, long now) {
+        return row.row().warns() > 0 || row.muted(now) || row.banned(now);
+    }
+
+    private static Component presenceLabel(int presence) {
+        return Component.translatable(PRESENCE_KEYS[presence]).withStyle(switch (presence) {
+            case PRESENCE_ONLINE -> ChatFormatting.GREEN;
+            case PRESENCE_OFFLINE -> ChatFormatting.GRAY;
+            default -> ChatFormatting.WHITE;
+        });
+    }
+
+    private static Component punishedLabel(boolean on) {
+        return Component.translatable("gui.roll_mod.hub.moderation.filter.punished")
+                .withStyle(on ? ChatFormatting.GOLD : ChatFormatting.DARK_GRAY);
+    }
+
     private static void rebuildPlayers(ScrollerView list, List<ClientModerationCache.Row> rows,
-                                       long now, UUID[] selected) {
+                                       long now, UUID[] selected, String filter, boolean offerOffline,
+                                       HubConfirm confirmer) {
         list.clearAllScrollViewChildren();
+        // The list holds everyone with saved data in this world, but it is capped and can be a
+        // second stale. A search that finds nobody may still be a player who has been here, so
+        // offer their saved inventory by the typed name. The server looks the name up and says so
+        // if there is no such player or no saved data.
+        if (rows.isEmpty() && offerOffline && !filter.isBlank() && ClientModerationCache.MAY_INV_SEE
+                && filter.matches("[a-z0-9_]{1,16}")) {
+            Button lookup = offlineAction(null, filter, confirmer, "gui.roll_mod.hub.moderation.invsee.offline.named");
+            lookup.layout(l -> l.widthPercent(100).height(ROW_H).flexGrow(0));
+            list.addScrollViewChild(lookup);
+        }
         for (ClientModerationCache.Row entry : rows) {
             ModerationRow row = entry.row();
             boolean isSelected = row.id().equals(selected[0]);
@@ -553,11 +661,43 @@ public final class ModerationTab {
             detail.addChild(reason);
         }
 
+        // Inventory and implants, above the punishments. Live and offline are separate buttons on
+        // purpose, never one button that picks: editing a player who is here and rewriting the file
+        // of one who is not are different acts. Both are marked "!", since both change another
+        // player's items; the server refuses either if the player's state no longer matches.
+        boolean invRow = ClientModerationCache.MAY_INV_SEE;
+        if (invRow) {
+            UIElement inventory = new UIElement();
+            inventory.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
+                    .marginTopAuto().marginBottom(GAP).gapColumn(GAP));
+            boolean edit = ClientModerationCache.MAY_INV_EDIT;
+            if (row.online()) {
+                inventory.addChild(warnAction("gui.roll_mod.hub.moderation.invsee.inventory",
+                        edit ? "gui.roll_mod.hub.moderation.invsee.live.tip"
+                                : "gui.roll_mod.hub.moderation.invsee.view.tip",
+                        () -> PacketDistributor.sendToServer(InvSeePackets.Open.online(row.id(),
+                                InvSeeLayout.Page.INVENTORY))));
+                if (ModList.get().isLoaded("createcybernetics")) {
+                    inventory.addChild(warnAction("gui.roll_mod.hub.moderation.invsee.implants",
+                            edit ? "gui.roll_mod.hub.moderation.invsee.live.tip"
+                                    : "gui.roll_mod.hub.moderation.invsee.view.tip",
+                            () -> PacketDistributor.sendToServer(InvSeePackets.Open.online(row.id(),
+                                    InvSeeLayout.Page.IMPLANTS))));
+                }
+            } else {
+                inventory.addChild(offlineAction(row.id(), row.name(), ban.confirmer,
+                        "gui.roll_mod.hub.moderation.invsee.offline"));
+            }
+            detail.addChild(inventory);
+        }
+
         // Actions, pinned to the bottom. Mute and warn need the player here to hear it — the server
         // refuses them otherwise — so they are only offered when that is true.
         UIElement actions = new UIElement();
-        actions.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .marginTopAuto().gapColumn(GAP));
+        actions.layout(l -> {
+            l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H).gapColumn(GAP);
+            if (!invRow) l.marginTopAuto();
+        });
 
         if (row.online()) {
             if (entry.muted(now)) {
@@ -996,6 +1136,43 @@ public final class ModerationTab {
         button.setText(Component.translatable(key));
         button.layout(l -> l.flexGrow(1).height(ROW_H));
         button.setOnClick(e -> onClick.run());
+        return button;
+    }
+
+    /** An action that changes another player's items: a red "!" in front, and what it does on hover. */
+    private static Button warnAction(String key, String tip, Runnable onClick) {
+        Button button = new Button();
+        button.setText(Component.literal("! ").withStyle(ChatFormatting.RED, ChatFormatting.BOLD)
+                .append(Component.translatable(key).withStyle(ChatFormatting.RESET)));
+        button.layout(l -> l.flexGrow(1).height(ROW_H));
+        button.setOnClick(e -> onClick.run());
+        hint(button, tip);
+        return button;
+    }
+
+    /**
+     * The offline option: opens the player's saved file. For a moderator who may edit, it asks first,
+     * because what they change is written straight into a file the player will load next time.
+     *
+     * @param id the player, or {@code null} for one known only by the name typed in the search
+     */
+    private static Button offlineAction(@Nullable UUID id, String name, HubConfirm confirmer, String key) {
+        boolean edit = ClientModerationCache.MAY_INV_EDIT;
+        Runnable open = () -> PacketDistributor.sendToServer(InvSeePackets.Open.offline(id, name));
+        Button button = new Button();
+        button.setText(Component.literal("! ").withStyle(ChatFormatting.GOLD, ChatFormatting.BOLD)
+                .append(Component.translatable(key, name).withStyle(ChatFormatting.RESET)));
+        button.layout(l -> l.flexGrow(1).height(ROW_H));
+        button.setOnClick(e -> {
+            if (!edit) {
+                open.run();
+                return;
+            }
+            confirmer.ask(Component.translatable("gui.roll_mod.hub.confirm.invsee.offline", name),
+                    Component.translatable("gui.roll_mod.hub.confirm.invsee.offline.button"), open);
+        });
+        hint(button, edit ? "gui.roll_mod.hub.moderation.invsee.offline.tip"
+                : "gui.roll_mod.hub.moderation.invsee.view.tip");
         return button;
     }
 

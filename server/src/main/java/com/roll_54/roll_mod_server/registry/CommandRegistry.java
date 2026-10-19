@@ -2,6 +2,7 @@ package com.roll_54.roll_mod_server.registry;
 
 import com.roll_54.roll_mod_server.RollModServer;
 import com.roll_54.roll_mod_server.commands.AutoGiveCommands;
+import com.roll_54.roll_mod_server.commands.ChunkFreezeCommand;
 import com.roll_54.roll_mod_server.commands.GitCopyCommand;
 import com.roll_54.roll_mod_server.commands.NetherstormCommand;
 import com.roll_54.roll_mod_server.commands.RegenBlockCommands;
@@ -22,6 +23,7 @@ public class CommandRegistry {
         AutoGiveCommands.register(dispatcher);
         RegenBlockCommands.register(dispatcher);
         NetherstormCommand.register(dispatcher);
+        ChunkFreezeCommand.register(dispatcher);
         GitCopyCommand.register(dispatcher);
         PVPCommand.register(dispatcher);
 

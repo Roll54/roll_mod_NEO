@@ -1,6 +1,8 @@
 package com.roll_54.roll_mod_server;
 
+import com.roll_54.roll_mod.minestar.deathlog.DeathLogService;
 import com.roll_54.roll_mod.minestar.friends.FriendsProvider;
+import com.roll_54.roll_mod_server.minestar.PrimeManager;
 import com.roll_54.roll_mod_server.minestar.MinestarFriendsProvider;
 import com.roll_54.roll_mod.RollMod;
 import net.neoforged.api.distmarker.Dist;
@@ -19,6 +21,9 @@ public final class RollModServer {
     public RollModServer(ModContainer container) {
         // The hub's friends tab lives in :common, which cannot see the Minestar client; this jar can.
         FriendsProvider.set(new MinestarFriendsProvider());
+        // Prime keeps a player's inventory through death; the death log marks those deaths so a
+        // moderator is warned that restoring one would hand out a second copy.
+        DeathLogService.setKeepsInventory(PrimeManager::hasPrime);
         RollMod.LOGGER.info("[{}] init complete.", MODID);
     }
 }

@@ -18,6 +18,7 @@ import com.roll_54.roll_mod.items.armor.geckolib.MultiProtectingGraviChestItem;
 import com.roll_54.roll_mod.items.armor.geckolib.SkinAnchorItem;
 import com.roll_54.roll_mod.items.cyberware.CropLenseItem;
 import com.roll_54.roll_mod.items.cyberware.CropModuleItem;
+import com.roll_54.roll_mod.items.cyberware.RadioImplantItem;
 import com.roll_54.roll_mod.items.cyberware.SulfurResistantLungsItem;
 import com.roll_54.roll_mod.items.electricItems.*;
 import com.roll_54.roll_mod.items.modulardrill.DrillModuleItem;
@@ -2438,6 +2439,23 @@ public class ItemRegistry {
                             );
                         }
                     });
+
+    // Hub "Radio" tab while installed; see minestar/radio/RadioService.
+    public static final DeferredHolder<Item, RadioImplantItem> BRAINUPGRADE_RADIO = ITEMS.register("brainupgrade_radio",
+            () -> new RadioImplantItem(new Item.Properties().stacksTo(1)) {
+                @Override
+                public void appendHoverText(ItemStack stack, Item.TooltipContext context, List<Component> tooltipComponents, TooltipFlag tooltipFlag) {
+                    tooltipComponents.add(Component.translatable("tooltip.createcybernetics.brainupgrade_tooltip"));
+                    if (Screen.hasShiftDown()) {
+                        tooltipComponents.add(Component.translatable("tooltip.roll_mod.brainupgrade_radio.desc").withStyle(ChatFormatting.GRAY));
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.humanity", getHumanityCost()).withStyle(ChatFormatting.GOLD));
+                        tooltipComponents.add(Component.translatable("tooltip.roll_mod.crop_analyzer.energy", RadioImplantItem.ENERGY_PER_TICK).withStyle(ChatFormatting.RED));
+                    } else {
+                        tooltipComponents.add(Component.translatable("tooltip.createcybernetics.hold_shift_down"));
+                    }
+                    super.appendHoverText(stack, context, tooltipComponents, tooltipFlag);
+                }
+            });
 
     public static final DeferredHolder<Item, CropModuleItem> CROP_ANALYZER_MODULE = ITEMS.register("crop_analyzer_module",
             () -> new CropModuleItem(new Item.Properties().stacksTo(1)) {

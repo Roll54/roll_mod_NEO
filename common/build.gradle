@@ -99,6 +99,11 @@ dependencies {
 
     implementation files("jars/createcybernetics-0.4.8b-neoforge-1.21.1-PLAYTEST-PRERELEASE-4.jar")
 
+    // Curios: the death log snapshots and restores worn curios. Soft like Farmer's Delight below —
+    // only compat/curios/CuriosAccess names its classes, and only after ModList says it is loaded —
+    // but implementation so the dev runs have curio slots to test against.
+    implementation files("jars/curios-neoforge-9.5.1+1.21.1.jar")
+
     // Functional Storage is here only so compat/functionalstorage/mixin can name
     // ControllerInventoryHandler. Nothing else in this mod references it and the mixin config is
     // required = false, so it stays soft; implementation rather than compileOnly so the dev runs

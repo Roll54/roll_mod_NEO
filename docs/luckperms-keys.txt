@@ -244,6 +244,90 @@ meta as unset, and the mod falls back to the defaults given here.
   Read by:    ModerationPermissions.canWriteLetters
   Example:    /lp group admin permission set rollmod.moderation.letters true
 
+--------------------------------------------------------------------------------
+ rollmod.moderation.deathlog
+--------------------------------------------------------------------------------
+  Shows the "Deaths" mode in the moderation tab: every death on record, with
+  the inventory, curios and cyberware the player had at that moment, and the
+  two buttons that hand it out again - "Retrieve to me" and "Return to
+  player". What does not fit in the receiver's inventory (or everything, when
+  the player who died is offline) is sent as a letter.
+
+  Grant this narrowly. Restoring is repeatable on purpose (the tab warns
+  before a repeat), so whoever holds the node can copy anything anybody ever
+  died with. Every restore is noted on the death and in moderation.log.
+
+  Deaths are recorded for everyone regardless of this node; it only decides
+  who may read and restore them.
+
+  Unset:      operators (level 2) hold it regardless. Without LuckPerms
+              installed, operators only.
+  Read by:    ModerationPermissions.canUseDeathlog
+  Example:    /lp group admin permission set rollmod.moderation.deathlog true
+
+--------------------------------------------------------------------------------
+rollmod.moderation.invsee
+--------------------------------------------------------------------------------
+  Adds the "Inventory" and "Implants" buttons to an online player's card in the
+  moderation tab, and "Offline inventory" to an offline one. Each opens a
+  separate window showing that player's inventory, armour, offhand and curios,
+  or their installed cyberware, organs and implant sub-inventories. With this
+  node alone the window is read-only: nothing can be taken or placed.
+
+  Offline players show only the vanilla inventory (main, armour, offhand), read
+  from their saved playerdata file. Curios and implants need the player online.
+
+  The buttons live in the moderation tab, so the holder also needs
+  rollmod.moderation.use (or rollmod.warps.moderate) to see the tab at all.
+
+  Unset:      operators (level 2) hold it regardless; so does anyone with
+              rollmod.moderation.invedit. Without LuckPerms installed,
+              operators only.
+  Read by:    ModerationPermissions.canInvSee
+  Example:    /lp group moderator permission set rollmod.moderation.invsee true
+
+--------------------------------------------------------------------------------
+rollmod.moderation.invedit
+--------------------------------------------------------------------------------
+  Makes the inventory window editable: items can be moved between the
+  moderator's inventory and the player's, armour and curios can be changed, and
+  implants can be installed or removed. Implants follow Create Cybernetics'
+  rules (supported slot, per-slot limit, required and incompatible implants,
+  organ replacement), and humanity is recomputed after each change.
+
+  Online and offline editing are separate buttons, both marked "!". Editing an
+  offline player rewrites only the Inventory list in their playerdata file, on
+  every change, and asks for a confirmation first. The window closes if the
+  player logs in (offline) or out (online) while it is open.
+
+  Grant this narrowly: it can create or delete any item. Every change is
+  written to moderation.log with the moderator, the player, the slot, and the
+  item before and after.
+
+  Unset:      operators (level 2) hold it regardless. Without LuckPerms
+              installed, operators only.
+  Read by:    ModerationPermissions.canInvEdit
+  Example:    /lp group admin permission set rollmod.moderation.invedit true
+
+--------------------------------------------------------------------------------
+ rollmod.minprice.bypass
+--------------------------------------------------------------------------------
+  Ignores the minimal price (config min_price.json5). The player may list on
+  the auction and add shop block positions, in sell or buy mode, below the
+  computed floor. Without the node, a listing or position priced under
+  "minimal price x amount" is refused with a chat message.
+
+  It also applies when someone trades with an existing shop position that has
+  fallen below a floor raised since it was set: the trade goes through only if
+  the owner is ONLINE and holds the node. An offline owner can't be checked
+  without blocking the server, so the position is refused until they fix the
+  price or log in. Infinite (server) vendors are never checked.
+
+  Unset:      nobody bypasses. Operators get nothing extra, and without
+              LuckPerms installed nobody bypasses either.
+  Read by:    LuckPermsCompat.canBypassMinPrice
+  Example:    /lp group admin permission set rollmod.minprice.bypass true
+
 
 ================================================================================
  3. QUICK REFERENCE
@@ -272,6 +356,10 @@ meta as unset, and the mod falls back to the defaults given here.
    rollmod.moderation.use              opens the moderation tab, skips whitelist
    rollmod.moderation.ban              may ban/unban and close the server
    rollmod.moderation.letters          may write letters to players
+   rollmod.moderation.deathlog         may read and restore the death log
+   rollmod.minprice.bypass             may sell/buy below the minimal price
+   rollmod.moderation.invsee           may view players' inventory and implants
+   rollmod.moderation.invedit          may change players' inventory and implants
 
  Setting them:
    /lp group vip meta set rollmod.homes.max 10

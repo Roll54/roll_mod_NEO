@@ -1,11 +1,17 @@
 package com.roll_54.roll_mod.minestar.moderation;
 
+import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.data.MuteStore;
 import com.roll_54.roll_mod.network.packet.SyncModerationPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.storage.LevelResource;
 import net.neoforged.neoforge.network.PacketDistributor;
 
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -65,11 +71,14 @@ public final class ModerationViewers {
                 PacketDistributor.sendToPlayer(player, SyncModerationPacket.DENIED);
                 continue;
             }
-            // Built once and shared: only the two permission flags differ between moderators.
+            // Built once and shared: only the permission flags differ between moderators.
             if (full == null) full = snapshot(server);
             PacketDistributor.sendToPlayer(player, full.forViewer(
                     ModerationPermissions.canBan(player),
-                    ModerationPermissions.canWriteLetters(player)));
+                    ModerationPermissions.canWriteLetters(player),
+                ModerationPermissions.canUseDeathlog(player),
+                ModerationPermissions.canInvSee(player),
+                ModerationPermissions.canInvEdit(player)));
         }
     }
 
@@ -80,14 +89,18 @@ public final class ModerationViewers {
         }
         PacketDistributor.sendToPlayer(player, snapshot(player.server).forViewer(
                 ModerationPermissions.canBan(player),
-                ModerationPermissions.canWriteLetters(player)));
+                ModerationPermissions.canWriteLetters(player),
+                ModerationPermissions.canUseDeathlog(player),
+                ModerationPermissions.canInvSee(player),
+                ModerationPermissions.canInvEdit(player)));
     }
 
     /**
-     * Everyone online, then everyone banned who is not: the two groups a moderator acts on. An
-     * offline player with warnings but no ban is left out — there is nothing to do to them from here
-     * that the commands do not already cover, and listing every warned player ever would bury the
-     * people actually on the server.
+     * Everyone online, then everyone banned who is not, then every other offline player with a
+     * record (warnings or a running mute), then every other player who has saved data in this world.
+     * The tab's presence and "punished" filters sort them apart, so the offline rows do not bury the
+     * people actually on the server. Clean offline players come last because the packet caps the
+     * list ({@code SyncModerationPacket.MAX_ROWS}). On a huge server, they are the ones cut.
      */
     private static SyncModerationPacket snapshot(MinecraftServer server) {
         long now = System.currentTimeMillis();
@@ -109,8 +122,60 @@ public final class ModerationViewers {
             rows.add(row(entry.getKey(), entry.getValue().name(), false, now));
         }
 
-        return new SyncModerationPacket(true, false, false, WhitelistStore.enabled(),
+        Set<UUID> punished = new HashSet<>(WarnStore.counts().keySet());
+        punished.addAll(MuteStore.muted());
+        punished.removeAll(seen);
+        List<ModerationRow> offline = new ArrayList<>();
+        for (UUID id : punished) {
+            offline.add(row(id, offlineName(server, id), false, now));
+        }
+        offline.sort(Comparator.comparing(ModerationRow::name, String.CASE_INSENSITIVE_ORDER));
+        rows.addAll(offline);
+        seen.addAll(punished);
+
+        // Everyone else who has played here: one playerdata file each. The same set "Offline
+        // inventory" can open.
+        List<ModerationRow> known = new ArrayList<>();
+        for (UUID id : savedPlayers(server)) {
+            if (!seen.add(id)) continue;
+            known.add(row(id, offlineName(server, id), false, now));
+        }
+        known.sort(Comparator.comparing(ModerationRow::name, String.CASE_INSENSITIVE_ORDER));
+        rows.addAll(known);
+
+        return new SyncModerationPacket(true, false, false, false, false, false, WhitelistStore.enabled(),
                 WhitelistStore.kickMessage(), rows);
+    }
+
+    /** Every player with a {@code playerdata/<uuid>.dat} in this world. */
+    private static List<UUID> savedPlayers(MinecraftServer server) {
+        List<UUID> out = new ArrayList<>();
+        Path dir = server.getWorldPath(LevelResource.PLAYER_DATA_DIR);
+        if (!Files.isDirectory(dir)) return out;
+        try (DirectoryStream<Path> files = Files.newDirectoryStream(dir, "*.dat")) {
+            for (Path file : files) {
+                String name = file.getFileName().toString();
+                try {
+                    out.add(UUID.fromString(name.substring(0, name.length() - 4)));
+                } catch (IllegalArgumentException ignored) {
+                    // Not a player file.
+                }
+            }
+        } catch (IOException e) {
+            RollMod.LOGGER.error("[Moderation] could not list saved players", e);
+        }
+        return out;
+    }
+
+    /** The name a warn was recorded under, else the server's profile cache, else the UUID. */
+    private static String offlineName(MinecraftServer server, UUID id) {
+        String name = WarnStore.name(id);
+        if (!name.isBlank()) return name;
+        if (server.getProfileCache() != null) {
+            var cached = server.getProfileCache().get(id);
+            if (cached.isPresent()) return cached.get().getName();
+        }
+        return id.toString();
     }
 
     private static ModerationRow row(UUID id, String name, boolean online, long now) {

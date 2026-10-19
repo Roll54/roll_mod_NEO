@@ -19,6 +19,7 @@ import java.util.List;
  * could reach.
  */
 public record SyncModerationPacket(boolean allowed, boolean mayBan, boolean mayWriteLetters,
+                                   boolean mayDeathlog, boolean mayInvSee, boolean mayInvEdit,
                                    boolean whitelist, String whitelistMessage,
                                    List<ModerationRow> rows)
         implements CustomPacketPayload {
@@ -26,7 +27,7 @@ public record SyncModerationPacket(boolean allowed, boolean mayBan, boolean mayW
     private static final int MAX_ROWS = 1000;
 
     public static final SyncModerationPacket DENIED =
-            new SyncModerationPacket(false, false, false, false, "", List.of());
+            new SyncModerationPacket(false, false, false, false, false, false, false, "", List.of());
 
     public static final Type<SyncModerationPacket> TYPE = new Type<>(RollMod.id("sync_moderation"));
 
@@ -34,8 +35,10 @@ public record SyncModerationPacket(boolean allowed, boolean mayBan, boolean mayW
             StreamCodec.of(SyncModerationPacket::encode, SyncModerationPacket::decode);
 
     /** The same snapshot with one viewer's permissions, so the list is built once per resync. */
-    public SyncModerationPacket forViewer(boolean mayBan, boolean mayWriteLetters) {
-        return new SyncModerationPacket(allowed, mayBan, mayWriteLetters, whitelist,
+    public SyncModerationPacket forViewer(boolean mayBan, boolean mayWriteLetters, boolean mayDeathlog,
+                                          boolean mayInvSee, boolean mayInvEdit) {
+        return new SyncModerationPacket(allowed, mayBan, mayWriteLetters, mayDeathlog, mayInvSee,
+                mayInvEdit, whitelist,
                 whitelistMessage, rows);
     }
 
@@ -43,6 +46,9 @@ public record SyncModerationPacket(boolean allowed, boolean mayBan, boolean mayW
         buf.writeBoolean(p.allowed);
         buf.writeBoolean(p.mayBan);
         buf.writeBoolean(p.mayWriteLetters);
+        buf.writeBoolean(p.mayDeathlog);
+        buf.writeBoolean(p.mayInvSee);
+        buf.writeBoolean(p.mayInvEdit);
         buf.writeBoolean(p.whitelist);
         buf.writeUtf(clamp(p.whitelistMessage, 512), 512);
         int rows = Math.min(MAX_ROWS, p.rows.size());
@@ -59,6 +65,9 @@ public record SyncModerationPacket(boolean allowed, boolean mayBan, boolean mayW
         boolean allowed = buf.readBoolean();
         boolean mayBan = buf.readBoolean();
         boolean mayWriteLetters = buf.readBoolean();
+        boolean mayDeathlog = buf.readBoolean();
+        boolean mayInvSee = buf.readBoolean();
+        boolean mayInvEdit = buf.readBoolean();
         boolean whitelist = buf.readBoolean();
         String message = buf.readUtf(512);
         int rowCount = Math.min(MAX_ROWS, buf.readVarInt());
@@ -66,7 +75,8 @@ public record SyncModerationPacket(boolean allowed, boolean mayBan, boolean mayW
         for (int i = 0; i < rowCount; i++) {
             rows.add(ModerationRow.decode(buf));
         }
-        return new SyncModerationPacket(allowed, mayBan, mayWriteLetters, whitelist, message,
+        return new SyncModerationPacket(allowed, mayBan, mayWriteLetters, mayDeathlog, mayInvSee,
+                mayInvEdit, whitelist, message,
                 List.copyOf(rows));
     }
 

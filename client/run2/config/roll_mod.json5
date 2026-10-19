@@ -179,6 +179,16 @@
 		*/
 		"expGrowth": 1.1
 	},
+	// Create Cybernetics tweaks.
+	"createCybernetics": {
+		/* Whether the Ripper counts as a hostile mob. It is a Monster by class, so vanilla treats
+		   it as one: it blocks sleeping nearby, despawns on Peaceful, is attacked by iron and
+		   snow golems and full conduits, wakes foxes and plays on the Hostile sound slider.
+		   False = none of that applies; it still fights back when hurt.
+		   True = vanilla behavior. Changes apply live, without a restart.
+		*/
+		"ripperHostile": false
+	},
 	"solarPanelOptions": {
 		"dimensionMultipliers": { },
 		"restrictedDimensions": [
@@ -188,5 +198,12 @@
 	"chat_changes": {
 		// Hide the advancement announcements in chat (challenges, see PlayerAdvancementsMixin).
 		"hideAdvancementMessages": false
+	},
+	// The moderation tab's death log: what a player carried when they died.
+	"deathlog": {
+		// Record player deaths at all. Off stops new records; old ones stay readable.
+		"enabled": true,
+		// Deaths kept per player, newest first. Older ones are deleted as new ones arrive.
+		"maxPerPlayer": 30
 	}
 }

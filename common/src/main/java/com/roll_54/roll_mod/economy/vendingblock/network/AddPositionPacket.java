@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.economy.vendingblock.network;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.economy.minprice.MinPriceService;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.Position;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.VendorBlockEntity;
 import com.roll_54.roll_mod.economy.vendingblock.registry.ItemRegistry;
@@ -10,6 +11,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -47,7 +49,18 @@ public record AddPositionPacket(BlockPos pos, ItemStack item, int amount, long p
               && (vendor.isOwner(player)
                   || player.getMainHandItem().is(ItemRegistry.VENDOR_KEY.get()))
               && !packet.item().isEmpty()) {
-            vendor.addPosition(new Position(packet.item(), packet.amount(), packet.price()));
+            Position position = new Position(packet.item(), packet.amount(), packet.price());
+            // Both modes: a shop buying below the floor moves value just like one selling below it.
+            if (player instanceof ServerPlayer serverPlayer) {
+              var belowFloor =
+                  MinPriceService.check(
+                      serverPlayer, position.item(), position.amount(), position.price());
+              if (belowFloor.isPresent()) {
+                player.sendSystemMessage(belowFloor.get());
+                return;
+              }
+            }
+            vendor.addPosition(position);
           }
         });
   }

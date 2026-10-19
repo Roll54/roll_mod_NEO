@@ -22,6 +22,10 @@
       "indent": 6
     },
     {
+      "text": "&7An &b&nunderlined aqua&7 text is a link: hover it to see the address, click it to open it in your browser.",
+      "indent": 6
+    },
+    {
       "type": "space"
     },
     {
@@ -36,7 +40,11 @@
       "indent": 6
     },
     {
-      "text": "&7Each letter can be accepted once. It stays in your list afterwards, and letters disappear when they expire &8- so accept gifts in time.",
+      "text": "&7Each letter can be accepted once. It stays in your list afterwards, and letters disappear when they expire &8- so accept gifts in time. &7Shop deliveries expire after &c1 day&7, items returned from a death after &c3 days&7.",
+      "indent": 6
+    },
+    {
+      "text": "&7Once a letter is accepted or read, &fDelete&7 takes it out of your list &8- click it twice. It only goes from your list, not anyone else's.",
       "indent": 6
     }
   ]

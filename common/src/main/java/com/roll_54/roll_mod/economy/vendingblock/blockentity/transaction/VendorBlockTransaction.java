@@ -8,7 +8,9 @@ import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.economy.currency.repository.CurrencyRepository;
+import com.roll_54.roll_mod.economy.minprice.MinPriceService;
 import com.roll_54.roll_mod.economy.vendingblock.Config;
+import com.roll_54.roll_mod.economy.vendingblock.auction.LuckPermsCompat;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.Position;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.VendorBlockEntity;
 import com.roll_54.roll_mod.economy.vendingblock.gui.chat.Messages;
@@ -34,6 +36,11 @@ public class VendorBlockTransaction {
 
     ItemStack product = position.displayStack(); // item with count = amount per purchase
     long price = position.price();
+
+    if (belowFloor(serverBuyer.server, vendor, position)) {
+      buyer.sendSystemMessage(Messages.minPriceOfferBlocked());
+      return;
+    }
 
     UUID ownerId = vendor.getOwnerID();
     // Owner username can be unresolved (null); Component.translatable rejects null args.
@@ -143,6 +150,19 @@ public class VendorBlockTransaction {
   }
 
   /**
+   * Whether a position has fallen under the minimal price since it was set (a {@code /reload}, a
+   * config edit). It is refused, not removed: the owner sees it and fixes the price. Infinite
+   * vendors are the server's own, and an owner online with the bypass keeps theirs.
+   */
+  private static boolean belowFloor(MinecraftServer server, VendorBlockEntity vendor, Position position) {
+    if (!MinPriceService.enabled() || vendor.isInfinite()) return false;
+    UUID ownerId = vendor.getOwnerID();
+    ServerPlayer owner = ownerId == null ? null : server.getPlayerList().getPlayer(ownerId);
+    if (owner != null && LuckPermsCompat.canBypassMinPrice(owner)) return false;
+    return MinPriceService.checkPrice(position.item(), position.amount(), position.price()).isPresent();
+  }
+
+  /**
    * Buy-mode counterpart of {@link #purchase}: the player ({@code seller}) hands items to the
    * vendor and is paid. Payment comes from the owner's balance (or is printed when the vendor is
    * infinite / ownerless); bought items go into storage unless the vendor is discarding them.
@@ -159,6 +179,11 @@ public class VendorBlockTransaction {
     ItemStack want = position.item();
     int amount = position.amount();
     long price = position.price();
+
+    if (belowFloor(serverSeller.server, vendor, position)) {
+      seller.sendSystemMessage(Messages.minPriceOfferBlocked());
+      return;
+    }
 
     UUID ownerId = vendor.getOwnerID();
     String ownerName = vendor.getOwnerUser() != null ? vendor.getOwnerUser() : "";

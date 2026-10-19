@@ -42,22 +42,33 @@ public class RollDataMapProvider extends DataMapProvider {
      * {@code "roll_mod:sulfur_dust": {"value": 250}} mean the same thing.
      */
     private void gatherHydroponicReagents() {
+        // Acids (positive) and bases (negative), per item. A slot eats one item per tick, so items top
+        // out at their own value per tick — pH 1/7 (500 per bed per tick) is meant to run on fluids.
         this.builder(ModDataMaps.ACIDITY_ITEM)
-                .add(ResourceLocation.parse("roll_mod:sulfur_dust"), new AcidityValue(250), false);
+                .add(ResourceLocation.parse("roll_mod:sulfur_dust"), new AcidityValue(250), false)
+                .add(ResourceLocation.parse("roll_mod:sulfur_berry"), new AcidityValue(50), false)
+                .add(ResourceLocation.parse("roll_mod:calcium_oxide"), new AcidityValue(-500), false)
+                .add(ResourceLocation.parse("roll_mod:calcium_hydroxide"), new AcidityValue(-400), false)
+                .add(ResourceLocation.parse("roll_mod:potassium_dust"), new AcidityValue(-300), false)
+                .add(ResourceLocation.parse("roll_mod:trona_dust"), new AcidityValue(-250), false)
+                .add(ResourceLocation.parse("roll_mod:calcium_carbonate"), new AcidityValue(-150), false);
 
+        // Per bucket. A strong acid or base fills the whole ±10000 reservoir with one bucket.
         this.builder(ModDataMaps.ACIDITY_FLUID)
-                 .add(ResourceLocation.parse("modern_industrialization:sodium_hydroxide"), new AcidityValue(-1000), false);
+                .add(ResourceLocation.parse("modern_industrialization:sulfuric_acid"), new AcidityValue(10000), false)
+                .add(ResourceLocation.parse("modern_industrialization:hydrochloric_acid"), new AcidityValue(5000), false)
+                .add(ResourceLocation.parse("modern_industrialization:sodium_hydroxide"), new AcidityValue(-10000), false);
 
         this.builder(ModDataMaps.FERTILIZER_ITEM)
-                .add(ResourceLocation.parse("minecraft:bone_meal"), new FertilizerValue(100), false);
+                .add(ResourceLocation.parse("minecraft:bone_meal"), new FertilizerValue(100), false)
+                .add(ResourceLocation.parse("roll_mod:saltpeter_dust"), new FertilizerValue(200), false)
+                .add(ResourceLocation.parse("roll_mod:apatite_dust"), new FertilizerValue(200), false)
+                .add(ResourceLocation.parse("roll_mod:ammonium_chloride_dust"), new FertilizerValue(150), false)
+                .add(ResourceLocation.parse("minecraft:rotten_flesh"), new FertilizerValue(25), false);
 
         this.builder(ModDataMaps.FERTILIZER_FLUID)
-                .add(ResourceLocation.parse("extended_industrialization:npk_fertilizer"), new FertilizerValue(10000), false);
-
-        this.builder(ModDataMaps.FERTILIZER_FLUID)
-                .add(ResourceLocation.parse("extended_industrialization:composted_manure"), new FertilizerValue(2500), false);
-
-        this.builder(ModDataMaps.FERTILIZER_FLUID)
+                .add(ResourceLocation.parse("extended_industrialization:npk_fertilizer"), new FertilizerValue(10000), false)
+                .add(ResourceLocation.parse("extended_industrialization:composted_manure"), new FertilizerValue(2500), false)
                 .add(ResourceLocation.parse("extended_industrialization:manure"), new FertilizerValue(1000), false);
     }
 }

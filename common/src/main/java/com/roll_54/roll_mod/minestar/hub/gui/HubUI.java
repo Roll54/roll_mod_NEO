@@ -17,6 +17,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.moderation.ClientModerationCache;
+import com.roll_54.roll_mod.minestar.radio.ClientRadioCache;
 import com.roll_54.roll_mod.minestar.moderation.ClientPlayerStatusCache;
 import com.roll_54.roll_mod.economy.plot.gui.PlotPurchaseUI;
 import com.roll_54.roll_mod.economy.vendingblock.gui.VendorUIHelper;
@@ -245,7 +246,11 @@ public final class HubUI {
                     HubBadge::interactionsPending),
             // Homes and warps in one: every place there is to go, behind a Homes | Warps switch.
             HubTab.flagged("travel", icon("home"),
-                    (player, inventory) -> TravelTab.build(player), HubBadge::homeInvitePending));
+                    (player, inventory) -> TravelTab.build(player), HubBadge::homeInvitePending),
+            // Only while a radio implant is installed; the server says so through ClientRadioCache.
+            new HubTab("radio", icon("radio_implant_tab"),
+                    (player, inventory) -> RadioTab.build(player),
+                    () -> ClientRadioCache.INSTALLED, () -> false));
 
     /**
      * Header order, as indices into {@link #TABS}. Purely visual: the content slots are still built
@@ -253,7 +258,7 @@ public final class HubUI {
      * having to be inserted second. {@link #indexOf} keeps returning tree indices, which is what
      * every caller passes to {@code HubCommand.open}.
      */
-    private static final List<Integer> DISPLAY_ORDER = List.of(0, 12, 11, 10, 1, 2, 4, 8, 7, 6, 9, 3, 5);
+    private static final List<Integer> DISPLAY_ORDER = List.of(0, 12, 11, 10, 1, 2, 4, 8, 7, 6, 9, 13, 3, 5);
 
     static {
         // Appending a tab and forgetting this list would silently hide it; fail at class-load

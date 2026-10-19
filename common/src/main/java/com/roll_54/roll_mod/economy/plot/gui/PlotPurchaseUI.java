@@ -121,13 +121,16 @@ public final class PlotPurchaseUI {
 
     // Selling land back is confirmed in a window of its own: you get only the starting price back.
     HubConfirm confirmer = new HubConfirm();
+    // Buying is gated on the shop dimension's theme, read and accepted in a window of its own.
+    PlotThemePopup theme = new PlotThemePopup();
 
     buildOverlays(map, selected, confirmSellFor, rebuildDialog);
-    buildDialog(dialog, selected, confirmSellFor, rebuildDialog, confirmer);
+    buildDialog(dialog, selected, confirmSellFor, rebuildDialog, confirmer, theme);
 
     // Last, so it covers the map and the dialog.
     root.addChild(section.overlay());
     root.addChild(confirmer.root());
+    root.addChild(theme.root());
 
     return root;
   }
@@ -185,7 +188,7 @@ public final class PlotPurchaseUI {
 
   private static void buildDialog(
       UIElement dialog, String[] selected, String[] confirmSellFor, Runnable[] rebuildDialog,
-      HubConfirm confirmer) {
+      HubConfirm confirmer, PlotThemePopup theme) {
     // A column of flow rows that scrolls when the window is too short for it — the sell
     // confirmation in particular is taller than the dialog at the smallest hub size.
     // flexBasis(0) and COLUMN for the reasons HubSection gives for its own scroller.
@@ -209,7 +212,7 @@ public final class PlotPurchaseUI {
           switch (p.kind()) {
             case MINE -> buildMine(content, p, confirmer);
             case OTHER_UNLISTED -> buildOwned(content, p);
-            default -> buildBuy(content, p); // VACANT, OTHER_LISTED
+            default -> buildBuy(content, p, theme); // VACANT, OTHER_LISTED
           }
         };
     rebuildDialog[0] = rebuild;
@@ -229,7 +232,7 @@ public final class PlotPurchaseUI {
   }
 
   /** Vacant plot or someone else's resale listing — show price and a Buy button. */
-  private static void buildBuy(ScrollerView content, PlotSnapshot p) {
+  private static void buildBuy(ScrollerView content, PlotSnapshot p, PlotThemePopup theme) {
     if (p.kind() == PlotSnapshot.Kind.OTHER_LISTED) {
       addText(
           content,
@@ -253,7 +256,7 @@ public final class PlotPurchaseUI {
       Button buy = new Button();
       buy.setText(Component.translatable("menu.roll_mod.plot.buy"));
       String id = p.id();
-      buy.setOnClick(e -> PacketDistributor.sendToServer(new BuyPlotPacket(id)));
+      buy.setOnClick(e -> theme.ask(() -> PacketDistributor.sendToServer(new BuyPlotPacket(id))));
       content.addScrollViewChild(button(buy, 8));
     } else {
       addLabel(content, "menu.roll_mod.plot.tooExpensive", 8);

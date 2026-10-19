@@ -26,19 +26,27 @@ public final class CrashReporter {
     private static final int MAX_HOVER_CHARS = 4000;
 
     private static final ConcurrentHashMap<String, Long> LAST_REPORT = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Integer> SUPPRESSED = new ConcurrentHashMap<>();
 
     /** Log the throwable and, if not rate-limited, broadcast a summary (with full-trace hover) to ops. */
     public static void report(MinecraftServer server, Throwable t) {
-        // Always log the full trace to the console.
-        LOGGER.error("[roll_mod] Caught server exception (suppressed to keep the server alive)", t);
-
         String signature = signatureOf(t);
         long now = System.currentTimeMillis();
         Long last = LAST_REPORT.get(signature);
         if (last != null && now - last < COOLDOWN_MS) {
-            return; // recently reported this exact failure; skip chat spam
+            SUPPRESSED.merge(signature, 1, Integer::sum);
+            return; // recently reported this exact failure; skip log + chat spam
         }
         LAST_REPORT.put(signature, now);
+        Integer suppressed = SUPPRESSED.remove(signature);
+
+        // Full trace only the first time; repeats get one line with how many were swallowed in between.
+        if (last == null) {
+            LOGGER.error("[roll_mod] Caught server exception (suppressed to keep the server alive)", t);
+        } else {
+            LOGGER.error("[roll_mod] Server exception repeating (suppressed): {} — {} more in the last {}s",
+                    t, suppressed == null ? 0 : suppressed, COOLDOWN_MS / 1000);
+        }
 
         if (server == null) {
             return;

@@ -27,8 +27,16 @@ import net.neoforged.fml.ModList;
  *       past the whitelist.
  *   <li>Permission {@code rollmod.moderation.ban} &rarr; may ban, unban and close the server.
  *   <li>Permission {@code rollmod.moderation.letters} &rarr; may write letters to players.
+ *   <li>Permission {@code rollmod.moderation.deathlog} &rarr; may read the death log and restore
+ *       what a player died with.
+ *   <li>Permission {@code rollmod.moderation.invsee} &rarr; may look into a player's inventory,
+ *       curios and implants from the moderation tab.
+ *   <li>Permission {@code rollmod.moderation.invedit} &rarr; may also change them, online or in an
+ *       offline player's saved data.
  *   <li>Meta {@code rollmod.dailytasks.freererolls} (integer) &rarr; daily-task rerolls a player
  *       gets for free each day before the Starcoins price applies.
+ *   <li>Permission {@code rollmod.minprice.bypass} &rarr; may list on the auction and set shop
+ *       positions below the minimal price.
  * </ul>
  */
 public final class LuckPermsCompat {
@@ -52,6 +60,10 @@ public final class LuckPermsCompat {
   private static final String MODERATION_PERMISSION = "rollmod.moderation.use";
   private static final String MODERATION_BAN_PERMISSION = "rollmod.moderation.ban";
   private static final String MODERATION_LETTERS_PERMISSION = "rollmod.moderation.letters";
+  private static final String MODERATION_DEATHLOG_PERMISSION = "rollmod.moderation.deathlog";
+  private static final String MODERATION_INVSEE_PERMISSION = "rollmod.moderation.invsee";
+  private static final String MODERATION_INVEDIT_PERMISSION = "rollmod.moderation.invedit";
+  private static final String MINPRICE_BYPASS_PERMISSION = "rollmod.minprice.bypass";
 
   private LuckPermsCompat() {}
 
@@ -154,6 +166,20 @@ public final class LuckPermsCompat {
   }
 
   /**
+   * {@link #canModerate} or {@link #canModerateWarps} for someone who is not in the world yet, as
+   * the login handshake sees them: only a UUID. Loads the user from LuckPerms storage, waiting at
+   * most three seconds; false on timeout or any failure, so the later in-world check still decides.
+   */
+  public static boolean canModerateOffline(java.util.UUID uuid) {
+    if (!LOADED) return false;
+    try {
+      return Lp.hasPermission(uuid, MODERATION_PERMISSION) || Lp.hasPermission(uuid, MODERATE_PERMISSION);
+    } catch (Throwable ignored) {
+      return false;
+    }
+  }
+
+  /**
    * Whether the player may ban, unban, and close the server to everyone without a bypass.
    *
    * <p>Separate from {@link #canModerate} on purpose: muting someone is a moment's inconvenience,
@@ -179,6 +205,44 @@ public final class LuckPermsCompat {
     if (!LOADED) return false;
     try {
       return Lp.hasPermission(player, MODERATION_LETTERS_PERMISSION);
+    } catch (Throwable ignored) {
+      return false;
+    }
+  }
+
+  /**
+   * Whether the player may read the death log and restore deaths from it.
+   *
+   * <p>Worth granting narrowly: restoring hands out items, so it can conjure anything anyone ever
+   * died with.
+   */
+  public static boolean canUseDeathlog(ServerPlayer player) {
+    if (!LOADED) return false;
+    try {
+      return Lp.hasPermission(player, MODERATION_DEATHLOG_PERMISSION);
+    } catch (Throwable ignored) {
+      return false;
+    }
+  }
+
+  /** Whether the player may look into another player's inventory, curios and implants. */
+  public static boolean canInvSee(ServerPlayer player) {
+    if (!LOADED) return false;
+    try {
+      return Lp.hasPermission(player, MODERATION_INVSEE_PERMISSION);
+    } catch (Throwable ignored) {
+      return false;
+    }
+  }
+
+  /**
+   * Whether the player may change another player's items, live or in their saved data. Like the
+   * death log, it can conjure anything, so it is a node of its own.
+   */
+  public static boolean canInvEdit(ServerPlayer player) {
+    if (!LOADED) return false;
+    try {
+      return Lp.hasPermission(player, MODERATION_INVEDIT_PERMISSION);
     } catch (Throwable ignored) {
       return false;
     }
@@ -223,6 +287,19 @@ public final class LuckPermsCompat {
     if (!LOADED) return false;
     try {
       return Lp.hasPermission(player, RTP_BYPASS_PERMISSION);
+    } catch (Throwable ignored) {
+      return false;
+    }
+  }
+
+  /**
+   * Whether this player may list on the auction and set shop positions below the minimal price.
+   * Without LuckPerms nobody may: the floor is the point of the module, operators included.
+   */
+  public static boolean canBypassMinPrice(ServerPlayer player) {
+    if (!LOADED) return false;
+    try {
+      return Lp.hasPermission(player, MINPRICE_BYPASS_PERMISSION);
     } catch (Throwable ignored) {
       return false;
     }
@@ -319,6 +396,17 @@ public final class LuckPermsCompat {
               .getQueryOptions(user)
               .orElse(net.luckperms.api.query.QueryOptions.defaultContextualOptions());
       return user.getCachedData().getPermissionData(options).checkPermission(node).asBoolean();
+    }
+
+    static boolean hasPermission(java.util.UUID uuid, String node) throws Exception {
+      net.luckperms.api.LuckPerms lp = net.luckperms.api.LuckPermsProvider.get();
+      net.luckperms.api.model.user.User user =
+          lp.getUserManager().loadUser(uuid).get(3, java.util.concurrent.TimeUnit.SECONDS);
+      if (user == null) return false;
+      return user.getCachedData()
+          .getPermissionData(net.luckperms.api.query.QueryOptions.defaultContextualOptions())
+          .checkPermission(node)
+          .asBoolean();
     }
 
     static Integer metaInt(ServerPlayer player, String key) {

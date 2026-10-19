@@ -211,7 +211,7 @@ public final class ModerationService {
      * Pings everyone who can act on it — the {@code WarpService.notifyModerators} loop, so a
      * moderator who is not an operator still hears.
      */
-    static void broadcastToModerators(MinecraftServer server, Component message) {
+    public static void broadcastToModerators(MinecraftServer server, Component message) {
         for (ServerPlayer staff : server.getPlayerList().getPlayers()) {
             if (ModerationPermissions.canModerate(staff)) staff.sendSystemMessage(message);
         }

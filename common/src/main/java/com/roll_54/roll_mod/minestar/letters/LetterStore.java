@@ -12,9 +12,11 @@ import org.jetbrains.annotations.Nullable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -94,11 +96,28 @@ public final class LetterStore {
         load(server.registryAccess());
         Letter letter = LETTERS.get(id);
         if (letter == null || letter.acceptedBy(reader)) return false;
-        Map<UUID, Long> accepted = new HashMap<>(letter.accepted());
-        accepted.put(reader, System.currentTimeMillis());
-        LETTERS.put(id, new Letter(letter.id(), letter.title(), letter.body(), letter.author(),
-                letter.createdAt(), letter.sendAt(), letter.expiresAt(), letter.rewards(), letter.icon(),
-                Map.copyOf(accepted), letter.recipient()));
+        LETTERS.put(id, letter.withAccepted(reader, System.currentTimeMillis()));
+        save(server.registryAccess());
+        return true;
+    }
+
+    /**
+     * Takes a letter {@code reader} has already accepted out of their list. A personal letter
+     * addressed to them is deleted outright — nobody else can ever read it; a broadcast only
+     * remembers that this reader is done with it. {@code false} for a letter they have not accepted,
+     * one not for them, or one already gone.
+     */
+    public static synchronized boolean dismiss(MinecraftServer server, UUID id, UUID reader) {
+        load(server.registryAccess());
+        Letter letter = LETTERS.get(id);
+        if (letter == null || !letter.isFor(reader) || !letter.acceptedBy(reader) || letter.dismissedBy(reader)) {
+            return false;
+        }
+        if (reader.equals(letter.recipient())) {
+            LETTERS.remove(id);
+        } else {
+            LETTERS.put(id, letter.withDismissed(reader));
+        }
         save(server.registryAccess());
         return true;
     }
@@ -164,6 +183,17 @@ public final class LetterStore {
             }
         }
 
+        Set<UUID> dismissed = new HashSet<>();
+        if (json.has("dismissed") && json.get("dismissed").isJsonArray()) {
+            for (JsonElement e : json.getAsJsonArray("dismissed")) {
+                try {
+                    dismissed.add(UUID.fromString(e.getAsString()));
+                } catch (RuntimeException ignored) {
+                    // An unreadable entry only brings the letter back into that reader's list.
+                }
+            }
+        }
+
         return new Letter(id,
                 string(json, "title"), string(json, "body"), string(json, "author"),
                 json.has("createdAt") ? json.get("createdAt").getAsLong() : 0L,
@@ -171,7 +201,8 @@ public final class LetterStore {
                 json.has("expiresAt") ? json.get("expiresAt").getAsLong() : 0L,
                 List.copyOf(rewards), string(json, "icon"), Map.copyOf(accepted),
                 // Absent on every broadcast, and on every letter written before personal ones existed.
-                json.has("recipient") ? UUID.fromString(json.get("recipient").getAsString()) : null);
+                json.has("recipient") ? UUID.fromString(json.get("recipient").getAsString()) : null,
+                Set.copyOf(dismissed));
     }
 
     private static String string(JsonObject json, String key) {
@@ -202,6 +233,11 @@ public final class LetterStore {
             JsonObject accepted = new JsonObject();
             letter.accepted().forEach((reader, when) -> accepted.addProperty(reader.toString(), when));
             json.add("accepted", accepted);
+            if (!letter.dismissed().isEmpty()) {
+                JsonArray dismissed = new JsonArray();
+                letter.dismissed().forEach(reader -> dismissed.add(reader.toString()));
+                json.add("dismissed", dismissed);
+            }
             array.add(json);
         }
         JsonObject root = new JsonObject();

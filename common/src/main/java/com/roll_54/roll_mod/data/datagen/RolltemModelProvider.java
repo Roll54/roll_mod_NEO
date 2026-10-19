@@ -199,6 +199,11 @@ public class RolltemModelProvider extends ItemModelProvider {
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/eyeupgrades_crop_analyzer_module"));
 
+        // TODO(art): textures/item/cyberware/brainupgrade_radio.png
+        getBuilder(ItemRegistry.BRAINUPGRADE_RADIO.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/brainupgrade_radio"));
+
         getBuilder(ItemRegistry.LUNGSUPGRADE_SULFUR_RESISTANCE.get().toString())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/lungsupgrade_sulfur_resistance"));

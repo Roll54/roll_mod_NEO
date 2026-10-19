@@ -19,7 +19,9 @@
     "theme.AbstractContainerScreenLabelMixin",
     "mi.MITextureManagerOverrideMixin",
     "mi.MIClientForceRuntimeDatagenMixin",
-    "mi.MIForceRuntimeResourcesMixin"
+    "mi.MIForceRuntimeResourcesMixin",
+    "maintenance.ConnectScreenMixin",
+    "radio.RadioStreamCloseMixin"
   ],
   "injectors": {
     "defaultRequire": 1

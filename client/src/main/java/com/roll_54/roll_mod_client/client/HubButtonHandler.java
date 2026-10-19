@@ -83,6 +83,7 @@ public final class HubButtonHandler {
     public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
         ClientPlayerStatusCache.clear();
         ClientModerationCache.clear();
+        com.roll_54.roll_mod.minestar.deathlog.ClientDeathLogCache.clear();
         ClientLetterCache.accept(java.util.List.of());
         // The hub's own caches are only refilled when the hub is next opened, so a badge from the
         // last server would otherwise sit on the button until then.

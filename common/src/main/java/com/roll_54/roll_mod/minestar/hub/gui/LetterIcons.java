@@ -7,6 +7,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.ItemSlot;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.vendingblock.gui.VendorUIHelper;
 import com.roll_54.roll_mod.minestar.letters.LetterIcon;
+import com.roll_54.roll_mod.minestar.letters.ShopLetterFormat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import org.appliedenergistics.yoga.YogaPositionType;
@@ -33,6 +34,12 @@ final class LetterIcons {
     static final IGuiTexture LETTER = SpriteTexture.of(RollMod.id("textures/gui/hub/letters/letter.png"));
     static final IGuiTexture LETTER_NEW = SpriteTexture.of(RollMod.id("textures/gui/hub/letters/letter_new.png"));
 
+    /**
+     * What shop letters were stamped with before they wore the starcoin. The file never existed, so
+     * letters still carrying it are shown with {@link ShopLetterFormat#ICON} instead of the envelope.
+     */
+    private static final String LEGACY_SHOP = "roll_mod:textures/gui/hub/letters/shop.png";
+
     /** Asked once per path: a missing file would draw the pink-and-black checkerboard. */
     private static final Map<ResourceLocation, Boolean> PRESENT = new HashMap<>();
 
@@ -52,6 +59,7 @@ final class LetterIcons {
         box.layout(l -> l.width(SIZE).height(SIZE).flexShrink(0));
         box.setAllowHitTest(false);
 
+        if (LEGACY_SHOP.equals(icon)) icon = ShopLetterFormat.ICON;
         ResourceLocation id = icon == null || icon.isBlank() ? null : ResourceLocation.tryParse(icon);
         ItemStack stack = id == null ? ItemStack.EMPTY : LetterIcon.item(id);
         boolean custom;

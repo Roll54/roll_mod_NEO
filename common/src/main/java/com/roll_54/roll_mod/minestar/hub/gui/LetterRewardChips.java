@@ -9,12 +9,17 @@ import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.vendingblock.gui.VendorUIHelper;
+import com.roll_54.roll_mod.minestar.letters.GiveCommands;
 import com.roll_54.roll_mod.minestar.letters.LetterReward;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import dev.vfyjxf.taffy.style.FlexWrap;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -28,7 +33,11 @@ import java.util.function.Consumer;
  * <p><b>Item slots here are never bound.</b> {@link VendorUIHelper#phantomSlot()} plus
  * {@code setItem} registers no sync value, which is the only reason slots may be created inside a
  * rebuild at all. A {@code bind(...)} on one of these would hand out a sync id the other side never
- * allocates and silently break every hub tab built after it.
+ * allocates and silently break every hub tab built after it. The item drawn on a {@code give}
+ * command chip is the same kind of unbound phantom slot.
+ *
+ * <p>A command reward that is a {@code give} shows the item it gives (see {@link GiveCommands}); a
+ * product giving several items shows the first, with every one of them listed on hover.
  */
 final class LetterRewardChips {
 
@@ -80,13 +89,70 @@ final class LetterRewardChips {
             case MONEY -> icon(MONEY_ICON, Component.translatable("gui.roll_mod.letters.reward.money",
                     Component.literal(String.valueOf(reward.amount())).withStyle(ChatFormatting.YELLOW),
                     Component.translatable("gui.roll_mod.letters.currency." + reward.currency().id())), tip);
-            // A labelled command reward is a thing bought, not a command: its name, and how many.
-            case COMMAND -> icon(COMMAND_ICON, reward.label().isEmpty()
-                    ? Component.translatable("gui.roll_mod.letters.reward.command",
-                            Component.literal("/" + String.join(" ; /", reward.commands())).withStyle(ChatFormatting.AQUA))
-                    : Component.translatable("gui.roll_mod.letters.reward.product",
-                            Component.literal(reward.label()).withStyle(ChatFormatting.GOLD), reward.repeat()), tip);
+            case COMMAND -> {
+                // A labelled command reward is a thing bought, not a command: its name, and how many.
+                Component what = reward.label().isEmpty()
+                        ? Component.translatable("gui.roll_mod.letters.reward.command",
+                                Component.literal("/" + String.join(" ; /", reward.commands())).withStyle(ChatFormatting.AQUA))
+                        : Component.translatable("gui.roll_mod.letters.reward.product",
+                                Component.literal(reward.label()).withStyle(ChatFormatting.GOLD), reward.repeat());
+                List<ItemStack> given = GiveCommands.parse(reward, registries());
+                yield given.isEmpty() ? icon(COMMAND_ICON, what, tip) : itemChip(given, what, tip);
+            }
         };
+    }
+
+    /**
+     * A {@code give} reward: the first item it gives, at the count it will arrive in, and on hover the
+     * reward's own line, every item it gives, then the item's tooltip.
+     */
+    private static UIElement itemChip(List<ItemStack> given, Component what, @Nullable Component tip) {
+        UIElement chip = new UIElement();
+        chip.layout(l -> l.width(SLOT).height(SLOT).paddingAll(1));
+        chip.style(s -> s.background(new ColorRectTexture(COLOR_CHIP)));
+        ItemSlot slot = VendorUIHelper.phantomSlot();
+        slot.setItem(given.get(0).copy());
+        slot.layout(l -> l.width(SLOT - 2).height(SLOT - 2));
+        slot.style(s -> s.background(IGuiTexture.EMPTY));
+        // The chip owns the hover and the click: the composer removes a reward by clicking its chip.
+        slot.slotStyle(s -> s.hoverOverlay(IGuiTexture.EMPTY).showItemTooltips(false));
+        slot.setAllowHitTest(false);
+        chip.addChild(slot);
+
+        List<Component> lines = new ArrayList<>();
+        lines.add(what);
+        for (ItemStack stack : given) {
+            lines.add(Component.literal("  " + stack.getCount() + "× ").withStyle(ChatFormatting.GRAY)
+                    .append(stack.getHoverName().copy().withStyle(ChatFormatting.WHITE)));
+        }
+        if (tip != null) lines.add(tip);
+        ItemStack shown = given.get(0);
+        chip.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
+                lines, null, null, shown));
+        return chip;
+    }
+
+    /**
+     * The registries to parse {@code give} items against, from whichever side is drawing: the client
+     * level, or the running server. {@code null} before either exists, which just means no preview.
+     */
+    @Nullable
+    private static HolderLookup.Provider registries() {
+        if (FMLEnvironment.dist == Dist.CLIENT) {
+            HolderLookup.Provider client = ClientRegistries.get();
+            if (client != null) return client;
+        }
+        var server = ServerLifecycleHooks.getCurrentServer();
+        return server == null ? null : server.registryAccess();
+    }
+
+    /** Isolated holder for the client-only lookup, as {@code HubUI.ClientReturn} is. */
+    private static final class ClientRegistries {
+        @Nullable
+        static HolderLookup.Provider get() {
+            var level = net.minecraft.client.Minecraft.getInstance().level;
+            return level == null ? null : level.registryAccess();
+        }
     }
 
     /**

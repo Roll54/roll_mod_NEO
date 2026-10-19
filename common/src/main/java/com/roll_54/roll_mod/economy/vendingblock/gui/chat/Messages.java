@@ -108,6 +108,19 @@ public class Messages {
     return Component.translatable("msg.roll_mod.blacklist.fullBlock", item);
   }
 
+  // ----------------------------------------------- Minimal price
+  public static Component minPriceTooLow(Component item, long count, long required) {
+    return Component.translatable("msg.roll_mod.minprice.tooLow", count, item, required);
+  }
+
+  public static Component minPriceNotReady() {
+    return Component.translatable("msg.roll_mod.minprice.notReady");
+  }
+
+  public static Component minPriceOfferBlocked() {
+    return Component.translatable("msg.roll_mod.minprice.offerBlocked");
+  }
+
   // ----------------------------------------------- Auction House
   // ------------------------------------------------
   public static Component ahListed(int count, Component item) {

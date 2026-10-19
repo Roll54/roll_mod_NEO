@@ -157,6 +157,8 @@ public final class HomeTab {
                                     own.levelXp(), own.levelXpNeeded()).withStyle(ChatFormatting.GRAY)),
                     null, null, ItemStack.EMPTY);
         });
+        // Hours played, from the same Minestar profile as the level above it.
+        Label playtimeRow = row(column, "gui.roll_mod.hub.home.playtime.tip");
         Label rankRow = row(column, "gui.roll_mod.hub.home.rank.tip");
         Label coinsRow = row(column, "gui.roll_mod.hub.home.starcoins.tip");
         UIElement coinsIcon = new UIElement();
@@ -179,6 +181,9 @@ public final class HomeTab {
             levelRow.setText(own == null ? Component.empty()
                     : Component.translatable("gui.roll_mod.hub.home.level",
                             Component.literal(String.valueOf(own.level())).withColor(COLOR_LEVEL)));
+            playtimeRow.setText(own == null ? Component.empty()
+                    : Component.translatable("gui.roll_mod.hub.home.playtime",
+                            Component.literal(String.valueOf(own.playtimeHours())).withStyle(ChatFormatting.AQUA)));
             if (own != null && !own.groupName().isEmpty()) {
                 MutableComponent group = Component.literal(own.groupName());
                 if (own.groupColor() >= 0) group = group.withColor(own.groupColor());

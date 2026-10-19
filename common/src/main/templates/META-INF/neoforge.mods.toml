@@ -64,6 +64,11 @@ config = "${mod_id}.functionalstorage.mixins.json"
 [[mixins]]
 config = "${mod_id}.mi_ftbquests.mixins.json"
 
+# GTMOGS surface indicators: places our ore samples waterlogged when they replace water. Soft because GTMOGS is a
+# server-pack mod, not a dependency; without it the target class is missing and the mixin is skipped.
+[[mixins]]
+config = "${mod_id}.gtmogs.mixins.json"
+
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg
 #[[accessTransformers]]
@@ -153,6 +158,14 @@ side = "BOTH"
 modId = "createcybernetics"
 type = "optional"
 versionRange = "[0,)"
+ordering = "NONE"
+side = "BOTH"
+
+# Curios: the death log reads and restores worn curios when it is installed (compat/curios).
+[[dependencies."${mod_id}"]]
+modId = "curios"
+type = "optional"
+versionRange = "[9,)"
 ordering = "NONE"
 side = "BOTH"
 

@@ -15,6 +15,9 @@ public final class ClientModerationCache {
     public static volatile boolean ALLOWED;
     public static volatile boolean MAY_BAN;
     public static volatile boolean MAY_WRITE_LETTERS;
+    public static volatile boolean MAY_DEATHLOG;
+    public static volatile boolean MAY_INV_SEE;
+    public static volatile boolean MAY_INV_EDIT;
     public static volatile boolean WHITELIST;
     public static volatile String WHITELIST_MESSAGE = "";
     public static volatile List<Row> ROWS = List.of();
@@ -54,6 +57,9 @@ public final class ClientModerationCache {
         WHITELIST_MESSAGE = payload.whitelistMessage();
         MAY_BAN = payload.mayBan();
         MAY_WRITE_LETTERS = payload.mayWriteLetters();
+        MAY_DEATHLOG = payload.mayDeathlog();
+        MAY_INV_SEE = payload.mayInvSee();
+        MAY_INV_EDIT = payload.mayInvEdit();
         ALLOWED = payload.allowed();
         VERSION++;
     }

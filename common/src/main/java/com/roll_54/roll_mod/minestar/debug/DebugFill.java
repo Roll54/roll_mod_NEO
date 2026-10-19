@@ -35,6 +35,7 @@ import com.roll_54.roll_mod.minestar.letters.Letter;
 import com.roll_54.roll_mod.minestar.letters.LetterReward;
 import com.roll_54.roll_mod.minestar.letters.LetterStore;
 import com.roll_54.roll_mod.minestar.letters.LetterViewers;
+import com.roll_54.roll_mod.minestar.letters.ShopLetterFormat;
 import com.roll_54.roll_mod.minestar.moderation.BanStore;
 import com.roll_54.roll_mod.minestar.moderation.ModerationStatus;
 import com.roll_54.roll_mod.minestar.moderation.ModerationViewers;
@@ -213,36 +214,132 @@ final class DebugFill {
         long now = System.currentTimeMillis();
         UUID target = p.getUUID();
         String longBody = String.join("\n\n", java.util.Collections.nCopies(12,
-                "This is a long test letter body, repeated so the reader has to scroll to reach the end."));
+                "This is a &olong&r test letter body, repeated so the reader has to &escroll&r to reach the end."));
 
         List<Letter> letters = List.of(
-                personal(TAG + "Welcome", "A short test letter.", now - 2 * DAY, List.of(), Map.of(), target),
+                personal(TAG + "&aWelcome", "A &bshort&r test letter.", now - 2 * DAY, List.of(), Map.of(), target),
                 personal(TAG + "Long letter", longBody, now - DAY, List.of(), Map.of(), target),
-                personal(TAG + "A gift", "This one has rewards to accept.", now - 6 * HOUR,
+                personal(TAG + "&6A gift", "This one has &arewards&r to accept.", now - 6 * HOUR,
                         List.of(LetterReward.item(new ItemStack(Items.DIAMOND, 3)),
                                 LetterReward.item(new ItemStack(Items.GOLDEN_APPLE, 2))),
                         Map.of(), target),
-                personal(TAG + "More gifts", "Several rewards, to fill the chip row.", now - HOUR,
+                personal(TAG + "&dMore gifts", "Several rewards, to fill the &dchip row&r.", now - HOUR,
                         List.of(LetterReward.item(new ItemStack(Items.IRON_INGOT, 16)),
                                 LetterReward.item(new ItemStack(Items.BREAD, 8)),
                                 LetterReward.item(new ItemStack(Items.TORCH, 32))),
                         Map.of(), target),
                 // Already accepted: shows the "taken" state, and can never pay out again.
-                personal(TAG + "Already taken", "Rewards on this one were already accepted.", now - 3 * DAY,
+                personal(TAG + "&7Already taken", "Rewards on this one were &7already accepted&r.", now - 3 * DAY,
                         List.of(LetterReward.item(new ItemStack(Items.STICK, 1))),
                         Map.of(target, now - 2 * DAY), target),
                 // Broadcasts only staff see in the moderation list: one expired, one scheduled far
                 // ahead. No live broadcast, which would land in every player's inbox.
-                new Letter(UUID.randomUUID(), TAG + "Expired broadcast", "An expired broadcast.", BY,
+                new Letter(UUID.randomUUID(), TAG + "&cExpired broadcast", "An &cexpired&r broadcast.", BY,
                         now - 10 * DAY, now - 10 * DAY, now - DAY, List.of(), "", Map.of(), null),
-                new Letter(UUID.randomUUID(), TAG + "Scheduled broadcast", "Goes out in a year.", BY,
-                        now, now + 365 * DAY, 0, List.of(), "", Map.of(), null));
+                new Letter(UUID.randomUUID(), TAG + "&9Scheduled broadcast", "Goes out in &9a year&r.", BY,
+                        now, now + 365 * DAY, 0, List.of(), "", Map.of(), null),
+                colours(now - 30 * MINUTE, target));
+
+        // Shop letters as the server's ShopLetters writes them — 1 product, a list long enough to
+        // scroll the reward strip, and a letter filled to exactly Letter.MAX_REWARDS.
+        List<Letter> shop = new ArrayList<>();
+        String name = p.getGameProfile().getName();
+        int[] sizes = {1, 30, Letter.MAX_REWARDS};
+        for (int i = 0; i < sizes.length; i++) {
+            for (ShopLetterFormat.Draft draft : ShopLetterFormat.drafts(name, products(sizes[i]))) {
+                shop.add(ShopLetterFormat.letter(draft, TAG + draft.title(), target, now - (i + 1) * 10 * MINUTE));
+            }
+        }
+        // Products whose commands are give: the chips should show the items, not the command icon.
+        for (ShopLetterFormat.Draft draft : ShopLetterFormat.drafts(name, giveProducts(p))) {
+            shop.add(ShopLetterFormat.letter(draft, TAG + "&bGive preview", target, now - 5 * MINUTE));
+        }
 
         for (Letter letter : letters) {
             LetterStore.put(server, letter);
             ledger.add("letters", letter.id());
         }
-        return "5 personal (3 with rewards, 1 accepted), 2 staff broadcasts";
+        for (Letter letter : shop) {
+            LetterStore.put(server, letter);
+            ledger.add("letters", letter.id());
+        }
+        return "6 personal (4 with rewards, 1 accepted, 1 colour sampler), 2 staff broadcasts, "
+                + shop.size() + " shop (1, 30 and " + Letter.MAX_REWARDS + " products, 1 of give previews)";
+    }
+
+    /** Every colour and format code, the escaped ampersand, and a coloured line long enough to wrap. */
+    private static Letter colours(long sentAt, UUID recipient) {
+        StringBuilder palette = new StringBuilder();
+        for (char c : "0123456789abcdef".toCharArray()) {
+            palette.append('&').append(c).append("&&").append(c).append(' ');
+        }
+        String body = String.join("\n",
+                "&6&lColour codes&r",
+                "",
+                palette.toString().trim(),
+                "&lbold&r &mstrike&r &nunderline&r &oitalic&r &kmagic&r &rreset",
+                "&c&lbold red &r&7then plain grey&r — a literal ampersand: &&",
+                "",
+                "&bA long coloured line that keeps going well past the width of the letter so the "
+                        + "reader has to wrap it, &ewhile switching colour half way&b and back again, "
+                        + "&ato check that the colour carries over the break.&r");
+        return new Letter(UUID.randomUUID(), TAG + "&6Colours", body, BY, sentAt, sentAt, 0,
+                List.of(LetterReward.money(CurrencyType.MAIN, 1_000L),
+                        LetterReward.item(new ItemStack(Items.EMERALD, 5))),
+                "minecraft:diamond", Map.of(), recipient);
+    }
+
+    /** {@code count} harmless products: accepting them only says so in chat. */
+    private static List<ShopLetterFormat.Product> products(int count) {
+        List<ShopLetterFormat.Product> products = new ArrayList<>(count);
+        for (int i = 1; i <= count; i++) {
+            products.add(new ShopLetterFormat.Product(TAG + "Product " + i,
+                    "say [Test] %player% received product " + i, 1 + i % 3));
+        }
+        return products;
+    }
+
+    /** How many random-item give products the preview letter carries. */
+    private static final int RANDOM_GIVES = 12;
+
+    /**
+     * Products whose commands are {@code give}s, for the chip preview: {@link #RANDOM_GIVES} random
+     * items at random counts and repeats, then the forms the parser has to cope with — item
+     * components, a kit of several gives, a selector target, {@code /minecraft:give}, a give mixed
+     * with another command — and two that must keep the command icon: no give at all, and a give of
+     * an item that does not exist. Accepting really gives the items.
+     */
+    private static List<ShopLetterFormat.Product> giveProducts(ServerPlayer p) {
+        var random = p.getRandom();
+        var features = p.server.getWorldData().enabledFeatures();
+        List<Item> pool = BuiltInRegistries.ITEM.stream()
+                .filter(item -> item != Items.AIR && item.isEnabled(features)
+                        && !(item instanceof net.minecraft.world.item.GameMasterBlockItem))
+                .toList();
+
+        List<ShopLetterFormat.Product> products = new ArrayList<>();
+        for (int i = 1; i <= RANDOM_GIVES; i++) {
+            Item item = pool.get(random.nextInt(pool.size()));
+            int count = 1 + random.nextInt(Math.max(1, item.getDefaultMaxStackSize()));
+            products.add(new ShopLetterFormat.Product(TAG + "Random " + i,
+                    "give %player% " + BuiltInRegistries.ITEM.getKey(item) + " " + count, 1 + random.nextInt(3)));
+        }
+        products.add(new ShopLetterFormat.Product(TAG + "Enchanted sword",
+                "give %player% minecraft:diamond_sword[enchantments={levels:{\"minecraft:sharpness\":5}},"
+                        + "custom_name='{\"text\":\"Debug Blade\",\"color\":\"gold\"}']", 1));
+        products.add(new ShopLetterFormat.Product(TAG + "Starter kit",
+                "give %player% minecraft:iron_pickaxe\ngive %player% minecraft:bread 16\ngive %player% minecraft:torch 32", 1));
+        products.add(new ShopLetterFormat.Product(TAG + "Selector target",
+                "give @p[name=\"" + p.getGameProfile().getName() + "\", limit=1] minecraft:golden_apple 2", 2));
+        products.add(new ShopLetterFormat.Product(TAG + "Namespaced",
+                "/minecraft:give %player% minecraft:ender_pearl 4", 1));
+        products.add(new ShopLetterFormat.Product(TAG + "Mixed commands",
+                "say [Test] %player% got a mixed product\ngive %player% minecraft:emerald 3", 1));
+        products.add(new ShopLetterFormat.Product(TAG + "No give (command icon)",
+                "say [Test] %player% received a non-give product", 1));
+        products.add(new ShopLetterFormat.Product(TAG + "Bad give (command icon)",
+                "give %player% roll_mod:no_such_item 1", 1));
+        return products;
     }
 
     private static Letter personal(String title, String body, long sentAt, List<LetterReward> rewards,
@@ -440,10 +537,11 @@ final class DebugFill {
         }
         report.add("warps: " + warpCount);
 
+        String shopAuthor = ShopLetterFormat.author();
         long letterCount = ledger.uuids("letters").stream()
                 .filter(id -> LetterStore.remove(server, id)).count();
         for (Letter letter : List.copyOf(LetterStore.all(server))) {
-            if (BY.equals(letter.author()) && letter.title().startsWith(TAG)
+            if ((BY.equals(letter.author()) || shopAuthor.equals(letter.author())) && letter.title().startsWith(TAG)
                     && LetterStore.remove(server, letter.id())) letterCount++;
         }
         report.add("letters: " + letterCount);

@@ -8,6 +8,7 @@ import com.roll_54.roll_mod.minestar.kits.KitViewers;
 import com.roll_54.roll_mod.minestar.letters.LetterService;
 import com.roll_54.roll_mod.minestar.letters.LetterViewers;
 import com.roll_54.roll_mod.minestar.moderation.ModerationViewers;
+import com.roll_54.roll_mod.minestar.moderation.invsee.InvSeeSessions;
 import com.roll_54.roll_mod.minestar.moderation.TpsMonitor;
 import com.roll_54.roll_mod.minestar.op.OperatorViewers;
 import com.roll_54.roll_mod.minestar.tpa.TpaService;
@@ -18,6 +19,7 @@ import com.roll_54.roll_mod.minestar.hub.warp.WarpService;
 import com.roll_54.roll_mod.minestar.hub.warp.WarpViewers;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.entity.player.PlayerContainerEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
@@ -40,6 +42,7 @@ public final class HubEvents {
         ModerationViewers.tick(event.getServer());
         LetterService.tick(event.getServer());
         PlayerPositions.tick(event.getServer());
+        com.roll_54.roll_mod.minestar.radio.RadioService.tick(event.getServer());
     }
 
     /** Back positions batch to disk on an interval, so a stop must write out what is pending. */
@@ -62,6 +65,14 @@ public final class HubEvents {
         ModerationViewers.markDirty();
     }
 
+    /** A moderator's inventory window is forgotten once it closes; see InvSeeSessions. */
+    @SubscribeEvent
+    public static void onContainerClose(PlayerContainerEvent.Close event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            InvSeeSessions.onClosed(player, event.getContainer());
+        }
+    }
+
     @SubscribeEvent
     public static void onLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         WarpService.cancel(event.getEntity().getUUID());
@@ -76,6 +87,8 @@ public final class HubEvents {
         ModerationViewers.markDirty();
         TpaService.forget(event.getEntity().getUUID());
         FriendViewers.remove(event.getEntity().getUUID());
+        com.roll_54.roll_mod.minestar.radio.RadioService.forget(event.getEntity().getUUID());
+        InvSeeSessions.forget(event.getEntity().getUUID());
         if (event.getEntity() instanceof ServerPlayer player) {
             TpaViewers.resync(player.server);
             FriendViewers.resync(player.server);

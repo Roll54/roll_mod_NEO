@@ -83,6 +83,16 @@ public final class HubInfo {
         return ClientRead.read(id);
     }
 
+    /**
+     * Whether {@code id} has a file, in the player's language or the fallback, that is not switched
+     * off with {@code "enabled": false}. For text that is optional rather than a section's
+     * explanation — the plot theme shown before a purchase. Always false on the server.
+     */
+    public static boolean has(String id) {
+        if (FMLEnvironment.dist != Dist.CLIENT) return false;
+        return ClientRead.has(id);
+    }
+
     /** The language every section is guaranteed to have, and what an untranslated one falls back to. */
     private static final String FALLBACK_LANGUAGE = "en_us";
 
@@ -100,6 +110,14 @@ public final class HubInfo {
             return lines == null ? List.of(missing()) : lines;
         }
 
+        static boolean has(String id) {
+            String language = net.minecraft.client.Minecraft.getInstance()
+                    .getLanguageManager().getSelected();
+            JsonObject root = tryRoot(language, id);
+            if (root == null && !FALLBACK_LANGUAGE.equals(language)) root = tryRoot(FALLBACK_LANGUAGE, id);
+            return root != null && (!root.has("enabled") || root.get("enabled").getAsBoolean());
+        }
+
         /**
          * One language's file, or {@code null} if it is absent or unreadable — which is the whole
          * reason this does not return {@link #missing()} itself. The caller has to be able to tell
@@ -108,6 +126,13 @@ public final class HubInfo {
          */
         @Nullable
         private static List<UIElement> tryRead(String language, String id) {
+            JsonObject root = tryRoot(language, id);
+            return root == null ? null : parse(root);
+        }
+
+        /** One language's file as JSON, or {@code null} if it is absent or unreadable. */
+        @Nullable
+        private static JsonObject tryRoot(String language, String id) {
             ResourceLocation path = ResourceLocation.fromNamespaceAndPath(
                     RollMod.MODID, "hub_info/" + language + "/" + id + ".json");
 
@@ -118,8 +143,7 @@ public final class HubInfo {
 
                 try (InputStream in = resource.get().open();
                      InputStreamReader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
-                    JsonObject root = JsonParser.parseReader(reader).getAsJsonObject();
-                    return parse(root);
+                    return JsonParser.parseReader(reader).getAsJsonObject();
                 }
             } catch (Exception e) {
                 RollMod.LOGGER.debug("Could not read hub info {}", path, e);

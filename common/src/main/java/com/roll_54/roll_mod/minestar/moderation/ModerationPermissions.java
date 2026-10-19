@@ -1,7 +1,10 @@
 package com.roll_54.roll_mod.minestar.moderation;
 
 import com.roll_54.roll_mod.economy.vendingblock.auction.LuckPermsCompat;
+import com.mojang.authlib.GameProfile;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.ServerOpListEntry;
 
 /**
  * Who may moderate, in one place.
@@ -40,6 +43,21 @@ public final class ModerationPermissions {
         return player.hasPermissions(2) || LuckPermsCompat.canWriteLetters(player);
     }
 
+    /** May read the death log and restore deaths from it — which hands out items, so kept apart. */
+    public static boolean canUseDeathlog(ServerPlayer player) {
+        return player.hasPermissions(2) || LuckPermsCompat.canUseDeathlog(player);
+    }
+
+    /** May open another player's inventory, curios and implants, read-only unless {@link #canInvEdit}. */
+    public static boolean canInvSee(ServerPlayer player) {
+        return canInvEdit(player) || LuckPermsCompat.canInvSee(player);
+    }
+
+    /** May change another player's items. Implies {@link #canInvSee}. */
+    public static boolean canInvEdit(ServerPlayer player) {
+        return player.hasPermissions(2) || LuckPermsCompat.canInvEdit(player);
+    }
+
     /**
      * Whether the whitelist lets this player through. The same answer as {@link #canModerate}, kept
      * under its own name so the login gate reads as what it is and so the two can part company
@@ -47,5 +65,15 @@ public final class ModerationPermissions {
      */
     public static boolean bypassesWhitelist(ServerPlayer player) {
         return canModerate(player);
+    }
+
+    /**
+     * {@link #bypassesWhitelist(ServerPlayer)} for the login handshake, where there is no player yet
+     * — only a profile. Operators by the ops list, staff by LuckPerms' stored data.
+     */
+    public static boolean bypassesWhitelist(MinecraftServer server, GameProfile profile) {
+        ServerOpListEntry op = server.getPlayerList().getOps().get(profile);
+        if (op != null && op.getLevel() >= 2) return true;
+        return LuckPermsCompat.canModerateOffline(profile.getId());
     }
 }

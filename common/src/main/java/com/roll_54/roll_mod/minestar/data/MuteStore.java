@@ -57,6 +57,17 @@ public final class MuteStore {
         return mute;
     }
 
+    /** Everyone whose mute is still running, for the moderator's list. */
+    public static java.util.Set<UUID> muted() {
+        load();
+        long now = System.currentTimeMillis();
+        java.util.Set<UUID> out = new java.util.HashSet<>();
+        MUTES.forEach((id, mute) -> {
+            if (!mute.expired(now)) out.add(id);
+        });
+        return out;
+    }
+
     /** Mutes until {@code until} epoch millis; {@code 0} never expires. */
     public static synchronized void mute(UUID player, long until, String by, String reason) {
         load();

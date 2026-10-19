@@ -12,8 +12,11 @@ import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.minestar.letters.ClientLetterCache;
+import com.roll_54.roll_mod.minestar.letters.LetterReward;
 import com.roll_54.roll_mod.minestar.letters.LetterView;
+import com.roll_54.roll_mod.minestar.letters.LetterText;
 import com.roll_54.roll_mod.network.packet.LetterAcceptPacket;
+import com.roll_54.roll_mod.network.packet.LetterDismissPacket;
 import com.roll_54.roll_mod.util.Durations;
 import com.roll_54.roll_mod.util.LegacyText;
 import dev.vfyjxf.taffy.style.FlexDirection;
@@ -36,7 +39,10 @@ import java.util.UUID;
  * {@code SyncLettersPacket} keeps current — so this tab can be rebuilt freely.
  *
  * <p>A letter is shown in full whether or not it has been accepted, rewards included. Accepting only
- * decides whether the button is still there.
+ * decides whether the button is still there — and, once it is accepted, the reader may delete it
+ * from their list.
+ *
+ * <p>Bodies may hold links, {@code [text](https://…)} or a bare address; see {@link LetterText}.
  */
 public final class LettersTab {
 
@@ -44,6 +50,12 @@ public final class LettersTab {
     private static final int LIST_W = 130;
     private static final int ROW_H = 16;
     private static final int LINE_H = 12;
+    /** Space between reward chips, as {@code LetterRewardChips.strip} lays them. */
+    private static final int CHIP_GAP = 3;
+    /** The page arrows either side of the reward row. */
+    private static final int ARROW_W = 14;
+    /** Chips per page before the row has been laid out and can be measured — what the default hub fits. */
+    private static final int DEFAULT_PER_PAGE = 12;
     /** Space between any text and the edge of the box it sits in. */
     private static final int TEXT_INSET = 4;
 
@@ -85,11 +97,11 @@ public final class LettersTab {
         String[] detailSig = {null};
 
         root.addEventListener(UIEvents.TICK, e -> {
-            // Staff are sent due and expired letters too, for the moderation tab; a reader only
-            // ever sees what is out and in date.
+            // Staff are sent due, expired and deleted letters too, for the moderation tab; a reader
+            // only ever sees what is out, in date and still in their list.
             long now = System.currentTimeMillis();
             List<LetterView> letters = ClientLetterCache.LETTERS.stream()
-                    .filter(l -> l.visible(now)).toList();
+                    .filter(l -> l.visible(now) && !l.dismissed()).toList();
             // A withdrawn or expired letter takes its selection with it.
             if (selected[0] != null && find(letters, selected[0]) == null) selected[0] = null;
             // Opening the tab lands on the newest unread letter, or the newest one.
@@ -168,10 +180,7 @@ public final class LettersTab {
         detail.addChildren(title, meta, bodyView(letter.body()));
 
         if (!letter.rewards().isEmpty()) {
-            Label caption = new Label();
-            caption.setText(Component.translatable("gui.roll_mod.letters.rewards").withStyle(ChatFormatting.GRAY));
-            caption.layout(l -> l.widthPercent(100).height(LINE_H).paddingHorizontal(TEXT_INSET));
-            detail.addChildren(caption, LetterRewardChips.strip(letter.rewards(), null, null));
+            detail.addChild(rewardsView(letter.rewards()));
         }
 
         Button accept = new Button();
@@ -179,6 +188,12 @@ public final class LettersTab {
         if (letter.accepted()) {
             accept.setText(Component.translatable("gui.roll_mod.letters.accepted"));
             accept.setActive(false);
+            accept.layout(l -> l.widthPercent(50).flexGrow(1));
+            UIElement buttons = new UIElement();
+            buttons.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H).gapColumn(3));
+            buttons.addChildren(accept, deleteButton(letter));
+            detail.addChild(buttons);
+            return;
         } else {
             accept.setText(Component.translatable(letter.rewards().isEmpty()
                     ? "gui.roll_mod.letters.read" : "gui.roll_mod.letters.accept"));
@@ -189,6 +204,28 @@ public final class LettersTab {
             });
         }
         detail.addChild(accept);
+    }
+
+    /**
+     * Deletes the letter from the reader's list. Two clicks: the first only arms it, so a stray
+     * click cannot throw a letter away.
+     */
+    private static Button deleteButton(LetterView letter) {
+        Button delete = new Button();
+        delete.layout(l -> l.widthPercent(50).flexGrow(1).height(ROW_H));
+        delete.setText(Component.translatable("gui.roll_mod.letters.delete"));
+        boolean[] armed = {false};
+        delete.setOnClick(e -> {
+            if (!armed[0]) {
+                armed[0] = true;
+                delete.setText(Component.translatable("gui.roll_mod.letters.delete.confirm")
+                        .withStyle(ChatFormatting.RED));
+                return;
+            }
+            PacketDistributor.sendToServer(new LetterDismissPacket(letter.id()));
+            delete.setActive(false);
+        });
+        return delete;
     }
 
     /** "from Steve · 23.09 14:05 · expires in 2:03:00:00". */
@@ -216,8 +253,8 @@ public final class LettersTab {
         view.viewPort(v -> v.layout(l -> l.paddingAll(TEXT_INSET).paddingRight(TEXT_INSET + 4)));
         view.style(s -> s.background(new ColorRectTexture(COLOR_PANEL)));
         for (String line : body.split("\n", -1)) {
-            Label label = new Label();
-            label.setText(line.isEmpty() ? Component.literal(" ") : LegacyText.display(line));
+            Label label = new LinkLabel();
+            label.setText(line.isEmpty() ? Component.literal(" ") : LetterText.display(line));
             label.layout(l -> l.widthPercent(100).marginBottom(1));
             label.textStyle(t -> t.font(HubInfo.FONT).textWrap(TextWrap.WRAP).adaptiveHeight(true));
             view.addScrollViewChild(label);
@@ -233,6 +270,79 @@ public final class LettersTab {
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
         view.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)));
         return view;
+    }
+
+    /**
+     * The attachments as one row of chips, paged: a shop letter can carry dozens of products, and
+     * left to wrap they would squeeze the body out of the panel. The row holds as many chips as fit
+     * its width — about {@link #DEFAULT_PER_PAGE} in a default-size hub, more as the hub is widened —
+     * re-measured every tick, so resizing the hub reflows the pages on the spot.
+     */
+    private static UIElement rewardsView(List<LetterReward> rewards) {
+        UIElement box = new UIElement();
+        box.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).flexShrink(0));
+
+        UIElement head = new UIElement();
+        head.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(LINE_H)
+                .paddingHorizontal(TEXT_INSET));
+        Label caption = new Label();
+        caption.setText(Component.translatable("gui.roll_mod.letters.rewards").withStyle(ChatFormatting.GRAY));
+        caption.layout(l -> l.flexGrow(1).height(LINE_H));
+        Label pageLabel = new Label();
+        pageLabel.layout(l -> l.width(60).height(LINE_H));
+        pageLabel.textStyle(t -> t.textAlignHorizontal(Horizontal.RIGHT));
+        head.addChildren(caption, pageLabel);
+
+        UIElement row = new UIElement();
+        row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(LetterRewardChips.SLOT)
+                .gapColumn(CHIP_GAP));
+        Button prev = pageArrow("‹");
+        Button next = pageArrow("›");
+        UIElement chips = new UIElement();
+        chips.layout(l -> l.flexBasis(0).flexGrow(1).height(LetterRewardChips.SLOT));
+        chips.setOverflowVisible(false);
+        row.addChildren(prev, chips, next);
+        box.addChildren(head, row);
+
+        int[] page = {0};
+        int[] shown = {-1, -1}; // per page, page
+        prev.setOnClick(e -> page[0]--);
+        next.setOnClick(e -> page[0]++);
+        row.addEventListener(UIEvents.TICK, e -> {
+            float width = row.getSizeWidth();
+            int all = fit(width);
+            boolean paged = rewards.size() > all;
+            int perPage = paged ? fit(width - 2 * (ARROW_W + CHIP_GAP)) : Math.max(1, rewards.size());
+            int pages = Math.max(1, (rewards.size() + perPage - 1) / perPage);
+            page[0] = Math.floorMod(page[0], pages); // past the last wraps to the first, and back
+            if (perPage == shown[0] && page[0] == shown[1]) return;
+            shown[0] = perPage;
+            shown[1] = page[0];
+
+            prev.setDisplay(paged);
+            next.setDisplay(paged);
+            pageLabel.setText(paged ? Component.literal((page[0] + 1) + " / " + pages).withStyle(ChatFormatting.DARK_GRAY)
+                    : Component.empty());
+            int from = page[0] * perPage;
+            chips.clearAllChildren();
+            chips.addChild(LetterRewardChips.strip(rewards.subList(from, Math.min(rewards.size(), from + perPage)),
+                    null, null));
+        });
+        return box;
+    }
+
+    /** How many chips a row of this width holds; the default before it has been laid out. */
+    private static int fit(float width) {
+        if (width <= 0f) return DEFAULT_PER_PAGE;
+        return Math.max(1, (int) ((width + CHIP_GAP) / (LetterRewardChips.SLOT + CHIP_GAP)));
+    }
+
+    private static Button pageArrow(String text) {
+        Button button = new Button();
+        button.setText(Component.literal(text));
+        button.layout(l -> l.width(ARROW_W).height(LetterRewardChips.SLOT).flexShrink(0).paddingAll(0));
+        HubSection.centreCaption(button);
+        return button;
     }
 
     @Nullable

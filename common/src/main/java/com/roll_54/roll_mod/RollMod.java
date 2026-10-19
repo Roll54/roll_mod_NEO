@@ -102,6 +102,7 @@ public final class RollMod {
         eventBus.addListener(this::registerEconomyCapabilities);
 
         CurrencyConfig.init();
+        com.roll_54.roll_mod.economy.minprice.MinPriceConfig.init();
         container.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT,
                 com.roll_54.roll_mod.economy.vendingblock.Config.Client.SPEC);
         container.registerConfig(net.neoforged.fml.config.ModConfig.Type.SERVER,
@@ -158,6 +159,9 @@ public final class RollMod {
             // The starting screen new players have to accept — see WelcomeService.
             PlayerUIMenuType.register(WelcomeUI.UI_ID,
                     player -> (PlayerUIMenuType.PlayerUIHolder) WelcomeUI::createUI);
+            // A moderator's window into another player's inventory or implants — see InvSeeSessions.
+            PlayerUIMenuType.register(com.roll_54.roll_mod.minestar.moderation.invsee.InvSeeUI.UI_ID,
+                    com.roll_54.roll_mod.minestar.moderation.invsee.InvSeeSessions::holder);
         });
         LOGGER.info("[{}] common setup", MODID);
     }

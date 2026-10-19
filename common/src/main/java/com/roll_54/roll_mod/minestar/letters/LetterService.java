@@ -209,6 +209,15 @@ public final class LetterService {
     }
 
     /**
+     * Deletes a letter the reader has already accepted from their own list — see
+     * {@link LetterStore#dismiss}. Nothing changes for anyone else.
+     */
+    public static void dismiss(ServerPlayer reader, UUID id) {
+        if (!LetterStore.dismiss(reader.server, id, reader.getUUID())) return;
+        LetterViewers.syncTo(reader);
+    }
+
+    /**
      * COMMAND rewards run at permission level 4 when accepted (see {@link #grant}), so attaching one
      * takes level 4 — the letters permission alone (level 2 / the LuckPerms node) would otherwise be
      * a straight escalation: write a letter with {@code op @s}, accept it yourself.
