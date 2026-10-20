@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.MapColor;
 import net.neoforged.bus.api.IEventBus;
@@ -248,7 +249,9 @@ public class BlockRegistry {
             () -> new HueriStatueBlock(BlockBehaviour.Properties.of()
                     .strength(2.0F)
                     .sound(SoundType.METAL)
-                    .noOcclusion())
+                    .noOcclusion()
+                    // A piston would split the two halves.
+                    .pushReaction(PushReaction.BLOCK))
     );
 
     public static final DeferredBlock<Block> HUERI_PLUSH = BLOCKS.register(

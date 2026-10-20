@@ -1,0 +1,9 @@
+{
+  "title": {"text": "Event participants", "bold": true, "color": "#e5c48b"},
+  "body": [
+    {"text": "Those who were the first to come and remember hueri:\n", "color": "gray"},
+    "<player:fabac1ba-3c96-4f5b-8300-ed6235c2aefb:rank>",
+    "<player:61699b2e-d327-4a01-9f1e-0ea8c3f06bc6:rank>",
+    "<player:ded6989b-9ddf-4ba6-b576-aab0f39a2bbc:rank>"
+  ]
+}

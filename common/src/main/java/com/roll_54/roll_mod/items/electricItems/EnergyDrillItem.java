@@ -180,7 +180,13 @@ public class EnergyDrillItem extends DiggerItem implements ISimpleEnergyItem {
         List<BlockPos> targets = collectArea(player, pos, MINING_RADIUS);
 
         // Здобич з усієї області злітається в інвентар гравця, а не на землю
-        DrillDropCollector.collect(player, () -> mineArea(stack, level, player, targets));
+        // Досвід теж збирається і йде гравцю одразу, а не сиплеться кулями з кожного блоку
+        var op = new DrillDropCollector.DrillOp();
+        op.captureXp = true;
+        DrillDropCollector.collect(player, op, () -> mineArea(stack, level, player, targets));
+        if (op.xpCollected > 0) {
+            player.giveExperiencePoints(op.xpCollected);
+        }
 
         return true;
     }

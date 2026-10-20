@@ -29,7 +29,6 @@ public enum ModuleType {
     DAMAGE(ToolKind.SABER),
     SWEEP(ToolKind.SABER),
     XP_MULTIPLIER(ToolKind.SABER),
-    DROP_COLLECTOR(ToolKind.SABER),
     VAMPIRISM(ToolKind.SABER),
     BEHEADING(ToolKind.SABER),
     IRRADIATION(ToolKind.SABER),

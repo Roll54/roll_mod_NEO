@@ -104,6 +104,11 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.VENUS_CARTRIDGE.get());
         basicItem(ItemRegistry.EMPTY_CARTRIDGE.get());
 
+        // No texture of its own yet: borrows vanilla's eye of ender.
+        getBuilder(ItemRegistry.DRILL_ORB.getId().getPath())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.withDefaultNamespace("item/ender_eye"));
+
         getBuilder(ItemRegistry.RESEARCH_ROCKET_CONTROLLER.get().toString())
                 .parent(new ModelFile.UncheckedModelFile("item/handheld"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/research_paper_special"));
@@ -199,7 +204,11 @@ public class RolltemModelProvider extends ItemModelProvider {
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/eyeupgrades_crop_analyzer_module"));
 
-        // TODO(art): textures/item/cyberware/brainupgrade_radio.png
+        // TODO(art): textures/item/cyberware/brainupgrade_radio.png. Tracked as generated until it is
+        // drawn, so the existing-file check does not fail the whole run (see pendingTextureItem).
+        existingFileHelper.trackGenerated(
+                ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/brainupgrade_radio"),
+                net.minecraft.server.packs.PackType.CLIENT_RESOURCES, ".png", "textures");
         getBuilder(ItemRegistry.BRAINUPGRADE_RADIO.get().toString())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/brainupgrade_radio"));
@@ -288,11 +297,10 @@ public class RolltemModelProvider extends ItemModelProvider {
         }
         hideable(withExistingParent("iv_modular_drill", modLoc("item/iv_electric_pickaxe")));
 
-        // Module textures live in item/tool/modules. HV speed is the one not drawn yet, so it is
-        // still tracked as generated first, the way the solar panel provider handles it.
+        // Module textures live in item/tool/modules.
         drillModuleItem(ItemRegistry.SPEED_MODULE_I.get());
         drillModuleItem(ItemRegistry.SPEED_MODULE_II.get());
-        hideable(pendingTextureItem(ItemRegistry.SPEED_MODULE_III.get()));
+        drillModuleItem(ItemRegistry.SPEED_MODULE_III.get());
         drillModuleItem(ItemRegistry.SPEED_MODULE_IV.get());
         drillModuleItem(ItemRegistry.SILK_TOUCH_MODULE.get());
         drillModuleItem(ItemRegistry.FORTUNE_MODULE_I.get());
@@ -324,32 +332,30 @@ public class RolltemModelProvider extends ItemModelProvider {
         drillModuleItem(ItemRegistry.LAVA_SOLIDIFIER_MODULE.get());
         drillModuleItem(ItemRegistry.SPEAK_MODULE.get());
 
-        // Saber modules: none is drawn yet, so all are tracked as pending, like HV speed above.
-        // Switch each to drillModuleItem once its PNG lands in item/tool/modules.
-        hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_I.get()));
-        hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_II.get()));
-        hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_III.get()));
-        hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_IV.get()));
-        hideable(pendingTextureItem(ItemRegistry.DAMAGE_MODULE_V.get()));
-        hideable(pendingTextureItem(ItemRegistry.SWEEP_MODULE_I.get()));
-        hideable(pendingTextureItem(ItemRegistry.SWEEP_MODULE_II.get()));
-        hideable(pendingTextureItem(ItemRegistry.SWEEP_MODULE_III.get()));
-        hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_I.get()));
-        hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_II.get()));
-        hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_III.get()));
-        hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_IV.get()));
-        hideable(pendingTextureItem(ItemRegistry.XP_MULTIPLIER_MODULE_V.get()));
-        hideable(pendingTextureItem(ItemRegistry.DROP_COLLECTOR_MODULE.get()));
-        hideable(pendingTextureItem(ItemRegistry.VAMPIRISM_MODULE_I.get()));
-        hideable(pendingTextureItem(ItemRegistry.VAMPIRISM_MODULE_II.get()));
-        hideable(pendingTextureItem(ItemRegistry.VAMPIRISM_MODULE_III.get()));
-        hideable(pendingTextureItem(ItemRegistry.BEHEADING_MODULE_I.get()));
-        hideable(pendingTextureItem(ItemRegistry.BEHEADING_MODULE_II.get()));
-        hideable(pendingTextureItem(ItemRegistry.BEHEADING_MODULE_III.get()));
-        hideable(pendingTextureItem(ItemRegistry.IRRADIATION_MODULE_I.get()));
-        hideable(pendingTextureItem(ItemRegistry.IRRADIATION_MODULE_II.get()));
-        hideable(pendingTextureItem(ItemRegistry.IRRADIATION_MODULE_III.get()));
-        hideable(pendingTextureItem(ItemRegistry.METEORITE_MODULE.get()));
+        // Saber modules.
+        drillModuleItem(ItemRegistry.DAMAGE_MODULE_I.get());
+        drillModuleItem(ItemRegistry.DAMAGE_MODULE_II.get());
+        drillModuleItem(ItemRegistry.DAMAGE_MODULE_III.get());
+        drillModuleItem(ItemRegistry.DAMAGE_MODULE_IV.get());
+        drillModuleItem(ItemRegistry.DAMAGE_MODULE_V.get());
+        drillModuleItem(ItemRegistry.SWEEP_MODULE_I.get());
+        drillModuleItem(ItemRegistry.SWEEP_MODULE_II.get());
+        drillModuleItem(ItemRegistry.SWEEP_MODULE_III.get());
+        drillModuleItem(ItemRegistry.XP_MULTIPLIER_MODULE_I.get());
+        drillModuleItem(ItemRegistry.XP_MULTIPLIER_MODULE_II.get());
+        drillModuleItem(ItemRegistry.XP_MULTIPLIER_MODULE_III.get());
+        drillModuleItem(ItemRegistry.XP_MULTIPLIER_MODULE_IV.get());
+        drillModuleItem(ItemRegistry.XP_MULTIPLIER_MODULE_V.get());
+        drillModuleItem(ItemRegistry.VAMPIRISM_MODULE_I.get());
+        drillModuleItem(ItemRegistry.VAMPIRISM_MODULE_II.get());
+        drillModuleItem(ItemRegistry.VAMPIRISM_MODULE_III.get());
+        drillModuleItem(ItemRegistry.BEHEADING_MODULE_I.get());
+        drillModuleItem(ItemRegistry.BEHEADING_MODULE_II.get());
+        drillModuleItem(ItemRegistry.BEHEADING_MODULE_III.get());
+        drillModuleItem(ItemRegistry.IRRADIATION_MODULE_I.get());
+        drillModuleItem(ItemRegistry.IRRADIATION_MODULE_II.get());
+        drillModuleItem(ItemRegistry.IRRADIATION_MODULE_III.get());
+        drillModuleItem(ItemRegistry.METEORITE_MODULE.get());
 
         // TEXTURES ARE NOT NEDEED FOR THESE ITEMS, THEY ARE DEV ONES.
         getBuilder(ItemRegistry.EXAMPLE_ARMOR_HELMET.get().toString())

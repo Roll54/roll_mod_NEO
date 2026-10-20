@@ -1,0 +1,17 @@
+{
+  "lines": [
+    { "text": "&fWho is ahead this season, and where you stand." },
+    { "type": "space" },
+    { "text": "&e&lBoards" },
+    { "text": "&7Pick one from the drop-down: &eRichest&7, &eQuests completed&7, &ePlaytime&7 on this server, &eTop earners (7 days)&7 and &eDaily tasks done&7.", "indent": 6 },
+    { "text": "&eQuests completed&7 counts required quests and ranks &fteams&7, not players &8- a party shares its quest progress.", "indent": 6 },
+    { "text": "&eTop earners&7 counts money from selling to other players over the last 7 days: auction sales &8(after the house's fee)&7 and vending block sales.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lReading a board" },
+    { "text": "&7The top &f50&7 are listed, with &6gold&7, &fsilver&7 and bronze for the first three. Your own line is pinned under the list and highlighted, so you can see your place however far down it is.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lSeasons" },
+    { "text": "&7Every board belongs to the current season and starts over with it.", "indent": 6 },
+    { "text": "&7Boards are rebuilt every couple of minutes; &f⟳&7 asks for the latest copy.", "indent": 6 }
+  ]
+}

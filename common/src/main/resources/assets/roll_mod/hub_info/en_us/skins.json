@@ -1,0 +1,37 @@
+{
+  "lines": [
+    {
+      "text": "&fYour cosmetic skins. In the middle is you, wearing every skin you have chosen."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lSlots"
+    },
+    {
+      "text": "&7Head and sword on the left, pickaxe and axe on the right. A skin shows on any item of its slot: any helmet, any sword, and so on.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lChoosing"
+    },
+    {
+      "text": "&7Click a slot to see every skin for it. Pick one you own to wear it, or None to take it off. The doll holds the tool whose skin you changed last, in your main hand.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lLocked skins"
+    },
+    {
+      "text": "&7Skins you do not own yet carry a lock. Click one to read how to get it.",
+      "indent": 6
+    }
+  ]
+}

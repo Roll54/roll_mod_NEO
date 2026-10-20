@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.registry;
 
 import com.mojang.serialization.Codec;
 import com.roll_54.roll_mod.data.UpgradeComponent;
+import com.roll_54.roll_mod.items.electricItems.DrillOrbContents;
 import com.roll_54.roll_mod.items.modulardrill.DrillModules;
 import com.roll_54.roll_mod.items.spaceModule.CartridgeData;
 import net.minecraft.core.component.DataComponentType;
@@ -57,6 +58,8 @@ public class ComponentsRegistry {
     public static final Supplier<DataComponentType<Integer>> SPEAK_BLOCKS;
     // Trash Filter module — its 18 ghost slots. On the drill while installed, on the module item otherwise.
     public static final Supplier<DataComponentType<ItemContainerContents>> TRASH_FILTER;
+    // Drill orb — the drill overflow it holds, merged by item type.
+    public static final Supplier<DataComponentType<DrillOrbContents>> DRILL_ORB_CONTENTS;
 
     private static <D> DeferredHolder<DataComponentType<?>, DataComponentType<D>> create(String name, Codec<D> codec, StreamCodec<? super RegistryFriendlyByteBuf, D> streamCodec) {
         return COMPONENTS.registerComponentType(name, (b) -> b.persistent(codec).networkSynchronized(streamCodec));
@@ -101,6 +104,7 @@ public class ComponentsRegistry {
         DRILL_MODULES = create("drill_modules", DrillModules.CODEC, DrillModules.STREAM_CODEC);
         SPEAK_BLOCKS = create("speak_blocks", Codec.INT, ByteBufCodecs.VAR_INT);
         TRASH_FILTER = create("trash_filter", ItemContainerContents.CODEC, ItemContainerContents.STREAM_CODEC);
+        DRILL_ORB_CONTENTS = create("drill_orb_contents", DrillOrbContents.CODEC, DrillOrbContents.STREAM_CODEC);
     }
 
 

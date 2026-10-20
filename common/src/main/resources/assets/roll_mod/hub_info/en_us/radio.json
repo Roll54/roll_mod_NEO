@@ -1,0 +1,37 @@
+{
+  "lines": [
+    {
+      "text": "&fA radio implant in your head. This tab is here while one is installed."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lStations"
+    },
+    {
+      "text": "&7Pick a station from the list to tune in. Pick it again to switch the radio off.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lHear it"
+    },
+    {
+      "text": "&7The station plays to you, wherever you are.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lBroadcast to others"
+    },
+    {
+      "text": "&7Players near you hear your station too, quieter the further away they are. It moves with you.",
+      "indent": 6
+    }
+  ]
+}

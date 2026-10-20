@@ -97,8 +97,8 @@ public final class SaberModuleEvents {
     }
 
     /**
-     * Beheading adds the victim's head to the drops; Drop Collector then hands every drop straight
-     * to the killer. Low priority, so other mods' changes to the drop list are collected too.
+     * Beheading adds the victim's head to the drops; every drop then goes straight to the killer
+     * (into the inventory, or at their feet when it is full). Low priority, so other mods' changes to the drop list are collected too.
      */
     @SubscribeEvent(priority = EventPriority.LOW)
     public static void onDrops(LivingDropsEvent event) {
@@ -115,12 +115,10 @@ public final class SaberModuleEvents {
             }
         }
 
-        if (DrillModuleHelper.get(stack).has(ModuleType.DROP_COLLECTOR)) {
-            List<ItemEntity> drops = new ArrayList<>(event.getDrops());
-            event.getDrops().clear();
-            for (ItemEntity drop : drops) {
-                DrillDropCollector.giveToPlayer(player, drop.getItem());
-            }
+        List<ItemEntity> drops = new ArrayList<>(event.getDrops());
+        event.getDrops().clear();
+        for (ItemEntity drop : drops) {
+            DrillDropCollector.giveToPlayer(player, drop.getItem());
         }
     }
 

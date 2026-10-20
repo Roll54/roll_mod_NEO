@@ -121,6 +121,19 @@
 		*/
 		"reductionCurve": 0.05
 	},
+	"chunkGuard": {
+		/* Freeze a chunk (no entity, block entity, scheduled, random ticks or natural spawning) when something
+		   ticking inside it throws, instead of crashing the server. Stays frozen until '/rollmod admin chunkfreeze unfreeze'
+		   or a restart.
+		*/
+		"freezeOnCrash": true,
+		// Non-player entities in one chunk at which the chunk gets frozen. 0 = disabled.
+		"entityLimit": 200,
+		// An overload-frozen chunk resumes ticking once its non-player entity count drops below this.
+		"resumeBelow": 150,
+		// How often (in ticks) entity counts per chunk are rescanned.
+		"scanIntervalTicks": 20
+	},
 	// Settings for Nether Storm behaviour
 	"storm": {
 		/* Minimum delay before storm starts again (in Minecraft hours).
@@ -205,5 +218,17 @@
 		"enabled": true,
 		// Deaths kept per player, newest first. Older ones are deleted as new ones arrive.
 		"maxPerPlayer": 30
+	},
+	// Player hub tabs that can be switched off.
+	"hub": {
+		// Show the Skins tab in the player hub. Off while the tab is unfinished. Synced to clients; applies live.
+		"skinsTab": false
+	},
+	// How long letters the server sends by itself stay in the player's list before they expire. Unaccepted attachments are lost with them.
+	"letters": {
+		// Hours a Minestar shop delivery letter waits to be accepted. 0 = never expires.
+		"shopLifetimeHours": 24,
+		// Hours a death-log letter (items of a death returned or retrieved by staff that did not fit the inventory) waits to be accepted. 0 = never expires.
+		"deathLogLifetimeHours": 72
 	}
 }

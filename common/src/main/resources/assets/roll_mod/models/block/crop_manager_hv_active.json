@@ -1,0 +1,7 @@
+{
+  "parent": "roll_mod:block/crop_manager_mk2_active",
+  "textures": {
+    "particle": "roll_mod:block/crop_manager/crop_manager_side_hv",
+    "side": "roll_mod:block/crop_manager/crop_manager_side_hv"
+  }
+}

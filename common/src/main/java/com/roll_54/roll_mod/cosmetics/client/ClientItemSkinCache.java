@@ -42,12 +42,18 @@ public final class ClientItemSkinCache {
      */
     private static volatile boolean anyPlayerHasSkins;
 
+    /**
+     * Bumped on every update from the server, so a screen showing this cache can tell on tick
+     * whether to redraw. {@link #setPreview} leaves it alone.
+     */
+    public static volatile int VERSION;
+
     public static boolean anyPlayerHasSkins() {
         return anyPlayerHasSkins;
     }
 
     /** An empty {@code skins} map removes the player, which is how logout is broadcast. */
-    public static void put(UUID player, Map<SkinCategory, ResourceLocation> skins) {
+    private static void write(UUID player, Map<SkinCategory, ResourceLocation> skins) {
         Map<UUID, Map<SkinCategory, ResourceLocation>> next = new HashMap<>(active);
         if (skins.isEmpty()) {
             next.remove(player);
@@ -58,6 +64,24 @@ public final class ClientItemSkinCache {
         }
         active = Map.copyOf(next);
         anyPlayerHasSkins = !next.isEmpty();
+    }
+
+    /** An update from the server: {@link #write}, then {@link #VERSION} moves on. */
+    public static void put(UUID player, Map<SkinCategory, ResourceLocation> skins) {
+        write(player, skins);
+        VERSION++;
+    }
+
+    /**
+     * Skins for a client-only stand-in that is not a real player — the hub's picker draws every
+     * skin, owned or not, on one — so the ordinary render-time resolvers draw them. Does not move
+     * {@link #VERSION}: the picker calls this every frame, and a screen watching the version would
+     * otherwise rebuild forever.
+     */
+    public static void setPreview(UUID standIn, Map<SkinCategory, ResourceLocation> skins) {
+        Map<SkinCategory, ResourceLocation> current = active.get(standIn);
+        if (current != null ? current.equals(skins) : skins.isEmpty()) return;
+        write(standIn, skins);
     }
 
     /**
@@ -76,6 +100,7 @@ public final class ClientItemSkinCache {
 
     public static void setUnlocked(Set<ResourceLocation> skins) {
         unlocked = Set.copyOf(skins);
+        VERSION++;
     }
 
     public static Set<ResourceLocation> unlocked() {
@@ -87,5 +112,6 @@ public final class ClientItemSkinCache {
         active = Map.of();
         unlocked = Set.of();
         anyPlayerHasSkins = false;
+        VERSION++;
     }
 }

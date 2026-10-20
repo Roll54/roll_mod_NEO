@@ -12,6 +12,7 @@
     "adstra.NanoArmorMixin",
     "adstra.OxygenApiImplMixin",
     "CommandSourceStackAccessor",
+    "ComponentArgumentMixin",
     "SmithingTransformRecipeAccessor",
     "CommandBlockLoggingMixin",
     "GraviChestPlateItemMixin",

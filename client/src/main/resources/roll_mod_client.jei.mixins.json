@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.roll_54.roll_mod_client.compat.jei.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "JeiFluidMinPriceMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

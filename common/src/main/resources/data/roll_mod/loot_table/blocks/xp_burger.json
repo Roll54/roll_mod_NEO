@@ -1,0 +1,38 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "roll_mod:blocks/xp_burger",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:alternatives",
+          "children": [
+            {
+              "type": "minecraft:item",
+              "name": "minecraft:bowl",
+              "conditions": [
+                {
+                  "condition": "minecraft:block_state_property",
+                  "block": "roll_mod:xp_burger",
+                  "properties": {
+                    "eaten": "true"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "minecraft:item",
+              "name": "roll_mod:xp_burger"
+            }
+          ]
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ]
+}

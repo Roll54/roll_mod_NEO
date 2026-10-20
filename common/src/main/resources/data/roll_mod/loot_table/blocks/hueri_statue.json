@@ -3,7 +3,15 @@
   "pools": [
     {
       "bonus_rolls": 0.0,
-      "conditions": [],
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "roll_mod:hueri_statue",
+          "properties": {
+            "half": "lower"
+          }
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",

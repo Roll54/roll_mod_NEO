@@ -1,0 +1,63 @@
+{
+  "lines": [
+    {
+      "text": "&fYour Minestar friends, wherever they are playing."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lThe list"
+    },
+    {
+      "text": "&7&aGreen&7 — on this server. &bAqua&7 — online in another modpack. &7Gray — offline. &6★&7 — in your FTB party. Hover a name for where they are or when they were last seen.",
+      "indent": 6
+    },
+    {
+      "text": "&7The drop-down changes the view: &fBy server&7 groups friends by the pack they are playing, then &fOnline first&7, &fA-Z&7, &fZ-A&7 and &fFTB team&7 (party members first). ⟳ reloads the list from Minestar.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lMaking friends"
+    },
+    {
+      "text": "&fOnline players&7 lists everyone on this server, friends marked with &d❤&7. Pick someone and press &eAdd friend&7 to send a request &8- they need a Minestar account.",
+      "indent": 6
+    },
+    {
+      "text": "&fRequests&7 shows requests waiting either way: answer incoming ones with &a✔&7 or &c✖&7, or withdraw one you sent with &c✖&7.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lThe panel"
+    },
+    {
+      "text": "&7Pick a friend to see their face, Minestar level, status, group, Prime, playtime and rewards. Hover the level for the XP still needed, and a reward for its rarity and description.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lActions"
+    },
+    {
+      "text": "&7&eTPA&7 and &eTPA here&7 work only while the friend is on this server.",
+      "indent": 6
+    },
+    {
+      "text": "&7&eInvite to team&7 invites them into your FTB party, creating one if you have none. It needs them on this server and is hidden in the FTB team view.",
+      "indent": 6
+    },
+    {
+      "text": "&7&eRemove friend&7 asks for a second click to confirm, so a misclick does not cost you a friend.",
+      "indent": 6
+    }
+  ]
+}

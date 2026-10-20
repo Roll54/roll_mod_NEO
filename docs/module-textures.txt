@@ -1,6 +1,6 @@
 MODULES & TEXTURES
 ==================
-65 modules: 32 with texture [✓], 33 without [ ].
+56 modules: 56 with texture [✓], 0 without [ ].
 
 Checked against the generated item models (layer0) and the PNGs in
 common/src/main/resources/assets/roll_mod/textures/.
@@ -26,7 +26,7 @@ Drill modules — 15/15
 [✓] aoe_module_iv              AOE Module IV                      tier 4  textures/item/tool/modules/aoe_module_iv.png
 [✓] aoe_module_v               AOE Module V                       tier 5  textures/item/tool/modules/aoe_module_v.png
 
-Shared modules (drill + saber) — 17/18
+Shared modules (drill + saber) — 18/18
 --------------------------------------
 [✓] speed_module_i             Speed Module I                     tier 1  textures/item/tool/modules/speed_module_i.png
 [✓] speed_module_ii            Speed Module II                    tier 2  textures/item/tool/modules/speed_module_ii.png
@@ -47,32 +47,31 @@ Shared modules (drill + saber) — 17/18
 [✓] eco_module_i               Eco Module I                       tier 1  textures/item/tool/modules/eco_module_i.png
 [✓] eco_module_ii              Eco Module II                      tier 2  textures/item/tool/modules/eco_module_ii.png
 
-Saber modules — 0/32
+Saber modules — 23/23
 --------------------
-[ ] damage_module_i            Damage Module I                    tier 1  textures/item/tool/modules/damage_module_i.png  (to draw)
-[ ] damage_module_ii           Damage Module II                   tier 2  textures/item/tool/modules/damage_module_ii.png  (to draw)
-[ ] damage_module_iii          Damage Module III                  tier 3  textures/item/tool/modules/damage_module_iii.png  (to draw)
-[ ] damage_module_iv           Damage Module IV                   tier 4  textures/item/tool/modules/damage_module_iv.png  (to draw)
-[ ] damage_module_v            Damage Module V                    tier 5  textures/item/tool/modules/damage_module_v.png  (to draw)
-[ ] sweep_module_i             Sweep Module I                     tier 1  textures/item/tool/modules/sweep_module_i.png  (to draw)
-[ ] sweep_module_ii            Sweep Module II                    tier 2  textures/item/tool/modules/sweep_module_ii.png  (to draw)
-[ ] sweep_module_iii           Sweep Module III                   tier 3  textures/item/tool/modules/sweep_module_iii.png  (to draw)
-[ ] xp_multiplier_module_i     XP Multiplier Module I             tier 1  textures/item/tool/modules/xp_multiplier_module_i.png  (to draw)
-[ ] xp_multiplier_module_ii    XP Multiplier Module II            tier 2  textures/item/tool/modules/xp_multiplier_module_ii.png  (to draw)
-[ ] xp_multiplier_module_iii   XP Multiplier Module III           tier 3  textures/item/tool/modules/xp_multiplier_module_iii.png  (to draw)
-[ ] xp_multiplier_module_iv    XP Multiplier Module IV            tier 4  textures/item/tool/modules/xp_multiplier_module_iv.png  (to draw)
-[ ] xp_multiplier_module_v     XP Multiplier Module V             tier 5  textures/item/tool/modules/xp_multiplier_module_v.png  (to draw)
-[ ] drop_collector_module      Drop Collector Module              tier 1  textures/item/tool/modules/drop_collector_module.png  (to draw)
-[ ] vampirism_module_i         Vampirism Module I                 tier 1  textures/item/tool/modules/vampirism_module_i.png  (to draw)
-[ ] vampirism_module_ii        Vampirism Module II                tier 2  textures/item/tool/modules/vampirism_module_ii.png  (to draw)
-[ ] vampirism_module_iii       Vampirism Module III               tier 3  textures/item/tool/modules/vampirism_module_iii.png  (to draw)
-[ ] beheading_module_i         Beheading Module I                 tier 1  textures/item/tool/modules/beheading_module_i.png  (to draw)
-[ ] beheading_module_ii        Beheading Module II                tier 2  textures/item/tool/modules/beheading_module_ii.png  (to draw)
-[ ] beheading_module_iii       Beheading Module III               tier 3  textures/item/tool/modules/beheading_module_iii.png  (to draw)
-[ ] irradiation_module_i       Irradiation Module I               tier 1  textures/item/tool/modules/irradiation_module_i.png  (to draw)
-[ ] irradiation_module_ii      Irradiation Module II              tier 2  textures/item/tool/modules/irradiation_module_ii.png  (to draw)
-[ ] irradiation_module_iii     Irradiation Module III             tier 3  textures/item/tool/modules/irradiation_module_iii.png  (to draw)
-[ ] meteorite_module           Meteorite Module                   tier 1  textures/item/tool/modules/meteorite_module.png  (to draw)
+[✓] damage_module_i            Damage Module I                    tier 1  textures/item/tool/modules/damage_module_i.png
+[✓] damage_module_ii           Damage Module II                   tier 2  textures/item/tool/modules/damage_module_ii.png
+[✓] damage_module_iii          Damage Module III                  tier 3  textures/item/tool/modules/damage_module_iii.png
+[✓] damage_module_iv           Damage Module IV                   tier 4  textures/item/tool/modules/damage_module_iv.png
+[✓] damage_module_v            Damage Module V                    tier 5  textures/item/tool/modules/damage_module_v.png
+[✓] sweep_module_i             Sweep Module I                     tier 1  textures/item/tool/modules/sweep_module_i.png
+[✓] sweep_module_ii            Sweep Module II                    tier 2  textures/item/tool/modules/sweep_module_ii.png
+[✓] sweep_module_iii           Sweep Module III                   tier 3  textures/item/tool/modules/sweep_module_iii.png
+[✓] xp_multiplier_module_i     XP Multiplier Module I             tier 1  textures/item/tool/modules/xp_multiplier_module_i.png
+[✓] xp_multiplier_module_ii    XP Multiplier Module II            tier 2  textures/item/tool/modules/xp_multiplier_module_ii.png
+[✓] xp_multiplier_module_iii   XP Multiplier Module III           tier 3  textures/item/tool/modules/xp_multiplier_module_iii.png
+[✓] xp_multiplier_module_iv    XP Multiplier Module IV            tier 4  textures/item/tool/modules/xp_multiplier_module_iv.png
+[✓] xp_multiplier_module_v     XP Multiplier Module V             tier 5  textures/item/tool/modules/xp_multiplier_module_v.png
+[✓] vampirism_module_i         Vampirism Module I                 tier 1  textures/item/tool/modules/vampirism_module_i.png
+[✓] vampirism_module_ii        Vampirism Module II                tier 2  textures/item/tool/modules/vampirism_module_ii.png
+[✓] vampirism_module_iii       Vampirism Module III               tier 3  textures/item/tool/modules/vampirism_module_iii.png
+[✓] beheading_module_i         Beheading Module I                 tier 1  textures/item/tool/modules/beheading_module_i.png
+[✓] beheading_module_ii        Beheading Module II                tier 2  textures/item/tool/modules/beheading_module_ii.png
+[✓] beheading_module_iii       Beheading Module III               tier 3  textures/item/tool/modules/beheading_module_iii.png
+[✓] irradiation_module_i       Irradiation Module I               tier 1  textures/item/tool/modules/irradiation_module_i.png
+[✓] irradiation_module_ii      Irradiation Module II              tier 2  textures/item/tool/modules/irradiation_module_ii.png
+[✓] irradiation_module_iii     Irradiation Module III             tier 3  textures/item/tool/modules/irradiation_module_iii.png
+[✓] meteorite_module           Meteorite Module                   tier 1  textures/item/tool/modules/meteorite_module.png
 
 
 TODO

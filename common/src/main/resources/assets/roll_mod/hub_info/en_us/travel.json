@@ -1,0 +1,219 @@
+{
+  "lines": [
+    {
+      "text": "&fEvery place you can go: your homes and the server's warps. Switch between them with &eHomes&f / &eWarps&f in the title row."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&l— Homes —",
+      "center": true
+    },
+    {
+      "text": "&fYour own private teleport points, and the ones friends have shared with you. Unlike warps, a home is not public and is never listed to anyone you did not invite."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lMaking a home"
+    },
+    {
+      "text": "&7Press &fCreate home&7, type a name and &fConfirm&7. It is created where you are standing, so stand where you want to arrive. How many you may keep depends on your rank &8- the button disappears once you are at your limit.",
+      "indent": 6
+    },
+    {
+      "text": "&7Names accept colour codes &8- &f&&a&7 for green, &f&&c&7 for red, &f&&l&7 for bold. Type &f&&&&&7 if you want a literal ampersand. You still reach the home by typing its plain name, so &f/home base&7 finds one called &a&&abase&7.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lTravelling"
+    },
+    {
+      "text": "&7Click the &fpearl&7 on a row to teleport straight away, or pick the home and press &fTeleport&7. The search box filters the list by home name or owner.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lSharing"
+    },
+    {
+      "text": "&7Pick your home, open &fChoose a player…&7, pick a name and press &fInvite&7. Offline players can be invited too. They get to accept or decline; once they accept, the home shows up in their &fShared with you&7 list and they can travel to it.",
+      "indent": 6
+    },
+    {
+      "text": "&7One home may have &f3&7 invites waiting at a time. An invite nobody answers lapses after a day, and answered or lapsed invites free the slot again &8- players you have already shared with do not count.",
+      "indent": 6
+    },
+    {
+      "text": "&7Sharing lets someone &farrive&7. It does not give them the right to build there or take anything &8- protect the area with a plot if that matters.",
+      "indent": 6
+    },
+    {
+      "text": "&7Anyone you shared with can &fLeave&7 on their own.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lInvites"
+    },
+    {
+      "text": "&7Invites waiting on your answer sit at the top of the list with &fAccept&7 and &fDecline&7. Unanswered, they lapse after a day.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lFrom FTB Essentials"
+    },
+    {
+      "text": "&7Old homes left behind by FTB Essentials are listed at the bottom. No command reaches them &8- press &fMigrate to RollMod&7 to keep one; it counts toward your limit.",
+      "indent": 6
+    },
+    {
+      "type": "rule"
+    },
+    {
+      "text": "&8Deleting a home removes it for everyone you shared it with, too.",
+      "center": true
+    },
+    {
+      "type": "rule"
+    },
+    {
+      "text": "&e&l— Warps —",
+      "center": true
+    },
+    {
+      "text": "&fPublic destinations other players have made and shared. Shops, farms, event grounds and anything else worth showing off."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lTravelling"
+    },
+    {
+      "text": "&7Pick a warp in the list on the left &8- the search box above it matches warp names and owners&7 - and press &fTeleport&7. The hub closes, and on a player-made warp a &a3 second countdown&7 runs over your hotbar before it fires. Nothing interrupts it &8- not moving, not being hit.",
+      "indent": 6
+    },
+    {
+      "text": "&b&lOfficial&7 warps skip the wait and travel &binstantly&7 &8- as do some ranks.",
+      "indent": 6
+    },
+    {
+      "text": "&7Some warps charge a fee, shown as the &fPrice&7 on the warp's page and paid to the owner on arrival. If you cannot afford it you are told before the countdown starts. You are never charged if the teleport fails, and you always travel to your own warps for free.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lThe status badges"
+    },
+    {
+      "text": "&7Every warp opens its row with a badge saying where it stands. Hover one to read it.",
+      "indent": 6
+    },
+    {
+      "text": "&b&lOfficial &8- &7made by staff. Events, hubs and shops. These are always at the top of the list.",
+      "indent": 6
+    },
+    {
+      "text": "&a&lApproved &8- &7a moderator has been there and vouched for it.",
+      "indent": 6
+    },
+    {
+      "text": "&e&lAwaiting review &8- &7nobody has checked it yet. This is normal for a new warp and it is fine to visit, but nobody has vouched for where it drops you. Look before you step.",
+      "indent": 6
+    },
+    {
+      "text": "&c&lRejected &8- &7blocked by staff. Only the owner can still travel there.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lThe warp's page"
+    },
+    {
+      "text": "&7Select a warp to see its status, owner, coordinates and world, the description and the price.",
+      "indent": 6
+    },
+    {
+      "text": "&fVisitors today&7 counts each player once and resets at &f06:00&7; &fTotal visits&7 counts every trip ever made. Owners' trips to their own warps are never counted.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lThe order of the list"
+    },
+    {
+      "text": "&7Official warps first, then the rest by how many different players visited them today. The busiest player-made warps rise to the top on their own.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lMaking your own"
+    },
+    {
+      "text": "&7Press &fCreate warp&7, fill in &fName&7, &fDescription&7 and &fPrice&7 &8(0 for free)&7, then &fConfirm&7. The warp is created where you are standing, so stand where you want visitors to arrive &8- not in the wall behind it.",
+      "indent": 6
+    },
+    {
+      "text": "&7How many you may keep depends on your rank; the &fCreate warp&7 button disappears once you are at your limit. &fDelete&7 on your own warp's page removes it.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lRules"
+    },
+    {
+      "text": "&f&l[1.6.2] &7Warps offering free services that hand out items are not allowed, with the exception of public mob farms.",
+      "indent": 6
+    },
+    {
+      "text": "&8Punishment: &6Medium severity",
+      "indent": 12
+    },
+    {
+      "text": "&f&l[2.8] &7Warps and shops may be advertised no more than once every 10 minutes.",
+      "indent": 6
+    },
+    {
+      "text": "&8Punishment: &eLight severity",
+      "indent": 12
+    },
+    {
+      "text": "&f&l[6.1] &7A claim counts as shop territory if it holds a public warp belonging to one of its members and at least one vending machine or public service (XP grinders, mechanisms, chargers and the like). Setting a public warp for players who are not members of the claim is forbidden.",
+      "indent": 6
+    },
+    {
+      "text": "&8Punishment: &cSevere",
+      "indent": 12
+    },
+    {
+      "type": "rule"
+    },
+    {
+      "text": "&8Somewhere you should not be? Report it with &f/rollmod reportWarp <name>&8.",
+      "center": true
+    }
+  ]
+}

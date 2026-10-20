@@ -1,0 +1,13 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.roll_54.roll_mod_client.compat.fusion.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "plugin": "com.roll_54.roll_mod_client.compat.fusion.mixin.FusionFixMixinPlugin",
+  "client": [
+    "BlockModelModifierBakedModelMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

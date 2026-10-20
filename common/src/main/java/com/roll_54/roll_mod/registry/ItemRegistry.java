@@ -1664,6 +1664,10 @@ public class ItemRegistry {
                     )
             );
 
+    // Holds what a drill mined but the inventory had no room for: one entity instead of a heap.
+    public static final DeferredHolder<Item, DrillOrbItem> DRILL_ORB =
+            ITEMS.register("drill_orb", () -> new DrillOrbItem(new Item.Properties()));
+
     /* ------------------------------------- modular drills ------------------------------------- */
     // The replacement for the fixed drills above: bare drills whose area, loot, speed and energy
     // behavior come from modules installed at the Module Installation Table.
@@ -1817,9 +1821,6 @@ public class ItemRegistry {
             module("xp_multiplier_module_iv", ModuleType.XP_MULTIPLIER, 4, 4.0, 1.6);
     public static final DeferredHolder<Item, DrillModuleItem> XP_MULTIPLIER_MODULE_V =
             module("xp_multiplier_module_v", ModuleType.XP_MULTIPLIER, 5, 5.0, 1.8);
-
-    public static final DeferredHolder<Item, DrillModuleItem> DROP_COLLECTOR_MODULE =
-            module("drop_collector_module", ModuleType.DROP_COLLECTOR, 1, 0, 1.05);
 
     public static final DeferredHolder<Item, DrillModuleItem> VAMPIRISM_MODULE_I =
             module("vampirism_module_i", ModuleType.VAMPIRISM, 1, 0.05, 1.1);

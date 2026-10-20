@@ -401,6 +401,14 @@ public class MyConfig extends Config {
         public ValidatedInt maxPerPlayer = new ValidatedInt(30, 500, 1);
     }
 
+    @Comment("Player hub tabs that can be switched off.")
+    public HubSettings hub = new HubSettings();
+
+    public static class HubSettings extends ConfigSection {
+        @Comment("Show the Skins tab in the player hub. Off while the tab is unfinished. Synced to clients; applies live.")
+        public ValidatedBoolean skinsTab = new ValidatedBoolean(false);
+    }
+
     @Comment("How long letters the server sends by itself stay in the player's list before they expire. Unaccepted attachments are lost with them.")
     public LetterSettings letters = new LetterSettings();
 

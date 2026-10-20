@@ -61,7 +61,7 @@ public final class ItemGroups {
             "tools_armor",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.tools_armor"))
-                    .icon(() -> new ItemStack(ItemRegistry.METEORITE_PICKAXE.get()))
+                    .icon(() -> new ItemStack(ItemRegistry.METEORITE_MODULE.get()))
                     .displayItems((params, out) -> fill(out, Category.TOOLS_ARMOR))
                     .build()
     );
@@ -70,7 +70,7 @@ public final class ItemGroups {
             "food",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.food"))
-                    .icon(() -> new ItemStack(ItemRegistry.SULFUR_BERRY_PIE.get()))
+                    .icon(() -> new ItemStack(ItemRegistry.FLUORITE_PINEAPPLE.get()))
                     .displayItems((params, out) -> {
                         // Edible crops live in ROLL_CROPS too; food is the one tab allowed to repeat them.
                         for (Item item : modItems()) {
@@ -85,7 +85,7 @@ public final class ItemGroups {
             "crafting",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.crafting"))
-                    .icon(() -> new ItemStack(ItemRegistry.SUPER_CIRCUIT.get()))
+                    .icon(() -> new ItemStack(ItemRegistry.METEORITE_METAL_INGOT.get()))
                     .displayItems((params, out) -> fill(out, Category.CRAFTING))
                     .build()
     );
@@ -94,7 +94,7 @@ public final class ItemGroups {
             "addons",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.addons"))
-                    .icon(() -> new ItemStack(ItemRegistry.GIGANTIC_CHROME_VANADIUM_STEEL_GAS_TANK.get()))
+                    .icon(() -> new ItemStack(ItemRegistry.BASECYBERWARE_LEFTARM_METEORITE_METAL.get()))
                     .displayItems((params, out) -> fill(out, Category.ADDONS))
                     .build()
     );
@@ -112,9 +112,7 @@ public final class ItemGroups {
             "generated_ores",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.generated_ores"))
-                    .icon(() -> GeneratedOreRegistry.ITEMS.getEntries().stream().findFirst()
-                            .map(h -> new ItemStack(h.get()))
-                            .orElseGet(() -> new ItemStack(ItemRegistry.METEORITE_PICKAXE.get())))
+                    .icon(() -> new ItemStack(ItemRegistry.METEORITE_METAL_BLOCKOGRIZ.get()))
                     .displayItems((params, out) -> fill(out, Category.ORES))
                     .build()
     );

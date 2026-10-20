@@ -4,6 +4,8 @@ import com.roll_54.roll_mod.RollMod;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.Item;
@@ -19,6 +21,7 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
+import net.neoforged.neoforge.items.wrapper.PlayerMainInvWrapper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ import java.util.Set;
  * leaving a heap of item entities on the ground. The trick is MI's steam drill one: while the
  * drill works its area, the drops of every block it breaks are taken out of {@link
  * BlockDropsEvent} and merged into a single list, and once the area is done each merged stack is
- * offered to the player.
+ * offered to the player. What does not fit goes into a {@link DrillOrbItem} at the player's feet.
  */
 @EventBusSubscriber(modid = RollMod.MODID)
 public final class DrillDropCollector {
@@ -100,8 +103,14 @@ public final class DrillDropCollector {
             currentOp = null;
         }
 
+        // What the inventory has no room for goes into drill orbs, not onto the ground as a heap.
+        List<ItemStack> overflow = new ArrayList<>();
         for (ItemStack stack : drops) {
-            giveToPlayer(player, stack);
+            ItemStack rest = offerToPlayer(player, stack);
+            if (!rest.isEmpty()) overflow.add(rest);
+        }
+        if (!overflow.isEmpty()) {
+            DrillOrbItem.storeNear(player, overflow);
         }
     }
 
@@ -177,6 +186,48 @@ public final class DrillDropCollector {
     }
 
     private static void giveChunkToPlayer(ServerPlayer player, ItemStack stack) {
+        ItemStack rest = offeredToMods(player, stack);
+        if (!rest.isEmpty()) {
+            ItemHandlerHelper.giveItemToPlayer(player, rest);
+        }
+    }
+
+    /**
+     * As {@link #giveToPlayer}, but whatever fits neither a backpack nor the inventory is handed
+     * back instead of dropped. The stack may be of any size; it is consumed.
+     */
+    public static ItemStack offerToPlayer(ServerPlayer player, ItemStack stack) {
+        int chunk = Math.max(1, Math.min(stack.getMaxStackSize(), 99));
+        while (!stack.isEmpty()) {
+            int size = Math.min(chunk, stack.getCount());
+            ItemStack rest = offerChunkToPlayer(player, stack.split(size));
+            if (!rest.isEmpty()) {
+                rest.grow(stack.getCount());
+                // Nothing of this chunk was taken, so nothing of the same item would be either.
+                if (rest.getCount() == size + stack.getCount()) return rest;
+                stack = rest;
+            }
+        }
+        return ItemStack.EMPTY;
+    }
+
+    private static ItemStack offerChunkToPlayer(ServerPlayer player, ItemStack stack) {
+        ItemStack rest = offeredToMods(player, stack);
+        if (rest.isEmpty()) return ItemStack.EMPTY;
+
+        // What giveItemToPlayer does, minus the dropping of what does not fit.
+        int before = rest.getCount();
+        rest = ItemHandlerHelper.insertItemStacked(new PlayerMainInvWrapper(player.getInventory()), rest, false);
+        if (rest.getCount() != before) {
+            player.level().playSound(null, player.getX(), player.getY() + 0.5, player.getZ(),
+                    SoundEvents.ITEM_PICKUP, SoundSource.PLAYERS, 0.2F,
+                    ((player.getRandom().nextFloat() - player.getRandom().nextFloat()) * 0.7F + 1.0F) * 2.0F);
+        }
+        return rest;
+    }
+
+    /** Lets backpack mods swallow the stack first; returns what they left, possibly empty. */
+    private static ItemStack offeredToMods(ServerPlayer player, ItemStack stack) {
         var itemEntity = new ItemEntity(player.level(), player.getX(), player.getY(), player.getZ(), stack);
         // Picked up right away, and backpacks ignore entities that are still on pickup delay.
         itemEntity.setNoPickUpDelay();
@@ -184,8 +235,6 @@ public final class DrillDropCollector {
 
         // canPickup is ignored on purpose: a mod that took the stack is expected to have emptied
         // or removed the entity, which is what is checked here.
-        if (!itemEntity.isRemoved()) {
-            ItemHandlerHelper.giveItemToPlayer(player, itemEntity.getItem());
-        }
+        return itemEntity.isRemoved() ? ItemStack.EMPTY : itemEntity.getItem();
     }
 }

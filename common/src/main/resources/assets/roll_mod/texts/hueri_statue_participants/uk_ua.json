@@ -1,0 +1,20 @@
+{
+  "title": {"text": "Учасники події", "bold": true, "color": "#e5c48b"},
+  "body": [
+    {"text": "Ті, хто першими прийшли пом'янути hueri:\n", "color": "gray"},
+    "<player:972d3d0c-0786-40ff-98bd-ee794f34864d:rank>",
+    "<player:ded6989b-9ddf-4ba6-b576-aab0f39a2bbc:rank>",
+    "<player:b7716a26-f263-4c31-a096-f17c91b96c27:rank>",
+    "<player:fabac1ba-3c96-4f5b-8300-ed6235c2aefb:rank>",
+    "<player:efcc2ab2-3fea-43e3-a4ce-78206a042461:rank>",
+    "<player:9d3f1713-3b9c-4ccc-862a-06831efa9d8a:rank>",
+    "<player:94565213-d683-4dea-9d30-c42f3921642f:rank>",
+    "<player:fd4255fe-5ccd-478f-a69d-abaaf8b5d973:rank>",
+    "<player:62adbeeb-2276-4ef6-9802-ba3d719154f4:rank>",
+    "<player:94471e07-b3da-4bbe-963e-125abf10dcaa:rank>",
+    "<player:86937eca-17aa-4f2e-8417-2ae8e09a1681:rank>",
+    "<player:781434ba-1d40-47d2-a7a6-a978028dadba:rank>",
+    "<player:bacd7f38-9461-4ee2-8fa6-0118c5a669fc:rank>",
+    "<player:089b4e2b-0de7-4bb3-925a-171c5b4e6a15:rank>"
+  ]
+}

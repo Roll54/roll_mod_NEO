@@ -1,0 +1,7 @@
+{
+	"parent": "roll_mod:block/xp_burger",
+	"textures": {
+		"particle": "roll_mod:item/food/golden_xp_burger",
+		"bun": "roll_mod:item/food/burger/golden_bun"
+	}
+}

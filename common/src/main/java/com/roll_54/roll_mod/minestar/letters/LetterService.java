@@ -9,6 +9,7 @@ import com.roll_54.roll_mod.minestar.moderation.ModerationLog;
 import com.roll_54.roll_mod.minestar.moderation.ModerationPermissions;
 import com.roll_54.roll_mod.minestar.moderation.ModerationStatus;
 import com.roll_54.roll_mod.util.Durations;
+import com.roll_54.roll_mod.util.ItemMentions;
 import com.roll_54.roll_mod.util.LegacyText;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -20,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -50,6 +52,7 @@ public final class LetterService {
                                  List<LetterReward> rewards, String icon) {
         if (!ModerationPermissions.canWriteLetters(author)) return false;
         if (!commandRewardsAllowed(author, rewards)) return false;
+        if (!itemTagsAllowed(author, body, "")) return false;
 
         String cleanTitle = clamp(title, Letter.MAX_TITLE);
         if (cleanTitle.isBlank()) {
@@ -145,6 +148,7 @@ public final class LetterService {
         if (!commandRewardsAllowed(author, rewards)) return false;
         Letter letter = LetterStore.byId(author.server, id);
         if (letter == null) return false;
+        if (!itemTagsAllowed(author, body, letter.body())) return false;
 
         String cleanTitle = clamp(title, Letter.MAX_TITLE);
         if (cleanTitle.isBlank()) {
@@ -232,6 +236,21 @@ public final class LetterService {
             }
         }
         return true;
+    }
+
+    /**
+     * An {@code <item:…>} tag in a body is drawn as the item ({@link LetterText}), which only an
+     * operator may write. Only the tags this edit <em>adds</em> count, so someone with the letters
+     * permission can still fix a typo in a letter an operator put items in.
+     */
+    private static boolean itemTagsAllowed(ServerPlayer author, String body, String previous) {
+        if (author.hasPermissions(2)) return true;
+        Set<String> added = ItemMentions.ids(body);
+        added.removeAll(ItemMentions.ids(previous));
+        if (added.isEmpty()) return true;
+        author.sendSystemMessage(Component.translatable("msg.roll_mod.letters.itemTagsNeedOp")
+                .withStyle(ChatFormatting.RED));
+        return false;
     }
 
     private static void grant(ServerPlayer reader, Letter letter, LetterReward reward) {

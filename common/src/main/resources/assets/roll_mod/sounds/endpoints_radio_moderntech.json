@@ -1,0 +1,119 @@
+{
+    "stations": [
+        {
+            "url": "https://online.kissfm.ua/KissFM_Ukr",
+            "title": "106.5 KISS",
+            "name": "Kiss FM"
+        },
+        {
+            "url": "https://online.hitfm.ua/HitFM_Ukr",
+            "title": "96.4 HIT",
+            "name": "Hit FM"
+        },
+        {
+            "url": "https://online.radioroks.ua/RadioROKS_Ukr",
+            "title": "98.0 ROKS",
+            "name": "Radio ROKS"
+        },
+        {
+            "url": "http://radio.ukr.radio:8000/golosdonbasu-mp3",
+            "title": "UA DONBAS",
+            "name": "Holos Donbasu"
+        },
+        {
+            "url": "https://icecast.radiofrance.fr/fiprock-midfi.mp3",
+            "title": "FIP ROCK",
+            "name": "FIP Rock"
+        },
+        {
+            "url": "https://a1.asurahosting.com/listen/rukh/radio.mp3",
+            "title": "RUKH",
+            "name": "Rukh Radio"
+        },
+        {
+            "url": "http://allrelays.rainwave.cc/all.mp3",
+            "title": "RAINWAVE ALL",
+            "name": "Rainwave All"
+        },
+        {
+            "url": "http://allrelays.rainwave.cc/game.mp3",
+            "title": "RAINWAVE GAME",
+            "name": "Rainwave Game"
+        },
+        {
+            "url": "https://allrelays.rainwave.cc/chiptune.mp3",
+            "title": "RAINWAVE CHIP",
+            "name": "Rainwave Chiptune"
+        },
+        {
+            "url": "https://allrelays.rainwave.cc/covers.mp3",
+            "title": "RAINWAVE COVERS",
+            "name": "Rainwave Covers"
+        },
+        {
+            "url": "https://allrelays.rainwave.cc/chill.mp3",
+            "title": "RAINWAVE CHILL",
+            "name": "Rainwave Chill"
+        },
+        {
+            "url": "https://stream.nightride.fm/nightride.mp3",
+            "title": "NIGHTRIDE",
+            "name": "Nightride FM"
+        },
+        {
+            "url": "https://public.isekoi-radio.com/listen/isekoi/radio.mp3",
+            "title": "ISEKOI",
+            "name": "ISEKOI Radio"
+        },
+        {
+            "url": "https://relay0.r-a-d.io/main.mp3",
+            "title": "R/A/DIO",
+            "name": "R/a/dio"
+        },
+        {
+            "url": "http://nrf1.newradio.it:10328/alfaanime",
+            "title": "KAZUKI",
+            "name": "Kazuki Anime Radio"
+        },
+        {
+            "url": "http://gyusyabu.ddo.jp:8000/;stream.mp3",
+            "title": "GYUSYABU",
+            "name": "Gyusyabu"
+        },
+        {
+            "url": "https://stream.zeno.fm/9q3ez3k3fchvv",
+            "title": "SPINNING SEAL",
+            "name": "Spinning Seal FM"
+        },
+        {
+            "url": "http://stream.radio.maschinengeist.org:8000/13374m813n7.192k.mp3",
+            "title": "DEEP FIELD",
+            "name": "Deep Field Transmissions"
+        },
+        {
+            "url": "https://ice1.somafm.com/missioncontrol-128-mp3",
+            "title": "MISSION CTRL",
+            "name": "Mission Control"
+        },
+        {
+            "url": "https://audio.wavefarm.org/wgxc.mp3",
+            "title": "OPEN EARS",
+            "name": "Radio for Open Ears"
+        },
+        {
+            "url": "http://relay.publicdomainradio.org/classical.mp3",
+            "title": "PD CLASSICAL",
+            "name": "Public Domain Classical"
+        },
+        {
+            "url": "https://str3.openstream.co/1840",
+            "title": "OPERA",
+            "name": "OperaRadio"
+        },
+        {
+            "url": "https://www.subsonicradio.com:8443/requests.mp3",
+            "title": "SUBSONIC",
+            "name": "Subsonic Radio"
+        }
+    ]
+}

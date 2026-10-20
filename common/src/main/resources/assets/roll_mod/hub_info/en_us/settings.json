@@ -1,0 +1,20 @@
+{
+  "lines": [
+    { "text": "&fYour preferences, opened with the gear among the hub's window buttons. They are kept on your computer and apply on every server." },
+    { "type": "space" },
+    { "text": "&e&lAppearance" },
+    { "text": "&7&fTheme&7 is what every hub and block screen of the mod is drawn in.", "indent": 6 },
+    { "text": "&fUse the hub theme everywhere&7 also recolours vanilla screens and other mods' screens. &cExperimental&7 &8- some screens may look off; reopen a screen after changing it.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lHub" },
+    { "text": "&fTabs position&7 puts the tabs on the top, bottom, left or right of the window. The hub reopens to apply it.", "indent": 6 },
+    { "text": "&fAllow moving the hub&7 lets you drag the window by its top band. Off keeps it in place; resizing and maximizing still work.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lChat buttons" },
+    { "text": "&7The row over the chat box picks what you see &band&7 where you write: &eAll&7, &eGlobal&7, &eLocal&7, &eFriends&7, &eTrade&7.", "indent": 6 },
+    { "text": "&7&eAll&7 shows everything - every channel, Discord, advancements, warnings - and writes to global.", "indent": 6 },
+    { "text": "&7Tick a button to show it, use the arrows to reorder. The last visible button cannot be hidden.", "indent": 6 },
+    { "text": "&7Add your own with a name and a template, then &fAdd&7. Your own buttons only change where you write and show everything, like &eAll&7. The template is what gets sent: &f{msg}&7 is your text, e.g. &f/msg Steve {msg}&7. Remove one with &f✖&7.", "indent": 6 },
+    { "text": "&7Commands you type yourself with &f/&7 are never changed.", "indent": 6 }
+  ]
+}

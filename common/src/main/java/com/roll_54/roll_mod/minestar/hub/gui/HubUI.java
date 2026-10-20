@@ -17,6 +17,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.moderation.ClientModerationCache;
+import com.roll_54.roll_mod.config.MyConfig;
 import com.roll_54.roll_mod.minestar.radio.ClientRadioCache;
 import com.roll_54.roll_mod.minestar.moderation.ClientPlayerStatusCache;
 import com.roll_54.roll_mod.economy.plot.gui.PlotPurchaseUI;
@@ -250,7 +251,12 @@ public final class HubUI {
             // Only while a radio implant is installed; the server says so through ClientRadioCache.
             new HubTab("radio", icon("radio_implant_tab"),
                     (player, inventory) -> RadioTab.build(player),
-                    () -> ClientRadioCache.INSTALLED, () -> false));
+                    () -> ClientRadioCache.INSTALLED, () -> false),
+            // TODO(art): placeholder icon — drop a real textures/gui/hub/skins.png in and change the
+            // name here. Off by config (hub.skinsTab) until the tab is finished.
+            new HubTab("skins", icon("friends"),
+                    (player, inventory) -> SkinsTab.build(player),
+                    () -> MyConfig.INSTANCE.hub.skinsTab.get(), () -> false));
 
     /**
      * Header order, as indices into {@link #TABS}. Purely visual: the content slots are still built
@@ -258,7 +264,7 @@ public final class HubUI {
      * having to be inserted second. {@link #indexOf} keeps returning tree indices, which is what
      * every caller passes to {@code HubCommand.open}.
      */
-    private static final List<Integer> DISPLAY_ORDER = List.of(0, 12, 11, 10, 1, 2, 4, 8, 7, 6, 9, 13, 3, 5);
+    private static final List<Integer> DISPLAY_ORDER = List.of(0, 12, 11, 10, 1, 2, 4, 8, 7, 6, 9, 14, 13, 3, 5);
 
     static {
         // Appending a tab and forgetting this list would silently hide it; fail at class-load

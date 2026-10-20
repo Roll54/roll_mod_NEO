@@ -1,0 +1,41 @@
+{
+  "enabled": true,
+  "lines": [
+    {
+      "text": "&6&lShop dimension theme",
+      "center": true
+    },
+    {
+      "type": "rule"
+    },
+    {
+      "text": "&fEvery plot in the shop dimension is built to one shared theme, so the market reads as one place."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lCurrent theme"
+    },
+    {
+      "text": "&7Describe the current theme here: style, materials, palette, what is allowed and what is not.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lBuilds that do not follow it"
+    },
+    {
+      "text": "&7Staff may ask you to rebuild, or take the plot back.",
+      "indent": 6
+    },
+    {
+      "type": "rule"
+    },
+    {
+      "text": "&7By buying this plot you agree to build to the current theme."
+    }
+  ]
+}

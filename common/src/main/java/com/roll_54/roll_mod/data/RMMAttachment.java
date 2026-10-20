@@ -54,6 +54,15 @@ public class RMMAttachment {
     );
 
     /**
+     * Whether the player has ever opened a Hueri statue — see
+     * {@link com.roll_54.roll_mod.blocks.HueriStatueBlock}. {@code false} (every fresh player) keeps
+     * the particles, the floating "!" and the look-at hint on every statue; the first open sets it.
+     */
+    public static final Supplier<AttachmentType<Boolean>> HUERI_STATUE_SEEN = ATTACHMENT_TYPES.register(
+            "hueri_statue_seen", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).copyOnDeath().build()
+    );
+
+    /**
      * Cosmetic item skins — <b>legacy, kept for one release to import old saves.</b>
      *
      * <p>This is no longer where cosmetics live. It serialised into {@code world/playerdata/}, which

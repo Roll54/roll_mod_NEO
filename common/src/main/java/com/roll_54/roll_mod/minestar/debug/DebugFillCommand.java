@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.minestar.debug;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.blocks.HueriStatueEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -12,12 +13,15 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 
 /**
  * {@code /rollmod debug fill [player]} and {@code /rollmod debug clear [player]}: test content for
  * every part of the hub, and the exact undo of it. Operators only — see {@link DebugFill}.
+ *
+ * <p>{@code /rollmod debug hueristatue [targets]}: forgets that they ever opened a Hueri statue.
  */
 @EventBusSubscriber(modid = RollMod.MODID)
 public final class DebugFillCommand {
@@ -40,7 +44,23 @@ public final class DebugFillCommand {
                                         "clear", DebugFill::clear))
                                 .then(Commands.argument("player", EntityArgument.player())
                                         .executes(ctx -> run(ctx.getSource(),
-                                                EntityArgument.getPlayer(ctx, "player"), "clear", DebugFill::clear))))));
+                                                EntityArgument.getPlayer(ctx, "player"), "clear", DebugFill::clear))))
+                        .then(Commands.literal("hueristatue")
+                                .executes(ctx -> resetStatue(ctx.getSource(),
+                                        List.of(ctx.getSource().getPlayerOrException())))
+                                .then(Commands.argument("targets", EntityArgument.players())
+                                        .executes(ctx -> resetStatue(ctx.getSource(),
+                                                EntityArgument.getPlayers(ctx, "targets")))))));
+    }
+
+    /** Back to "never opened a Hueri statue", so the particles, "!" and hint come back at once. */
+    private static int resetStatue(CommandSourceStack source, Collection<ServerPlayer> targets) {
+        for (ServerPlayer target : targets) {
+            HueriStatueEvents.reset(target);
+        }
+        source.sendSuccess(() -> Component.literal("[Debug] Hueri statue reset for " + targets.size()
+                + " player(s)").withStyle(ChatFormatting.GOLD), true);
+        return targets.size();
     }
 
     private static int run(CommandSourceStack source, ServerPlayer target, String action,

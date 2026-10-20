@@ -1,0 +1,741 @@
+{
+	"render_type": "minecraft:cutout",
+	"textures": {
+		"particle": "roll_mod:block/sulfur_berry_pie_top",
+		"top": "roll_mod:block/sulfur_berry_pie_top",
+		"side": "roll_mod:block/sulfur_berry_pie_side",
+		"inner": "roll_mod:block/sulfur_berry_pie_inner",
+		"plate_top": "brewinandchewin:block/pizza_bottom",
+		"plate_side": "brewinandchewin:block/pizza_side",
+		"plate_bottom": "brewinandchewin:block/pizza_bottom",
+		"toppings": "roll_mod:item/food/burger/sulfur_berry_pie_toppings"
+	},
+	"elements": [
+		{
+			"name": "plate_base",
+			"from": [
+				1,
+				0,
+				1
+			],
+			"to": [
+				15,
+				1,
+				15
+			],
+			"faces": {
+				"up": {
+					"uv": [
+						1,
+						1,
+						15,
+						15
+					],
+					"texture": "#plate_top"
+				},
+				"down": {
+					"uv": [
+						1,
+						1,
+						15,
+						15
+					],
+					"texture": "#plate_bottom",
+					"cullface": "down"
+				},
+				"north": {
+					"uv": [
+						1,
+						15,
+						15,
+						16
+					],
+					"texture": "#plate_side"
+				},
+				"east": {
+					"uv": [
+						1,
+						15,
+						15,
+						16
+					],
+					"texture": "#plate_side"
+				},
+				"south": {
+					"uv": [
+						1,
+						15,
+						15,
+						16
+					],
+					"texture": "#plate_side"
+				},
+				"west": {
+					"uv": [
+						1,
+						15,
+						15,
+						16
+					],
+					"texture": "#plate_side"
+				}
+			}
+		},
+		{
+			"from": [
+				1,
+				1,
+				1
+			],
+			"to": [
+				14,
+				2,
+				2
+			],
+			"faces": {
+				"up": {
+					"uv": [
+						1,
+						1,
+						14,
+						2
+					],
+					"texture": "#plate_top"
+				},
+				"north": {
+					"uv": [
+						2,
+						14,
+						15,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"east": {
+					"uv": [
+						14,
+						14,
+						15,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"south": {
+					"uv": [
+						1,
+						14,
+						14,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"west": {
+					"uv": [
+						1,
+						14,
+						2,
+						15
+					],
+					"texture": "#plate_side"
+				}
+			}
+		},
+		{
+			"from": [
+				1,
+				1,
+				2
+			],
+			"to": [
+				2,
+				2,
+				15
+			],
+			"faces": {
+				"up": {
+					"uv": [
+						1,
+						2,
+						2,
+						15
+					],
+					"texture": "#plate_top"
+				},
+				"north": {
+					"uv": [
+						14,
+						14,
+						15,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"east": {
+					"uv": [
+						1,
+						14,
+						14,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"south": {
+					"uv": [
+						1,
+						14,
+						2,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"west": {
+					"uv": [
+						2,
+						14,
+						15,
+						15
+					],
+					"texture": "#plate_side"
+				}
+			}
+		},
+		{
+			"from": [
+				2,
+				1,
+				14
+			],
+			"to": [
+				15,
+				2,
+				15
+			],
+			"faces": {
+				"up": {
+					"uv": [
+						2,
+						14,
+						15,
+						15
+					],
+					"texture": "#plate_top"
+				},
+				"north": {
+					"uv": [
+						1,
+						14,
+						14,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"east": {
+					"uv": [
+						1,
+						14,
+						2,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"south": {
+					"uv": [
+						2,
+						14,
+						15,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"west": {
+					"uv": [
+						14,
+						14,
+						15,
+						15
+					],
+					"texture": "#plate_side"
+				}
+			}
+		},
+		{
+			"from": [
+				14,
+				1,
+				1
+			],
+			"to": [
+				15,
+				2,
+				14
+			],
+			"faces": {
+				"up": {
+					"uv": [
+						14,
+						1,
+						15,
+						14
+					],
+					"texture": "#plate_top"
+				},
+				"north": {
+					"uv": [
+						1,
+						14,
+						2,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"east": {
+					"uv": [
+						2,
+						14,
+						15,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"south": {
+					"uv": [
+						14,
+						14,
+						15,
+						15
+					],
+					"texture": "#plate_side"
+				},
+				"west": {
+					"uv": [
+						1,
+						14,
+						14,
+						15
+					],
+					"texture": "#plate_side"
+				}
+			}
+		},
+		{
+			"name": "big_berry",
+			"from": [
+				9,
+				5,
+				6
+			],
+			"to": [
+				11,
+				7,
+				8
+			],
+			"rotation": {
+				"angle": -22.5,
+				"axis": "y",
+				"origin": [
+					9,
+					5,
+					6
+				]
+			},
+			"faces": {
+				"up": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					],
+					"texture": "#toppings"
+				},
+				"down": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					],
+					"texture": "#toppings"
+				},
+				"north": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					],
+					"texture": "#toppings"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					],
+					"texture": "#toppings"
+				},
+				"south": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					],
+					"texture": "#toppings"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						2,
+						2
+					],
+					"texture": "#toppings"
+				}
+			}
+		},
+		{
+			"name": "leaf_with_brach",
+			"from": [
+				5,
+				6.25,
+				6
+			],
+			"to": [
+				9,
+				6.25,
+				9
+			],
+			"rotation": {
+				"angle": 22.5,
+				"axis": "z",
+				"origin": [
+					7,
+					6,
+					7
+				]
+			},
+			"faces": {
+				"up": {
+					"uv": [
+						0,
+						4,
+						4,
+						7
+					],
+					"texture": "#toppings"
+				},
+				"down": {
+					"uv": [
+						0,
+						4,
+						4,
+						7
+					],
+					"texture": "#toppings"
+				}
+			}
+		},
+		{
+			"name": "small_berry",
+			"from": [
+				5,
+				5,
+				9
+			],
+			"to": [
+				6,
+				6,
+				10
+			],
+			"rotation": {
+				"angle": 22.5,
+				"axis": "y",
+				"origin": [
+					5,
+					5,
+					8
+				]
+			},
+			"faces": {
+				"up": {
+					"uv": [
+						2,
+						0,
+						3,
+						1
+					],
+					"texture": "#toppings"
+				},
+				"down": {
+					"uv": [
+						2,
+						0,
+						3,
+						1
+					],
+					"texture": "#toppings"
+				},
+				"north": {
+					"uv": [
+						2,
+						0,
+						3,
+						1
+					],
+					"texture": "#toppings"
+				},
+				"east": {
+					"uv": [
+						2,
+						0,
+						3,
+						1
+					],
+					"texture": "#toppings"
+				},
+				"south": {
+					"uv": [
+						2,
+						0,
+						3,
+						1
+					],
+					"texture": "#toppings"
+				},
+				"west": {
+					"uv": [
+						2,
+						0,
+						3,
+						1
+					],
+					"texture": "#toppings"
+				}
+			}
+		},
+		{
+			"name": "normal_berry",
+			"from": [
+				5.5,
+				5,
+				5
+			],
+			"to": [
+				7,
+				6.5,
+				6.5
+			],
+			"rotation": {
+				"angle": 22.5,
+				"axis": "y",
+				"origin": [
+					7,
+					5,
+					5
+				]
+			},
+			"faces": {
+				"up": {
+					"uv": [
+						4,
+						0,
+						5.5,
+						1.5
+					],
+					"texture": "#toppings"
+				},
+				"down": {
+					"uv": [
+						4,
+						0,
+						5.5,
+						1.5
+					],
+					"texture": "#toppings"
+				},
+				"north": {
+					"uv": [
+						4,
+						0,
+						5.5,
+						1.5
+					],
+					"texture": "#toppings"
+				},
+				"east": {
+					"uv": [
+						4,
+						0,
+						5.5,
+						1.5
+					],
+					"texture": "#toppings"
+				},
+				"south": {
+					"uv": [
+						4,
+						0,
+						5.5,
+						1.5
+					],
+					"texture": "#toppings"
+				},
+				"west": {
+					"uv": [
+						4,
+						0,
+						5.5,
+						1.5
+					],
+					"texture": "#toppings"
+				}
+			}
+		},
+		{
+			"name": "3rd_piece",
+			"from": [
+				2,
+				1,
+				2
+			],
+			"to": [
+				8,
+				5,
+				8
+			],
+			"faces": {
+				"up": {
+					"uv": [
+						2,
+						2,
+						8,
+						8
+					],
+					"texture": "#top"
+				},
+				"north": {
+					"uv": [
+						8,
+						12,
+						14,
+						16
+					],
+					"texture": "#side"
+				},
+				"west": {
+					"uv": [
+						2,
+						12,
+						8,
+						16
+					],
+					"texture": "#side"
+				}
+			}
+		},
+		{
+			"name": "2nd_piece",
+			"from": [
+				2,
+				1,
+				8
+			],
+			"to": [
+				8,
+				5,
+				14
+			],
+			"faces": {
+				"up": {
+					"uv": [
+						2,
+						8,
+						8,
+						14
+					],
+					"texture": "#top"
+				},
+				"east": {
+					"uv": [
+						2,
+						12,
+						8,
+						16
+					],
+					"texture": "#inner"
+				},
+				"south": {
+					"uv": [
+						2,
+						12,
+						8,
+						16
+					],
+					"texture": "#side"
+				},
+				"west": {
+					"uv": [
+						8,
+						12,
+						14,
+						16
+					],
+					"texture": "#side"
+				}
+			}
+		},
+		{
+			"name": "4th_piece",
+			"from": [
+				8,
+				1,
+				2
+			],
+			"to": [
+				14,
+				5,
+				8
+			],
+			"faces": {
+				"up": {
+					"uv": [
+						8,
+						2,
+						14,
+						8
+					],
+					"texture": "#top"
+				},
+				"north": {
+					"uv": [
+						2,
+						12,
+						8,
+						16
+					],
+					"texture": "#side"
+				},
+				"east": {
+					"uv": [
+						8,
+						12,
+						14,
+						16
+					],
+					"texture": "#side"
+				},
+				"south": {
+					"uv": [
+						8,
+						12,
+						14,
+						16
+					],
+					"texture": "#inner"
+				}
+			}
+		}
+	]
+}

@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "eaten=false,facing=north": {
+      "model": "roll_mod:block/xp_burger"
+    },
+    "eaten=true,facing=north": {
+      "model": "roll_mod:block/burger_plate"
+    },
+    "eaten=false,facing=east": {
+      "model": "roll_mod:block/xp_burger",
+      "y": 90
+    },
+    "eaten=true,facing=east": {
+      "model": "roll_mod:block/burger_plate",
+      "y": 90
+    },
+    "eaten=false,facing=south": {
+      "model": "roll_mod:block/xp_burger",
+      "y": 180
+    },
+    "eaten=true,facing=south": {
+      "model": "roll_mod:block/burger_plate",
+      "y": 180
+    },
+    "eaten=false,facing=west": {
+      "model": "roll_mod:block/xp_burger",
+      "y": 270
+    },
+    "eaten=true,facing=west": {
+      "model": "roll_mod:block/burger_plate",
+      "y": 270
+    }
+  }
+}

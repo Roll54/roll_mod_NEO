@@ -1,0 +1,88 @@
+{
+  "lines": [
+    {
+      "text": "&fEverything you can do with another player, in one place: teleports, friends and money."
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lThe list"
+    },
+    {
+      "text": "&7At the top, &fWaiting for you&7: teleport, friend and money requests you have to answer. &a✔&7 accepts, &c✖&7 declines; click the text to open that player.",
+      "indent": 6
+    },
+    {
+      "text": "&7Then everyone &aonline here&7 (friends marked &d❤&7, your FTB party &6★&7), then your Minestar &ffriends&7 elsewhere &8- &baqua&7 online in another pack, gray offline. &6✦&7 means money is waiting between you. The search box filters by name.",
+      "indent": 6
+    },
+    {
+      "text": "&7A player opened from the &fLeaderboards&7 tab appears under &fViewed&7.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lThe panel"
+    },
+    {
+      "text": "&7The chosen player's face, name, &dMinestar level&7 (hover it for the XP still needed), group and status across the top. Under it, the actions on the left and their profile &8- Prime, playtime, rewards&7 &8-&7 on the right.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lActions"
+    },
+    {
+      "text": "&eTeleport to&7 / &eTeleport here&7 send a teleport request; they work only while the player is on this server. A request lapses after &e2 minutes&7.",
+      "indent": 6
+    },
+    {
+      "text": "&eAdd friend&7 sends a Minestar friend request; &eRemove friend&7 asks for a second click. &eInvite to team&7 invites them into your FTB party.",
+      "indent": 6
+    },
+    {
+      "text": "&7Anything open between you two is listed under the buttons, with its answer.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lMoney"
+    },
+    {
+      "text": "&eMoney…&7 opens a window: type an amount, then choose with the &fRequest instead&7 switch.",
+      "indent": 6
+    },
+    {
+      "text": "&7Off &8- &fsend&7: the coins leave your balance now and are held until they accept; if they deny or do not answer in &e7 days&7, you get them back.",
+      "indent": 6
+    },
+    {
+      "text": "&7On &8- &frequest&7: you ask them to pay you. Nothing is held; their coins move only if they agree, and only if they have them. Unanswered requests lapse after &e7 days&7.",
+      "indent": 6
+    },
+    {
+      "type": "space"
+    },
+    {
+      "text": "&e&lTeleport buttons"
+    },
+    {
+      "text": "&fRandom&7, &fBack&7 and &fSpawn&7 are on the &fHome&7 tab now, in its side panel &8- switch it to &eTeleport&7.",
+      "indent": 6
+    },
+    {
+      "type": "rule"
+    },
+    {
+      "text": "&8Commands: /tpa, /tpahere, /tpaccept, /tpdeny, /rtp, /back, /spawn, /rollmod money pay|request|accept|deny|payrequest|refuse",
+      "center": true
+    }
+  ]
+}

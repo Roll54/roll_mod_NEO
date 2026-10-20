@@ -13,6 +13,8 @@ import com.roll_54.roll_mod.network.packet.OpenHubPacket;
 import com.roll_54.roll_mod.network.packet.WelcomeResponsePacket;
 import com.roll_54.roll_mod.network.packet.FriendActionPacket;
 import com.roll_54.roll_mod.network.packet.ChatChannelPacket;
+import com.roll_54.roll_mod.network.packet.HueriStatuePackets;
+import com.roll_54.roll_mod.network.packet.HueriStatueSeenPacket;
 import com.roll_54.roll_mod.network.packet.HistoryPackets;
 import com.roll_54.roll_mod.network.packet.LeaderboardPackets;
 import com.roll_54.roll_mod.network.packet.SkinPackets;
@@ -96,6 +98,26 @@ public class NetworkHandler {
                 WelcomeResponsePacket.TYPE,
                 WelcomeResponsePacket.STREAM_CODEC,
                 WelcomeResponsePacket::handle
+        );
+        registrar.playToServer(
+                HueriStatuePackets.Open.TYPE,
+                HueriStatuePackets.Open.STREAM_CODEC,
+                HueriStatuePackets.Open::handle
+        );
+        registrar.playToServer(
+                HueriStatuePackets.Donate.TYPE,
+                HueriStatuePackets.Donate.STREAM_CODEC,
+                HueriStatuePackets.Donate::handle
+        );
+        registrar.playToClient(
+                HueriStatuePackets.Players.TYPE,
+                HueriStatuePackets.Players.STREAM_CODEC,
+                HueriStatuePackets.Players::handle
+        );
+        registrar.playToClient(
+                HueriStatueSeenPacket.TYPE,
+                HueriStatueSeenPacket.STREAM_CODEC,
+                HueriStatueSeenPacket::handle
         );
         registrar.playToClient(
                 ChatChannelPacket.TYPE,
