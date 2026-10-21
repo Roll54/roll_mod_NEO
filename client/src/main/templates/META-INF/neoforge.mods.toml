@@ -19,7 +19,9 @@ config = "${mod_id_client}.jei.mixins.json"
 
 # Fusion block model modifiers on MI machines: defers the wrapped model's particle lookup (MI machines
 # resolve their casing model, which throws mid-bake and fails the reload) and feeds the block entity's
-# model data through Fusion's Sodium path (otherwise machines always face north). Soft, and the config
+# model data through Fusion's Sodium path (otherwise machines always face north). MachineBakedModelMixin
+# lets MI machine casings render as Fusion connecting models (keeps machine model data, asks for all casing
+# quads) so resource-pack connected casings join machines. Soft, and the config
 # plugin skips it entirely unless Fusion is loaded.
 [[mixins]]
 config = "${mod_id_client}.fusion.mixins.json"

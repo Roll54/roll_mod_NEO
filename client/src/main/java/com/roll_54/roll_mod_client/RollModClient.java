@@ -18,6 +18,7 @@ import com.roll_54.roll_mod_client.client.gecko.HazmatHelmetRenderer;
 import com.roll_54.roll_mod_client.client.gecko.MultiProtectingGraviChestPlateRenderer;
 import com.roll_54.roll_mod_client.client.screen.HudRender;
 import com.roll_54.roll_mod_client.client.skin.CyberwareSkinLayer;
+import com.roll_54.roll_mod_client.compat.fusion.FusionCompatClient;
 import com.roll_54.roll_mod_client.gui.screen.CropManagerScreen;
 import com.roll_54.roll_mod_client.gui.screen.GrowthChamberScreen;
 import com.roll_54.roll_mod_client.gui.screen.PedestalScreen;
@@ -65,6 +66,7 @@ public final class RollModClient {
     public RollModClient(ModContainer container) {
         IEventBus eventBus = container.getEventBus();
         eventBus.addListener(this::onClientSetup);
+        FusionCompatClient.init();
         RollMod.LOGGER.info("[{}] init complete.", MODID);
     }
 

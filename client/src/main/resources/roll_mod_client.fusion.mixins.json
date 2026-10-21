@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "plugin": "com.roll_54.roll_mod_client.compat.fusion.mixin.FusionFixMixinPlugin",
   "client": [
-    "BlockModelModifierBakedModelMixin"
+    "BlockModelModifierBakedModelMixin",
+    "MachineBakedModelMixin"
   ],
   "injectors": {
     "defaultRequire": 1
