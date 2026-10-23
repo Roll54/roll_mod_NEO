@@ -1,0 +1,9 @@
+{
+  "targets": [
+    "yet_another_industrialization:steel_plated_end_stone_bricks"
+  ],
+  "ignore_missing_targets": true,
+  "default_model_overrides": [
+    "yet_another_industrialization:block/steel_plated_end_stone_bricks_connected"
+  ]
+}

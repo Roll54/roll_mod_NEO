@@ -233,8 +233,8 @@ public final class DailyTaskEvents {
      * so earlier handlers have had their say; the outcome is confirmed in
      * {@link #resolvePendingClips}.
      *
-     * <p>Only the clipper is watched. Plain right-click harvesting is deliberately not counted: in
-     * AgriCraft 4.0.8 {@code CropBlock.rightClickLogic} gives a held seed, fertilizer or crop stick
+     * <p>Only the clipper is watched. Plain right-click harvesting is deliberately not counted:
+     * AgriCraft's {@code CropBlock.rightClickLogic} gives a held seed, fertilizer, rake or crop stick
      * priority over picking the crop, so a right-click harvest only lands with a hand holding
      * nothing the mod cares about — too conditional to build a daily task on.
      */
@@ -243,9 +243,9 @@ public final class DailyTaskEvents {
         ServerPlayer player = serverPlayer(event.getEntity());
         if (player == null || !event.getItemStack().is(ModItems.CLIPPER.get())) return;
 
-        // Deliberately not filtered on canBeHarvested(): the confirmation below keys off the growth
-        // stage moving, which holds whether the clipper ends up clipping the crop or -- as it does
-        // today, because rightClickLogic passes it through to useWithoutItem -- harvesting it.
+        // Not filtered here: since AgriCraft 4.0.24 a clipper click always goes to ClipperItem, which
+        // clips only a mature plant with clip_products (every roll_mod and overridden vanilla plant
+        // has some) and refuses otherwise. The confirmation below keys off the growth stage moving.
         AgriApi.getCrop(event.getLevel(), event.getPos()).filter(AgriCrop::hasPlant).ifPresent(crop -> {
             PENDING_CLIPS.add(new PendingClip(player.getUUID(), event.getLevel().dimension(),
                     event.getPos().immutable(), crop.getPlantId(), crop.getGrowthStage().index()));
@@ -268,9 +268,9 @@ public final class DailyTaskEvents {
             ServerPlayer player = server.getPlayerList().getPlayer(pending.playerId());
             if (level == null || player == null) continue;
 
-            // Both outcomes wind the crop back -- a clip to the plant's initial stage, a harvest to
-            // its harvest stage -- so the stage going backwards is the proof the clipper did
-            // something. A crop that was broken or unloaded instead no longer counts.
+            // A clip winds the crop back to its initial stage, so the stage going backwards is the
+            // proof the clipper did something. A refused clip, or a crop that was broken or
+            // unloaded instead, no longer counts.
             AgriCrop crop = AgriApi.getCrop(level, pending.pos()).filter(AgriCrop::hasPlant).orElse(null);
             if (crop == null) {
                 RollMod.LOGGER.debug("[DailyTasks] Clip candidate at {} dropped: no crop there now.",

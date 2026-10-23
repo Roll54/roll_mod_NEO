@@ -1,0 +1,9 @@
+{
+  "targets": [
+    "yet_another_industrialization:battery_casing"
+  ],
+  "ignore_missing_targets": true,
+  "default_model_overrides": [
+    "yet_another_industrialization:block/battery_casing_connected"
+  ]
+}

@@ -194,11 +194,13 @@ ordering = "AFTER"
 side = "BOTH"
 
 # Same story: compat/argicraft and mixin/crops name AgriCraft classes unguarded, and
-# roll_mod.mixins.json is required = true with four mixins targeting them.
+# roll_mod.mixins.json is required = true with the mixin/crops mixins targeting them.
 [[dependencies."${mod_id}"]]
 modId = "agricraft"
 type = "required"
-versionRange = "[4.0.8,)"
+# 4.0.24 (the AgriCraft ReReloaded line): RakeItemMixin hooks RakeItem.rakeCrop, AgriCraftCompatPackMixin
+# AgriCraftNeoForge.addPack and SprinklerGrowthMixin the sprinkler, none of which exist before it.
+versionRange = "[4.0.24,)"
 ordering = "AFTER"
 side = "BOTH"
 

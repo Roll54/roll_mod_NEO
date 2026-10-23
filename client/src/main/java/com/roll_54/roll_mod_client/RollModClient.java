@@ -98,12 +98,12 @@ public final class RollModClient {
                 PlayerCyberwareData data = player.getData(ModAttachments.CYBERWARE);
 
                 return data != null
-                        && data.hasSpecificItem(
+                        && (data.hasSpecificItem(
                         ItemRegistry.CROP_ANALYZER_LENSE.get(),
                         CyberwareSlot.EYES)
                         || data.hasSpecificItem(
                         ItemRegistry.CROP_ANALYZER_MODULE.get(),
-                        CyberwareSlot.EYES);
+                        CyberwareSlot.EYES));
             });
         });
 

@@ -1,0 +1,10 @@
+{
+  "fusion": {
+    "type": "connecting",
+    "layout": "simple",
+    "connections": [
+      { "type": "match_block", "ignore_missing": true, "block": "yet_another_industrialization:battery_casing" },
+      { "type": "mi_ct:is_mi_machine" }
+    ]
+  }
+}

@@ -3,101 +3,73 @@ package com.roll_54.roll_mod.mixin.crops;
 import com.agricraft.agricraft.api.AgriApi;
 import com.agricraft.agricraft.api.crop.AgriCrop;
 import com.agricraft.agricraft.api.crop.AgriGrowthStage;
-import com.agricraft.agricraft.api.plant.AgriWeed;
-import com.agricraft.agricraft.common.block.CropBlock;
 import com.agricraft.agricraft.common.item.RakeItem;
-import com.agricraft.agricraft.common.registry.ModItems;
 import com.roll_54.roll_mod.compat.argicraft.HerbicideHelper;
-import net.minecraft.core.BlockPos;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 /**
- * Makes the AgriCraft hand rake (iron/wooden) remove weeds authoritatively on the server.
+ * roll_mod's rake rules on top of AgriCraft's (4.0.24+) {@link RakeItem#rakeCrop}, which does the raking itself:
+ * iron rake clears the weed, wooden rake steps it down one stage, and the weed's rake drops spawn.
  *
- * <p>By default AgriCraft's {@link RakeItem#useOn} removes the weed on the client (interaction
- * prediction) but the removal does not stick on the server, so the weed reappears on the next block
- * sync. This mixin takes full ownership of "rake a weedy crop" on both physical sides: it runs the
- * exact same rake logic AgriCraft would (iron rake clears the weed; wooden rake steps it down one
- * growth stage, clearing it once it bottoms out), spawns the rake drops server-side, and returns
- * early so AgriCraft's own (desyncing) path never runs — keeping client and server in lock-step.
- *
- * <p>Only intercepts when the held item is a rake <em>and</em> the targeted crop currently has weeds;
- * every other interaction (raking a clean crop, non-crop blocks) falls through to AgriCraft untouched.
+ * <ul>
+ *     <li>Fully removing a weed also drops {@code roll_mod:biomass} scaled by how grown it was
+ *     ({@link HerbicideHelper#dropBiomass}), on the server only. Hooked on {@code rakeCrop}, the one method
+ *     every rake path goes through: {@code CropBlock}'s own main-hand handling and {@link RakeItem#useOn}.</li>
+ *     <li>{@code useOn} (sneaking, off hand, automation) still rakes on both sides upstream, so the client's
+ *     predicted removal desyncs and the weed comes back. Here it rakes on the server only and lets the block
+ *     sync carry the result, like {@code CropBlock} does.</li>
+ * </ul>
  */
 @Mixin(RakeItem.class)
 public abstract class RakeItemMixin {
 
+    /** The weed's stage before this {@code rakeCrop} call, for the biomass amount; null when nothing to drop. */
+    @Unique
+    private static final ThreadLocal<AgriGrowthStage> roll_mod$rakedStage = new ThreadLocal<>();
+
+    @Shadow
+    public abstract void rakeCrop(AgriCrop crop, ItemStack stack, @Nullable Player player);
+
+    @Inject(method = "rakeCrop", at = @At("HEAD"))
+    private void roll_mod$rememberWeedStage(AgriCrop crop, ItemStack stack, @Nullable Player player, CallbackInfo ci) {
+        Level level = crop.getLevel();
+        boolean server = level != null && !level.isClientSide;
+        roll_mod$rakedStage.set(server && crop.hasWeeds() ? crop.getWeedGrowthStage() : null);
+    }
+
+    @Inject(method = "rakeCrop", at = @At("RETURN"))
+    private void roll_mod$dropBiomassWhenRemoved(AgriCrop crop, ItemStack stack, @Nullable Player player, CallbackInfo ci) {
+        AgriGrowthStage stage = roll_mod$rakedStage.get();
+        roll_mod$rakedStage.remove();
+        if (stage != null && !crop.hasWeeds()) {
+            HerbicideHelper.dropBiomass(crop.getLevel(), crop.getBlockPos(), stage);
+        }
+    }
+
     @Inject(method = "useOn", at = @At("HEAD"), cancellable = true)
-    private void roll_mod$rakeAuthoritatively(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
+    private void roll_mod$rakeOnServerOnly(UseOnContext context, CallbackInfoReturnable<InteractionResult> cir) {
         Level level = context.getLevel();
-        BlockPos pos = context.getClickedPos();
-
-        Optional<AgriCrop> optional = AgriApi.getCrop(level, pos);
-        if (optional.isEmpty()) {
-            return; // not a crop — let AgriCraft's useOn run
+        Optional<AgriCrop> crop = AgriApi.getCrop(level, context.getClickedPos());
+        if (crop.isEmpty() || !crop.get().hasWeeds()) {
+            return; // nothing to rake: AgriCraft's own result
         }
-
-        boolean iron = (Object) this == ModItems.IRON_RAKE.get();
-        boolean wooden = (Object) this == ModItems.WOODEN_RAKE.get();
-        if (!iron && !wooden) {
-            return; // unknown rake variant — don't take over
-        }
-
-        AgriCrop crop = optional.get();
-        if (!crop.hasWeeds()) {
-            return; // nothing to rake — let AgriCraft handle the interaction normally
-        }
-        AgriWeed weed = crop.getWeed();
-        AgriGrowthStage stage = crop.getWeedGrowthStage();
-        if (weed == null || stage == null) {
-            return;
-        }
-
-        RandomSource random = level.getRandom();
-
-        // Iron rake clears the weed outright; wooden rake knocks it down one stage at a time.
-        boolean removed;
-        if (iron) {
-            crop.removeWeeds();
-            removed = true;
-        } else {
-            AgriGrowthStage previous = stage.getPrevious(crop, random);
-            if (previous == stage) { // already at the lowest stage (getPrevious returns the same instance)
-                crop.removeWeeds();
-                removed = true;
-            } else {
-                crop.setWeedGrowthStage(previous);
-                removed = false;
-            }
-        }
-
-        // Drops are server-authoritative; the client only mirrors the visual weed change above.
         if (!level.isClientSide) {
-            Player player = context.getPlayer();
-            ArrayList<ItemStack> drops = new ArrayList<>();
-            weed.onRake(stage, drops::add, random, player);
-            for (ItemStack drop : drops) {
-                CropBlock.spawnItem(level, pos, drop);
-            }
-            // Removing the weed yields biomass scaled by how grown it was at removal time.
-            if (removed) {
-                HerbicideHelper.dropBiomass(level, pos, stage);
-            }
+            this.rakeCrop(crop.get(), context.getItemInHand(), context.getPlayer());
         }
-
-        // Take over this interaction entirely so AgriCraft's desyncing rake path doesn't also run.
         cir.setReturnValue(InteractionResult.sidedSuccess(level.isClientSide));
     }
 }

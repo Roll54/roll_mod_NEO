@@ -12,8 +12,6 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -21,7 +19,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -151,28 +148,27 @@ public class MultiProtectingGraviChestItem extends ArmorItem implements ISimpleE
 
 
 
-    @Override
-    public void inventoryTick(ItemStack stack, Level level, Entity entity, int slotId, boolean isSelected) {
-        if (level.isClientSide())
-            return;
-        if (entity instanceof Player player && stack == player.getItemBySlot(EquipmentSlot.CHEST)) {
-            // State 0: Flight mode - 5000 energy per tick
-            if (player.getAbilities().flying && isActivatedById(stack, 0)) {
-                setStoredEnergy(stack, Math.max(0, getStoredEnergy(stack) - 5000));
-            }
-
-            // State 1: Sulfur armor mode - 10000 energy per tick
-            if (isActivatedById(stack, 1)) {
-                setStoredEnergy(stack, Math.max(0, getStoredEnergy(stack) - 10000));
-            }
-
-            // State 2: Elytra mode - 20000 energy per tick (when falling/gliding)
-            if (isActivatedById(stack, 2) && player.isFallFlying()) {
-                setStoredEnergy(stack, Math.max(0, getStoredEnergy(stack) - 20000));
-            }
-
-            tryBoost(stack, player);
+    /**
+     * Per-tick upkeep while worn. Called server-side by {@link MultiProtectingGraviChestTicker}, and
+     * only for players whose chest slot holds this item with at least one state switched on.
+     */
+    public void wornTick(ItemStack stack, Player player) {
+        // State 0: Flight mode - 5000 energy per tick
+        if (player.getAbilities().flying && isActivatedById(stack, 0)) {
+            setStoredEnergy(stack, Math.max(0, getStoredEnergy(stack) - 5000));
         }
+
+        // State 1: Sulfur armor mode - 10000 energy per tick
+        if (isActivatedById(stack, 1)) {
+            setStoredEnergy(stack, Math.max(0, getStoredEnergy(stack) - 10000));
+        }
+
+        // State 2: Elytra mode - 20000 energy per tick (when falling/gliding)
+        if (isActivatedById(stack, 2) && player.isFallFlying()) {
+            setStoredEnergy(stack, Math.max(0, getStoredEnergy(stack) - 20000));
+        }
+
+        tryBoost(stack, player);
     }
 
     public void tryBoost(ItemStack stack, Player player) {

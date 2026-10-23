@@ -1,0 +1,10 @@
+{
+  "fusion": {
+    "type": "connecting",
+    "layout": "simple",
+    "connections": [
+      { "type": "match_block", "ignore_missing": true, "block": "extended_industrialization:steel_plated_bricks" },
+      { "type": "mi_ct:is_mi_machine" }
+    ]
+  }
+}

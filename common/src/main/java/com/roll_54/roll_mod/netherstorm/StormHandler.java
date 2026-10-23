@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.netherstorm;
 
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.registry.AttributeRegistry;
+import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.registry.ModConfigs;
 import com.roll_54.roll_mod.registry.ModEffects;
 import net.minecraft.core.BlockPos;
@@ -109,11 +110,22 @@ public class StormHandler {
                 gamemode == GameType.SPECTATOR ||
                 player.hasEffect(ModEffects.SULFUR_RESISTANCE) ||
                 player.getData(STORM_PROTECTED) ||
-                        protectionPoints >= 16
+                        protectionPoints >= 16 ||
+                        hasStormProtectedArmor(player)
         )
             protection = true;
 
         return protection;
+    }
+
+    /** True if any worn armor piece carries the {@code roll_mod:storm_protected} component. */
+    private static boolean hasStormProtectedArmor(ServerPlayer player) {
+        for (ItemStack stack : player.getArmorSlots()) {
+            if (stack.getOrDefault(ComponentsRegistry.STORM_PROTECTED.get(), false)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isPlayerProtectedFromStormWithOutArmor(ServerPlayer player){

@@ -23,14 +23,27 @@ MI's datagen reads only from vanilla, MI's own jar and
 
 - `gear.png` there changes the gear shape for **every** material, not just one.
 - A per-item file such as `incoloy_gear.png` there is **ignored**, because MI never asks for a template by that name.
-- Only `materialsets/common` is rerouted. Set-specific, gem, ore and block templates are not.
+- A file there is used for that template name in **every** material set, not only `common`: MI checks the set's
+  own folder first (e.g. `shiny/gear_overlay.png`), so a `common` override must also win over set-specific ones.
+  Templates we have no file for (other set-specific, gem, ore and block templates) are untouched.
+- `<part>_underlay.png` / `<part>_overlay.png` are drawn untinted under/over the tinted part (`gear_overlay`,
+  `ring_overlay`, `blade_overlay`, `fine_wire_overlay`).
+- `machine_casing_ct.png`, `machine_casing_special_ct.png`, `machine_casing_pipe_ct.png` are 4x4 Fusion "simple"
+  sheets: `MICasingConnectedTexturesMixin` tints them into `<casing>_ct` / `<casing>_mct` connected textures for
+  every material casing (see the class for the generated models and mcmetas).
 
 ## Why a per-item texture in our jar loses
 
 A file at `assets/modern_industrialization/textures/item/incoloy_gear.png` in roll_mod's jar sits in
 the mod resources pack. MI's generated pack is on TOP, so MI's generated `incoloy_gear.png` hides it.
 This applies to any MI item MI generates itself. It may affect the MI item textures already shipped
-this way (e.g. `gold_gear.png`, `tin_curved_plate.png`).
+this way (e.g. `gold_gear.png`, `tin_curved_plate.png`, and from the "MI in New" pack `osmiridium_*`,
+`gold_large_plate.png`, YAI's `beryllium_large_plate.png` — shipped because the dev run doesn't generate them; if
+the pack's materials do, the generated ones win).
+
+Hand-made, non-generated MI/EI/YAI textures (machine overlays, hulls, casings like `bricked_*`, items such as
+`wrench`, `quantum_circuit_board`) are plain overrides in `common/src/main/resources/assets/<modid>/textures/` and
+always apply.
 
 ## MI's own per-item override
 

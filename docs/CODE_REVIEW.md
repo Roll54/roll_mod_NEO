@@ -228,8 +228,8 @@ surface as an ignored `false`.
 - ⬜ `client/.../util/StarcoinPriceTooltip.java:28-56` — fetches a `data/` file through the
   client *assets* resource manager, so the price map is always empty and the feature is dead
   (`reset()` is also never called). Use a synced data map.
-- ⬜ `client/.../RollModClient.java:96-104` — `data != null && lense || module`: the null guard
-  doesn't cover the second operand → NPE inside AgriCraft's overlay predicate. Parenthesize.
+- ✅ FIXED `client/.../RollModClient.java:96-104` — `data != null && lense || module`: the null guard
+  doesn't cover the second operand → NPE inside AgriCraft's overlay predicate. Parenthesized.
 - ⬜ `client/.../client/KeyInputHandler.java:48-56` — a static `boolean[3]` is the packet's
   authoritative toggle value while the real state lives in the item component: after relog or
   swapping chestplates the first keypress "does nothing". Derive from the worn stack.

@@ -1,4 +1,4 @@
-// 1.21.1	2026-10-19T15:40:09.583538616	Item Models: roll_mod
+// 1.21.1	2026-10-21T19:58:09.85789369	Item Models: roll_mod
 5478948ed127b16a29bb07058702c1660666f43c assets/roll_mod/models/crop/cabbage_stage0.json
 b18c6664c22b2a76b367c0229864b02b683f78fe assets/roll_mod/models/crop/cabbage_stage1.json
 8b240f7745d13a6aac70dadeb43a747d4f8abc12 assets/roll_mod/models/crop/cabbage_stage2.json
@@ -179,7 +179,7 @@ abbf4342dcf4feeeb2a600f655e36d2b8076fa68 assets/roll_mod/models/item/blue_wafer_
 3dc01fc1c21e0b5b47042e94f920047823c85007 assets/roll_mod/models/item/blue_wafer_not.json
 e2e7531c3a5382bcda631efef69c53b33af6634d assets/roll_mod/models/item/blue_wafer_pmic.json
 14792c9933559a656676d37b35f7388222b0c694 assets/roll_mod/models/item/blue_wafer_ram.json
-e49d4159070678a0912a517501b5954577a7d511 assets/roll_mod/models/item/brainupgrade_radio.json
+fe61c14a3cd792e758cd89a41b5dda3b6ecc1ced assets/roll_mod/models/item/brainupgrade_radio.json
 be14536d656172d5d0b61c5bf0ca2877ebad6fe3 assets/roll_mod/models/item/burn_module.json
 031550dbef6c921b39d8d000f62eb3f87b2cd2e7 assets/roll_mod/models/item/calcite_dust.json
 a161530180d8bcc170c7c52df9b410a5c9a67954 assets/roll_mod/models/item/chemical_core.json
@@ -231,6 +231,12 @@ a161530180d8bcc170c7c52df9b410a5c9a67954 assets/roll_mod/models/item/herbicide.j
 e542c76f122cebd0295d2b084f2dc8edd02ce64e assets/roll_mod/models/item/herbicide_tier_1.json
 6d6cc3268a8e7924e341b0c81b2904de1f870316 assets/roll_mod/models/item/herbicide_tier_2.json
 90c41dc53b1732ae83a5ded16ff32a56a865cbc3 assets/roll_mod/models/item/herbicide_tier_3.json
+83b449a7286f6fc79ea6f3511344a04c3aaaf5ca assets/roll_mod/models/item/highly_advanced_large_motor.json
+87b40818fbe3e6cec8c1f80c8d9f6345183fa6b5 assets/roll_mod/models/item/highly_advanced_large_pump.json
+53d84d2747176e2a8c8b5ddc1123eaeb29b323f8 assets/roll_mod/models/item/highly_advanced_motor.json
+64f14a7b999a2da4bd191f3ea6984ee8a760f329 assets/roll_mod/models/item/highly_advanced_piston.json
+c20ad648a334f606ab019b76c33124515c382b4b assets/roll_mod/models/item/highly_advanced_pump.json
+80b4ad2cfe565cff2656c6ebd6468ac9f831c29c assets/roll_mod/models/item/highly_advanced_robot_arm.json
 297dfdb25608e770282039fd03505f0f5c677024 assets/roll_mod/models/item/hops_leaf.json
 fbe0e463076e746f2419d0eca436bc03085e0175 assets/roll_mod/models/item/hops_seeds.json
 f477971ffc059ec54f02f4c901c382741267436c assets/roll_mod/models/item/hv_modular_drill.json
@@ -265,6 +271,8 @@ b34fa650566f63efaef481289f81adc9fad17cf0 assets/roll_mod/models/item/meteorite_m
 9c6cebb2ea48e8d86e19dd1da0293eeda053b7cf assets/roll_mod/models/item/meteorite_metal_plate.json
 b93ea5809ce9dd00a43c7dd1b792170d3a1611b5 assets/roll_mod/models/item/meteorite_metal_rod.json
 9351930bff35c283b122c3c0dc728c8a793587a5 assets/roll_mod/models/item/meteorite_module.json
+8fbe9759920282e381af9ed62d2738613f0da296 assets/roll_mod/models/item/mixed_cosmic_t1.json
+2f7ba1598b4144fcf54008426b4228ce4f0d5e56 assets/roll_mod/models/item/mixed_cosmic_t3.json
 6fa1a47635db48bfd79a5510b7389d7d95828a33 assets/roll_mod/models/item/modpack_logo.json
 e296dd920bfa4f0c2c96fa013bf56f6df3505dad assets/roll_mod/models/item/mojito.json
 0acf80fcef1b666d4b63b4e72ae0c0406fc0f628 assets/roll_mod/models/item/moon_cartridge.json

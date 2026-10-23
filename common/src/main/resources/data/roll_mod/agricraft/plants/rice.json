@@ -48,7 +48,7 @@
   "seeds": [
     {
       "grass_drop_chance": 0,
-      "item": "roll_mod:green_bell_pepper_seeds",
+      "item": "farmersdelight:rice",
       "override_planting": true,
       "seed_drop_bonus": 0.0,
       "seed_drop_chance": 1.0

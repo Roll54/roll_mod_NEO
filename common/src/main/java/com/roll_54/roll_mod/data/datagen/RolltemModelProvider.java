@@ -40,6 +40,16 @@ public class RolltemModelProvider extends ItemModelProvider {
 
     @Override
     protected void registerModels() {
+        basicItem(ItemRegistry.MIXED_COSMIC_T1.get());
+        basicItem(ItemRegistry.MIXED_COSMIC_T3.get());
+
+        basicItem(ItemRegistry.HIGHLY_ADV_MOTOR.get());
+        basicItem(ItemRegistry.HIGHLY_ADV_LARGE_MOTOR.get());
+        basicItem(ItemRegistry.HIGHLY_ADV_PUMP.get());
+        basicItem(ItemRegistry.HIGHLY_ADV_LARGE_PUMP.get());
+        basicItem(ItemRegistry.HIGHLY_ADV_PISTON.get());
+        basicItem(ItemRegistry.HIGHLY_ADV_ROBOT_ARM.get());
+
         basicItem(ItemRegistry.PURPLE_BOULE.get());
         basicItem(ItemRegistry.PURPLE_WAFER.get());
         basicItem(ItemRegistry.PURPLE_WAFER_ACCUMULATION.get());
@@ -204,14 +214,9 @@ public class RolltemModelProvider extends ItemModelProvider {
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/eyeupgrades_crop_analyzer_module"));
 
-        // TODO(art): textures/item/cyberware/brainupgrade_radio.png. Tracked as generated until it is
-        // drawn, so the existing-file check does not fail the whole run (see pendingTextureItem).
-        existingFileHelper.trackGenerated(
-                ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/brainupgrade_radio"),
-                net.minecraft.server.packs.PackType.CLIENT_RESOURCES, ".png", "textures");
         getBuilder(ItemRegistry.BRAINUPGRADE_RADIO.get().toString())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/brainupgrade_radio"));
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/radio_implant_item"));
 
         getBuilder(ItemRegistry.LUNGSUPGRADE_SULFUR_RESISTANCE.get().toString())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))

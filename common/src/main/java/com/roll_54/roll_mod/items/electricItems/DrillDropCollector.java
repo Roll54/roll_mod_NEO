@@ -18,6 +18,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
 import net.neoforged.neoforge.event.level.BlockDropsEvent;
 import net.neoforged.neoforge.items.ItemHandlerHelper;
@@ -136,28 +137,55 @@ public final class DrillDropCollector {
             return;
         }
 
-        outer:
         for (ItemEntity entity : event.getDrops()) {
-            ItemStack dropped = entity.getItem();
-            if (dropped.isEmpty()) {
-                continue;
-            }
-            if (op != null && op.trashFilter.contains(dropped.getItem())) {
-                continue;
-            }
-            if (op != null && op.smeltDrops) {
-                dropped = smelted(event.getLevel(), dropped);
-            }
-            for (ItemStack merged : collected) {
-                if (ItemStack.isSameItemSameComponents(merged, dropped)) {
-                    merged.grow(dropped.getCount());
-                    continue outer;
-                }
-            }
-            collected.add(dropped);
+            absorb(collected, op, event.getLevel(), entity.getItem());
         }
         // Emptied, not canceled: the block still drops its experience the usual way.
         event.getDrops().clear();
+    }
+
+    /**
+     * Catches items that other mods spawn straight into the world while the drill works, bypassing
+     * {@link BlockDropsEvent}. Create Cybernetics' orange data shard is one: it doubles ore drops by
+     * calling {@code Block.popResource} from its {@code BlockEvent.BreakEvent} handler (and swaps
+     * ancient debris for netherite scrap the same way). Those extras get the same Burn, Trash Filter
+     * and Auto-Smelt treatment as the regular drops and go to the player or a drill orb with them.
+     */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onEntityJoinLevel(EntityJoinLevelEvent event) {
+        List<ItemStack> collected = totalDrops;
+        if (collected == null || event.loadedFromDisk()) {
+            return;
+        }
+        if (!(event.getEntity() instanceof ItemEntity entity) || !(event.getLevel() instanceof ServerLevel level)) {
+            return;
+        }
+
+        DrillOp op = currentOp;
+        if (op == null || !op.burnDrops) {
+            absorb(collected, op, level, entity.getItem());
+        }
+        event.setCanceled(true);
+    }
+
+    /** Filters, smelts and merges one dropped stack into the operation's collected list. */
+    private static void absorb(List<ItemStack> collected, @Nullable DrillOp op, ServerLevel level, ItemStack dropped) {
+        if (dropped.isEmpty()) {
+            return;
+        }
+        if (op != null && op.trashFilter.contains(dropped.getItem())) {
+            return;
+        }
+        if (op != null && op.smeltDrops) {
+            dropped = smelted(level, dropped);
+        }
+        for (ItemStack merged : collected) {
+            if (ItemStack.isSameItemSameComponents(merged, dropped)) {
+                merged.grow(dropped.getCount());
+                return;
+            }
+        }
+        collected.add(dropped);
     }
 
     /** The drop's furnace result at the same count, or the drop itself when nothing smelts it. */

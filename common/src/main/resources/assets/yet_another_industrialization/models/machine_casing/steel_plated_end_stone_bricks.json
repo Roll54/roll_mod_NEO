@@ -1,0 +1,10 @@
+{
+  "loader": "fusion:model",
+  "type": "connecting",
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "yet_another_industrialization:block/steel_plated_end_stone_bricks_mct",
+    "particle": "yet_another_industrialization:block/steel_plated_end_stone_bricks"
+  },
+  "connections": { "type": "match_block", "ignore_missing": true, "block": "yet_another_industrialization:steel_plated_end_stone_bricks" }
+}

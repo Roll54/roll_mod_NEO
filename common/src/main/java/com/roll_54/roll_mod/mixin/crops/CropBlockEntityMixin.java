@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.mixin.crops;
 
 import com.agricraft.agricraft.api.crop.AgriGrowthStage;
+import com.agricraft.agricraft.api.fertilizer.AgriFertilizer;
 import com.agricraft.agricraft.api.plant.AgriPlant;
 import com.agricraft.agricraft.api.plant.AgriWeed;
 import com.agricraft.agricraft.api.genetic.AgriGenome;
@@ -15,6 +16,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.agricraft.agricraft.common.block.entity.CropBlockEntity;
 import net.minecraft.network.chat.Component;
@@ -26,16 +28,10 @@ import java.util.List;
 public abstract class CropBlockEntityMixin implements AgriHerbicide {
 
     @Shadow
-    private String weedId;
-
-    @Shadow
-    private AgriWeed weed;
-
-    @Shadow
-    private AgriGrowthStage weedGrowthStage;
-
-    @Shadow
     public abstract AgriGrowthStage getGrowthStage();
+
+    @Shadow
+    public abstract boolean isCrossCropSticks();
 
     @Unique
     private int roll_mod$herbicideAmount = 0;
@@ -53,16 +49,28 @@ public abstract class CropBlockEntityMixin implements AgriHerbicide {
         return stage != null && stage.isFinal();
     }
 
-    @Inject(method = "loadAdditional", at = @At("TAIL"))
-    private void roll_mod$clearWeedsWhenTagSaysNo(
-            CompoundTag tag,
-            HolderLookup.Provider registries,
-            CallbackInfo ci
-    ) {
-        if (!tag.getBoolean("hasWeeds")) {
-            this.weedId = "";
-            this.weed = null;
-            this.weedGrowthStage = new AgriGrowthStage(0, 8);
+    /**
+     * Fertilizer (bone meal included) must not make cross crop sticks spread the neighbouring crops.
+     * Upstream accepts fertilizer on cross sticks ({@code allow_fertilizer_mutation} + the fertilizer's
+     * {@code trigger_mutation}) and runs a cross-breed tick per potency step, so a player could force
+     * spreading on demand. Rejecting it here keeps the item unused on cross sticks.
+     */
+    @Inject(method = "acceptsFertilizer", at = @At("HEAD"), cancellable = true)
+    private void roll_mod$rejectFertilizerOnCrossSticks(AgriFertilizer fertilizer, CallbackInfoReturnable<Boolean> cir) {
+        if (this.isCrossCropSticks()) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    /**
+     * Same rule for callers that apply fertilizer without asking {@code acceptsFertilizer} first (other
+     * mods' fertilizing machines): the fertilizer-only growth tick does nothing on cross sticks. Natural
+     * cross-breeding runs through {@code applyGrowthTick} and is unaffected.
+     */
+    @Inject(method = "applyFertilizerGrowthTick", at = @At("HEAD"), cancellable = true)
+    private void roll_mod$noFertilizerCrossBreeding(CallbackInfo ci) {
+        if (this.isCrossCropSticks()) {
+            ci.cancel();
         }
     }
 

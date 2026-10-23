@@ -47,7 +47,7 @@ dependencies {
     // Exposed as api so the client and server subprojects inherit them transitively.
     api "aztech:Modern-Industrialization:${modern_industrialization_version}"
     api "software.bernie.geckolib:geckolib-neoforge-${minecraft_version}:${geckolibVersion}"
-    api files("jars/AgriCraft-neoforge-1.21.1-4.0.8.jar")
+    api files("jars/AgriCraft-neoforge-1.21.1-4.0.24.jar")
 
     implementation "dev.technici4n:GrandPower:${grandpower_version}"
     implementation "me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}"

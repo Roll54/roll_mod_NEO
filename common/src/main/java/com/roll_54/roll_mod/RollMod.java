@@ -72,6 +72,7 @@ public final class RollMod {
         ComponentsRegistry.COMPONENTS.register(eventBus);
         RMMAttachment.ATTACHMENT_TYPES.register(eventBus);
         eventBus.addListener(com.roll_54.roll_mod.radiation.RadiationComponentDefaults::modifyComponents);
+        eventBus.addListener(com.roll_54.roll_mod.netherstorm.StormComponentDefaults::modifyComponents);
         ModConfigs.init();
         // Cosmetics keep their own storage and their own config: they are permanent entitlements
         // that must outlive any world, and must not depend on an economy being configured at all.

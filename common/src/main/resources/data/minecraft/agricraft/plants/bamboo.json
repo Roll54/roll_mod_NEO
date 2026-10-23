@@ -1,4 +1,13 @@
 {
+  "clip_products": [
+    {
+      "chance": 0.5,
+      "item": "minecraft:bamboo",
+      "max": 1,
+      "min": 1,
+      "required": true
+    }
+  ],
   "cloneable": true,
   "growth_bonus": 0.01,
   "growth_chance": 0.9,

@@ -19,20 +19,23 @@ import java.nio.file.Path;
 
 /**
  * Makes MI tint our grayscale part templates instead of its own: any
- * {@code modern_industrialization:textures/materialsets/common/<part>.png} that has a file of the same
+ * {@code modern_industrialization:textures/materialsets/<set>/<part>.png} that has a file of the same
  * name in {@code assets/roll_mod/textures/override/modern_industrialization/textures/materialsets/common/}
- * is read from there.
+ * is read from there, for every material set. MI looks in the set's own folder before {@code common},
+ * so without the set paths its {@code shiny/{ring,gear,blade}_overlay.png} would still win over ours
+ * for shiny materials.
  *
  * <p>MI only reads these templates while generating textures, which at runtime means its runtime
  * datagen — forced on by {@link MIClientForceRuntimeDatagenMixin} and {@link MIForceRuntimeResourcesMixin}.
  * Its resource provider then holds just vanilla, MI's jar and {@code extra_datagen_resources}
  * ({@code TexturesProvider.run}, MI 2.4.1), not our jar, so the file is read straight from roll_mod's
- * mod file. Only {@code common} is rerouted; set-specific, gem, ore and block templates are untouched.
+ * mod file. Only templates we ship a {@code common} file for are rerouted; every other set-specific,
+ * gem, ore and block template is untouched.
  */
 @Mixin(TextureManager.class)
 public class MITextureManagerOverrideMixin {
     @Unique
-    private static final String roll_mod$COMMON = "modern_industrialization:textures/materialsets/common/";
+    private static final String roll_mod$MATERIALSETS = "modern_industrialization:textures/materialsets/";
 
     @Inject(method = "getAssetAsTexture", at = @At("HEAD"), cancellable = true)
     private void roll_mod$readOverride(String path, CallbackInfoReturnable<NativeImage> cir) throws IOException {
@@ -52,11 +55,16 @@ public class MITextureManagerOverrideMixin {
     @Unique
     @Nullable
     private static Path roll_mod$override(String path) {
-        if (!path.startsWith(roll_mod$COMMON)) return null;
+        if (!path.startsWith(roll_mod$MATERIALSETS)) return null;
+        // <set>/<file>: the set is dropped, every set reads the same common override.
+        String rest = path.substring(roll_mod$MATERIALSETS.length());
+        int slash = rest.indexOf('/');
+        if (slash < 0) return null;
+        String fileName = rest.substring(slash + 1);
         IModFileInfo rollMod = ModList.get().getModFileById(RollMod.MODID);
         if (rollMod == null) return null;
         Path file = rollMod.getFile().findResource("assets", RollMod.MODID, "textures", "override",
-                "modern_industrialization", "textures", "materialsets", "common", path.substring(roll_mod$COMMON.length()));
+                "modern_industrialization", "textures", "materialsets", "common", fileName);
         return Files.isRegularFile(file) ? file : null;
     }
 }

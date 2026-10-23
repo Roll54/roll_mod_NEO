@@ -796,8 +796,17 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> ADV_PISTON = ITEMS.register("advanced_piston", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> ADV_ROBOT_ARM = ITEMS.register("advanced_robot_arm", () -> new Item(new Item.Properties()));
 
+    public static final DeferredHolder<Item, Item> HIGHLY_ADV_MOTOR = ITEMS.register("highly_advanced_motor", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> HIGHLY_ADV_LARGE_MOTOR = ITEMS.register("highly_advanced_large_motor", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> HIGHLY_ADV_PUMP = ITEMS.register("highly_advanced_pump", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> HIGHLY_ADV_LARGE_PUMP = ITEMS.register("highly_advanced_large_pump", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> HIGHLY_ADV_PISTON = ITEMS.register("highly_advanced_piston", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> HIGHLY_ADV_ROBOT_ARM = ITEMS.register("highly_advanced_robot_arm", () -> new Item(new Item.Properties()));
+
     // Космос
+    public static final DeferredHolder<Item, Item> MIXED_COSMIC_T1 = ITEMS.register("mixed_cosmic_t1", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> MIXED_COSMIC_T2 = ITEMS.register("mixed_cosmic_t2", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> MIXED_COSMIC_T3 = ITEMS.register("mixed_cosmic_t3", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> NOSE_MK1 = ITEMS.register("nose_mk1", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> NOSE_MK2 = ITEMS.register("nose_mk2", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> NOSE_MK3 = ITEMS.register("nose_mk3", () -> new Item(new Item.Properties()));

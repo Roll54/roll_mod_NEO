@@ -34,6 +34,18 @@ versionRange = "[${mod_version},)"
 ordering = "AFTER"
 side = "CLIENT"
 
+# Fusion is optional, but compat/fusion (the mi_ct:is_mi_machine predicate, the fusion mixins, the generated MI
+# casing connected textures) and the shipped EI/YAI connected models use the Fusion 1.3 API and model format;
+# Fusion 1.2.x keeps its predicates in another package, so an older Fusion broke roll_mod_client's construction
+# (NoClassDefFoundError ConnectionPredicate) and with it the whole client. With this range NeoForge names the
+# outdated Fusion on its loading-error screen instead.
+[[dependencies."${mod_id_client}"]]
+modId = "fusion"
+type = "optional"
+versionRange = "[1.3.16,)"
+ordering = "NONE"
+side = "CLIENT"
+
 [[dependencies."${mod_id_client}"]]
 modId = "neoforge"
 type = "required"

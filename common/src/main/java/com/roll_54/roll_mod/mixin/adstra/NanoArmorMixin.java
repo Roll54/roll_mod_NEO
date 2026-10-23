@@ -43,9 +43,9 @@ import static com.roll_54.roll_mod.netherstorm.StormHandler.isPlayerProtectedFro
 public abstract class NanoArmorMixin implements FluidProvider.Item {
 
     // NanoSuitArmorItem has no tankSize field (that lives on Ad Astra's SpaceSuitItem), so we define
-    // our own capacity here. Value is in millibuckets; 1000 matches the netherite space suit.
+    // our own capacity here. Value is in millibuckets; 10 buckets, same as the Ad Astra suits (SpaceSuitItemMixin).
     @Unique
-    private static final long roll_mod$TANK_SIZE = 1000L;
+    private static final long roll_mod$TANK_SIZE = 10_000L;
 
     @Override
     public CommonStorage<FluidResource> getFluids(ItemStack itemStack, ItemContext context) {

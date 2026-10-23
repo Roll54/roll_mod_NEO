@@ -1,0 +1,13 @@
+{
+  "loader": "fusion:model",
+  "type": "connecting",
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "extended_industrialization:block/steel_plated_bricks_ct",
+    "particle": "extended_industrialization:block/steel_plated_bricks"
+  },
+  "connections": [
+      { "type": "match_block", "ignore_missing": true, "block": "extended_industrialization:steel_plated_bricks" },
+      { "type": "mi_ct:is_mi_machine" }
+    ]
+}

@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.data.datagen.ore;
 
 import com.google.common.hash.Hashing;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.data.datagen.DatagenSourcePaths;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockOverlay;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.ItemBase;
@@ -45,30 +46,9 @@ public class OreTextureProvider implements DataProvider {
         this.itemLayersDir = templatesRoot.resolve(Path.of("items", "layers"));
     }
 
-    /**
-     * Locates {@code assets/<modid>/py_datagen} containing the source templates. The templates live in
-     * the {@code common} module's resources, but datagen may launch from any module's working directory
-     * (e.g. {@code :client:runData}), so we probe several candidate roots relative to the CWD and pick
-     * the first that exists rather than assuming a single-module layout.
-     */
+    /** Locates {@code assets/<modid>/py_datagen} containing the source templates. */
     private static Path locateTemplatesRoot() {
-        Path cwd = Path.of("").toAbsolutePath().normalize();
-        if (cwd.getFileName() != null && cwd.getFileName().toString().equals("run")) {
-            cwd = cwd.getParent();
-        }
-        Path tail = Path.of("src", "main", "resources", "assets", RollMod.MODID, "py_datagen");
-        List<Path> candidates = List.of(
-                cwd.resolve(tail),                                   // running from the module that holds the templates
-                cwd.resolve("common").resolve(tail),                // running from the repo root
-                cwd.resolveSibling("common").resolve(tail)          // running from a sibling module (client/server)
-        );
-        for (Path candidate : candidates) {
-            if (Files.isDirectory(candidate)) {
-                return candidate;
-            }
-        }
-        // Fall back to the original behaviour so the "Missing template" error still names a sensible path.
-        return candidates.get(0);
+        return DatagenSourcePaths.locateAssets(Path.of("py_datagen"));
     }
 
     @Override
