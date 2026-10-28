@@ -573,7 +573,7 @@ in `CropBlockEntityMixin`), and the Weed Manager / Crop Managers skip it.
 |---|---|---|---|---|
 | Weed Manager `roll_mod:weed_manager` | 5×5, own Y | every 10 ticks | 100k FE buffer, 1000 FE/t in, 500 FE per removal | herbicide only, 1 biomass per removal; skips crops whose herbicide exceeds 2× the stack value |
 | Crop Manager `roll_mod:crop_manager` | 11×11, own Y | every tick | 100k buffer, 500 per op | **deprecated**, hidden from tabs; de-weeds and harvests |
-| MBD2 Crop Manager LV / MV (`crop_manager_mk2`) / HV | 3×3 / 5×5 / 7×7 behind the machine | `tick_interval` (default 1) | 50k / 100k / 200k buffer, 500 / 1000 / 2000 per t | trait `crop_harvester`; GUI toggles collect, herbicide, void biomass, show area; 1 biomass per weed |
+| MBD2 Crop Manager LV / MV (`crop_manager_mk2`) / HV | 3×3 / 5×5 / 7×7 behind the machine | every 20 ticks (`tick_interval`) | 50k / 100k / 200k buffer, 500 / 1000 / 2000 per t | trait `crop_harvester`; GUI toggles collect, herbicide, void biomass, show area; 1 biomass per weed |
 
 MBD2 trait fields and slots: see `docs/mbd2-recipes.md`. All managers respect `weeds_resistance`.
 
@@ -596,6 +596,35 @@ MBD2 trait fields and slots: see `docs/mbd2-recipes.md`. All managers respect `w
   **`docs/hydroponic-data-maps.md`**. JEI has a *Hydroponic Reagents* category.
 - Fallback soil JSON: `data/roll_mod/agricraft/soils/hydroponic_garden_bed.json` (used only if the mixin can't
   answer).
+
+### 11.4a EV Greenhouse
+`roll_mod:ev_greenhouse` is an MBD2 multiblock (code in `compat/MBD2/greenhouse/`) that grows the AgriCraft seed in
+its one slot **without a crop in the world**; the seed is never used up. 3×3×3, controller in the middle of the
+front face, read back → front, each layer bottom first:
+
+| | back | middle | front |
+|---|---|---|---|
+| bottom | `H F H` | `F S F` | `H C H` |
+| middle | `F G F` | `G . G` | `F G F` |
+| top | `H F H` | `F L F` | `H F H` |
+
+`H` highly advanced machine hull **or an MI hatch** — at least one item output, one fluid input and one energy
+input hatch, any tier — `F` netherite frame, `G` glass, `S` grass block, `L` lapotronic laser block, `.` air (the
+crop), `C` controller. Formed, the client stops drawing the structure's blocks (they stay in the world, only hidden)
+and the controller draws the geo model; the plant is drawn at its stage in the air cell.
+
+- **Growth** (`GreenhouseGrowth`): as a crop on a fully supplied Hydroponic Garden Bed (soil ×6.0), but with the
+  *expected* time instead of rolls — a stage takes `4096 / (3 × min(1, 6 × (growth_chance + growth × growth_bonus ×
+  growthMultiplier)))` ticks. Weeds, light, seasons, soil and every other requirement are ignored.
+- **Harvest**: AgriCraft's own — `(gain + 3) / 3` rolls of the plant's products — into the item output hatches, then the
+  plant restarts at its after-harvest stage. If the harvest does not fit the item output hatches it waits.
+- **Costs**: each stage starts by taking 1000 mB water and 1000 fertilizer (`roll_mod:fertilizer` data map units)
+  from the fluid input hatches; growing costs 2048 EU × the stage's ticks, from the energy input hatches.
+- **Overclock** (MI's): the machine may draw up to 8192 EU/t plus MI upgrades (right-click into the controller,
+  sneak + empty hand takes them back). Above 2048 EU/t it grows proportionally faster, ramping like MI's
+  `CrafterComponent` (+1 efficiency per harvest, −1 per idle or starved tick, cap `2048 + efficiency × cycleEU / 600`).
+- Numbers live in `GreenhouseSettings`. JEI category *EV Greenhouse Yield*: per plant, the average items of each
+  product per harvest for gain 1–2, 3–5, 6–8 and 9–10, and the base regrowth time at growth 1 and 10.
 
 ### 11.5 Bug fixes to AgriCraft
 - `AgriSeedItemMixin`: a seed without a genome used on anything but crop sticks or an analyzer no longer gets eaten

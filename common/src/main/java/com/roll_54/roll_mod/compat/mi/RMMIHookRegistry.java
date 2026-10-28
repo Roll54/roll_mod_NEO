@@ -15,17 +15,17 @@ import net.swedz.tesseract.neoforge.registry.holder.ItemHolder;
 public final class RMMIHookRegistry implements MIHookRegistry {
     @Override
     public DeferredRegister.Blocks blockRegistry() {
-        return null;
+        return RMMIRegistries.BLOCKS;
     }
 
     @Override
     public DeferredRegister<BlockEntityType<?>> blockEntityRegistry() {
-        return null;
+        return RMMIRegistries.BLOCK_ENTITIES;
     }
 
     @Override
     public DeferredRegister.Items itemRegistry() {
-        return null;
+        return RMMIRegistries.ITEMS;
     }
 
     @Override
@@ -40,7 +40,7 @@ public final class RMMIHookRegistry implements MIHookRegistry {
 
     @Override
     public void onBlockRegister(BlockHolder blockHolder) {
-
+        RMMIRegistries.include(blockHolder);
     }
 
     @Override
@@ -50,7 +50,7 @@ public final class RMMIHookRegistry implements MIHookRegistry {
 
     @Override
     public void onItemRegister(ItemHolder itemHolder) {
-
+        RMMIRegistries.include(itemHolder);
     }
 
     @Override
@@ -60,6 +60,7 @@ public final class RMMIHookRegistry implements MIHookRegistry {
 
     @Override
     public SortOrder sortOrderMachines() {
-        return null;
+        // Tesseract hands this straight to ItemHolder.sorted() for every machine item.
+        return SortOrder.UNSORTED;
     }
 }

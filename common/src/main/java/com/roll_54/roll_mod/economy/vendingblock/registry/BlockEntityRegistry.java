@@ -33,6 +33,17 @@ public class BlockEntityRegistry {
                           BlockRegistry.DISPLAY.get())
                       .build(null));
 
+  public static final Supplier<
+          BlockEntityType<com.roll_54.roll_mod.economy.service.ServiceBlockEntity>>
+      SERVICE_BE =
+          BLOCK_ENTITIES.register(
+              "service_block_be",
+              () ->
+                  BlockEntityType.Builder.of(
+                          com.roll_54.roll_mod.economy.service.ServiceBlockEntity::new,
+                          BlockRegistry.SERVICE.get())
+                      .build(null));
+
   /**
    * The economy used to be the separate mod {@code roll_mod_currency}, so everything already saved
    * on the server carries that namespace. The alias points the old name at the new one, so blocks

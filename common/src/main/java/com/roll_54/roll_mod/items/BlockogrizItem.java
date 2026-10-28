@@ -3,6 +3,9 @@ package com.roll_54.roll_mod.items;
 import com.roll_54.roll_mod.registry.TagRegistry;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -12,6 +15,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.context.UseOnContext;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.CampfireBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -24,8 +29,36 @@ import java.util.Optional;
 
 public class BlockogrizItem extends DiggerItem{
 
-    public BlockogrizItem(Tier tier, Properties properties) {
+    /** Efficiency level every new stack of this tier comes with. */
+    private final int preEfficiency;
+
+    public BlockogrizItem(Tier tier, int preEfficiency, Properties properties) {
         super(tier, TagRegistry.MINEABLE_WITH_PAXEL, properties);
+        this.preEfficiency = preEfficiency;
+    }
+
+    /**
+     * Adds this tier's pre-enchant to {@code stack}, never lowering a level it already has. Recipe
+     * results ({@code BlockogrizRecipeResultMixin}) and creative tab stacks go through here, so a
+     * blockogriz is enchanted wherever it is made; stacks that already exist are left alone.
+     */
+    public static ItemStack withPreEnchant(ItemStack stack, HolderLookup.Provider registries) {
+        if (stack.getItem() instanceof BlockogrizItem item && item.preEfficiency > 0
+                && stack.getEnchantments().getLevel(efficiency(registries)) < item.preEfficiency) {
+            stack.enchant(efficiency(registries), item.preEfficiency);
+        }
+        return stack;
+    }
+
+    private static Holder<Enchantment> efficiency(HolderLookup.Provider registries) {
+        return registries.lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.EFFICIENCY);
+    }
+
+    /** Fallback for recipe types the mixin does not cover; runs when a player or crafter takes the result. */
+    @Override
+    public void onCraftedPostProcess(ItemStack stack, Level level) {
+        super.onCraftedPostProcess(stack, level);
+        withPreEnchant(stack, level.registryAccess());
     }
 
     @Override

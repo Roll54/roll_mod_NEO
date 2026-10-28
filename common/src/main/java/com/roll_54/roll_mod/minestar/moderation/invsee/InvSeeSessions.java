@@ -79,12 +79,10 @@ public final class InvSeeSessions {
         if (!ModerationPermissions.canInvSee(moderator)) return;
         MinecraftServer server = moderator.server;
 
+        // A moderator may open their own live inventory and implants too (InvSeeUI drops the
+        // duplicate grid underneath for that one). Their own offline file stays refused below.
         ServerPlayer online = id != null ? server.getPlayerList().getPlayer(id)
                 : server.getPlayerList().getPlayerByName(name);
-        if (online != null && online.getUUID().equals(moderator.getUUID())) {
-            deny(moderator, "gui.roll_mod.invsee.self");
-            return;
-        }
         boolean editable = ModerationPermissions.canInvEdit(moderator);
 
         if (!offline) {

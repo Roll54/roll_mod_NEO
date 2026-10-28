@@ -16,6 +16,11 @@
         "allow_fertilizer_mutation": true,
         // Set to true to allow mutations on clone events (spreading from single crop).
         "clone_mutations": false,
+        /*
+         * Multiplier applied to a crop's fertility-based chance to be picked as a parent for cross breeding / cloning (e.g. via bone meal on cross crop sticks). 1.0 keeps the base chance unchanged, 1.2 raises it by 20%.
+         * Range: 0 - 5
+         */
+        "mutation_chance_multiplier": 1.2,
         // Set to true to override vanilla farming, meaning vanilla seeds will be converted to agricraft seeds on planting.
         "override_vanilla_farming": true,
         // Set to true to convert seeds only in the analyzer. Has no effect if "Override vanilla farming" is set to false.
@@ -53,7 +58,9 @@
          * Enchantment cost in player levels to enchant the seed bag.
          * Range: 0 - 30
          */
-        "seed_bag_enchant_cost": 10
+        "seed_bag_enchant_cost": 10,
+        // Set to false to prevent AgriCraft loot modifiers from clearing the default loot dropped by grass
+        "allow_grass_drop_resets": true
     },
     "stats": {
         /*
@@ -129,9 +136,66 @@
         // Set to true to hide the Mutativity stat (hidden stats will not show up in tooltips or seed analysis). Setting min and max equal and hiding a stat effectively disables it, with its behaviour at the defined value for min and max.
         "mutativity_hidden": false
     },
+    "irrigation": {
+        /*
+         * The amount of water (in mB) one irrigation tank block can hold
+         * Range: 1000 - 40000
+         */
+        "tank_capacity": 8000,
+        /*
+         * The amount of water (in mB) one irrigation channel block can hold
+         * Range: 50 - 2000
+         */
+        "channel_capacity": 500,
+        /*
+         * The amount of water (in mB per tick) an irrigation tank collects while it is raining (set to 0 to disable)
+         * Range: 0 - 50
+         */
+        "rain_fill_rate": 5,
+        /*
+         * The amount of water (in mB per second) a sprinkler consumes while it is working
+         * Range: 0 - 1000
+         */
+        "sprinkler_water_consumption": 10,
+        /*
+         * The chance a sprinkler gives a growth tick to a plant in its working area on each pass
+         * Range: 0 - 1
+         */
+        "sprinkler_growth_chance": 0.2,
+        /*
+         * The minimum interval (in ticks) between two full irrigation cycles of a sprinkler
+         * Range: 1 - 1200
+         */
+        "sprinkler_interval": 40,
+        // Set to false to disable sprinkler water particles
+        "sprinkler_particles": true
+    },
+    "greenhouse": {
+        /*
+         * The maximum interior size (in blocks) of a greenhouse
+         * Range: 64 - 8192
+         */
+        "block_limit": 1024,
+        /*
+         * The minimum fraction of the greenhouse ceiling that must be made of glass
+         * Range: 0 - 1
+         */
+        "ceiling_glass_fraction": 0.4,
+        // Set to false to prevent greenhouses from bypassing seasonal growth requirements
+        "ignores_seasons": true,
+        /*
+         * Growth rate multiplier for crops inside a greenhouse
+         * Range: 1 - 3
+         */
+        "growth_modifier": 1.05
+    },
     "compat": {
+        // Enable Starfield Pastoral compatibility on NeoForge. Only verified versions are supported; restart after changing this option.
+        "starfield": true,
         // Set to false to disable compatibility with Mystical Agriculture (in case things break)
         "mysticalagriculture": true,
+        // Set to true to allow Mystical Agriculture crops to spread from a single mature parent, overriding their cloneable data flag. Requires Mystical Agriculture compatibility; normal fertility and spread chance rolls still apply.
+        "mysticalagriculture_cloning": false,
         // If true, harvesting drones will be able to harvest AgriCraft crops
         "pneumaticcraft": true,
         // If set to true, plant gatherer will be able to harvest AgriCraft crops

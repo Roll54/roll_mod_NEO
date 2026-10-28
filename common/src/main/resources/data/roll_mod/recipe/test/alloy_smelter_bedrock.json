@@ -1,0 +1,27 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "extended_industrialization"
+    }
+  ],
+  "type": "extended_industrialization:alloy_smelter",
+  "eu": 4,
+  "duration": 100,
+  "item_inputs": [
+    {
+      "item": "minecraft:bedrock",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:barrier",
+      "amount": 1
+    }
+  ],
+  "item_outputs": [
+    {
+      "item": "minecraft:bedrock",
+      "amount": 2
+    }
+  ]
+}

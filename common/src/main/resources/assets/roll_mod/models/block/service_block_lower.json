@@ -1,0 +1,257 @@
+{
+	"credit": "Made with Blockbench",
+	"parent": "block/block",
+	"textures": {
+		"front": "roll_mod:block/service_block/service_block_front_bottom",
+		"side": "roll_mod:block/service_block/service_block_side_bottom",
+		"bottom": "roll_mod:block/service_block/service_block_bottom",
+		"particle": "roll_mod:block/service_block/service_block_side_bottom"
+	},
+	"elements": [
+		{
+			"name": "body",
+			"from": [
+				0,
+				0,
+				0
+			],
+			"to": [
+				16,
+				16,
+				16
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#front",
+					"cullface": "north"
+				},
+				"east": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#side",
+					"cullface": "east"
+				},
+				"south": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#side",
+					"cullface": "south"
+				},
+				"west": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#side",
+					"cullface": "west"
+				},
+				"down": {
+					"uv": [
+						0,
+						0,
+						16,
+						16
+					],
+					"texture": "#bottom",
+					"cullface": "down"
+				}
+			}
+		},
+		{
+			"name": "keypad",
+			"from": [
+				2,
+				11,
+				-0.5
+			],
+			"to": [
+				7,
+				15,
+				0
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						9,
+						1,
+						14,
+						5
+					],
+					"texture": "#front"
+				},
+				"east": {
+					"uv": [
+						9,
+						1,
+						14,
+						1.5
+					],
+					"texture": "#front"
+				},
+				"west": {
+					"uv": [
+						9,
+						1,
+						14,
+						1.5
+					],
+					"texture": "#front"
+				},
+				"up": {
+					"uv": [
+						9,
+						1,
+						14,
+						1.5
+					],
+					"texture": "#front"
+				},
+				"down": {
+					"uv": [
+						9,
+						1,
+						14,
+						1.5
+					],
+					"texture": "#front"
+				}
+			}
+		},
+		{
+			"name": "card_shelf",
+			"from": [
+				2,
+				7,
+				-1
+			],
+			"to": [
+				7,
+				8,
+				0
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						9,
+						8,
+						14,
+						9
+					],
+					"texture": "#front"
+				},
+				"east": {
+					"uv": [
+						9,
+						8,
+						14,
+						9
+					],
+					"texture": "#front"
+				},
+				"west": {
+					"uv": [
+						9,
+						8,
+						14,
+						9
+					],
+					"texture": "#front"
+				},
+				"up": {
+					"uv": [
+						9,
+						8,
+						14,
+						9
+					],
+					"texture": "#front"
+				},
+				"down": {
+					"uv": [
+						9,
+						8,
+						14,
+						9
+					],
+					"texture": "#front"
+				}
+			}
+		},
+		{
+			"name": "nozzle_holder",
+			"from": [
+				9.5,
+				3,
+				-1
+			],
+			"to": [
+				11.5,
+				6,
+				0
+			],
+			"faces": {
+				"north": {
+					"uv": [
+						5,
+						10,
+						6,
+						13
+					],
+					"texture": "#front"
+				},
+				"east": {
+					"uv": [
+						5,
+						11,
+						6,
+						11.5
+					],
+					"texture": "#front"
+				},
+				"west": {
+					"uv": [
+						5,
+						11,
+						6,
+						11.5
+					],
+					"texture": "#front"
+				},
+				"up": {
+					"uv": [
+						5,
+						11,
+						6,
+						11.5
+					],
+					"texture": "#front"
+				},
+				"down": {
+					"uv": [
+						5,
+						11,
+						6,
+						11.5
+					],
+					"texture": "#front"
+				}
+			}
+		}
+	]
+}

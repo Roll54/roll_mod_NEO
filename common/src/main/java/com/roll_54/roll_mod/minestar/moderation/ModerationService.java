@@ -51,7 +51,7 @@ public final class ModerationService {
 
         ModerationLog.append(moderator.getGameProfile().getName(), "muted",
                 target.getGameProfile().getName(), reasonOf(rule, note) + " for " + duration);
-        announce(target.server, moderator, "msg.roll_mod.moderation.announce.muted",
+        announce(target.server, moderator.getGameProfile().getName(), "msg.roll_mod.moderation.announce.muted",
                 target.getGameProfile().getName(), duration);
         PunishmentLetters.send(target.server, target.getUUID(), PunishmentLetters.Kind.MUTE,
                 moderator.getGameProfile().getName(), millis, rule, note, 0);
@@ -75,22 +75,30 @@ public final class ModerationService {
      * drop one; only an operator clearing them by hand can.
      */
     public static int warn(ServerPlayer moderator, ServerPlayer target, String rule, String note) {
+        return warn(moderator.getGameProfile().getName(), target, rule, note);
+    }
+
+    /**
+     * {@link #warn(ServerPlayer, ServerPlayer, String, String)} issued by something other than a
+     * moderator — {@code actor} is the name the files, the log and the staff announcement credit, as
+     * {@code "server"} for an automatic one. Same three-strike rule.
+     */
+    public static int warn(String actor, ServerPlayer target, String rule, String note) {
         String targetName = target.getGameProfile().getName();
         int count = WarnStore.add(target.getUUID(), targetName,
-                new WarnStore.Warn(System.currentTimeMillis(),
-                        moderator.getGameProfile().getName(), rule, note));
+                new WarnStore.Warn(System.currentTimeMillis(), actor, rule, note));
 
         target.sendSystemMessage(Component.translatable("msg.roll_mod.moderation.warned", count)
                 .withStyle(ChatFormatting.RED));
         cite(target, rule);
         ModerationStatus.sendTo(target);
 
-        ModerationLog.append(moderator.getGameProfile().getName(), "warned", targetName,
+        ModerationLog.append(actor, "warned", targetName,
                 reasonOf(rule, note) + " (warning #" + count + ")");
-        announce(target.server, moderator, "msg.roll_mod.moderation.announce.warned",
+        announce(target.server, actor, "msg.roll_mod.moderation.announce.warned",
                 targetName, String.valueOf(count));
         PunishmentLetters.send(target.server, target.getUUID(), PunishmentLetters.Kind.WARN,
-                moderator.getGameProfile().getName(), 0L, rule, note, count);
+                actor, 0L, rule, note, count);
 
         if (count >= WARNS_BEFORE_BAN) {
             // Automatic, so the audit line says "server" rather than crediting the moderator with a
@@ -200,10 +208,9 @@ public final class ModerationService {
         return rule + ": " + note;
     }
 
-    private static void announce(MinecraftServer server, ServerPlayer moderator, String key,
+    private static void announce(MinecraftServer server, String actor, String key,
                                  String targetName, String detail) {
-        broadcastToModerators(server, Component.translatable(key,
-                        moderator.getGameProfile().getName(), targetName, detail)
+        broadcastToModerators(server, Component.translatable(key, actor, targetName, detail)
                 .withStyle(ChatFormatting.GOLD));
     }
 

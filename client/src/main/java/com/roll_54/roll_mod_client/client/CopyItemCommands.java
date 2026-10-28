@@ -19,8 +19,9 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
 import java.util.function.Function;
 
 /**
- * {@code /rollmod copyid} and {@code /rollmod copyname} — print the held item's full registry id
- * or just its path (no mod id) in chat (click to copy again) and put it on the clipboard straight away.
+ * {@code /rollmod copyid}, {@code /rollmod copyname} and {@code /rollmod copyname lang} — print the held
+ * item's full registry id, just its path (no mod id), or its display name in the current client language
+ * in chat (click to copy again) and put it on the clipboard straight away.
  *
  * <p>Client-side because only the client can touch the clipboard. Any other {@code /rollmod ...}
  * is unknown to the client dispatcher, so NeoForge still forwards it to the server.
@@ -34,7 +35,8 @@ public final class CopyItemCommands {
     public static void onRegisterClientCommands(RegisterClientCommandsEvent event) {
         event.getDispatcher().register(Commands.literal("rollmod")
                 .then(copy("copyid", stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()).toString()))
-                .then(copy("copyname", stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath())));
+                .then(copy("copyname", stack -> BuiltInRegistries.ITEM.getKey(stack.getItem()).getPath())
+                        .then(copy("lang", stack -> stack.getHoverName().getString()))));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> copy(String name, Function<ItemStack, String> extractor) {

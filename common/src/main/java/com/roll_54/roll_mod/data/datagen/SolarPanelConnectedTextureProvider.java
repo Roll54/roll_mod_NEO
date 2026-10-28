@@ -34,11 +34,11 @@ import java.util.concurrent.CompletableFuture;
 public class SolarPanelConnectedTextureProvider implements DataProvider {
 
     /**
-     * Frame thickness on every edge: the tops' frame is a dark outer line, a light bevel and a dark line
-     * around the cells (3px); sides and bottoms have only the outer line and bevel (2px).
+     * Frame thickness on every edge: the tops' frame is a single outer line round the cells (1px); sides
+     * and bottoms have the outer line and a bevel (2px).
      */
     private static int frame(String texture) {
-        return texture.startsWith("solar_panel_top_") ? 3 : 2;
+        return texture.startsWith("solar_panel_top_") ? 1 : 2;
     }
 
     /**

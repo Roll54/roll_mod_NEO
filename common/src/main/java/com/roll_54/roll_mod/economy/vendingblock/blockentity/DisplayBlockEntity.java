@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
-public class DisplayBlockEntity extends BlockEntity {
+public class DisplayBlockEntity extends BlockEntity implements OwnedBlockEntity {
 
   private UUID ownerID;
   private String ownerUser;

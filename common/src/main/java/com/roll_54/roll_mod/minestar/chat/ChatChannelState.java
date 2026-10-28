@@ -47,6 +47,8 @@ public final class ChatChannelState {
     /** The button messages go through: a built-in or a custom one. */
     private String send = ChatButton.ALL;
     private int nextCustom = 1;
+    /** Whether a message typed with a leading {@code !} goes to Global, whatever button is picked. */
+    private boolean bangGlobal;
 
     private ChatChannelState() {}
 
@@ -81,7 +83,16 @@ public final class ChatChannelState {
         return find(send, view());
     }
 
+    public synchronized boolean bangGlobal() {
+        return bangGlobal;
+    }
+
     /* ------------------------------------------------ editing ------------------------------------------------ */
+
+    public synchronized void setBangGlobal(boolean on) {
+        bangGlobal = on;
+        save();
+    }
 
     /**
      * A click on a button over the chat box: a built-in one switches both the view and where
@@ -155,6 +166,7 @@ public final class ChatChannelState {
         json.addProperty("view", view);
         json.addProperty("send", send);
         json.addProperty("nextCustom", nextCustom);
+        json.addProperty("bangGlobal", bangGlobal);
 
         Path path = file();
         Path tmp = path.resolveSibling(path.getFileName() + ".tmp");
@@ -198,6 +210,7 @@ public final class ChatChannelState {
             if (json.has("view")) state.view = json.get("view").getAsString();
             if (json.has("send")) state.send = json.get("send").getAsString();
             if (json.has("nextCustom")) state.nextCustom = Math.max(1, json.get("nextCustom").getAsInt());
+            if (json.has("bangGlobal")) state.bangGlobal = json.get("bangGlobal").getAsBoolean();
         } catch (RuntimeException e) {
             RollMod.LOGGER.warn("[Chat] {} is malformed; using the default chat buttons", file(), e);
             return new ChatChannelState();

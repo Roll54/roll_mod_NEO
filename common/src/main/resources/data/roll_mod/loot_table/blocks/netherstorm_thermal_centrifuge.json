@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "roll_mod:netherstorm_thermal_centrifuge"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "roll_mod:blocks/netherstorm_thermal_centrifuge"
+}

@@ -40,7 +40,8 @@ public class JEIRollModPlugin implements IModPlugin {
         registration.addRecipeCategories(
                 new ResearchTableRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new CauldronWashingCategory(registration.getJeiHelpers().getGuiHelper()),
-                new HydroponicReagentCategory(registration.getJeiHelpers().getGuiHelper())
+                new HydroponicReagentCategory(registration.getJeiHelpers().getGuiHelper()),
+                new GreenhouseYieldCategory(registration.getJeiHelpers().getGuiHelper())
         );
     }
 
@@ -85,6 +86,7 @@ public class JEIRollModPlugin implements IModPlugin {
 
         // Built from the synced data maps, so datapack reagents appear after a /reload too.
         registration.addRecipes(HydroponicReagentCategory.TYPE, HydroponicReagentRecipe.collect());
+        registration.addRecipes(GreenhouseYieldCategory.TYPE, GreenhouseYieldRecipe.collect());
     }
 
     @Override
@@ -98,6 +100,7 @@ public class JEIRollModPlugin implements IModPlugin {
         registration.addRecipeCatalyst(new ItemStack(net.minecraft.world.level.block.Blocks.CAULDRON), CauldronWashingCategory.TYPE);
 
         registration.addRecipeCatalyst(new ItemStack(BlockRegistry.HYDROPONIC_GARDEN_BED), HydroponicReagentCategory.TYPE);
+        registration.addRecipeCatalyst(GreenhouseYieldCategory.controllerStack(), GreenhouseYieldCategory.TYPE);
     }
 
     @Override

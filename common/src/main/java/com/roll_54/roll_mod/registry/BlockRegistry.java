@@ -13,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.TransparentBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.material.PushReaction;
@@ -46,6 +47,18 @@ public class BlockRegistry {
     public static final DeferredBlock<Block> LAPOTRONIC_LASER_BLOCK = BLOCKS.register(
             "lapotronic_laser_block",
             () -> new Block(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.AMETHYST))
+    );
+
+    /**
+     * Glass that shrugs off explosions (obsidian's resistance) and that the wither cannot break
+     * ({@code minecraft:wither_immune}, in {@code RollBlockTagDatagen}). Unlike vanilla glass it drops
+     * itself, and it connects into one pane with its neighbours through Fusion.
+     */
+    public static final DeferredBlock<Block> BOROSILICATE_GLASS = BLOCKS.register(
+            "borosilicate_glass",
+            () -> new TransparentBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS)
+                    .strength(3.0F, 1200.0F)
+                    .requiresCorrectToolForDrops())
     );
 
     public static final DeferredBlock<Block> LATEX_DANDELION =
@@ -266,6 +279,7 @@ public class BlockRegistry {
         ITEMS.register("hydroponic_garden_bed", () -> new BlockItem(HYDROPONIC_GARDEN_BED.get(), new Item.Properties()));
         ITEMS.register("treated_log", () -> new BlockItem(TREATED_LOG.get(), new Item.Properties()));
         ITEMS.register("lapotronic_laser_block", () -> new BlockItem(LAPOTRONIC_LASER_BLOCK.get(), new Item.Properties()));
+        ITEMS.register("borosilicate_glass", () -> new BlockItem(BOROSILICATE_GLASS.get(), new Item.Properties()));
         ITEMS.register("research_workbench", () -> new BlockItem(RESEARCH_WORKBENCH.get(), new Item.Properties()));
         // Its name follows the client's "show new items" option, like the modules it installs.
         ITEMS.register("module_installation_table", () -> new BlockItem(MODULE_INSTALLATION_TABLE.get(), new Item.Properties()) {

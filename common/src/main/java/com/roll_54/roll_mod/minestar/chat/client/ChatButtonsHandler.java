@@ -6,6 +6,7 @@ import com.roll_54.roll_mod.minestar.chat.ChatChannel;
 import com.roll_54.roll_mod.minestar.hub.gui.HubBadge;
 import com.roll_54.roll_mod.minestar.chat.ChatChannelState;
 import net.minecraft.ChatFormatting;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -27,6 +28,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientChatEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,10 +42,17 @@ import org.jetbrains.annotations.Nullable;
  * one where they go, and the view to All. The button messages go through is drawn yellow, the one
  * being viewed (All, when a custom one is sending) green.
  *
- * <p>Sending rewrites the typed text for the chosen button — see {@link ChatButton#outgoing}. Typed
+ * <p>Sending rewrites the typed text for the chosen button — see {@link ChatButton#outgoing}. With
+ * the Settings switch on, a message starting with {@code !} goes to Global instead, without the
+ * {@code !}. Typed
  * commands never reach {@link ClientChatEvent}, so they are left alone. A rewrite that turns into a
  * command (Friends' {@code /fc}, or a custom {@code /msg …}) is sent as one here and the chat
  * message itself cancelled: the event fires after vanilla has already decided this is chat.
+ *
+ * <p>Ctrl + left Alt, pressed and released on its own while the chat is open, moves to the next
+ * button — the same as clicking it. Hardcoded rather than a key mapping, since a mapping cannot be
+ * just two modifiers. Only the left Alt counts: Windows sends AltGr as left Ctrl + right Alt, so a
+ * tap of AltGr on European layouts must not switch channels.
  */
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = RollMod.MODID, value = Dist.CLIENT)
@@ -58,6 +67,12 @@ public final class ChatButtonsHandler {
     private static final int BOTTOM_OFFSET = 14 + BUTTON_H + 2;
 
     private ChatButtonsHandler() {}
+
+    /**
+     * Ctrl and left Alt are both down with nothing else pressed since. Switching waits for the release
+     * so AltGr characters and other Ctrl+Alt shortcuts still work: their third key disarms it.
+     */
+    private static boolean cycleArmed;
 
     @SubscribeEvent
     public static void onScreenInit(ScreenEvent.Init.Post event) {
@@ -76,6 +91,44 @@ public final class ChatButtonsHandler {
         buttons.forEach(ChannelButton::restyle);
     }
 
+    @SubscribeEvent
+    public static void onKeyPressed(ScreenEvent.KeyPressed.Pre event) {
+        if (!(event.getScreen() instanceof ChatScreen)) return;
+        int key = event.getKeyCode();
+        // Read from the key state, so it is right whichever of the two went down first.
+        cycleArmed = (isControl(key) || key == GLFW.GLFW_KEY_LEFT_ALT) && Screen.hasControlDown()
+                && InputConstants.isKeyDown(Minecraft.getInstance().getWindow().getWindow(), GLFW.GLFW_KEY_LEFT_ALT);
+    }
+
+    @SubscribeEvent
+    public static void onKeyReleased(ScreenEvent.KeyReleased.Pre event) {
+        if (!(event.getScreen() instanceof ChatScreen screen)) return;
+        int key = event.getKeyCode();
+        if (!cycleArmed || !(isControl(key) || key == GLFW.GLFW_KEY_LEFT_ALT)) return;
+        cycleArmed = false;
+
+        ChatChannelState state = ChatChannelState.get();
+        List<ChatButton> visible = state.visible();
+        if (visible.size() < 2) return;
+        String current = state.send().id();
+        int index = 0;
+        for (int i = 0; i < visible.size(); i++) {
+            if (visible.get(i).id().equals(current)) {
+                index = i;
+                break;
+            }
+        }
+        state.pick(visible.get((index + 1) % visible.size()));
+        ClientChatStore.refresh();
+        for (GuiEventListener child : screen.children()) {
+            if (child instanceof ChannelButton button) button.restyle();
+        }
+    }
+
+    private static boolean isControl(int key) {
+        return key == GLFW.GLFW_KEY_LEFT_CONTROL || key == GLFW.GLFW_KEY_RIGHT_CONTROL;
+    }
+
     /**
      * The typed text, sent as the command of the button messages go through. The server locks plain
      * chat, so every message leaves as a command; a command typed by hand is left alone.
@@ -84,8 +137,17 @@ public final class ChatButtonsHandler {
     public static void onSend(ClientChatEvent event) {
         String text = event.getMessage();
         if (text.isBlank() || text.startsWith("/")) return;
-        String outgoing = ChatChannelState.get().send().outgoing(text);
+        ChatChannelState state = ChatChannelState.get();
         event.setCanceled(true);
+        String outgoing;
+        if (state.bangGlobal() && text.startsWith(ChatButton.GLOBAL_PREFIX)) {
+            String stripped = ChatButton.withoutGlobalPrefix(text);
+            // Nothing but "!": nothing to say.
+            if (stripped.isEmpty()) return;
+            outgoing = ChatButton.GLOBAL_BUTTON.outgoing(stripped);
+        } else {
+            outgoing = state.send().outgoing(text);
+        }
         var connection = Minecraft.getInstance().getConnection();
         if (connection != null) connection.sendCommand(outgoing.substring(1));
     }

@@ -123,14 +123,13 @@ public final class HomeTab {
                         RankResolver.displayName(RankResolver.DEFAULT_RANK)))
                 .initialValue(RankResolver.displayName(RankResolver.DEFAULT_RANK)).build();
         SimpleBinding<Integer> tier = intBinding(supplier(server, PlayerTier::of, 0), 0);
-        SimpleBinding<Integer> questsDone =
-                intBinding(supplier(server, p -> QuestProgress.of(p).requiredDone(), 0), 0);
-        SimpleBinding<Integer> questsTotal =
-                intBinding(supplier(server, p -> QuestProgress.of(p).requiredTotal(), 0), 0);
-        SimpleBinding<Integer> optionalDone =
-                intBinding(supplier(server, p -> QuestProgress.of(p).optionalDone(), 0), 0);
-        SimpleBinding<Integer> optionalTotal =
-                intBinding(supplier(server, p -> QuestProgress.of(p).optionalTotal(), 0), 0);
+        // Bindings are polled every server tick while the screen is open, and counting walks the whole
+        // quest book, so the four quest lines share one count, refreshed once a second.
+        Supplier<QuestProgress.Counts> quests = throttled(server, QuestProgress::of, QuestProgress.Counts.NONE);
+        SimpleBinding<Integer> questsDone = intBinding(() -> quests.get().requiredDone(), 0);
+        SimpleBinding<Integer> questsTotal = intBinding(() -> quests.get().requiredTotal(), 0);
+        SimpleBinding<Integer> optionalDone = intBinding(() -> quests.get().optionalDone(), 0);
+        SimpleBinding<Integer> optionalTotal = intBinding(() -> quests.get().optionalTotal(), 0);
 
         UIElement column = new UIElement();
         column.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexGrow(1).heightPercent(100)
@@ -335,6 +334,28 @@ public final class HomeTab {
                                             java.util.function.Function<ServerPlayer, T> mapper,
                                             T fallback) {
         return () -> server == null ? fallback : mapper.apply(server);
+    }
+
+    /** Ticks a {@link #throttled} value is reused for. */
+    private static final int REFRESH_TICKS = 20;
+
+    /** {@link #supplier}, but computed at most once per {@value #REFRESH_TICKS} ticks, by the server's tick count. */
+    private static <T> Supplier<T> throttled(@Nullable ServerPlayer server,
+                                             java.util.function.Function<ServerPlayer, T> mapper,
+                                             T fallback) {
+        if (server == null) return () -> fallback;
+        Object[] cached = {null};
+        int[] computedAt = {Integer.MIN_VALUE};
+        return () -> {
+            int now = server.server.getTickCount();
+            if (cached[0] == null || now - computedAt[0] >= REFRESH_TICKS) {
+                cached[0] = mapper.apply(server);
+                computedAt[0] = now;
+            }
+            @SuppressWarnings("unchecked")
+            T value = (T) cached[0];
+            return value;
+        };
     }
 
     private static <T> T value(SimpleBinding<T> binding, T fallback) {

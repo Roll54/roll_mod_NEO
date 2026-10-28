@@ -147,6 +147,15 @@ public final class HubSection {
         return button;
     }
 
+    /**
+     * Whether an in-hub panel is up: an explanation, a popup, a confirmation. Desktop-window popups
+     * do not count, as they never sit over the hub's own drawing.
+     */
+    static boolean inHubPanelOpen() {
+        UIElement panel = openPanel;
+        return panel != null && panel.isDisplayed();
+    }
+
     /** Hides whichever in-hub floating panel is up — for a desktop window taking over. */
     static void closeInHubPanel() {
         closePanel();

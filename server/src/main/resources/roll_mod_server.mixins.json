@@ -6,6 +6,7 @@
   "mixins": [
     "crash.ChunkFreezeLevelMixin",
     "crash.ChunkFreezeServerLevelMixin",
+    "crash.InventoryTickGuardMixin",
     "crash.MinecraftServerCrashGuardMixin",
     "crash.MinecraftServerLevelTickGuardMixin",
     "minestar.MinestarConfigValidateMixin",

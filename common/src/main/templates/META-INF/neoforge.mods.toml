@@ -59,6 +59,11 @@ config = "${mod_id}.createcybernetics.mixins.json"
 [[mixins]]
 config = "${mod_id}.functionalstorage.mixins.json"
 
+# AE2, soft as well: a performance mixin that lets import/export buses (every addon bus inherits the
+# patched tickingRequest) sleep while the vending block they face can neither give nor take anything.
+[[mixins]]
+config = "${mod_id}.ae2.mixins.json"
+
 # MI's FTB Quests submit path. Soft even though MI is effectively required here: the declared range
 # spans 2.4 to 2.6, and this is an optimisation, so a moved call site should not be a boot failure.
 [[mixins]]
@@ -150,6 +155,14 @@ side = "BOTH"
 modId = "functionalstorage"
 type = "optional"
 versionRange = "[1.5.8,)"
+ordering = "NONE"
+side = "BOTH"
+
+# AE2 carries only the bus sleep mixin; the range is the version its IOBusPart was read from.
+[[dependencies."${mod_id}"]]
+modId = "ae2"
+type = "optional"
+versionRange = "[19.2.17,)"
 ordering = "NONE"
 side = "BOTH"
 

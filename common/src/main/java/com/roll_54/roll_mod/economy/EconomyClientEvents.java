@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.economy;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.economy.service.ServiceBlockRenderer;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.DisplayBlockEntityDisplay;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.VendorBlockEntityDisplay;
 import com.roll_54.roll_mod.economy.vendingblock.gui.hud.HintOverlay;
@@ -12,7 +13,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 
-/** Client-side setup for the economy: the vendor block renderers and the crosshair hint overlay. */
+/** Client-side setup for the economy: the vendor, display and service block renderers and the crosshair hint overlay. */
 @EventBusSubscriber(modid = RollMod.MODID, value = Dist.CLIENT)
 public final class EconomyClientEvents {
 
@@ -29,5 +30,7 @@ public final class EconomyClientEvents {
         BlockEntityRegistry.VENDOR_BE.get(), VendorBlockEntityDisplay::new);
     event.registerBlockEntityRenderer(
         BlockEntityRegistry.DISPLAY_BE.get(), DisplayBlockEntityDisplay::new);
+    event.registerBlockEntityRenderer(
+        BlockEntityRegistry.SERVICE_BE.get(), ServiceBlockRenderer::new);
   }
 }

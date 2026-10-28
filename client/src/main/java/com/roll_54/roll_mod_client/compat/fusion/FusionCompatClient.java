@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod_client.compat.fusion;
 
+import com.supermartijn642.fusion.api.model.predicates.blockstate.FusionBlockStateModelPredicateRegistry;
 import com.supermartijn642.fusion.api.texture.types.connecting.predicates.FusionConnectionPredicateRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModList;
@@ -16,6 +17,10 @@ public final class FusionCompatClient {
         FusionConnectionPredicateRegistry.registerConnectionPredicate(
             ResourceLocation.fromNamespaceAndPath("mi_ct", "is_mi_machine"),
             IsMiMachineConnectionPredicate.SERIALIZER
+        );
+        FusionBlockStateModelPredicateRegistry.registerBlockStateModelPredicate(
+            ResourceLocation.fromNamespaceAndPath("mi_ct", "is_framed_block"),
+            IsFramedBlockModelPredicate.SERIALIZER
         );
     }
 

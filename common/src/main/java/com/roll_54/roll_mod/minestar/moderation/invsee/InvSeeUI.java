@@ -86,8 +86,12 @@ public final class InvSeeUI {
         boolean implants = layout.page() == InvSeeLayout.Page.IMPLANTS;
         int width = implants ? IMPLANTS_W : INVENTORY_W;
         int contentBottom = implants ? implantsHeight() : inventoryHeight(layout);
+        // A moderator's own inventory page would show the same slots twice, so the grid underneath
+        // is left out. The target's id is the same on both sides, so both trees still match. The
+        // implants page keeps it: that is where implants to install come from.
+        boolean ownGrid = implants || !layout.target().equals(player.getUUID());
         int inventoryY = contentBottom + 6;
-        int height = inventoryY + PLAYER_INV_H + 6;
+        int height = ownGrid ? inventoryY + PLAYER_INV_H + 6 : contentBottom + 6;
 
         UIElement root = VendorUIHelper.styledPanel(width, height);
         root.layout(l -> l.paddingAll(0));
@@ -100,7 +104,7 @@ public final class InvSeeUI {
             inventory(root, layout, session);
         }
 
-        root.addChild(VendorUIHelper.playerInventory((width - PLAYER_INV_W) / 2, inventoryY));
+        if (ownGrid) root.addChild(VendorUIHelper.playerInventory((width - PLAYER_INV_W) / 2, inventoryY));
         return ModularUI.of(RollUi.of(player, root), player);
     }
 

@@ -21,12 +21,25 @@ public record ChatButton(String id, String name, String template) {
 
     public static final String ALL = "all";
     public static final String CUSTOM_PREFIX = "custom:";
+    /** Typed in front of a message to send it to Global, when the player has that turned on. */
+    public static final String GLOBAL_PREFIX = "!";
 
     public static final ChatButton ALL_BUTTON = new ChatButton(ALL, "", "");
     public static final ChatButton GLOBAL_BUTTON = new ChatButton(ChatChannel.GLOBAL.id(), "", "");
     public static final ChatButton LOCAL_BUTTON = new ChatButton(ChatChannel.LOCAL.id(), "", "");
     public static final ChatButton FRIENDS_BUTTON = new ChatButton(ChatChannel.FRIENDS.id(), "", "");
     public static final ChatButton TRADE_BUTTON = new ChatButton(ChatChannel.TRADE.id(), "", "");
+
+    /**
+     * {@code text} without the {@link #GLOBAL_PREFIX}es it starts with, and the space after them:
+     * {@code "!! hi"} is {@code "hi"}. Stripping twice changes nothing, so the client and the
+     * server's {@code /gc} can both do it.
+     */
+    public static String withoutGlobalPrefix(String text) {
+        int start = 0;
+        while (start < text.length() && text.startsWith(GLOBAL_PREFIX, start)) start += GLOBAL_PREFIX.length();
+        return text.substring(start).strip();
+    }
 
     public boolean custom() {
         return id.startsWith(CUSTOM_PREFIX);

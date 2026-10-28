@@ -28,9 +28,13 @@ MI's datagen reads only from vanilla, MI's own jar and
   Templates we have no file for (other set-specific, gem, ore and block templates) are untouched.
 - `<part>_underlay.png` / `<part>_overlay.png` are drawn untinted under/over the tinted part (`gear_overlay`,
   `ring_overlay`, `blade_overlay`, `fine_wire_overlay`).
-- `machine_casing_ct.png`, `machine_casing_special_ct.png`, `machine_casing_pipe_ct.png` are 4x4 Fusion "simple"
-  sheets: `MICasingConnectedTexturesMixin` tints them into `<casing>_ct` / `<casing>_mct` connected textures for
-  every material casing (see the class for the generated models and mcmetas).
+- `casing_4_rivets_ct.png`, `casing_12_rivets_ct.png`, `casing_pipe_ct.png` are 4x4 Fusion "simple" sheets for
+  `machine_casing`, `machine_casing_special` and `machine_casing_pipe` ("MI in New" names): `MICasingConnectedTexturesMixin`
+  tints them into `<casing>_ct` / `<casing>_mct` connected textures for every material casing (see the class for the
+  generated models and mcmetas). The older `machine_casing_ct.png`, `machine_casing_special_ct.png`,
+  `machine_casing_pipe_ct.png` are the fallback when one of those is missing (`MiCasingConnectedTextures.ctTemplates`).
+- `machine_casing.png`, `machine_casing_special.png`, `machine_casing_pipe.png` and `crushed_dust.png` replace MI's own
+  templates of the same name, like `gear.png`.
 
 ## Why a per-item texture in our jar loses
 

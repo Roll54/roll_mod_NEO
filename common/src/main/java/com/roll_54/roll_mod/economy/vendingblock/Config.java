@@ -153,6 +153,13 @@ public class Config {
             .translation("config.roll_mod.creative.keyInTab")
             .define("vendorKeyInCreative", true);
 
+    public static final ModConfigSpec.BooleanValue AE2_BUS_SLEEP_ON_VENDOR =
+        BUILDER
+            .comment(
+                "Whether AE2 import/export buses (addon buses included) facing a vending block sleep while it has nothing\nthey can take, or no room for anything they export, instead of polling it every few ticks.\nThe vending block wakes them whenever its storage, positions or mode change.")
+            .translation("config.roll_mod.ae2.busSleep")
+            .define("ae2BusSleepOnVendor", true);
+
     static {
       BUILDER.push("auctionHouse");
     }
@@ -198,6 +205,48 @@ public class Config {
             .comment("Minimum amount a new bid must exceed the current highest bid by")
             .translation("config.roll_mod.ah.minBidIncrement")
             .defineInRange("ahMinBidIncrement", 1L, 1L, Long.MAX_VALUE);
+
+    static {
+      BUILDER.pop();
+      BUILDER.push("serviceBlock");
+    }
+
+    public static final ModConfigSpec.LongValue SERVICE_ENERGY_PER_TIER_EU =
+        BUILDER
+            .comment(
+                "Energy buffer of a charging or discharging service block, per EU/t of the machine hull placed in it.\nThe default 100000 gives LV (32 EU/t) 3.2M EU, MV 12.8M, HV 102.4M, EV 819.2M.")
+            .translation("config.roll_mod.service.energyPerTierEu")
+            .defineInRange("serviceEnergyPerTierEu", 100_000L, 1L, Long.MAX_VALUE);
+
+    public static final ModConfigSpec.IntValue SERVICE_FLUID_CAPACITY =
+        BUILDER
+            .comment("Fluid (mB) a filling or draining service block can store")
+            .translation("config.roll_mod.service.fluidCapacity")
+            .defineInRange("serviceFluidCapacity", 256_000, 1, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.IntValue SERVICE_XP_CAPACITY =
+        BUILDER
+            .comment("Liquid experience (mB, 20 mB = 1 XP point) an XP service block can store")
+            .translation("config.roll_mod.service.xpCapacity")
+            .defineInRange("serviceXpCapacity", 1_000_000, 20, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.LongValue SERVICE_ENERGY_UNIT =
+        BUILDER
+            .comment("EU per priced unit of a charging or discharging service")
+            .translation("config.roll_mod.service.energyUnit")
+            .defineInRange("serviceEnergyUnit", 100_000L, 1L, Long.MAX_VALUE);
+
+    public static final ModConfigSpec.IntValue SERVICE_XP_UNIT =
+        BUILDER
+            .comment("XP points per priced unit of an XP service")
+            .translation("config.roll_mod.service.xpUnit")
+            .defineInRange("serviceXpUnit", 100, 1, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.IntValue SERVICE_FLUID_UNIT =
+        BUILDER
+            .comment("mB per priced unit of a filling or draining service")
+            .translation("config.roll_mod.service.fluidUnit")
+            .defineInRange("serviceFluidUnit", 1000, 1, Integer.MAX_VALUE);
 
     static {
       BUILDER.pop();

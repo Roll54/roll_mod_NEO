@@ -17,6 +17,8 @@ public enum LedgerReason {
     AUCTION_REFUND(Group.AUCTION, false),
     VENDOR_SALE(Group.VENDING, true),
     VENDOR_PURCHASE(Group.VENDING, false),
+    SERVICE_SALE(Group.VENDING, true),
+    SERVICE_PURCHASE(Group.VENDING, false),
     PLAYTIME(Group.REWARD, false),
     DAILY(Group.REWARD, false),
     QUEST(Group.REWARD, false),

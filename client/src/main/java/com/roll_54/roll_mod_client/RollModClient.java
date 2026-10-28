@@ -149,6 +149,24 @@ public final class RollModClient {
                     ModuleInstallationTableRenderer::new);
             event.registerBlockEntityRenderer(BlockEntites.ROCKET_CONTROLLER_BE.get(), RocketControllerBlockEntityRenderer::new);
             event.registerBlockEntityRenderer(BlockEntites.HUERI_STATUE_BE.get(), HueriStatueRenderer::new);
+
+            // MI machines registered under roll_mod through Tesseract. MI only registers renderers for
+            // its own machines, and without MultiblockMachineBER a controller shows no hologram of its
+            // shape when a wrench is held. Same mapping Extended Industrialization uses for its own.
+            for (var holder : com.roll_54.roll_mod.compat.mi.RMMIRegistries.BLOCKS.getEntries()) {
+                if (!(holder.get() instanceof aztech.modern_industrialization.machines.MachineBlock machine)) continue;
+                var blockEntity = machine.getBlockEntityInstance();
+                @SuppressWarnings({"unchecked", "rawtypes"})
+                net.minecraft.world.level.block.entity.BlockEntityType<net.minecraft.world.level.block.entity.BlockEntity> type =
+                        (net.minecraft.world.level.block.entity.BlockEntityType) blockEntity.getType();
+                if (blockEntity instanceof aztech.modern_industrialization.machines.multiblocks.MultiblockMachineBlockEntity) {
+                    event.registerBlockEntityRenderer(type, ctx -> (net.minecraft.client.renderer.blockentity.BlockEntityRenderer)
+                            new aztech.modern_industrialization.client.machines.multiblocks.MultiblockMachineBER(ctx));
+                } else {
+                    event.registerBlockEntityRenderer(type, ctx -> (net.minecraft.client.renderer.blockentity.BlockEntityRenderer)
+                            new aztech.modern_industrialization.client.machines.MachineBlockEntityRenderer(ctx));
+                }
+            }
         }
 
         @SubscribeEvent
@@ -164,6 +182,22 @@ public final class RollModClient {
                     return renderer;
                 }
             }, com.roll_54.roll_mod.registry.BlockRegistry.MODULE_INSTALLATION_TABLE.get().asItem());
+
+            for (com.roll_54.roll_mod.registry.FluidRegistry.RollFluid fluid : com.roll_54.roll_mod.registry.FluidRegistry.all()) {
+                net.minecraft.resources.ResourceLocation still = RollMod.id(fluid.stillTexture());
+                net.minecraft.resources.ResourceLocation flowing = RollMod.id(fluid.flowingTexture());
+                event.registerFluidType(new net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions() {
+                    @Override
+                    public net.minecraft.resources.ResourceLocation getStillTexture() {
+                        return still;
+                    }
+
+                    @Override
+                    public net.minecraft.resources.ResourceLocation getFlowingTexture() {
+                        return flowing;
+                    }
+                }, fluid.type().get());
+            }
         }
 
         @SubscribeEvent

@@ -277,6 +277,11 @@ rollmod.moderation.invsee
   Offline players show only the vanilla inventory (main, armour, offhand), read
   from their saved playerdata file. Curios and implants need the player online.
 
+  A moderator can open their own card too, so they can see (and, with
+  rollmod.moderation.invedit, change) their own curios and implants. The
+  Inventory page for yourself has no second inventory grid underneath, because
+  it would show the same slots twice.
+
   The buttons live in the moderation tab, so the holder also needs
   rollmod.moderation.use (or rollmod.warps.moderate) to see the tab at all.
 

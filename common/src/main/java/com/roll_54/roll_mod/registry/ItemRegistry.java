@@ -22,6 +22,7 @@ import com.roll_54.roll_mod.items.cyberware.RadioImplantItem;
 import com.roll_54.roll_mod.items.cyberware.SulfurResistantLungsItem;
 import com.roll_54.roll_mod.items.electricItems.*;
 import com.roll_54.roll_mod.items.modulardrill.DrillModuleItem;
+import com.roll_54.roll_mod.items.modulardrill.ModuleComplexity;
 import com.roll_54.roll_mod.items.modulardrill.DrillVoltage;
 import com.roll_54.roll_mod.items.modulardrill.ModularDrillItem;
 import com.roll_54.roll_mod.items.modularsaber.ModularSaberItem;
@@ -177,6 +178,7 @@ public class ItemRegistry {
                             DIAMOND_ALLOY,
                             15.0F,
                             -2.8F,
+                            4, // pre-enchant: Efficiency IV
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(MALACHITE_GREEEN, 2, AQUA)
                     )
@@ -201,6 +203,7 @@ public class ItemRegistry {
                             METEORITE_METAL,
                             15.0F,
                             -2.8F,
+                            4, // pre-enchant: Efficiency IV
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(METEORITE_DARK_BLUE, 2, METEORITE_LIGHT_BLUE)
                     )
@@ -213,6 +216,7 @@ public class ItemRegistry {
                             IRON,
                             6.0F,
                             -2.8F,
+                            1, // pre-enchant: Efficiency I
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(WHITE, 1,LIGHT_GRAY)
                     )
@@ -225,6 +229,7 @@ public class ItemRegistry {
                             STEEL,
                             11.0F,
                             -2.8F,
+                            2, // pre-enchant: Efficiency II
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(BLACK_STEEL_COLOR, 1,LIGHT_GRAY)
                     )
@@ -237,6 +242,7 @@ public class ItemRegistry {
                             NETHERITE,
                             12.5F,
                             -2.8F,
+                            3, // pre-enchant: Efficiency III
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(WHITE, 1,LIGHT_GRAY)
                     )
@@ -249,6 +255,7 @@ public class ItemRegistry {
                             BLACK_STEEL,
                             11.5F,
                             -2.8F,
+                            3, // pre-enchant: Efficiency III
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(BLACK_STEEL_COLOR, 1,LIGHT_GRAY)
                     )
@@ -261,6 +268,7 @@ public class ItemRegistry {
                             BISMUTH_BRONZE,
                             9.0F,
                             -2.8F,
+                            2, // pre-enchant: Efficiency II
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(BISMUTH_BRONZE_COLOR, 1,LIGHT_GRAY)
                     )
@@ -273,6 +281,7 @@ public class ItemRegistry {
                             BLACK_BRONZE,
                             9.0F,
                             -2.8F,
+                            2, // pre-enchant: Efficiency II
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(BLACK_BRONZE_COLOR, 1,LIGHT_GRAY)
                     )
@@ -791,6 +800,14 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> BISMUTH_INGOT = registerSimple("bismuth_ingot");
     public static final DeferredHolder<Item, Item> BISMUTH_PLATE = registerSimple("bismuth_plate");
     public static final DeferredHolder<Item, Item> BISMUTH_CURVED_PLATE = registerSimple("bismuth_curved_plate");
+    public static final DeferredHolder<Item, Item> BORIC_ACID = registerSimple("boric_acid");
+    public static final DeferredHolder<Item, Item> BORON_OXIDE = registerSimple("boron_oxide");
+    public static final DeferredHolder<Item, Item> BORON_FIBER = registerSimple("boron_fiber");
+    public static final DeferredHolder<Item, Item> BORON_EPOXY_PLATE = registerSimple("boron_epoxy_plate");
+    public static final DeferredHolder<Item, Item> SIMULATION_COMPOSITE = registerTooltip(
+            "simulation_composite",
+            new TooltipOptions(0, 0x178272, null, false)
+    );
 
     public static final DeferredHolder<Item, Item> ADV_CONVEYOR = ITEMS.register("advanced_conveyor", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> ADV_PISTON = ITEMS.register("advanced_piston", () -> new Item(new Item.Properties()));
@@ -1447,6 +1464,9 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, BlockItem> TENWOC_PLUSH_ITEM = ITEMS.register("tenwoc__plush", () -> new BlockItem(TENWOC__PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, StormScannerItem> LV_STORM_SCANNER = ITEMS.register("lv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 1, 0xff1500, 1_000_000));
     public static final DeferredHolder<Item, StormScannerItem> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 2, 0xff1500, 10_000_000));
+
+    // Plain item for now; no behaviour yet.
+    public static final DeferredHolder<Item, Item> MUTAGEN_SYRINGE = registerSimple("mutagen_syringe");
     public static final DeferredHolder<Item, EnergyBatteryItem> TEST_BATTERY = ITEMS.register("nano_battery", () -> new EnergyBatteryItem(new Item.Properties().stacksTo(1), 20_000_000L, 20_000L, 200_000L, 0x00FFFF));
     // 🔋 REDSTONE BATTERY
     public static final DeferredHolder<Item, EnergyBatteryItem> REDSTONE_BATTERY =
@@ -1692,8 +1712,8 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, ModularDrillItem> IV_MODULAR_DRILL =
             ITEMS.register("iv_modular_drill", () -> new ModularDrillItem(DrillVoltage.IV, new Item.Properties()));
 
-    /** What the strongest single-tier modules take from the complexity budget; others take 3 × tier. */
-    private static final int STRONG_COMPLEXITY = 6;
+    /** What the strongest single-tier modules take from the complexity budget: a tier-III module's share. */
+    private static final int STRONG_COMPLEXITY = 5;
 
     // Drill modules. value/costFactor semantics are in DrillModuleItem's javadoc; all numbers are
     // balance knobs. No voltage requirements — progression is gated by the crafting recipes.
@@ -1710,7 +1730,7 @@ public class ItemRegistry {
             speedModule("speed_module_iv", 4, 4.0, 0.96, 4.0, 1.24);
 
     public static final DeferredHolder<Item, DrillModuleItem> SILK_TOUCH_MODULE =
-            module("silk_touch_module", ModuleType.SILK_TOUCH, 1, 0, 2.0, 5);
+            module("silk_touch_module", ModuleType.SILK_TOUCH, 1, 0, 2.0, 4);
 
     // Fortune in a drill, Looting in a saber. Each tool keeps its own energy balance: the first cost
     // factor is per block in a drill, the second per hit in a saber (the old Looting modules').
@@ -1726,7 +1746,7 @@ public class ItemRegistry {
             sharedModule("fortune_module_v", ModuleType.FORTUNE, 5, 5, 4.0, 1.5);
 
     public static final DeferredHolder<Item, DrillModuleItem> XP_REACTOR_MODULE =
-            module("xp_reactor_module", ModuleType.XP_REACTOR, 1, 0, 1.0, 5);
+            module("xp_reactor_module", ModuleType.XP_REACTOR, 1, 0, 1.0, 3);
     public static final DeferredHolder<Item, DrillModuleItem> OVERCHARGE_MODULE =
             module("overcharge_module", ModuleType.OVERCHARGE, 1, 0, 1.0, STRONG_COMPLEXITY);
 
@@ -1766,10 +1786,10 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, DrillModuleItem> LAVA_SOLIDIFIER_MODULE =
             module("lava_solidifier_module", ModuleType.LAVA_SOLIDIFIER, 1, 0, 1.0);
 
-    // Talks in chat every 10k mined blocks; no effect on mining, so no cost — and it gives 5
+    // Talks in chat every 10k mined blocks; no effect on mining, so no cost — and it gives 2
     // complexity back, the one module that does.
     public static final DeferredHolder<Item, DrillModuleItem> SPEAK_MODULE =
-            module("speak_module", ModuleType.SPEAK, 1, 0, 1.0, -5);
+            module("speak_module", ModuleType.SPEAK, 1, 0, 1.0, -2);
 
     // Areas taken from the retired advanced drills: 3³, 5³, 7³, 9³ — and the IV pickaxe's 11³.
     public static final DeferredHolder<Item, DrillModuleItem> AOE_MODULE_I =
@@ -1865,15 +1885,15 @@ public class ItemRegistry {
     /** A module shared by drills and sabers whose energy cost differs per tool. */
     private static DeferredHolder<Item, DrillModuleItem> sharedModule(
             String id, ModuleType type, int tier, double value, double drillCostFactor, double saberCostFactor) {
-        return ITEMS.register(id, () -> new DrillModuleItem(type, tier, value, drillCostFactor, saberCostFactor,
-                DrillModuleItem.COMPLEXITY_PER_TIER * tier, new Item.Properties()));
+        return ITEMS.register(id, () -> new DrillModuleItem(type, tier, value, value, drillCostFactor, saberCostFactor,
+                ModuleComplexity.cost(tier), new Item.Properties()));
     }
 
     /** A Speed module: its effect and its energy cost both differ between drill and saber. */
     private static DeferredHolder<Item, DrillModuleItem> speedModule(String id, int tier,
             double drillSpeed, double saberAttackSpeed, double drillCostFactor, double saberCostFactor) {
         return ITEMS.register(id, () -> new DrillModuleItem(ModuleType.SPEED, tier, drillSpeed, saberAttackSpeed,
-                drillCostFactor, saberCostFactor, DrillModuleItem.COMPLEXITY_PER_TIER * tier, new Item.Properties()));
+                drillCostFactor, saberCostFactor, ModuleComplexity.cost(tier), new Item.Properties()));
     }
 
     private static DeferredHolder<Item, DrillModuleItem> module(

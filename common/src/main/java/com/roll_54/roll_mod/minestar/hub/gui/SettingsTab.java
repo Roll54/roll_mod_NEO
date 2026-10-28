@@ -228,6 +228,21 @@ final class SettingsTab {
         /* -------------------------------------------------- chat ------------------------------------------------- */
 
         body.addScrollViewChild(heading("gui.roll_mod.hub.settings.section.chat"));
+        UIElement bangRow = row();
+        Label bangLabel = new Label();
+        bangLabel.setText(Component.translatable("gui.roll_mod.hub.settings.chat.bang"));
+        bangLabel.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
+        bangLabel.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
+        hintOn(bangLabel, "gui.roll_mod.hub.settings.chat.bang.tip");
+        Switch bang = new Switch();
+        bang.setOn(client && ChatChannelState.get().bangGlobal());
+        bang.layout(l -> l.width(28).height(14).flexShrink(0));
+        bang.setOnSwitchChanged(on -> {
+            if (client) ChatChannelState.get().setBangGlobal(on);
+        });
+        bangRow.addChildren(bangLabel, bang);
+        body.addScrollViewChild(bangRow);
+
         Label hint = new Label();
         hint.setText(Component.translatable("gui.roll_mod.hub.settings.chat.hint").withStyle(ChatFormatting.GRAY));
         hint.layout(l -> l.widthPercent(100).paddingHorizontal(2));

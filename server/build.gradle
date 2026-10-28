@@ -97,6 +97,9 @@ dependencies {
     // Open Parties and Claims owns plot claims, and :common only compiles against it. The server is
     // where PlotService actually runs, so without this every plot command throws.
     dependencies.add(runCfg.name, files("../common/jars/open-parties-and-claims-neoforge-1.21.1-0.27.5.jar"))
+    // Sophisticated Core supplies the liquid XP (sophisticatedcore:xp_still) the service block's XP
+    // services trade in. Test runs only; nothing compiles against it.
+    dependencies.add(runCfg.name, files("../common/jars/sophisticatedcore-1.21.1-1.5.5.2363.jar"))
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

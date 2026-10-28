@@ -34,6 +34,10 @@ public class NetworkHandler {
         StorageLockPacket.TYPE, StorageLockPacket.STREAM_CODEC, StorageLockPacket::handle);
     registrar.playToServer(
         SetFacadePacket.TYPE, SetFacadePacket.STREAM_CODEC, SetFacadePacket::handle);
+    registrar.playToServer(
+        com.roll_54.roll_mod.economy.service.network.ServiceSettingsPacket.TYPE,
+        com.roll_54.roll_mod.economy.service.network.ServiceSettingsPacket.STREAM_CODEC,
+        com.roll_54.roll_mod.economy.service.network.ServiceSettingsPacket::handle);
 
     // Auction House
     registrar.playToClient(

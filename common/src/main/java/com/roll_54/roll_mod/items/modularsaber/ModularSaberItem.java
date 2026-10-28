@@ -102,7 +102,7 @@ public class ModularSaberItem extends Item implements ISimpleEnergyItem, OneStat
 
     @Override
     public int maxComplexity() {
-        return voltage.complexity;
+        return voltage.complexity();
     }
 
     /** A placeholder name while the client hides new items — see {@link NewItemVisibility}. */

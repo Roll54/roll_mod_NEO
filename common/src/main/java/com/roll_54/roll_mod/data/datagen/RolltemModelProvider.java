@@ -43,6 +43,8 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.MIXED_COSMIC_T1.get());
         basicItem(ItemRegistry.MIXED_COSMIC_T3.get());
 
+        basicItem(ItemRegistry.MUTAGEN_SYRINGE.get());
+
         basicItem(ItemRegistry.HIGHLY_ADV_MOTOR.get());
         basicItem(ItemRegistry.HIGHLY_ADV_LARGE_MOTOR.get());
         basicItem(ItemRegistry.HIGHLY_ADV_PUMP.get());
@@ -280,6 +282,12 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.BISMUTH_INGOT.get());
         basicItem(ItemRegistry.BISMUTH_PLATE.get());
         basicItem(ItemRegistry.BISMUTH_CURVED_PLATE.get());
+
+        basicItem(ItemRegistry.BORIC_ACID.get());
+        basicItem(ItemRegistry.BORON_OXIDE.get());
+        basicItem(ItemRegistry.BORON_FIBER.get());
+        basicItem(ItemRegistry.BORON_EPOXY_PLATE.get());
+        basicItem(ItemRegistry.SIMULATION_COMPOSITE.get());
 
         rollToolItemModel(ItemRegistry.STEEL_BLOCKOGRIZ.get());
         rollToolItemModel(ItemRegistry.DIAMOND_BLOCKOGRIZ.get());

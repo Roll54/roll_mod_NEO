@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.economy.vendingblock.blockentity;
 
+import com.roll_54.roll_mod.compat.ae2.Ae2BusWaker;
 import com.roll_54.roll_mod.economy.vendingblock.registry.BlockEntityRegistry;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,9 +17,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.items.IItemHandler;
 
-public class VendorBlockEntity extends BlockEntity {
+public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
 
   public static final int MAX_POSITIONS = 10;
 
@@ -45,6 +47,7 @@ public class VendorBlockEntity extends BlockEntity {
       level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
       level.invalidateCapabilities(getBlockPos());
       checkErrorState();
+      wakeAe2Buses();
     }
   }
 
@@ -54,7 +57,20 @@ public class VendorBlockEntity extends BlockEntity {
       level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
       level.invalidateCapabilities(getBlockPos());
       checkErrorState();
+      wakeAe2Buses();
     }
+  }
+
+  @Override
+  public void setRemoved() {
+    super.setRemoved();
+    // A bus asleep on this block would otherwise stay asleep against whatever replaces it.
+    if (level != null && !level.isClientSide()) wakeAe2Buses();
+  }
+
+  /** AE2 buses facing this block sleep while it can give or take nothing; any change may undo that. */
+  private void wakeAe2Buses() {
+    if (ModList.get().isLoaded("ae2")) Ae2BusWaker.wake(level, getBlockPos());
   }
 
   // --- positions -------------------------------------------------------

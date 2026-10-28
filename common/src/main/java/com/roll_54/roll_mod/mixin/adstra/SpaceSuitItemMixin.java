@@ -1,11 +1,9 @@
 package com.roll_54.roll_mod.mixin.adstra;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import earth.terrarium.adastra.common.items.armor.SpaceSuitItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 /**
  * Raises the oxygen tank of every Ad Astra suit to 10 buckets. The space suit (1 B), netherite space
@@ -15,21 +13,18 @@ import org.spongepowered.asm.mixin.injection.At;
  *
  * <p>Existing stacks keep the oxygen they hold; they just gain room.
  */
-@Mixin(value = SpaceSuitItem.class, remap = false)
+@Mixin(targets = "earth.terrarium.adastra.common.items.armor.SpaceSuitItem", remap = false)
 public abstract class SpaceSuitItemMixin {
 
     @Unique
     private static final long roll_mod$TANK_SIZE = 10_000L;
 
-    @WrapOperation(
-            method = "<init>",
-            at = @At(
-                    value = "FIELD",
-                    target = "Learth/terrarium/adastra/common/items/armor/SpaceSuitItem;tankSize:J",
-                    opcode = org.objectweb.asm.Opcodes.PUTFIELD
-            )
-    )
-    private void roll_mod$biggerTank(SpaceSuitItem instance, long tankSize, Operation<Void> original) {
-        original.call(instance, tankSize > 0 ? roll_mod$TANK_SIZE : tankSize);
+    // tankSize is final, so it can only be written from <init> itself; a @WrapOperation on the
+    // PUTFIELD moves the write into a bridge method and the JVM rejects it. Instead, swap the value as
+    // the constructor reads its tankSize argument (the only load of that long in <init>, right before
+    // the field is stored), so the write stays where it is.
+    @ModifyVariable(method = "<init>", at = @At("LOAD"), argsOnly = true)
+    private long roll_mod$biggerTank(long tankSize) {
+        return tankSize > 0 ? roll_mod$TANK_SIZE : tankSize;
     }
 }

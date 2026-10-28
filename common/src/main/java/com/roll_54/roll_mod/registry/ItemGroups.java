@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.blocks.SliceableFoodBlock;
+import com.roll_54.roll_mod.items.BlockogrizItem;
 import com.roll_54.roll_mod.items.ComponentApplicatorItem;
 import com.roll_54.roll_mod.items.HerbicideItem;
 import com.roll_54.roll_mod.items.InjectionItem;
@@ -53,7 +54,7 @@ public final class ItemGroups {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.main"))
                     .icon(ItemGroups::createCustomHeadIcon)
-                    .displayItems((params, out) -> fill(out, Category.MAIN))
+                    .displayItems((params, out) -> fill(params, out, Category.MAIN))
                     .build()
     );
 
@@ -62,7 +63,7 @@ public final class ItemGroups {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.tools_armor"))
                     .icon(() -> new ItemStack(ItemRegistry.METEORITE_MODULE.get()))
-                    .displayItems((params, out) -> fill(out, Category.TOOLS_ARMOR))
+                    .displayItems((params, out) -> fill(params, out, Category.TOOLS_ARMOR))
                     .build()
     );
 
@@ -86,7 +87,7 @@ public final class ItemGroups {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.crafting"))
                     .icon(() -> new ItemStack(ItemRegistry.METEORITE_METAL_INGOT.get()))
-                    .displayItems((params, out) -> fill(out, Category.CRAFTING))
+                    .displayItems((params, out) -> fill(params, out, Category.CRAFTING))
                     .build()
     );
 
@@ -95,7 +96,7 @@ public final class ItemGroups {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.addons"))
                     .icon(() -> new ItemStack(ItemRegistry.BASECYBERWARE_LEFTARM_METEORITE_METAL.get()))
-                    .displayItems((params, out) -> fill(out, Category.ADDONS))
+                    .displayItems((params, out) -> fill(params, out, Category.ADDONS))
                     .build()
     );
 
@@ -104,7 +105,7 @@ public final class ItemGroups {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.roll_crops_tab"))
                     .icon(() -> new ItemStack(ItemRegistry.LATEX_DANDELION_FLOWER.get()))
-                    .displayItems((params, out) -> fill(out, Category.CROPS))
+                    .displayItems((params, out) -> fill(params, out, Category.CROPS))
                     .build()
     );
 
@@ -113,7 +114,7 @@ public final class ItemGroups {
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.roll_mod.generated_ores"))
                     .icon(() -> new ItemStack(ItemRegistry.METEORITE_METAL_BLOCKOGRIZ.get()))
-                    .displayItems((params, out) -> fill(out, Category.ORES))
+                    .displayItems((params, out) -> fill(params, out, Category.ORES))
                     .build()
     );
 
@@ -125,11 +126,16 @@ public final class ItemGroups {
                     .icon(() -> new ItemStack(ItemRegistry.SULFUR_BERRY.get()))
                     .displayItems((params, out) -> {
                         for (Item item : modItems()) {
-                            out.accept(item);
+                            out.accept(defaultStack(item, params));
                         }
                     })
                     .build()
     );
+
+    /** The stack a tab shows for {@code item}: as crafted, so a blockogriz carries its pre-enchant. */
+    private static ItemStack defaultStack(Item item, CreativeModeTab.ItemDisplayParameters params) {
+        return BlockogrizItem.withPreEnchant(new ItemStack(item), params.holders());
+    }
 
     private enum Category { DEPRECATED, VENDING, ORES, ADDONS, CROPS, TOOLS_ARMOR, FOOD, CRAFTING, MAIN }
 
@@ -160,10 +166,10 @@ public final class ItemGroups {
         return categories().keySet();
     }
 
-    private static void fill(CreativeModeTab.Output out, Category category) {
+    private static void fill(CreativeModeTab.ItemDisplayParameters params, CreativeModeTab.Output out, Category category) {
         for (Item item : modItems()) {
             if (categories().get(item) != category) continue;
-            out.accept(item);
+            out.accept(defaultStack(item, params));
             // Energy items also come fully charged, right after the empty one.
             if (item instanceof ISimpleEnergyItem energy) {
                 ItemStack full = new ItemStack(item);

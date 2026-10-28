@@ -24,7 +24,8 @@
     "mi.MIClientForceRuntimeDatagenMixin",
     "mi.MIForceRuntimeResourcesMixin",
     "maintenance.ConnectScreenMixin",
-    "radio.RadioStreamCloseMixin"
+    "radio.RadioStreamCloseMixin",
+    "greenhouse.SectionCompilerHideMixin"
   ],
   "injectors": {
     "defaultRequire": 1

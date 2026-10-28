@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,half=lower": {
+      "model": "roll_mod:block/service_block_lower"
+    },
+    "facing=north,half=upper": {
+      "model": "roll_mod:block/service_block_upper"
+    },
+    "facing=east,half=lower": {
+      "model": "roll_mod:block/service_block_lower",
+      "y": 90
+    },
+    "facing=east,half=upper": {
+      "model": "roll_mod:block/service_block_upper",
+      "y": 90
+    },
+    "facing=south,half=lower": {
+      "model": "roll_mod:block/service_block_lower",
+      "y": 180
+    },
+    "facing=south,half=upper": {
+      "model": "roll_mod:block/service_block_upper",
+      "y": 180
+    },
+    "facing=west,half=lower": {
+      "model": "roll_mod:block/service_block_lower",
+      "y": 270
+    },
+    "facing=west,half=upper": {
+      "model": "roll_mod:block/service_block_upper",
+      "y": 270
+    }
+  }
+}

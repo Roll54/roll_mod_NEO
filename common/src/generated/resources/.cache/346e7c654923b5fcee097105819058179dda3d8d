@@ -1,4 +1,4 @@
-// 1.21.1	2026-09-05T09:41:31.789576371	PY Ore Texture Generator
+// 1.21.1	2026-10-27T04:30:45.956174346	PY Ore Texture Generator
 1b31e2d7a94a182f3d0c0d554eb68c8886be6303 assets/roll_mod/textures/block/deepslate_bauxite.png
 757703300195972937c41f768553fd2c4cf5947c assets/roll_mod/textures/block/deepslate_bort.png
 299bf94d600c1abeee7154517714b85d50de75e3 assets/roll_mod/textures/block/deepslate_cassiterite_sand.png
@@ -37,11 +37,16 @@ f9629666c699a9488847be4c9261dc07f7799d14 assets/roll_mod/textures/block/end_thor
 1fab6305764af7b4d33bc15b52a28de10fa8e341 assets/roll_mod/textures/block/end_uraninite.png
 e816a5ea32cf3c6c957ce23001dd99a5f5b09c36 assets/roll_mod/textures/block/mars_bornite.png
 f3a5d9be68f273be229848a3b189342b617f32d9 assets/roll_mod/textures/block/mars_goethite.png
+5fb48b272b6ceca8f5ab3a8586a4b05bf00e261e assets/roll_mod/textures/block/mars_gold_amalgam.png
 123b2acda3b3f8bc3dba72c665adfc90e1fdedd1 assets/roll_mod/textures/block/mars_hematite.png
 b88aeffd69da43de43b4b1a1e1e9c34e7e818643 assets/roll_mod/textures/block/mars_iridium.png
 8bbbf85218a220cfc30289d3aa8a367b841f106c assets/roll_mod/textures/block/mars_molybdenum.png
+3ce0a6a3b2b799d3ead25a78da4ee123631c7ede assets/roll_mod/textures/block/mars_olivine.png
+f44c40eb4d6a56eafacae8bf6eaaf88d5d6e5d9b assets/roll_mod/textures/block/mars_pyrite.png
 68f42877acc47dafe8da3e6dabdbd5b3111f6927 assets/roll_mod/textures/block/mars_pyrolusite.png
+d6f976ed509561ac441ad3e744df6e2c9f7c95ba assets/roll_mod/textures/block/mars_quartz.png
 eeb6befb482b7dfb47af720cf15ce0253e3cab4c assets/roll_mod/textures/block/mars_sheldonite.png
+d0321b6f91e4a3f394a3b3651ec6b9c28e4fee93 assets/roll_mod/textures/block/mars_silver_amalgam.png
 e45db7710e2f7f215074dbea6d53e9bae34db984 assets/roll_mod/textures/block/mars_tantalite.png
 860a1d86702d80676a6795d2ef785775317a71f2 assets/roll_mod/textures/block/mercury_antimony.png
 14c3a3c6dbb8e77df20d48f4038042dd5d28f2dd assets/roll_mod/textures/block/mercury_certus_quartz.png
@@ -68,6 +73,7 @@ ba066a7a0464d73f66380d9010c3f7a810ea68be assets/roll_mod/textures/block/moon_hem
 0cee76f098c5ad4dbc9d2fb5b7a18f9234780f0e assets/roll_mod/textures/block/moon_lepidolite.png
 6a040a4f7c61343b04979ad7fe179fb65dd32227 assets/roll_mod/textures/block/moon_magnetite.png
 dc4529ee0b810c979b79c762795d0fd1217f8c17 assets/roll_mod/textures/block/moon_molybdenite.png
+9c63da0b54afe31b8cfb2ab0e74aaf3905696ee3 assets/roll_mod/textures/block/moon_olivine.png
 9f964d7ee17a2cf1bfae12f3e7da127201af03c6 assets/roll_mod/textures/block/moon_pyrochlore.png
 bb14168878642218d8b3700c377143b89d911371 assets/roll_mod/textures/block/moon_rock_salt.png
 633835f702b679cb6d7e304e6f5b99643bfd0cfc assets/roll_mod/textures/block/moon_rutile.png
@@ -678,7 +684,7 @@ bb47e529bfe5ad40b81d5523c48cbc27d7dd9bab assets/roll_mod/textures/item/raw_quart
 1711098862830b519ed6a9901c1fb755ab812154 assets/roll_mod/textures/item/raw_rheniite.png
 060ea7b90cc6affa88c0b9a5d9636fbc19b3b320 assets/roll_mod/textures/item/raw_rhodochrosite.png
 9d15215d50c1768236d815949ed2562c09c5eeab assets/roll_mod/textures/item/raw_rock_salt.png
-0f8e079888c6a8c56cd507af6efd0aa84209fbd0 assets/roll_mod/textures/item/raw_ruby.png
+96bdc05777d5a30d158d1ff1b6fb455403af88db assets/roll_mod/textures/item/raw_ruby.png
 1ff0ccc883cdf8634daf9590f0a32cca1a6f7fd3 assets/roll_mod/textures/item/raw_rutile.png
 90000a052fa313a8df210f2c0ca1b47261338c01 assets/roll_mod/textures/item/raw_salt.png
 104f4a5af9497f01e40f891ab88b69103f753759 assets/roll_mod/textures/item/raw_saltpeter.png

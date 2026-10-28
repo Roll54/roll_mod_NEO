@@ -1,0 +1,17 @@
+{
+  "type": "modern_industrialization:blast_furnace",
+  "eu": 2048,
+  "duration": 100,
+  "item_inputs": [
+    {
+      "item": "minecraft:bedrock",
+      "amount": 1
+    }
+  ],
+  "item_outputs": [
+    {
+      "item": "minecraft:barrier",
+      "amount": 2
+    }
+  ]
+}

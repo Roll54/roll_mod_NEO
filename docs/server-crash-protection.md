@@ -104,10 +104,25 @@ the per-level guard instead.
 | Guard | Wraps | When it catches, what is lost |
 |-------|-------|-------------------------------|
 | `MinecraftServerLevelTickGuardMixin` | In `MinecraftServer.tickChildren`, separately: the level-tick pre-event, `ServerLevel.tick`, the level-tick post-event | Only the rest of that one step for that one level. Other levels, network connections, the player list and chunk sending still tick |
+| `InventoryTickGuardMixin` | Each `ItemStack.inventoryTick` call in `Inventory.tick` | Only that one item's tick for that player. The player, the rest of their inventory and the server keep ticking |
 | `MinecraftServerCrashGuardMixin` | The whole `tickServer` call in `runServer` | The rest of the tick. Outer fallback for anything thrown outside the calls above |
 
 Both hand the exception to `CrashReporter`. Neither covers worker threads (worldgen, network) or
 startup/shutdown.
+
+### Inventory tick guard
+
+Players always tick, even in frozen chunks, so an item in a player's inventory whose `inventoryTick`
+throws used to fail the whole player tick: vanilla turns that into "Ticking player" and kicks the player
+with *Internal server error* — on every login, so they could never stay on to drop the item. Now only that
+item's tick is skipped and the exception goes to `CrashReporter`.
+
+This was added for Sophisticated Backpacks 3.26.7 / Core 1.5.5: a backpack in the inventory whose
+linked-storage group no longer exists throws `IllegalStateException: Unknown linked storage group <uuid>`
+from `BackpackItem.inventoryTick`. The backpack itself stays broken (its own per-tick features, like
+upgrades that run from the inventory, don't run), so the player should move its contents out or staff
+should replace it. Only the main inventory, armor and offhand are covered; Curios slots tick through
+Curios' own code and are not.
 
 ## `CrashReporter`
 

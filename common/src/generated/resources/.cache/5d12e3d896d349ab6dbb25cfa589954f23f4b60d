@@ -1,4 +1,5 @@
-// 1.21.1	2026-10-09T23:02:06.671858668	Tags for minecraft:block mod id roll_mod
-f0d655f9fd787cd859ae69698942d3f2c910007a data/c/tags/block/ores.json
-7a08154d6686149588ad6b724a77ff676f847ddd data/minecraft/tags/block/mineable/pickaxe.json
-48ae30b438a36d5885f274af254eba8f123cd3d6 data/minecraft/tags/block/needs_stone_tool.json
+// 1.21.1	2026-10-27T14:17:33.341286663	Tags for minecraft:block mod id roll_mod
+93533d3fdba8b89b28a4383776d67ca33ad9f52d data/c/tags/block/ores.json
+cbc80bbd1f065a1ddeae6c62e3ab16ea845a387a data/minecraft/tags/block/mineable/pickaxe.json
+932bd91c366904ba5d54bdaa63ce7822d717df0c data/minecraft/tags/block/needs_stone_tool.json
+bab2820bf781b283b836f314756891b3f17309f4 data/minecraft/tags/block/wither_immune.json

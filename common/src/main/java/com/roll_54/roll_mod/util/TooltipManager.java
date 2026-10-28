@@ -95,11 +95,13 @@ public class TooltipManager {
                 Tier tier,
                 float attackDamage,
                 float attackSpeed,
+                int preEfficiency,
                 Properties props,
                 TooltipOptions opts
         ) {
             super(
                     tier,
+                    preEfficiency,
                     props.attributes(
                             DiggerItem.createAttributes(
                                     tier,

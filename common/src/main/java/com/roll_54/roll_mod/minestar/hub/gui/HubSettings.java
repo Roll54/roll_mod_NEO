@@ -11,6 +11,7 @@ import com.roll_54.roll_mod.RollMod;
 import dev.vfyjxf.taffy.style.AlignItems;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import dev.vfyjxf.taffy.style.AlignContent;
+import javax.annotation.Nullable;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import org.appliedenergistics.yoga.YogaPositionType;
@@ -42,6 +43,12 @@ final class HubSettings {
     private static final int BACKDROP = 0x80000000;
 
     private final UIElement root;
+
+    /**
+     * The popup last opened, for {@link #isOpenIn}. Only ever set from a click, so only on the client's
+     * copy of the tree.
+     */
+    @Nullable private static UIElement shown;
 
     HubSettings(Player player) {
         root = new UIElement();
@@ -84,6 +91,17 @@ final class HubSettings {
 
     void toggle() {
         root.setDisplay(!root.isDisplayed());
+        if (root.isDisplayed()) shown = root;
+    }
+
+    /**
+     * Whether the settings popup is up over {@code element}'s screen. Compared by screen, so a popup
+     * left open when an earlier hub screen closed does not count for the next one.
+     */
+    static boolean isOpenIn(UIElement element) {
+        UIElement popup = shown;
+        return popup != null && popup.isDisplayed() && popup.getModularUI() != null
+                && popup.getModularUI() == element.getModularUI();
     }
 
     void hide() {

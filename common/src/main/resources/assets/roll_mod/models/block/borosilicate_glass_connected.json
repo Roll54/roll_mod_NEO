@@ -1,0 +1,13 @@
+{
+    "loader": "fusion:model",
+    "type": "connecting",
+    "parent": "minecraft:block/cube_all",
+    "render_type": "minecraft:cutout",
+    "textures": {
+        "all": "roll_mod:block/borosilicate_glass_ct",
+        "particle": "roll_mod:block/borosilicate_glass"
+    },
+    "connections": {
+        "type": "is_same_block"
+    }
+}

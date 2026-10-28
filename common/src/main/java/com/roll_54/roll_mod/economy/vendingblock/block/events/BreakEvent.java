@@ -1,12 +1,10 @@
 package com.roll_54.roll_mod.economy.vendingblock.block.events;
 
 import com.roll_54.roll_mod.economy.vendingblock.Config;
-import com.roll_54.roll_mod.economy.vendingblock.blockentity.DisplayBlockEntity;
-import com.roll_54.roll_mod.economy.vendingblock.blockentity.VendorBlockEntity;
+import com.roll_54.roll_mod.economy.vendingblock.blockentity.OwnedBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
@@ -19,24 +17,17 @@ public class BreakEvent {
     BlockPos pos = event.getPos();
     Player player = event.getEntity();
 
-    BlockEntity be = level.getBlockEntity(pos);
-    if (be instanceof VendorBlockEntity vendorBlockEntity) {
-      if (!canBreak(player, vendorBlockEntity)) {
-        event.setCanceled(true);
-      }
-    } else if (be instanceof DisplayBlockEntity displayBlockEntity) {
-      if (!canBreak(player, displayBlockEntity)) {
-        event.setCanceled(true);
-      }
+    OwnedBlockEntity owned = OwnedBlockEntity.at(level, pos);
+    if (owned != null && !canBreak(player, owned)) {
+      event.setCanceled(true);
     }
   }
 
-  private static boolean canBreak(Player player, Object blockEntity) {
+  private static boolean canBreak(Player player, OwnedBlockEntity blockEntity) {
 
     Config.Server.BreakLevel breakLevel = Config.Server.BREAK_LEVEL.get();
 
-    if (blockEntity instanceof VendorBlockEntity vendor && vendor.isOwner(player)) return true;
-    if (blockEntity instanceof DisplayBlockEntity display && display.isOwner(player)) return true;
+    if (blockEntity.isOwner(player)) return true;
 
     switch (breakLevel) {
       case SERVER_OWNER:

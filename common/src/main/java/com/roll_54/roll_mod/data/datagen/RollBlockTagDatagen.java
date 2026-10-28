@@ -39,6 +39,10 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
                 BlockRegistry.GRINDING_WHEELS.get());
         needsStoneTag.add(BlockRegistry.HYDROPONIC_GARDEN_BED.get());
 
+        // Blast- and wither-proof glass.
+        pickaxeTag.add(BlockRegistry.BOROSILICATE_GLASS.get());
+        tag(BlockTags.WITHER_IMMUNE).add(BlockRegistry.BOROSILICATE_GLASS.get());
+
         // The Crop Managers' blocks are created by MBD2 from their machine definitions, not by this
         // mod's DeferredRegister, so there is no DeferredBlock to hand to add(...) -- only their ids.
         for (var tier : com.roll_54.roll_mod.compat.MBD2.machine.RollMBD2Machines.CropManagerTier.values()) {
@@ -49,6 +53,21 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
         pickaxeTag.addOptional(ResourceLocation.fromNamespaceAndPath("mi_tweaks", "large_chemical_reactor"));
         pickaxeTag.addOptional(ResourceLocation.fromNamespaceAndPath("mi_tweaks", "maceration_tower"));
         pickaxeTag.addOptional(ResourceLocation.fromNamespaceAndPath("mi_tweaks", "maelstrom"));
+
+        // MI machines registered under roll_mod through Tesseract: the same tags Tesseract gives them.
+        for (var machine : com.roll_54.roll_mod.compat.mi.RMMIRegistries.BLOCKS.getEntries()) {
+            pickaxeTag.add(machine.get());
+            needsStoneTag.add(machine.get());
+        }
+        // Parallel multiblocks that skip registration where their blocks' mods or recipe types are missing --
+        // as in this datagen run, which has no AE2, Extended Crafting or KubeJS -- by id, so the pack still
+        // gets them. Optional entries, so a pack without them loads the tags fine.
+        for (var spec : com.roll_54.roll_mod.compat.mi.machines.ParallelMultiblocks.ALL) {
+            ResourceLocation id = com.roll_54.roll_mod.RollMod.id(spec.id());
+            if (net.minecraft.core.registries.BuiltInRegistries.BLOCK.containsKey(id)) continue; // tagged above
+            pickaxeTag.addOptional(id);
+            needsStoneTag.addOptional(id);
+        }
 
         // Solar panels (all tiers).
         for (var solarPanel : BlockRegistry.SOLAR_PANELS) {

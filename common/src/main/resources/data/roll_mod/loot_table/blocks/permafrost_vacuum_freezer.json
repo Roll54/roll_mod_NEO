@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "roll_mod:permafrost_vacuum_freezer"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "roll_mod:blocks/permafrost_vacuum_freezer"
+}

@@ -74,6 +74,8 @@ public class RollMBD2Machines {
     private static final String ENERGY_TRAIT = "energy";
 
     private static final int OUTPUT_SLOTS = 18;
+    /** How often a Crop Manager scans its area. */
+    private static final int HARVEST_INTERVAL_TICKS = 20;
 
     @SubscribeEvent
     public void onRegisterMachines(MBDRegistryEvent.Machine event) {
@@ -179,6 +181,10 @@ public class RollMBD2Machines {
         harvester.setEnergyTraitName(ENERGY_TRAIT);
         harvester.setAreaWidth(tier.area);
         harvester.setAreaDepth(tier.area);
+        // Once a second rather than every tick: a crop advances on random ticks, about once a minute,
+        // and scanning the area is mostly block-entity lookups that find nothing new (spark: ~0.8 s of
+        // every 500 s on a busy server, nearly all of it the per-tick scan).
+        harvester.setTickInterval(HARVEST_INTERVAL_TICKS);
 
         List<TraitDefinition> traits = List.of(herbicide, output, energy, harvester);
 

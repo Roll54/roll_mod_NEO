@@ -30,6 +30,13 @@ public class BlockRegistry {
               new com.roll_54.roll_mod.economy.vendingblock.block.DisplayBlock(
                   Block.Properties.of().strength(1.0f).sound(SoundType.METAL).noOcclusion()));
 
+  public static final DeferredBlock<Block> SERVICE =
+      registerBlock(
+          "service_block",
+          () ->
+              new com.roll_54.roll_mod.economy.service.ServiceBlock(
+                  Block.Properties.of().strength(1.5f).sound(SoundType.METAL).noOcclusion()));
+
   private static <T extends Block> DeferredBlock<T> registerBlock(String name, Supplier<T> block) {
     DeferredBlock<T> toReturn = BLOCKS.register(name, block);
     registerBlockItem(name, toReturn);

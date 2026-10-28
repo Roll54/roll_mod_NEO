@@ -76,7 +76,7 @@ public class ModularDrillItem extends DiggerItem implements ISimpleEnergyItem, M
 
     @Override
     public int maxComplexity() {
-        return voltage.complexity;
+        return voltage.complexity();
     }
 
     /** A placeholder name while the client hides new items — see {@link NewItemVisibility}. */
@@ -127,7 +127,18 @@ public class ModularDrillItem extends DiggerItem implements ISimpleEnergyItem, M
     /* -------------------------------------------- speed --------------------------------------------- */
 
     /**
-     * Tier speed × Speed module × throttle. The guard keeps the multipliers off the two fixed
+     * Added to the Speed module's multiplier per tier, LV being 1 (as {@link DrillVoltage#complexity}
+     * counts): +10% of the tier's speed on LV up to +50% on IV, the same flat amount with or without
+     * a module (an HV drill is ×1.3 bare, ×2.3 over a ×2.0 module).
+     */
+    private static final float SPEED_BONUS_PER_TIER = 0.10F;
+
+    private float baseSpeedBonus() {
+        return SPEED_BONUS_PER_TIER * (voltage.ordinal() + 1);
+    }
+
+    /**
+     * Tier speed × (Speed module + {@link #baseSpeedBonus}) × throttle. The guard keeps the multipliers off the two fixed
      * values the parent returns for wrong-tool blocks; a drill without the energy for one block
      * digs like a bare hand instead of eating half a block's worth of progress for free.
      */
@@ -141,7 +152,7 @@ public class ModularDrillItem extends DiggerItem implements ISimpleEnergyItem, M
             return 1.0F;
         }
         return speed
-                * (float) DrillModuleHelper.speedFactor(stack)
+                * ((float) DrillModuleHelper.speedFactor(stack) + baseSpeedBonus())
                 * (DrillModuleHelper.get(stack).throttle() / 100.0F);
     }
 

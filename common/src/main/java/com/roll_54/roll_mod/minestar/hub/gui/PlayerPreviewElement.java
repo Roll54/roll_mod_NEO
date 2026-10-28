@@ -18,8 +18,8 @@ import java.util.function.BooleanSupplier;
  * <p>It also draws <em>through</em> the UI. {@code renderEntityInInventoryFollowsMouse} flushes a
  * render pass of its own, so the model lands on top of whatever the element tree painted before it
  * regardless of {@code zIndex} — which is why anything that must appear over the doll has to tell it
- * to stand down instead, via the {@code suppressed} predicate. The information window is the one
- * thing that currently does.
+ * to stand down instead. Every in-hub panel (explanations, popups, confirmations) and the settings
+ * popup are checked here; anything else passes the {@code suppressed} predicate.
  *
  * <p>The vanilla call is client-only, and this element is constructed on the dedicated server too,
  * because the hub's tree is built identically on both sides. Java resolves a method reference lazily,
@@ -49,7 +49,8 @@ public class PlayerPreviewElement extends UIElement {
     @Override
     public void drawBackgroundAdditional(GUIContext context) {
         super.drawBackgroundAdditional(context);
-        if (FMLEnvironment.dist != Dist.CLIENT || suppressed.getAsBoolean()) return;
+        if (FMLEnvironment.dist != Dist.CLIENT || suppressed.getAsBoolean()
+                || HubSection.inHubPanelOpen() || HubSettings.isOpenIn(this)) return;
 
         ClientRender.draw(context, getPositionX(), getPositionY(),
                 getSizeWidth(), getSizeHeight(), scale, context.mouseX, context.mouseY);

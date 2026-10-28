@@ -76,7 +76,7 @@ public final class DrillModuleHelper {
         if (modules.has(module.type)) return false;
         // The complexity budget, which binds even with slots free. A module that gives complexity
         // back (Speak) always passes.
-        if (module.complexity > 0 && complexity(drill) + module.complexity > tool.maxComplexity()) return false;
+        if (module.complexity() > 0 && complexity(drill) + module.complexity() > tool.maxComplexity()) return false;
 
         for (ModuleType conflict : conflictsOf(module.type)) {
             if (modules.has(conflict)) return false;
@@ -108,7 +108,7 @@ public final class DrillModuleHelper {
     public static int complexity(ItemStack tool) {
         int total = 0;
         for (DrillModuleItem module : get(tool).moduleItems()) {
-            total += module.complexity;
+            total += module.complexity();
         }
         return total;
     }
@@ -124,8 +124,8 @@ public final class DrillModuleHelper {
         if (!(tool.getItem() instanceof ModularTool modular)) return true;
         // By id, not moduleItems(): that list skips unresolved ids, so its indices can drift.
         if (!(BuiltInRegistries.ITEM.get(modules.modules().get(index)) instanceof DrillModuleItem module)) return true;
-        if (module.complexity >= 0) return true;
-        return complexity(tool) - module.complexity <= modular.maxComplexity();
+        if (module.complexity() >= 0) return true;
+        return complexity(tool) - module.complexity() <= modular.maxComplexity();
     }
 
     /** Installs the module. The caller has already checked {@link #canInstall}. */

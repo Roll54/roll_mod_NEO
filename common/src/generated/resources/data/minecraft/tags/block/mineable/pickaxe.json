@@ -4,6 +4,7 @@
     "roll_mod:weed_manager",
     "roll_mod:hydroponic_garden_bed",
     "roll_mod:grinding_wheels",
+    "roll_mod:borosilicate_glass",
     {
       "id": "roll_mod:crop_manager_lv",
       "required": false
@@ -26,6 +27,41 @@
     },
     {
       "id": "mi_tweaks:maelstrom",
+      "required": false
+    },
+    "roll_mod:iv_fluid_input_hatch",
+    "roll_mod:iv_fluid_output_hatch",
+    "roll_mod:highly_advanced_heat_exchanger",
+    "roll_mod:parallel_pyrolyse_oven",
+    "roll_mod:rotary_hearth_furnace",
+    "roll_mod:highly_advanced_large_furnace",
+    "roll_mod:large_alloy_smelter",
+    "roll_mod:highly_advanced_bending_machine",
+    "roll_mod:large_mixer",
+    "roll_mod:large_compressor",
+    "roll_mod:large_cutting_machine",
+    "roll_mod:advanced_pyrolyse_oven",
+    "roll_mod:highly_advanced_distillery",
+    "roll_mod:ore_washer",
+    "roll_mod:steam_ore_washer",
+    {
+      "id": "roll_mod:circuit_assembly_line",
+      "required": false
+    },
+    {
+      "id": "roll_mod:assembly_line",
+      "required": false
+    },
+    {
+      "id": "roll_mod:netherstorm_thermal_centrifuge",
+      "required": false
+    },
+    {
+      "id": "roll_mod:hephaestus_compressor",
+      "required": false
+    },
+    {
+      "id": "roll_mod:permafrost_vacuum_freezer",
       "required": false
     },
     "roll_mod:solar_panel_1",
@@ -134,6 +170,8 @@
     "roll_mod:end_pyrite_ore_sample",
     "roll_mod:netherrack_pyrite",
     "roll_mod:netherrack_pyrite_ore_sample",
+    "roll_mod:mars_pyrite",
+    "roll_mod:mars_pyrite_ore_sample",
     "roll_mod:raw_pyrite_block",
     "roll_mod:netherrack_cinnabar",
     "roll_mod:netherrack_cinnabar_ore_sample",
@@ -323,6 +361,10 @@
     "roll_mod:raw_lead_block",
     "roll_mod:end_olivine",
     "roll_mod:end_olivine_ore_sample",
+    "roll_mod:moon_olivine",
+    "roll_mod:moon_olivine_ore_sample",
+    "roll_mod:mars_olivine",
+    "roll_mod:mars_olivine_ore_sample",
     "roll_mod:raw_olivine_block",
     "roll_mod:netherrack_trona",
     "roll_mod:netherrack_trona_ore_sample",
@@ -338,6 +380,8 @@
     "roll_mod:venus_quartz_ore_sample",
     "roll_mod:mercury_quartz",
     "roll_mod:mercury_quartz_ore_sample",
+    "roll_mod:mars_quartz",
+    "roll_mod:mars_quartz_ore_sample",
     "roll_mod:raw_quartz_block",
     "roll_mod:deepslate_diamond",
     "roll_mod:deepslate_diamond_ore_sample",
@@ -355,9 +399,13 @@
     "roll_mod:raw_iridium_block",
     "roll_mod:end_gold_amalgam",
     "roll_mod:end_gold_amalgam_ore_sample",
+    "roll_mod:mars_gold_amalgam",
+    "roll_mod:mars_gold_amalgam_ore_sample",
     "roll_mod:raw_gold_amalgam_block",
     "roll_mod:end_silver_amalgam",
     "roll_mod:end_silver_amalgam_ore_sample",
+    "roll_mod:mars_silver_amalgam",
+    "roll_mod:mars_silver_amalgam_ore_sample",
     "roll_mod:raw_silver_amalgam_block",
     "roll_mod:stone_coal",
     "roll_mod:stone_coal_ore_sample",

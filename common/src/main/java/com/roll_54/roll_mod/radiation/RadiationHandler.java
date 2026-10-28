@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.radiation;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.data.ModTags;
 import com.roll_54.roll_mod.registry.ComponentsRegistry;
+import com.roll_54.roll_mod.registry.FluidRegistry;
 import com.roll_54.roll_mod.registry.ModEffects;
 import com.roll_54.roll_mod.registry.TagRegistry;
 import net.minecraft.core.Holder;
@@ -25,6 +26,7 @@ import static com.roll_54.roll_mod.data.RMMAttachment.RADIATION;
  * Drives the radiation mechanic each server tick:
  * <ul>
  *   <li>Held radioactive items (main hand + offhand) raise the player's stored radiation.</li>
+ *   <li>Being in nuclear waste fluid raises it too.</li>
  *   <li>Equipped storm-protective armor reduces the gain (summed per-piece resistance, capped at 1.0).</li>
  *   <li>When not exposed, radiation slowly decays.</li>
  *   <li>The stored amount maps to one of six escalating poisoning tiers, each applying the custom
@@ -46,6 +48,9 @@ public class RadiationHandler {
     private static final int HIGH_GAIN = 50;
     private static final int EXTREME_GAIN = 200;
 
+    /** Radiation gained per tick while standing or swimming in nuclear waste (same as a high-tier item). */
+    private static final int NUCLEAR_WASTE_GAIN = HIGH_GAIN;
+
     /** Radiation lost per tick while not exposed to any radioactive item. */
     private static final int DECAY = 5;
 
@@ -65,6 +70,9 @@ public class RadiationHandler {
             if (gm == GameType.CREATIVE || gm == GameType.SPECTATOR) continue;
 
             int gain = itemRadiation(player.getMainHandItem()) + itemRadiation(player.getOffhandItem());
+            if (player.isInFluidType(FluidRegistry.NUCLEAR_WASTE.type().get())) {
+                gain += NUCLEAR_WASTE_GAIN;
+            }
 
             if (gain > 0) {
                 float resistance = 0f;

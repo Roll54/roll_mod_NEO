@@ -11,6 +11,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModList;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -24,7 +26,7 @@ import java.util.Set;
  *     casing, through {@code <casing ns>:machine_casing/<casing>}.</li>
  * </ul>
  * MI material casings get all of it from MI's runtime datagen, the {@code _ct} textures tinted from the
- * {@code <part>_ct} templates (see {@code MICasingConnectedTexturesMixin} and
+ * templates {@link #ctTemplates} names (see {@code MICasingConnectedTexturesMixin} and
  * {@code MIMachineCasingsProviderMixin}). {@link #EXTRA_CASINGS} ship their textures, mcmetas, connected
  * models and modifiers as static resources and only need the machine casing model generated, since MI's
  * runtime pack sits on top and would otherwise cover it with a plain {@code use_block_model} one.
@@ -38,9 +40,28 @@ public final class MiCasingConnectedTextures {
             ResourceLocation.fromNamespaceAndPath("yet_another_industrialization", "steel_plated_end_stone_bricks")
     );
 
+    /**
+     * The connected sheet each MI casing part prefers, named as in the "MI in New" pack: 4 rivets for the
+     * plain casing, 12 for the special one, pipes for the pipe casing. See {@link #ctTemplates}.
+     */
+    private static final Map<String, String> CT_TEMPLATES = Map.of(
+            "machine_casing", "casing_4_rivets_ct",
+            "machine_casing_special", "casing_12_rivets_ct",
+            "machine_casing_pipe", "casing_pipe_ct"
+    );
+
     private static final ResourceLocation MI_MACHINE_PREDICATE = ResourceLocation.fromNamespaceAndPath("mi_ct", "is_mi_machine");
 
     private static Set<ResourceLocation> casings;
+
+    /**
+     * Template names to try, in order, for the connected sheet of an MI casing part: its "MI in New"
+     * sheet where it has one, then the older {@code <part>_ct}.
+     */
+    public static List<String> ctTemplates(String part){
+        String preferred = CT_TEMPLATES.get(part);
+        return preferred == null ? List.of(part + "_ct") : List.of(preferred, part + "_ct");
+    }
 
     /** Fusion models fail to load without Fusion, so nothing is generated then. */
     public static boolean enabled(){

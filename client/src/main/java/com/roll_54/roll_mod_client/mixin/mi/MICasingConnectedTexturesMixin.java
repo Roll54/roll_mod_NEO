@@ -25,7 +25,7 @@ import java.util.function.BiConsumer;
 /**
  * Generates Fusion connected textures next to every MI material casing texture. MI tints
  * {@code materialsets/<set>/<part>.png} into {@code block/<id>.png}; here the same coloramp tints the
- * {@code <part>_ct} template (a 4x4 Fusion "simple" sheet, served from roll_mod's override folder by
+ * part's connected template ({@link MiCasingConnectedTextures#ctTemplates}; a 4x4 Fusion "simple" sheet, served from roll_mod's override folder by
  * {@link MITextureManagerOverrideMixin}) into {@code block/<id>_ct.png} and {@code block/<id>_mct.png}, and
  * the mcmetas, connected block model and Fusion model modifier are written into the same generated pack.
  * The pattern itself lives in {@link MiCasingConnectedTextures}; the machine casing models are done in
@@ -48,8 +48,14 @@ public class MICasingConnectedTexturesMixin {
         if (!MiCasingConnectedTextures.enabled() || !(part instanceof MaterialItemPart itemPart)) return;
 
         String setName = material.get(MaterialProperty.SET).name;
-        String template = part.key().key + "_ct";
-        if (!mtm.hasAsset("modern_industrialization:textures/materialsets/common/" + template + ".png")) return;
+        String template = null;
+        for (String candidate : MiCasingConnectedTextures.ctTemplates(part.key().key)) {
+            if (mtm.hasAsset("modern_industrialization:textures/materialsets/common/" + candidate + ".png")) {
+                template = candidate;
+                break;
+            }
+        }
+        if (template == null) return;
 
         // Same namespace MI writes the casing texture to (PartTextureGenerator keeps only the path).
         ResourceLocation block = ResourceLocation.fromNamespaceAndPath("modern_industrialization",

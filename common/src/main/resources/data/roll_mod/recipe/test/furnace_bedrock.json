@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:smelting",
+  "ingredient": {
+    "item": "minecraft:bedrock"
+  },
+  "result": {
+    "id": "minecraft:barrier",
+    "count": 1
+  },
+  "experience": 0.0,
+  "cookingtime": 200
+}

@@ -35,7 +35,8 @@ public class OreLootTableProvider extends LootTableProvider {
                 new SubProviderEntry(OreBlockLoot::new, LootContextParamSets.BLOCK),
                 // Solar panels share this single provider: LootTableProvider.getName() is final,
                 // so a mod can register only one loot provider (see SolarPanelLootProvider).
-                new SubProviderEntry(SolarPanelLootProvider.SolarPanelLoot::new, LootContextParamSets.BLOCK)
+                new SubProviderEntry(SolarPanelLootProvider.SolarPanelLoot::new, LootContextParamSets.BLOCK),
+                new SubProviderEntry(SolarPanelLootProvider.MachineLoot::new, LootContextParamSets.BLOCK)
         ), lookupProvider);
     }
 

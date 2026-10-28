@@ -26,6 +26,7 @@ public class TabRegistry {
                       (parameters, output) -> {
                         output.accept(BlockRegistry.VENDOR.get());
                         output.accept(BlockRegistry.DISPLAY.get());
+                        output.accept(BlockRegistry.SERVICE.get());
                         if (Config.Server.VENDOR_KEY_IN_CREATIVE.get())
                           output.accept(ItemRegistry.VENDOR_KEY.get());
                       })

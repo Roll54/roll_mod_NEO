@@ -28,16 +28,13 @@ import java.util.Set;
  * <p>{@code costFactor} multiplies the tool's energy cost while the module is installed — per
  * block in a drill, per hit in a saber (BURN's 0.9 is the discount the voided drops pay for). A
  * shared module may carry a separate {@code saberCostFactor}: Fortune is Fortune in a drill and
- * Looting in a saber, and each keeps its own balance. {@code complexity} is what it takes from the
- * tool's complexity budget.
+ * Looting in a saber, and each keeps its own balance. {@link #complexity()} is what it takes from the
+ * tool's complexity budget — see {@link ModuleComplexity}.
  *
  * <p>No voltage requirement, deliberately: any module fits any drill with a free slot. Progression
  * is balanced through the crafting recipes, not through code locks.
  */
 public class DrillModuleItem extends Item {
-
-    /** Complexity a module costs per tier, when it names none of its own. */
-    public static final int COMPLEXITY_PER_TIER = 3;
 
     public final ModuleType type;
     public final int tier;
@@ -51,25 +48,17 @@ public class DrillModuleItem extends Item {
     public final double costFactor;
     /** The energy cost factor in a saber (per hit). Differs only for a shared module balanced per tool. */
     public final double saberCostFactor;
-    /**
-     * How much of the tool's complexity budget the module takes; negative gives some back (Speak).
-     * See {@link DrillModuleHelper#canInstall}.
-     */
-    public final int complexity;
+    /** See {@link #complexity()}. */
+    private final int complexity;
 
-    /** Complexity {@code 3 × tier}, the same cost factor in every tool. */
+    /** Complexity {@code 2 + tier}, the same cost factor in every tool. */
     public DrillModuleItem(ModuleType type, int tier, double value, double costFactor, Properties properties) {
-        this(type, tier, value, costFactor, costFactor, COMPLEXITY_PER_TIER * tier, properties);
+        this(type, tier, value, costFactor, ModuleComplexity.cost(tier), properties);
     }
 
     public DrillModuleItem(ModuleType type, int tier, double value, double costFactor, int complexity,
                            Properties properties) {
-        this(type, tier, value, costFactor, costFactor, complexity, properties);
-    }
-
-    public DrillModuleItem(ModuleType type, int tier, double value, double costFactor, double saberCostFactor,
-                           int complexity, Properties properties) {
-        this(type, tier, value, value, costFactor, saberCostFactor, complexity, properties);
+        this(type, tier, value, value, costFactor, costFactor, complexity, properties);
     }
 
     public DrillModuleItem(ModuleType type, int tier, double value, double saberValue, double costFactor,
@@ -82,6 +71,14 @@ public class DrillModuleItem extends Item {
         this.costFactor = costFactor;
         this.saberCostFactor = saberCostFactor;
         this.complexity = complexity;
+    }
+
+    /**
+     * How much of the tool's complexity budget the module takes; negative gives some back (Speak).
+     * See {@link DrillModuleHelper#canInstall} and {@link ModuleComplexity}.
+     */
+    public int complexity() {
+        return complexity;
     }
 
     /** The energy cost factor this module applies in this kind of tool. */
@@ -128,6 +125,7 @@ public class DrillModuleItem extends Item {
                         .withStyle(ChatFormatting.AQUA));
             }
         }
+        int complexity = complexity();
         tooltip.add(Component.translatable("tooltip.roll_mod.module.complexity",
                         (complexity > 0 ? "+" : "") + complexity)
                 .withStyle(complexity < 0 ? ChatFormatting.GREEN : ChatFormatting.YELLOW));

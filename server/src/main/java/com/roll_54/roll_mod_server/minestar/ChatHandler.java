@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod_server.minestar;
 
+import com.roll_54.roll_mod.minestar.chat.ChatButton;
 import com.roll_54.roll_mod.minestar.chat.ChatChannel;
 import com.roll_54.roll_mod.minestar.chat.ChatChannels;
 import com.roll_54.roll_mod.minestar.data.MuteStore;
@@ -51,7 +52,10 @@ public class ChatHandler {
         event.getDispatcher().register(Commands.literal("gc")
                 .then(Commands.argument("message", StringArgumentType.greedyString())
                         .executes(ctx -> {
-                            sendGlobal(ctx.getSource().getPlayerOrException(), StringArgumentType.getString(ctx, "message").trim());
+                            // "!" is the client's Global shortcut, never part of the message: stripped
+                            // here too, before the chat event, so bridges and logs never see it either.
+                            sendGlobal(ctx.getSource().getPlayerOrException(),
+                                    ChatButton.withoutGlobalPrefix(StringArgumentType.getString(ctx, "message").trim()));
                             return 1;
                         })));
         event.getDispatcher().register(Commands.literal("lc")

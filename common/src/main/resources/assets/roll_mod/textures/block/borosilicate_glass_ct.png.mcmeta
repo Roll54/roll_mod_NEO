@@ -1,0 +1,8 @@
+{
+  "fusion": {
+    "type": "connecting",
+    "layout": "simple",
+    "render_type": "cutout",
+    "connections": { "type": "is_same_block" }
+  }
+}

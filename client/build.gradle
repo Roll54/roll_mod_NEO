@@ -134,4 +134,11 @@ neoForge.ideSyncTask generateModMetadata
     // The Xaero maps are its usual companions and make the plot map worth looking at.
     dependencies.add(runCfg.name, files("../common/jars/open-parties-and-claims-neoforge-1.21.1-0.27.5.jar"))
     dependencies.add(runCfg.name, files("../common/jars/xaerominimap-neoforge-1.21.1-26.1.0.jar"))
-    dependencies.add(runCfg.name, files("../common/jars/xaeroworldmap-neoforge-1.21.1-1.41.2.jar"))}
+    dependencies.add(runCfg.name, files("../common/jars/xaeroworldmap-neoforge-1.21.1-1.41.2.jar"))
+}
+// Sophisticated Core supplies the liquid XP (sophisticatedcore:xp_still) the service block's XP
+// services trade in. Test runs only; nothing compiles against it.
+['client', 'client2'].each { runName ->
+    def runCfg = neoForge.runs.getByName(runName).additionalRuntimeClasspathConfiguration
+    dependencies.add(runCfg.name, files("../common/jars/sophisticatedcore-1.21.1-1.5.5.2363.jar"))
+}

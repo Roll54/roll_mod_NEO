@@ -55,6 +55,9 @@ public final class RollMod {
 
         ItemRegistry.register(eventBus);
         BlockRegistry.register(eventBus);
+        FluidRegistry.register(eventBus);
+        // Machines registered through Tesseract's MI hooks (see RMMIHookRegistry) live in these.
+        com.roll_54.roll_mod.compat.mi.RMMIRegistries.register(eventBus);
         GeneratedOreRegistry.register(eventBus);
         ItemGroups.register(eventBus);
         BlockEntites.register(eventBus);
@@ -68,6 +71,7 @@ public final class RollMod {
         MachineModelRegistry.register();
         eventBus.register(new ExampleLavaRecipe());
         eventBus.register(new RollMBD2Machines());
+        eventBus.register(new com.roll_54.roll_mod.compat.MBD2.greenhouse.GreenhouseMachines());
         SoundRegistry.SOUND_EVENTS.register(eventBus);
         ComponentsRegistry.COMPONENTS.register(eventBus);
         RMMAttachment.ATTACHMENT_TYPES.register(eventBus);
@@ -127,6 +131,15 @@ public final class RollMod {
                         return vendorBlockEntity.getInsertItemHandler();
                     }
                 });
+        // Service block: the owner's cables and pipes fill (or empty) its stock from any side. Each
+        // answers null for a block whose service does not trade that resource.
+        var serviceBe = com.roll_54.roll_mod.economy.vendingblock.registry.BlockEntityRegistry.SERVICE_BE.get();
+        event.registerBlockEntity(aztech.modern_industrialization.api.energy.EnergyApi.SIDED, serviceBe,
+                (be, side) -> be.energyCapability());
+        event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, serviceBe,
+                (be, side) -> be.energyCapability());
+        event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, serviceBe,
+                (be, side) -> be.fluidCapability());
     }
 
     private void onCommonSetup(final FMLCommonSetupEvent event) {

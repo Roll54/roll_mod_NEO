@@ -4,7 +4,8 @@
   "package": "com.roll_54.roll_mod_client.compat.jei.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "JeiFluidMinPriceMixin"
+    "JeiFluidMinPriceMixin",
+    "JeiUnsizedScreenMixin"
   ],
   "injectors": {
     "defaultRequire": 0

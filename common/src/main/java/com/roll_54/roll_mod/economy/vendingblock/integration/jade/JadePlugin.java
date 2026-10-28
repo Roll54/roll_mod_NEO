@@ -20,5 +20,7 @@ public class JadePlugin implements IWailaPlugin {
   public void registerClient(IWailaClientRegistration registration) {
     registration.registerBlockComponent(
         VendorBlockComponentProvider.INSTANCE, BlockRegistry.VENDOR.get().getClass());
+    registration.registerBlockComponent(
+        ServiceBlockComponentProvider.INSTANCE, BlockRegistry.SERVICE.get().getClass());
   }
 }

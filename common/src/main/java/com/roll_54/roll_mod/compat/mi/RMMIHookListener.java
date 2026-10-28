@@ -4,6 +4,7 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.registry.MachineRegistry;
 import net.swedz.tesseract.neoforge.compat.mi.hook.MIHookEntrypoint;
 import net.swedz.tesseract.neoforge.compat.mi.hook.MIHookListener;
+import net.swedz.tesseract.neoforge.compat.mi.hook.context.listener.HatchMIHookContext;
 import net.swedz.tesseract.neoforge.compat.mi.hook.context.listener.MachineCasingsMIHookContext;
 import net.swedz.tesseract.neoforge.compat.mi.hook.context.listener.MachineRecipeTypesMIHookContext;
 import net.swedz.tesseract.neoforge.compat.mi.hook.context.listener.MultiblockMachinesMIHookContext;
@@ -32,6 +33,10 @@ public final class RMMIHookListener implements MIHookListener {
 
     public void machineRecipeTypes(MachineRecipeTypesMIHookContext hook) {
         MachineRegistry.recipeTypes(hook);
+    }
+
+    public void hatches(HatchMIHookContext hook) {
+        MachineRegistry.hatches(hook);
     }
 
     public void multiblockMachines(MultiblockMachinesMIHookContext hook) {
