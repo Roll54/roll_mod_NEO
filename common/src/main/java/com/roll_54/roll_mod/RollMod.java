@@ -71,7 +71,7 @@ public final class RollMod {
         MachineModelRegistry.register();
         eventBus.register(new ExampleLavaRecipe());
         eventBus.register(new RollMBD2Machines());
-        eventBus.register(new com.roll_54.roll_mod.compat.MBD2.greenhouse.GreenhouseMachines());
+       // eventBus.register(new com.roll_54.roll_mod.compat.MBD2.greenhouse.GreenhouseMachines());
         SoundRegistry.SOUND_EVENTS.register(eventBus);
         ComponentsRegistry.COMPONENTS.register(eventBus);
         RMMAttachment.ATTACHMENT_TYPES.register(eventBus);

@@ -1,5 +1,5 @@
 package com.roll_54.roll_mod.compat.MBD2.greenhouse;
-
+/*
 import aztech.modern_industrialization.machines.components.UpgradeComponent;
 import com.lowdragmc.mbd2.api.block.RotationState;
 import com.lowdragmc.mbd2.api.capability.recipe.IO;
@@ -34,7 +34,7 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import java.util.List;
 
-/**
+
  * The EV Greenhouse: a 3×3×3 MBD2 multiblock that grows an AgriCraft seed (see {@link GrowerTrait}).
  * Crops leave and EU, water and fertilizer arrive through ordinary MI hatches built into it.
  *
@@ -53,12 +53,12 @@ import java.util.List;
  *
  * <p>Built in Java like {@code RollMBD2Machines}, and for the same reason registered at
  * {@code FMLConstructModEvent}: nothing may resolve a registry entry until the pattern factory runs.
- */
+
 public class GreenhouseMachines {
 
     public static final ResourceLocation CONTROLLER_ID = RollMod.id("ev_greenhouse");
 
-    /** Trait names of the controller. */
+    /** Trait names of the controller.
     public static final String SEED_TRAIT = "seed";
     public static final String GROWER_TRAIT = "grower";
 
@@ -109,7 +109,7 @@ public class GreenhouseMachines {
     /**
      * Unformed: a plain hull. Formed: the geo model, with a box big enough that it is not culled
      * while the controller itself is off screen.
-     */
+
     private static MachineState controllerState() {
         @SuppressWarnings("unchecked")
         MachineState.Builder<MachineState> builder = (MachineState.Builder<MachineState>) MachineState.baseBuilder();
@@ -168,11 +168,11 @@ public class GreenhouseMachines {
         return BuiltInRegistries.BLOCK.get(id);
     }
 
-    /**
+
      * Every MI hatch of one kind, whichever mod registers it ({@code modern_industrialization:lv_item_output_hatch},
      * this mod's fluid hatches, ...): MI names them {@code <tier>_<kind>}. Cheapest tier first, so the
      * structure preview shows that one.
-     */
+
     private static Block[] hatches(String suffix) {
         return BuiltInRegistries.BLOCK.entrySet().stream()
                 .filter(entry -> entry.getKey().location().getPath().endsWith(suffix))
@@ -186,7 +186,7 @@ public class GreenhouseMachines {
     /**
      * MI upgrade items go into the controller by right-click, as into an MI machine; sneaking with an
      * empty hand takes them back.
-     */
+
     private static void onUseItem(MachineUseItemOnEvent event) {
         if (!CONTROLLER_ID.equals(event.getMachine().getDefinition().id())) return;
         GrowerTrait grower = event.getMachine().getTraitByName(GrowerTrait.class, GROWER_TRAIT);
@@ -203,3 +203,4 @@ public class GreenhouseMachines {
         }
     }
 }
+*/
