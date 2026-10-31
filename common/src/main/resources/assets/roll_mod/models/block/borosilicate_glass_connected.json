@@ -2,7 +2,7 @@
     "loader": "fusion:model",
     "type": "connecting",
     "parent": "minecraft:block/cube_all",
-    "render_type": "minecraft:cutout",
+    "render_type": "minecraft:translucent",
     "textures": {
         "all": "roll_mod:block/borosilicate_glass_ct",
         "particle": "roll_mod:block/borosilicate_glass"

@@ -9,6 +9,7 @@ import com.lowdragmc.mbd2.common.machine.definition.config.ConfigMachineSettings
 import com.lowdragmc.mbd2.common.machine.definition.config.ConfigRecipeLogicSettings;
 import com.lowdragmc.mbd2.common.machine.definition.config.MachineState;
 import com.lowdragmc.mbd2.common.trait.TraitDefinition;
+import com.lowdragmc.mbd2.common.trait.fluid.FluidTankCapabilityTraitDefinition;
 import com.lowdragmc.mbd2.common.trait.item.ItemSlotCapabilityTraitDefinition;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.compat.MBD2.crops.CropHarvesterTraitDefinition;
@@ -18,6 +19,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.SubscribeEvent;
 
 import java.util.List;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Registers this mod's MBD2 machines.
@@ -45,25 +47,32 @@ public class RollMBD2Machines {
      * did, so placed blocks keep working. It also keeps the deprecated Crop Manager's buffer and
      * throughput.
      *
+     * <p>MV and up also feed crops N/P/K, and HV applies mutagen (crops wiki §11.7).
+     *
      * @param area the side of the square work area behind the machine, in blocks
      */
     public enum CropManagerTier {
-        LV("crop_manager_lv", "lv", 3, 50_000, 500),
-        MV("crop_manager_mk2", "mv", 5, 100_000, 1_000),
-        HV("crop_manager_hv", "hv", 7, 200_000, 2_000);
+        LV("crop_manager_lv", "lv", 3, 50_000, 500, false, false),
+        MV("crop_manager_mk2", "mv", 5, 100_000, 1_000, true, false),
+        HV("crop_manager_hv", "hv", 7, 200_000, 2_000, true, true);
 
         public final ResourceLocation id;
         private final String cableTier;
         private final int area;
         private final int energyCapacity;
         private final int energyTransfer;
+        public final boolean nutrients;
+        public final boolean mutagen;
 
-        CropManagerTier(String path, String cableTier, int area, int energyCapacity, int energyTransfer) {
+        CropManagerTier(String path, String cableTier, int area, int energyCapacity, int energyTransfer,
+                        boolean nutrients, boolean mutagen) {
             this.id = RollMod.id(path);
             this.cableTier = cableTier;
             this.area = area;
             this.energyCapacity = energyCapacity;
             this.energyTransfer = energyTransfer;
+            this.nutrients = nutrients;
+            this.mutagen = mutagen;
         }
     }
 
@@ -72,6 +81,15 @@ public class RollMBD2Machines {
     private static final String HERBICIDE_TRAIT = "herbicide";
     private static final String OUTPUT_TRAIT = "output";
     private static final String ENERGY_TRAIT = "energy";
+    private static final String HERBICIDE_FLUID_TRAIT = "herbicide_fluid";
+    private static final String NUTRIENT_TRAIT = "nutrients";
+    private static final String NUTRIENT_FLUID_TRAIT = "nutrient_fluid";
+    private static final String MUTAGEN_TRAIT = "mutagen";
+
+    private static final int HERBICIDE_TANK_MB = 16_000;
+    private static final int NUTRIENT_TANK_MB = 16_000;
+    /** Mutagen bleeds 100/s from every crop it is on, so the HV tank is the deepest. */
+    private static final int MUTAGEN_TANK_MB = 32_000;
 
     private static final int OUTPUT_SLOTS = 18;
     /** How often a Crop Manager scans its area. */
@@ -154,6 +172,9 @@ public class RollMBD2Machines {
         herbicide.getItemFilterSettings().setWhitelist(true);
         herbicide.getItemFilterSettings().setFilterTags(List.of(TagRegistry.HERBICIDES.location()));
 
+        FluidTankCapabilityTraitDefinition herbicideFluid = inputTank(HERBICIDE_FLUID_TRAIT, HERBICIDE_TANK_MB,
+                TagRegistry.HERBICIDE_FLUIDS.location());
+
         ItemSlotCapabilityTraitDefinition output = new ItemSlotCapabilityTraitDefinition();
         output.setName(OUTPUT_TRAIT);
         output.setSlotSize(OUTPUT_SLOTS);
@@ -179,6 +200,12 @@ public class RollMBD2Machines {
         harvester.setHerbicideSlotName(HERBICIDE_TRAIT);
         harvester.setOutputSlotName(OUTPUT_TRAIT);
         harvester.setEnergyTraitName(ENERGY_TRAIT);
+        harvester.setHerbicideTankName(HERBICIDE_FLUID_TRAIT);
+        harvester.setNutrientSlotName(NUTRIENT_TRAIT);
+        harvester.setNutrientTankName(NUTRIENT_FLUID_TRAIT);
+        harvester.setMutagenTankName(MUTAGEN_TRAIT);
+        harvester.setNutrientFeeding(tier.nutrients);
+        harvester.setMutagenFeeding(tier.mutagen);
         harvester.setAreaWidth(tier.area);
         harvester.setAreaDepth(tier.area);
         // Once a second rather than every tick: a crop advances on random ticks, about once a minute,
@@ -186,12 +213,48 @@ public class RollMBD2Machines {
         // every 500 s on a busy server, nearly all of it the per-tick scan).
         harvester.setTickInterval(HARVEST_INTERVAL_TICKS);
 
-        List<TraitDefinition> traits = List.of(herbicide, output, energy, harvester);
+        List<TraitDefinition> traits = new java.util.ArrayList<>(List.of(herbicide, herbicideFluid, output, energy, harvester));
+        ItemSlotCapabilityTraitDefinition nutrientSlot = null;
+        FluidTankCapabilityTraitDefinition nutrientFluid = null;
+        FluidTankCapabilityTraitDefinition mutagen = null;
+        if (tier.nutrients) {
+            // No filter: any item or fluid may go in, and only those with a roll_mod:npk value are used.
+            // A data map can't drive MBD2's filter, which only knows items, fluids and tags.
+            nutrientSlot = new ItemSlotCapabilityTraitDefinition();
+            nutrientSlot.setName(NUTRIENT_TRAIT);
+            nutrientSlot.setSlotSize(1);
+            nutrientSlot.setGuiIO(IO.IN);
+            nutrientSlot.getCapabilityIO().setAllIO(IO.IN);
+            nutrientFluid = inputTank(NUTRIENT_FLUID_TRAIT, NUTRIENT_TANK_MB, null);
+            traits.add(nutrientSlot);
+            traits.add(nutrientFluid);
+        }
+        if (tier.mutagen) {
+            mutagen = inputTank(MUTAGEN_TRAIT, MUTAGEN_TANK_MB, TagRegistry.MUTAGEN_FLUIDS.location());
+            traits.add(mutagen);
+        }
 
         return ConfigMachineSettings.builder()
                 .hasUI(true)
-                .uiTemplate(CropManagerUI.template(output, herbicide, energy, harvester))
+                .uiTemplate(CropManagerUI.template(output, herbicide, herbicideFluid, nutrientSlot, nutrientFluid,
+                        mutagen, energy, harvester))
                 .traitDefinitions(traits)
                 .build();
+    }
+
+    /** A one-tank fluid input, filtered by {@code tag} when given (a tag, because fluids don't exist yet). */
+    private static FluidTankCapabilityTraitDefinition inputTank(String name, int capacity, @Nullable ResourceLocation tag) {
+        FluidTankCapabilityTraitDefinition tank = new FluidTankCapabilityTraitDefinition();
+        tank.setName(name);
+        tank.setTankSize(1);
+        tank.setCapacity(capacity);
+        tank.setGuiIO(IO.IN);
+        tank.getCapabilityIO().setAllIO(IO.IN);
+        if (tag != null) {
+            tank.getFluidFilterSettings().setEnable(true);
+            tank.getFluidFilterSettings().setWhitelist(true);
+            tank.getFluidFilterSettings().setFilterTags(List.of(tag));
+        }
+        return tank;
     }
 }

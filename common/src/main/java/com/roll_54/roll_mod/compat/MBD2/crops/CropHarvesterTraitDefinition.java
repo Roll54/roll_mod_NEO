@@ -88,6 +88,11 @@ public class CropHarvesterTraitDefinition extends TraitDefinition implements IUI
     @ConfigNumber(range = {0.0, 2.147483647E9})
     private int energyPerWeedRemoval = 500;
 
+    @Configurable(name = "config.definition.trait.crop_harvester.energy_per_feed",
+            tips = {"config.definition.trait.crop_harvester.energy_per_feed.tooltip"})
+    @ConfigNumber(range = {0.0, 2.147483647E9})
+    private int energyPerFeed = 100;
+
     @Configurable(name = "config.definition.trait.crop_harvester.tick_interval",
             tips = {"config.definition.trait.crop_harvester.tick_interval.tooltip"})
     @ConfigNumber(range = {1.0, 1200.0})
@@ -98,6 +103,33 @@ public class CropHarvesterTraitDefinition extends TraitDefinition implements IUI
     @Configurable(name = "config.definition.trait.crop_harvester.herbicide_slot_name",
             tips = {"config.definition.trait.crop_harvester.herbicide_slot_name.tooltip"})
     private String herbicideSlotName = "herbicide";
+
+    @Configurable(name = "config.definition.trait.crop_harvester.herbicide_tank_name",
+            tips = {"config.definition.trait.crop_harvester.herbicide_tank_name.tooltip"})
+    private String herbicideTankName = "herbicide_fluid";
+
+    // ── Feeding (crops wiki §11.7) ───────────────────────────────────────
+    // MV and HV feed N/P/K; HV also applies mutagen. A missing trait just turns its feature off.
+
+    @Configurable(name = "config.definition.trait.crop_harvester.nutrient_feeding",
+            tips = {"config.definition.trait.crop_harvester.nutrient_feeding.tooltip"})
+    private boolean nutrientFeeding = false;
+
+    @Configurable(name = "config.definition.trait.crop_harvester.mutagen_feeding",
+            tips = {"config.definition.trait.crop_harvester.mutagen_feeding.tooltip"})
+    private boolean mutagenFeeding = false;
+
+    @Configurable(name = "config.definition.trait.crop_harvester.nutrient_slot_name",
+            tips = {"config.definition.trait.crop_harvester.nutrient_slot_name.tooltip"})
+    private String nutrientSlotName = "nutrients";
+
+    @Configurable(name = "config.definition.trait.crop_harvester.nutrient_tank_name",
+            tips = {"config.definition.trait.crop_harvester.nutrient_tank_name.tooltip"})
+    private String nutrientTankName = "nutrient_fluid";
+
+    @Configurable(name = "config.definition.trait.crop_harvester.mutagen_tank_name",
+            tips = {"config.definition.trait.crop_harvester.mutagen_tank_name.tooltip"})
+    private String mutagenTankName = "mutagen";
 
     @Configurable(name = "config.definition.trait.crop_harvester.output_slot_name",
             tips = {"config.definition.trait.crop_harvester.output_slot_name.tooltip"})
@@ -129,15 +161,15 @@ public class CropHarvesterTraitDefinition extends TraitDefinition implements IUI
     public static final String SETTING_APPLY_HERBICIDE = "apply_herbicide";
     public static final String SETTING_VOID_BIOMASS = "void_biomass";
     public static final String SETTING_RENDER_BOX = "render_box";
+    public static final String SETTING_FEED_NUTRIENTS = "feed_nutrients";
+    public static final String SETTING_APPLY_MUTAGEN = "apply_mutagen";
     /** The collapsible settings window, and the gear that opens it. */
     public static final String SETTINGS_PANEL = "settings_panel";
     public static final String SETTINGS_TOGGLE = "settings_toggle";
 
     private static final int ROW_HEIGHT = 16;
-    /** How many switches {@link #createTraitUITemplate} lays out. */
-    private static final int SETTING_ROWS = 4;
-    /** The height those rows take; the hand-built settings window is sized from it. */
-    public static final int SETTINGS_ROWS_HEIGHT = SETTING_ROWS * ROW_HEIGHT;
+    /** Switches every tier has; the feeding ones are added on top where the tier feeds. */
+    private static final int BASE_SETTING_ROWS = 4;
     private static final int SWITCH_WIDTH = 20;
     private static final int SWITCH_HEIGHT = 10;
     private static final int LABEL_X = 4 + SWITCH_WIDTH + 4;
@@ -148,6 +180,16 @@ public class CropHarvesterTraitDefinition extends TraitDefinition implements IUI
      * see the end of the name.
      */
     private static final int LABEL_WIDTH = 60;
+
+    /** How many switches {@link #createTraitUITemplate} lays out for this tier. */
+    public int settingRows() {
+        return BASE_SETTING_ROWS + (nutrientFeeding ? 1 : 0) + (mutagenFeeding ? 1 : 0);
+    }
+
+    /** The height those rows take; the hand-built settings window is sized from it. */
+    public int settingsRowsHeight() {
+        return settingRows() * ROW_HEIGHT;
+    }
 
     public String settingId(String setting) {
         return uiId() + "_" + setting;
@@ -164,6 +206,13 @@ public class CropHarvesterTraitDefinition extends TraitDefinition implements IUI
         addRow(container, 1, SETTING_APPLY_HERBICIDE, "gui.roll_mod.crop_manager.apply_herbicide");
         addRow(container, 2, SETTING_VOID_BIOMASS, "gui.roll_mod.crop_manager.void_biomass");
         addRow(container, 3, SETTING_RENDER_BOX, "gui.roll_mod.crop_manager.render_box");
+        int row = BASE_SETTING_ROWS;
+        if (nutrientFeeding) {
+            addRow(container, row++, SETTING_FEED_NUTRIENTS, "gui.roll_mod.crop_manager.feed_nutrients");
+        }
+        if (mutagenFeeding) {
+            addRow(container, row, SETTING_APPLY_MUTAGEN, "gui.roll_mod.crop_manager.apply_mutagen");
+        }
     }
 
     private void addRow(UIElement container, int index, String setting, String langKey) {
@@ -207,6 +256,8 @@ public class CropHarvesterTraitDefinition extends TraitDefinition implements IUI
         bindSetting(ui, SETTING_APPLY_HERBICIDE, harvester::isApplyHerbicide, harvester::setApplyHerbicide);
         bindSetting(ui, SETTING_VOID_BIOMASS, harvester::isVoidBiomass, harvester::setVoidBiomass);
         bindSetting(ui, SETTING_RENDER_BOX, harvester::isRenderBoundingBox, harvester::setRenderBoundingBox);
+        bindSetting(ui, SETTING_FEED_NUTRIENTS, harvester::isFeedNutrients, harvester::setFeedNutrients);
+        bindSetting(ui, SETTING_APPLY_MUTAGEN, harvester::isApplyMutagen, harvester::setApplyMutagen);
         bindSettingsToggle(ui);
     }
 
@@ -387,6 +438,62 @@ public class CropHarvesterTraitDefinition extends TraitDefinition implements IUI
 
     public void setEnergyPerWeedRemoval(int energyPerWeedRemoval) {
         this.energyPerWeedRemoval = energyPerWeedRemoval;
+    }
+
+    public int getEnergyPerFeed() {
+        return energyPerFeed;
+    }
+
+    public void setEnergyPerFeed(int energyPerFeed) {
+        this.energyPerFeed = energyPerFeed;
+    }
+
+    public String getHerbicideTankName() {
+        return herbicideTankName;
+    }
+
+    public void setHerbicideTankName(String herbicideTankName) {
+        this.herbicideTankName = herbicideTankName;
+    }
+
+    public boolean isNutrientFeeding() {
+        return nutrientFeeding;
+    }
+
+    public void setNutrientFeeding(boolean nutrientFeeding) {
+        this.nutrientFeeding = nutrientFeeding;
+    }
+
+    public boolean isMutagenFeeding() {
+        return mutagenFeeding;
+    }
+
+    public void setMutagenFeeding(boolean mutagenFeeding) {
+        this.mutagenFeeding = mutagenFeeding;
+    }
+
+    public String getNutrientSlotName() {
+        return nutrientSlotName;
+    }
+
+    public void setNutrientSlotName(String nutrientSlotName) {
+        this.nutrientSlotName = nutrientSlotName;
+    }
+
+    public String getNutrientTankName() {
+        return nutrientTankName;
+    }
+
+    public void setNutrientTankName(String nutrientTankName) {
+        this.nutrientTankName = nutrientTankName;
+    }
+
+    public String getMutagenTankName() {
+        return mutagenTankName;
+    }
+
+    public void setMutagenTankName(String mutagenTankName) {
+        this.mutagenTankName = mutagenTankName;
     }
 
     public int getTickInterval() {

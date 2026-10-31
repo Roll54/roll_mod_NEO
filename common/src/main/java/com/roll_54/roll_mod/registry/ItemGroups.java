@@ -216,6 +216,7 @@ public final class ItemGroups {
 
     private static boolean isAddon(Item item) {
         if (item instanceof HerbicideItem) return true; // AgriCraft crop herbicides
+        if (item instanceof com.roll_54.roll_mod.items.MutagenSyringeItem) return true; // AgriCraft crop mutagen
         for (Class<?> c = item.getClass(); c != null && c != Item.class; c = c.getSuperclass()) {
             if (fromAddon(c)) return true;
             for (Class<?> i : c.getInterfaces()) {

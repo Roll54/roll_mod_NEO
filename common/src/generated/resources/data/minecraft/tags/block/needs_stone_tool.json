@@ -9,7 +9,9 @@
     "roll_mod:highly_advanced_large_furnace",
     "roll_mod:large_alloy_smelter",
     "roll_mod:highly_advanced_bending_machine",
+    "roll_mod:assembly_line",
     "roll_mod:large_mixer",
+    "roll_mod:permafrost_vacuum_freezer",
     "roll_mod:large_compressor",
     "roll_mod:large_cutting_machine",
     "roll_mod:advanced_pyrolyse_oven",
@@ -21,19 +23,11 @@
       "required": false
     },
     {
-      "id": "roll_mod:assembly_line",
-      "required": false
-    },
-    {
       "id": "roll_mod:netherstorm_thermal_centrifuge",
       "required": false
     },
     {
       "id": "roll_mod:hephaestus_compressor",
-      "required": false
-    },
-    {
-      "id": "roll_mod:permafrost_vacuum_freezer",
       "required": false
     },
     "roll_mod:netherrack_mica",

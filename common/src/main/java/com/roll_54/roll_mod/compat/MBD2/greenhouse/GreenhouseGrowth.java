@@ -81,7 +81,7 @@ public final class GreenhouseGrowth {
         return ticksToMature(plant, plant.getGrowthStageAfterHarvest(), growth);
     }
 
-    /** AgriCraft's harvest rolls: 1,1,2,2,2,3,3,3,4,4 for gain 1..10. */
+    /** AgriCraft's harvest rolls: 1,1,2,2,2,3,3,3,4,4 for gain 1..10, on up to 7 at gain 20. */
     public static int harvestRolls(int gain) {
         return (3 + gain) / 3;
     }

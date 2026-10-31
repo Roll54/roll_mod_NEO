@@ -158,10 +158,11 @@ versionRange = "[1.5.8,)"
 ordering = "NONE"
 side = "BOTH"
 
-# AE2 carries only the bus sleep mixin; the range is the version its IOBusPart was read from.
+# AE2 is required: the vending block's inventory is an ME interface built on AE2's InterfaceLogic,
+# and the bus sleep mixin reads IOBusPart. The range is the version both were written against.
 [[dependencies."${mod_id}"]]
 modId = "ae2"
-type = "optional"
+type = "required"
 versionRange = "[19.2.17,)"
 ordering = "NONE"
 side = "BOTH"

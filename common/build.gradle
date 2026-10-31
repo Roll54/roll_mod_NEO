@@ -135,9 +135,10 @@ dependencies {
     compileOnly "curse.maven:jade-324717:7545219"
     compileOnly "curse.maven:carry-on-274259:7393892"
     compileOnly "net.luckperms:api:5.4"
-    // AE2: compat/ae2 puts IO buses to sleep on a blocked vending block. Soft mixin config and an
-    // isLoaded guard on the wake path; compile-only from the pack's jar (modmaven has no 19.2.17).
-    compileOnly files("jars/appliedenergistics2-19.2.17.jar")
+    // AE2 is required: the vending block's inventory is an ME interface (AE2's InterfaceLogic).
+    // implementation, so every dev run loads it; from the pack's jar (modmaven has no 19.2.17).
+    // GuideME, which AE2 needs, is already an implementation dependency above.
+    implementation files("jars/appliedenergistics2-19.2.17.jar")
 
     // Farmer's Delight: daily-task COOK hook. implementation, not compileOnly, so every dev run loads it
     // and the cooking tasks can be tested out of the box. Still soft for the shipped mod: only the

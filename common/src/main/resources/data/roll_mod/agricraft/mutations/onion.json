@@ -1,0 +1,6 @@
+{
+  "chance": 0.25,
+  "child": "roll_mod:onion",
+  "parent1": "minecraft:potato",
+  "parent2": "minecraft:allium"
+}

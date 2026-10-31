@@ -1,0 +1,60 @@
+{
+  "cloneable": true,
+  "growth_bonus": 0.005,
+  "growth_chance": 0.75,
+  "harvest_stage": 4,
+  "mods": [],
+  "products": [
+    {
+      "chance": 1.0,
+      "item": "rusticdelight:cotton_boll",
+      "max": 10,
+      "min": 5,
+      "required": true
+    }
+  ],
+  "requirement": {
+    "light_tolerance_factor": 0.5,
+    "max_light": 15,
+    "min_light": 13,
+    "seasons": [
+      "summer",
+      "autumn"
+    ],
+    "soil_acidity": {
+      "type": "equal",
+      "tolerance_factor": 0,
+      "value": "neutral"
+    },
+    "soil_humidity": {
+      "type": "equal",
+      "tolerance_factor": 0,
+      "value": "watery"
+    },
+    "soil_nutrients": {
+      "type": "equal",
+      "tolerance_factor": 0,
+      "value": "medium"
+    }
+  },
+  "seeds": [
+    {
+      "grass_drop_chance": 0.0,
+      "item": "rusticdelight:cotton_seeds",
+      "override_planting": true,
+      "seed_drop_bonus": 0.0,
+      "seed_drop_chance": 1.0
+    }
+  ],
+  "spread_chance": 0.1,
+  "stages": [
+    4,
+    4,
+    8,
+    8,
+    13,
+    13,
+    15,
+    15
+  ]
+}

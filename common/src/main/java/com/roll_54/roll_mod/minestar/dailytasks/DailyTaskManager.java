@@ -321,7 +321,7 @@ public final class DailyTaskManager {
      * What a slot's 1st, 2nd and 3rd reroll of the day cost in Starcoins. Its length is also the
      * cap: a slot rerolled this many times keeps its task until the next 06:00 roll.
      */
-    private static final long[] REROLL_COSTS = {100, 150, 200};
+    private static final long[] REROLL_COSTS = {1000, 1500, 2000};
 
     /** Players with a paid reroll still waiting on the currency database — a second click is dropped. */
     private static final Set<UUID> PENDING_REROLLS = new HashSet<>();

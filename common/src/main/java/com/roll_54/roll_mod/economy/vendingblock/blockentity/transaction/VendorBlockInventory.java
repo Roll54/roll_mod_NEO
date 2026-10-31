@@ -20,15 +20,15 @@ public class VendorBlockInventory {
     return remaining <= 0;
   }
 
-  /** Units of {@code item} available in the vendor's bulk storage. */
+  /** Units of {@code item} available in the vendor's storage. */
   public static int stockCount(VendorBlockEntity vendor, ItemStack item) {
-    return vendor.storage.countOf(item);
+    return vendor.stockOf(item);
   }
 
   /** Remove up to {@code amount} units of {@code item} from storage; returns the amount removed. */
   public static int deductFromStorage(VendorBlockEntity vendor, ItemStack item, int amount) {
     if (vendor.isInfinite()) return amount;
-    return vendor.storage.remove(item, amount);
+    return vendor.takeStock(item, amount);
   }
 
   /** Units of {@code item} (same item + components) held in the seller's inventory. */

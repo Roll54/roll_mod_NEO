@@ -3,6 +3,7 @@ package com.roll_54.roll_mod_client.compat.jei;
 import com.agricraft.agricraft.api.codecs.AgriProduct;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.compat.MBD2.greenhouse.GreenhouseGrowth;
+import com.roll_54.roll_mod.compat.argicraft.CropBreedingSettings;
 import com.roll_54.roll_mod.compat.MBD2.greenhouse.GreenhouseMachines;
 import com.roll_54.roll_mod.compat.MBD2.greenhouse.GreenhouseSettings;
 import mezz.jei.api.constants.VanillaTypes;
@@ -33,7 +34,7 @@ import java.util.Locale;
  * <p>AgriCraft harvests {@code (gain + 3) / 3} times per mature plant, and each time every product
  * drops on its own chance with an amount in its range. The grid shows the <em>average</em> items of
  * each product per harvest for each group of gains with the same number of rolls; hovering a product
- * gives its chance and range. Under it, the base time of one regrowth at growth 1 and 10 (upgrades
+ * gives its chance and range. Under it, the base time of one regrowth at growth 1 and 20 (upgrades
  * shorten it). All numbers come from {@link GreenhouseGrowth}, which the machine itself uses.
  */
 public class GreenhouseYieldCategory implements IRecipeCategory<GreenhouseYieldRecipe> {
@@ -47,8 +48,8 @@ public class GreenhouseYieldCategory implements IRecipeCategory<GreenhouseYieldR
     private static final int MAX_PRODUCTS = (WIDTH - PRODUCTS_X) / SLOT;
     private static final int TABLE_Y = 24;
     private static final int LINE = 10;
-    /** Gains grouped by equal rolls: 1-2, 3-5, 6-8, 9-10. */
-    private static final int[][] GAIN_GROUPS = { {1, 2}, {3, 5}, {6, 8}, {9, 10} };
+    /** Gains grouped by equal rolls, up to the 20 that gene ceilings allow (crops wiki §11.7). */
+    private static final int[][] GAIN_GROUPS = { {1, 2}, {3, 5}, {6, 8}, {9, 11}, {12, 14}, {15, 17}, {18, 20} };
     private static final int HEIGHT = TABLE_Y + (GAIN_GROUPS.length + 1) * LINE + 2 * LINE + 4;
 
     private static final int COLOR_TEXT = 0xFF404040;
@@ -140,7 +141,7 @@ public class GreenhouseYieldCategory implements IRecipeCategory<GreenhouseYieldR
         int y = TABLE_Y + (GAIN_GROUPS.length + 1) * LINE + 2;
         gui.drawString(font, Component.translatable("jei.roll_mod.ev_greenhouse_yield.cycle",
                 time(GreenhouseGrowth.cycleTicks(recipe.plant(), 1)),
-                time(GreenhouseGrowth.cycleTicks(recipe.plant(), 10))), 4, y, COLOR_TEXT, false);
+                time(GreenhouseGrowth.cycleTicks(recipe.plant(), CropBreedingSettings.STAT_MAX))), 4, y, COLOR_TEXT, false);
         gui.drawString(font, Component.translatable("jei.roll_mod.ev_greenhouse_yield.energy",
                 String.format(Locale.ROOT, "%,d", GreenhouseSettings.RECIPE_EU)), 4, y + LINE, COLOR_DIM, false);
     }

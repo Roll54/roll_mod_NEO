@@ -184,8 +184,9 @@ public final class RollModClient {
             }, com.roll_54.roll_mod.registry.BlockRegistry.MODULE_INSTALLATION_TABLE.get().asItem());
 
             for (com.roll_54.roll_mod.registry.FluidRegistry.RollFluid fluid : com.roll_54.roll_mod.registry.FluidRegistry.all()) {
-                net.minecraft.resources.ResourceLocation still = RollMod.id(fluid.stillTexture());
-                net.minecraft.resources.ResourceLocation flowing = RollMod.id(fluid.flowingTexture());
+                net.minecraft.resources.ResourceLocation still = fluid.stillTextureId();
+                net.minecraft.resources.ResourceLocation flowing = fluid.flowingTextureId();
+                int tint = fluid.tintColor();
                 event.registerFluidType(new net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions() {
                     @Override
                     public net.minecraft.resources.ResourceLocation getStillTexture() {
@@ -196,7 +197,22 @@ public final class RollModClient {
                     public net.minecraft.resources.ResourceLocation getFlowingTexture() {
                         return flowing;
                     }
+
+                    @Override
+                    public int getTintColor() {
+                        return tint;
+                    }
                 }, fluid.type().get());
+            }
+        }
+
+        /** Tinted fluids' dynamic buckets only show their colour with the container tint handler. */
+        @SubscribeEvent
+        public static void registerItemColors(net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item event) {
+            for (com.roll_54.roll_mod.registry.FluidRegistry.RollFluid fluid : com.roll_54.roll_mod.registry.FluidRegistry.all()) {
+                if (fluid.isTinted()) {
+                    event.register(new net.neoforged.neoforge.client.model.DynamicFluidContainerModel.Colors(), fluid.bucket().get());
+                }
             }
         }
 

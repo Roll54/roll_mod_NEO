@@ -23,6 +23,10 @@ public class NetworkHandler {
         DiscardsPaymentPacket::handle);
     registrar.playToServer(BuyModePacket.TYPE, BuyModePacket.STREAM_CODEC, BuyModePacket::handle);
     registrar.playToServer(
+        VendorInterfacePacket.TYPE,
+        VendorInterfacePacket.STREAM_CODEC,
+        VendorInterfacePacket::handle);
+    registrar.playToServer(
         FilterSlotUpdatePacket.TYPE,
         FilterSlotUpdatePacket.STREAM_CODEC,
         FilterSlotUpdatePacket::handle);
@@ -30,8 +34,6 @@ public class NetworkHandler {
         AddPositionPacket.TYPE, AddPositionPacket.STREAM_CODEC, AddPositionPacket::handle);
     registrar.playToServer(
         RemovePositionPacket.TYPE, RemovePositionPacket.STREAM_CODEC, RemovePositionPacket::handle);
-    registrar.playToServer(
-        StorageLockPacket.TYPE, StorageLockPacket.STREAM_CODEC, StorageLockPacket::handle);
     registrar.playToServer(
         SetFacadePacket.TYPE, SetFacadePacket.STREAM_CODEC, SetFacadePacket::handle);
     registrar.playToServer(

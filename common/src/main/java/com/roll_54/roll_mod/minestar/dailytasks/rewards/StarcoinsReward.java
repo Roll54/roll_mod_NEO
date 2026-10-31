@@ -9,6 +9,7 @@ import com.roll_54.roll_mod.economy.api.CurrencyCause;
 import com.roll_54.roll_mod.economy.api.CurrencyService;
 import com.roll_54.roll_mod.economy.currency.model.CurrencyType;
 import com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.Items;
 
@@ -32,7 +33,7 @@ public final class StarcoinsReward implements DailyReward {
             DailyTaskIcon.of(RollMod.id("textures/item/lp.png"), Items.GOLD_NUGGET);
 
     private static final CurrencyType TYPE = CurrencyType.MAIN;
-    private static final long AMOUNT = 250;
+    private static final long AMOUNT = 2500;
 
     @Override
     public String id() {
@@ -42,6 +43,12 @@ public final class StarcoinsReward implements DailyReward {
     @Override
     public DailyTaskIcon icon() {
         return ICON;
+    }
+
+    /** The amount comes from {@link #AMOUNT}, so the hover can never drift from the payout. */
+    @Override
+    public Component tooltip() {
+        return Component.translatable(descKey(), AMOUNT);
     }
 
     @Override

@@ -1,5 +1,5 @@
 {
-  "chance": 0.5,
+  "chance": 0.01,
   "child": "roll_mod:rutile_bell_pepper",
   "parent1": "roll_mod:yellow_bell_pepper",
   "parent2": "roll_mod:magnetite_spinach"

@@ -1465,8 +1465,9 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, StormScannerItem> LV_STORM_SCANNER = ITEMS.register("lv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 1, 0xff1500, 1_000_000));
     public static final DeferredHolder<Item, StormScannerItem> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 2, 0xff1500, 10_000_000));
 
-    // Plain item for now; no behaviour yet.
-    public static final DeferredHolder<Item, Item> MUTAGEN_SYRINGE = registerSimple("mutagen_syringe");
+    /** Right-click a crop: +500 mutagen (crops wiki §11.7). */
+    public static final DeferredHolder<Item, Item> MUTAGEN_SYRINGE = ITEMS.register("mutagen_syringe",
+            () -> new com.roll_54.roll_mod.items.MutagenSyringeItem(new Item.Properties()));
     public static final DeferredHolder<Item, EnergyBatteryItem> TEST_BATTERY = ITEMS.register("nano_battery", () -> new EnergyBatteryItem(new Item.Properties().stacksTo(1), 20_000_000L, 20_000L, 200_000L, 0x00FFFF));
     // 🔋 REDSTONE BATTERY
     public static final DeferredHolder<Item, EnergyBatteryItem> REDSTONE_BATTERY =
@@ -2177,6 +2178,14 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> RED_BELL_PEPPER_SEEDS = CROPS.register("red_bell_pepper_seeds", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> YELLOW_BELL_PEPPER_SEEDS = CROPS.register("yellow_bell_pepper_seeds", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> GREEN_BELL_PEPPER_SEEDS = CROPS.register("green_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> WILD_PALE_BELL_PEPPER_SEEDS = CROPS.register("wild_pale_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> WILD_DARK_BELL_PEPPER_SEEDS = CROPS.register("wild_dark_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> ORANGE_BELL_PEPPER_SEEDS = CROPS.register("orange_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> WHITE_BELL_PEPPER_SEEDS = CROPS.register("white_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> PINK_BELL_PEPPER_SEEDS = CROPS.register("pink_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> BLACK_BELL_PEPPER_SEEDS = CROPS.register("black_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> PURPLE_BELL_PEPPER_SEEDS = CROPS.register("purple_bell_pepper_seeds", () -> new Item(new Item.Properties()));
+    public static final DeferredHolder<Item, Item> BLUE_BELL_PEPPER_SEEDS = CROPS.register("blue_bell_pepper_seeds", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SULFUR_BERRY_COFFEE_BEANS = CROPS.register("sulfur_berry_coffee_beans", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> SULFUR_BERRY_COFFEE_SEEDS = CROPS.register("sulfur_berry_coffee_seeds", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> FLUORITE_PINEAPPLE = CROPS.register("fluorite_pineapple", () -> new Item(new Item.Properties().food(

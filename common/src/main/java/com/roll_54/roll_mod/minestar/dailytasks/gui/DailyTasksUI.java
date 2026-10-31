@@ -583,7 +583,7 @@ public final class DailyTasksUI {
         return slot;
     }
 
-    /** {@code "8 × Diamond, 2 × Netherite Ingot, 250 Starcoins"}, for the row tooltip. */
+    /** {@code "8 × Diamond, 2 × Netherite Ingot, 2500 Starcoins"}, for the row tooltip. */
     private static Component rewardNames(int first, int second) {
         MutableComponent out = Component.empty();
         for (TaskReward reward : drawn(first, second)) {

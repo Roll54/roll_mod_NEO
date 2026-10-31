@@ -16,7 +16,10 @@ import org.jetbrains.annotations.Nullable;
  * instead of in code. Files live at {@code data/<namespace>/data_maps/{item,fluid}/{acidity,fertilizer}.json};
  * see {@code docs/hydroponic-data-maps.md} for the format.
  *
- * <p>All four are synced to clients: the bed's input slots have to decide whether they accept a
+ * <p>{@code roll_mod:npk} ({@link NutrientValue}) feeds crops' N/P/K through the MV/HV Crop Managers;
+ * see {@code docs/crops-wiki.md} §11.7.
+ *
+ * <p>All of them are synced to clients: the bed's input slots have to decide whether they accept a
  * stack, and {@code Slot#mayPlace} runs on the client too.
  */
 @EventBusSubscriber(modid = RollMod.MODID)
@@ -46,6 +49,18 @@ public final class ModDataMaps {
                     .synced(FertilizerValue.CODEC, false)
                     .build();
 
+    /** N/P/K contributed by one item. */
+    public static final DataMapType<Item, NutrientValue> NPK_ITEM =
+            DataMapType.builder(RollMod.id("npk"), Registries.ITEM, NutrientValue.CODEC)
+                    .synced(NutrientValue.CODEC, false)
+                    .build();
+
+    /** N/P/K contributed by one bucket (1000 mB) of this fluid. */
+    public static final DataMapType<Fluid, NutrientValue> NPK_FLUID =
+            DataMapType.builder(RollMod.id("npk"), Registries.FLUID, NutrientValue.CODEC)
+                    .synced(NutrientValue.CODEC, false)
+                    .build();
+
     private ModDataMaps() {
     }
 
@@ -55,6 +70,8 @@ public final class ModDataMaps {
         event.register(ACIDITY_FLUID);
         event.register(FERTILIZER_ITEM);
         event.register(FERTILIZER_FLUID);
+        event.register(NPK_ITEM);
+        event.register(NPK_FLUID);
     }
 
     @Nullable
@@ -75,5 +92,15 @@ public final class ModDataMaps {
     @Nullable
     public static FertilizerValue fertilizer(Fluid fluid) {
         return fluid.builtInRegistryHolder().getData(FERTILIZER_FLUID);
+    }
+
+    @Nullable
+    public static NutrientValue nutrients(ItemStack stack) {
+        return stack.isEmpty() ? null : stack.getItem().builtInRegistryHolder().getData(NPK_ITEM);
+    }
+
+    @Nullable
+    public static NutrientValue nutrients(Fluid fluid) {
+        return fluid.builtInRegistryHolder().getData(NPK_FLUID);
     }
 }

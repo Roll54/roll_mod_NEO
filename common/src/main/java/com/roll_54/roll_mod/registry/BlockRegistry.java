@@ -205,7 +205,7 @@ public class BlockRegistry {
     public static final List<DeferredBlock<Block>> SOLAR_PANELS = new ArrayList<>();
 
     static {
-        for (int tier = 1; tier <= 15; tier++) {
+        for (int tier = 3; tier <= 15; tier += 3) {
             long production = 1L << tier; // 2^tier: 4 … 32768 EU/t
             DeferredBlock<Block> panel = BLOCKS.register(
                     "solar_panel_" + tier,

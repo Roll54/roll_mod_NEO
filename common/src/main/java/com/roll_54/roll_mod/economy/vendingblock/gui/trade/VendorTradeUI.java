@@ -1,7 +1,6 @@
 package com.roll_54.roll_mod.economy.vendingblock.gui.trade;
 
 import com.roll_54.roll_mod.minestar.theme.RollUi;
-import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.Icons;
 import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
@@ -12,13 +11,10 @@ import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvent;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.Position;
 import com.roll_54.roll_mod.economy.vendingblock.blockentity.VendorBlockEntity;
-import com.roll_54.roll_mod.economy.vendingblock.blockentity.VendorStorage;
 import com.roll_54.roll_mod.economy.vendingblock.gui.VendorUIHelper;
-import com.roll_54.roll_mod.economy.vendingblock.gui.components.BigSlotItemHandler;
 import com.roll_54.roll_mod.economy.vendingblock.network.AddPositionPacket;
 import com.roll_54.roll_mod.economy.vendingblock.network.BuyModePacket;
 import com.roll_54.roll_mod.economy.vendingblock.network.RemovePositionPacket;
-import com.roll_54.roll_mod.economy.vendingblock.network.StorageLockPacket;
 import java.util.List;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
@@ -59,7 +55,7 @@ public final class VendorTradeUI {
     root.layout(l -> l.paddingAll(0));
 
     UIElement positionsPanel = positionsPanel(be);
-    UIElement storagePanel = storagePanel(be);
+    UIElement storagePanel = VendorInterfacePanel.build(be);
     VendorUIHelper.abs(positionsPanel, 0, 26, WIDTH, 118);
     VendorUIHelper.abs(storagePanel, 0, 26, WIDTH, 118);
     storagePanel.setDisplay(false);
@@ -110,6 +106,7 @@ public final class VendorTradeUI {
           storagePanel.setDisplay(true);
           menu.setDisplay(false);
         };
+
 
     Button trades = new Button();
     trades.setText(Component.translatable("menu.roll_mod.vendor.menu.trades"));
@@ -266,44 +263,5 @@ public final class VendorTradeUI {
     row.addChild(delete);
 
     return row;
-  }
-
-  private static final int LOCK_ON_COLOR = 0xFFCC3030;
-  private static final int LOCK_OFF_COLOR = 0x90303030;
-
-  private static UIElement storagePanel(VendorBlockEntity be) {
-    UIElement panel = new UIElement();
-
-    for (int i = 0; i < VendorStorage.SLOTS; i++) {
-      int index = i;
-      int x = 8 + (i % 9) * 18;
-      int y = 4 + (i / 9) * 18;
-
-      ItemSlot slot = new ItemSlot().bind(new BigSlotItemHandler(be.storage, i, 0, 0));
-      panel.addChild(VendorUIHelper.abs(slot, x, y, 18, 18));
-
-      // lock toggle: a small corner indicator (red = locked), on top of the slot
-      UIElement lock = new UIElement();
-      setLockColor(lock, be.storage.isLocked(i));
-      lock.addEventListener(UIEvents.MOUSE_DOWN, UIEvent::stopPropagation);
-      lock.addEventListener(
-          UIEvents.CLICK,
-          e -> {
-            boolean newLocked = !be.storage.isLocked(index);
-            PacketDistributor.sendToServer(
-                new StorageLockPacket(be.getBlockPos(), index, newLocked));
-            setLockColor(lock, newLocked);
-            e.stopPropagation();
-          });
-      lock.addEventListener(UIEvents.TICK, e -> setLockColor(lock, be.storage.isLocked(index)));
-      panel.addChild(VendorUIHelper.abs(lock, x + 12, y + 1, 5, 5));
-    }
-
-    return panel;
-  }
-
-  private static void setLockColor(UIElement lock, boolean locked) {
-    lock.style(
-        s -> s.backgroundTexture(new ColorRectTexture(locked ? LOCK_ON_COLOR : LOCK_OFF_COLOR)));
   }
 }

@@ -83,8 +83,8 @@ meta as unset, and the mod falls back to the defaults given here.
 --------------------------------------------------------------------------------
   How many daily-task rerolls the player gets FREE each day. A task slot is
   rerolled with the button at the bottom-right of its row in the daily tasks
-  tab; normally the 1st reroll of a slot costs 100 Starcoins, the 2nd 150 and
-  the 3rd 200, and then that slot is locked until the 06:00 reset. The first N
+  tab; normally the 1st reroll of a slot costs 1000 Starcoins, the 2nd 1500 and
+  the 3rd 2000, and then that slot is locked until the 06:00 reset. The first N
   rerolls a player makes each day (across all slots) skip the price. A free
   reroll still counts towards the slot's 3-reroll limit. The count of free
   rerolls used resets at 06:00. In a party, the player who clicks pays and

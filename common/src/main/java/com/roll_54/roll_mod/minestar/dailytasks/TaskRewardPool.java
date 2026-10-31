@@ -49,6 +49,9 @@ public final class TaskRewardPool {
             stack("diamonds", Items.DIAMOND, 8, 1),
             stack("netherite_ingots", Items.NETHERITE_INGOT, 2, 1));
 
+    /** What {@link #STARCOINS} pays per task; also the number its name shows on hover. */
+    private static final long STARCOIN_AMOUNT = 2500;
+
     /**
      * Paid on top of the draw, every task, every time — so it is deliberately not in the pool and
      * cannot be drawn twice. The icon is a PNG, so it carries an item for the advancement toast,
@@ -59,9 +62,9 @@ public final class TaskRewardPool {
             // Lowercase, and it has to stay that way: a ResourceLocation path may only hold
             // [a-z0-9/._-], and an uppercase one throws out of this static initialiser.
             DailyTaskIcon.of(RollMod.id("textures/item/lp.png"), Items.GOLD_NUGGET),
-            Component.translatable("gui.roll_mod.daily_tasks.reward.starcoins"),
+            Component.translatable("gui.roll_mod.daily_tasks.reward.starcoins", STARCOIN_AMOUNT),
             CurrencyType.MAIN,
-            250,
+            STARCOIN_AMOUNT,
             1);
 
     private TaskRewardPool() {}

@@ -1,14 +1,30 @@
 package com.roll_54.roll_mod.economy.vendingblock.blockentity;
 
+import appeng.api.config.Actionable;
+import appeng.api.networking.GridHelper;
+import appeng.api.networking.IGridNode;
+import appeng.api.networking.IGridNodeListener;
+import appeng.api.networking.IInWorldGridNodeHost;
+import appeng.api.networking.IManagedGridNode;
+import appeng.api.networking.security.IActionHost;
+import appeng.api.stacks.AEItemKey;
+import appeng.api.stacks.AEKey;
+import appeng.api.stacks.GenericStack;
+import appeng.api.util.AECableType;
+import appeng.helpers.InterfaceLogic;
+import appeng.helpers.InterfaceLogicHost;
 import com.roll_54.roll_mod.compat.ae2.Ae2BusWaker;
 import com.roll_54.roll_mod.economy.vendingblock.registry.BlockEntityRegistry;
+import com.roll_54.roll_mod.economy.vendingblock.registry.BlockRegistry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.HolderLookup.Provider;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -17,12 +33,28 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.items.IItemHandler;
+import org.jetbrains.annotations.Nullable;
 
-public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
+/**
+ * The vending block. Its inventory is an ME interface: AE2's own {@link InterfaceLogic}, with the
+ * interface's 9 config slots, 9 storage slots, upgrade slot (crafting or fuzzy card), priority and
+ * fuzzy mode. Cabled to a network it stocks the configured items, crafts them with a crafting card,
+ * and pushes everything not configured into the network — goods bought from players included —
+ * exactly like an interface. Purchases are paid out of that storage.
+ */
+public class VendorBlockEntity extends BlockEntity
+    implements OwnedBlockEntity, InterfaceLogicHost, IInWorldGridNodeHost, IActionHost {
 
   public static final int MAX_POSITIONS = 10;
+
+  /** ME link state for the owner's screen and Jade; the client has no grid node to ask. */
+  public static final int ME_OFFLINE = 0;
+  public static final int ME_NO_CHANNEL = 1;
+  public static final int ME_ONLINE = 2;
+
+  private static final String TAG_INTERFACE = "interface";
+  private static final String TAG_ME_STATUS = "meStatus";
 
   private UUID ownerID;
   private String ownerUser;
@@ -35,20 +67,39 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
   private final List<Position> positions = new ArrayList<>();
   private ItemStack facade = ItemStack.EMPTY;
 
-  public final VendorStorage storage = new VendorStorage(this::onStorageChanged);
+  private static final IGridNodeListener<VendorBlockEntity> NODE_LISTENER =
+      new IGridNodeListener<>() {
+        @Override
+        public void onSaveChanges(VendorBlockEntity be, IGridNode node) {
+          be.setChanged();
+        }
+
+        @Override
+        public void onGridChanged(VendorBlockEntity be, IGridNode node) {
+          be.logic.gridChanged();
+        }
+
+        @Override
+        public void onStateChanged(VendorBlockEntity be, IGridNode node, State state) {
+          if (be.mainNode.hasGridBooted()) be.logic.notifyNeighbors();
+          be.updateMeStatus();
+        }
+      };
+
+  private final IManagedGridNode mainNode =
+      GridHelper.createManagedNode(this, NODE_LISTENER)
+          .setInWorldNode(true)
+          .setTagName("proxy")
+          .setVisualRepresentation(BlockRegistry.VENDOR.get());
+
+  // After the node: the logic adds its ticker and crafting-requester services to it.
+  private final InterfaceLogic logic =
+      new InterfaceLogic(mainNode, this, BlockRegistry.VENDOR.get().asItem());
+
+  private int meStatus = ME_OFFLINE;
 
   public VendorBlockEntity(BlockPos pos, BlockState state) {
     super(BlockEntityRegistry.VENDOR_BE.get(), pos, state);
-  }
-
-  private void onStorageChanged() {
-    setChanged();
-    if (level != null && !level.isClientSide()) {
-      level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
-      level.invalidateCapabilities(getBlockPos());
-      checkErrorState();
-      wakeAe2Buses();
-    }
   }
 
   private void sync() {
@@ -61,16 +112,129 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
     }
   }
 
+  /** AE2 buses facing this block sleep while it can give or take nothing; any change may undo that. */
+  private void wakeAe2Buses() {
+    Ae2BusWaker.wake(level, getBlockPos());
+  }
+
+  // --- ME interface ----------------------------------------------------
+
+  @Override
+  public InterfaceLogic getInterfaceLogic() {
+    return logic;
+  }
+
+  @Override
+  public BlockEntity getBlockEntity() {
+    return this;
+  }
+
+  /** The interface's config, storage, cards, priority or fuzzy mode changed. */
+  @Override
+  public void saveChanges() {
+    sync();
+  }
+
+  @Override
+  public ItemStack getMainMenuIcon() {
+    return new ItemStack(BlockRegistry.VENDOR.get());
+  }
+
+  public IManagedGridNode getMainNode() {
+    return mainNode;
+  }
+
+  @Override
+  public @Nullable IGridNode getGridNode(Direction dir) {
+    return mainNode.getNode();
+  }
+
+  @Override
+  public @Nullable IGridNode getActionableNode() {
+    return mainNode.getNode();
+  }
+
+  @Override
+  public AECableType getCableConnectionType(Direction dir) {
+    return logic.getCableConnectionType(dir);
+  }
+
+  /** {@link #ME_OFFLINE}, {@link #ME_NO_CHANNEL} or {@link #ME_ONLINE}; synced to the client. */
+  public int getMeStatus() {
+    return meStatus;
+  }
+
+  private void updateMeStatus() {
+    int status;
+    if (mainNode.isActive()) status = ME_ONLINE;
+    else if (mainNode.isPowered()) status = ME_NO_CHANNEL;
+    else status = ME_OFFLINE;
+    if (status != meStatus) {
+      meStatus = status;
+      if (level != null && !level.isClientSide()) {
+        level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
+      }
+    }
+  }
+
+  @Override
+  public void clearRemoved() {
+    super.clearRemoved();
+    // Client side this does nothing; server side the node joins on the first tick.
+    GridHelper.onFirstTick(this, be -> be.mainNode.create(be.getLevel(), be.getBlockPos()));
+  }
+
+  @Override
+  public void onChunkUnloaded() {
+    super.onChunkUnloaded();
+    mainNode.destroy();
+  }
+
   @Override
   public void setRemoved() {
     super.setRemoved();
+    mainNode.destroy();
     // A bus asleep on this block would otherwise stay asleep against whatever replaces it.
     if (level != null && !level.isClientSide()) wakeAe2Buses();
   }
 
-  /** AE2 buses facing this block sleep while it can give or take nothing; any change may undo that. */
-  private void wakeAe2Buses() {
-    if (ModList.get().isLoaded("ae2")) Ae2BusWaker.wake(level, getBlockPos());
+  // --- stock -------------------------------------------------------------
+
+  /** Units of {@code item} (same item and components) in the interface storage. */
+  public int stockOf(ItemStack item) {
+    AEItemKey key = AEItemKey.of(item);
+    if (key == null) return 0;
+    long total = 0;
+    var storage = logic.getStorage();
+    for (int slot = 0; slot < storage.size(); slot++) {
+      if (key.equals(storage.getKey(slot))) total += storage.getAmount(slot);
+    }
+    return (int) Math.min(Integer.MAX_VALUE, total);
+  }
+
+  /** Removes up to {@code amount} of {@code item}; returns how many were removed. */
+  public int takeStock(ItemStack item, int amount) {
+    AEItemKey key = AEItemKey.of(item);
+    if (key == null || amount <= 0) return 0;
+    int removed = 0;
+    var storage = logic.getStorage();
+    for (int slot = 0; slot < storage.size() && removed < amount; slot++) {
+      removed += (int) storage.extract(slot, key, amount - removed, Actionable.MODULATE);
+    }
+    return removed;
+  }
+
+  /** Puts up to {@code amount} of {@code item} into the interface storage; returns how many fit. */
+  public int storeGoods(ItemStack item, int amount, boolean simulate) {
+    AEItemKey key = AEItemKey.of(item);
+    if (key == null || amount <= 0) return 0;
+    Actionable mode = simulate ? Actionable.SIMULATE : Actionable.MODULATE;
+    var storage = logic.getStorage();
+    long stored = 0;
+    for (int slot = 0; slot < storage.size() && stored < amount; slot++) {
+      stored += storage.insert(slot, key, amount - stored, mode);
+    }
+    return (int) stored;
   }
 
   // --- positions -------------------------------------------------------
@@ -99,13 +263,13 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
   }
 
   public int stockFor(Position position) {
-    return storage.countOf(position.item());
+    return stockOf(position.item());
   }
 
   public long purchasesLeft(Position position) {
     if (infiniteInventory) return Long.MAX_VALUE;
     if (position.amount() <= 0) return 0;
-    return (long) storage.countOf(position.item()) / position.amount();
+    return (long) stockOf(position.item()) / position.amount();
   }
 
   public boolean isPositionItem(ItemStack stack) {
@@ -120,12 +284,7 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
    */
   public boolean canStore(ItemStack item, int amount) {
     if (item.isEmpty() || amount <= 0) return false;
-    int remaining = amount;
-    for (int slot = 0; slot < storage.getSlots() && remaining > 0; slot++) {
-      ItemStack leftover = storage.insertItem(slot, item.copyWithCount(remaining), true);
-      remaining = leftover.isEmpty() ? 0 : leftover.getCount();
-    }
-    return remaining <= 0;
+    return storeGoods(item, amount, true) >= amount;
   }
 
   // --- facade ----------------------------------------------------------
@@ -141,21 +300,45 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
 
   // --- capabilities ----------------------------------------------------
 
+  /**
+   * The interface storage as items. Hoppers and pipes insert through {@link #getInsertItemHandler()}
+   * and take out of the bottom face through {@link #getExtractItemHandler()}.
+   */
+  private ItemStack stackInSlot(int slot) {
+    GenericStack stack = logic.getStorage().getStack(slot);
+    return stack != null && stack.what() instanceof AEItemKey key
+        ? key.toStack((int) Math.min(Integer.MAX_VALUE, stack.amount()))
+        : ItemStack.EMPTY;
+  }
+
+  private int slotCount() {
+    return logic.getStorage().size();
+  }
+
   private final IItemHandler insertItemHandler =
       new IItemHandler() {
         @Override
         public int getSlots() {
-          return storage.getSlots();
+          return slotCount();
         }
 
         @Override
         public ItemStack getStackInSlot(int slot) {
-          return storage.getStackInSlot(slot);
+          return stackInSlot(slot);
         }
 
         @Override
         public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-          return storage.insertItem(slot, stack, simulate);
+          var storage = logic.getStorage();
+          AEItemKey key = AEItemKey.of(stack);
+          if (slot >= storage.size() || key == null) return stack;
+          long inserted =
+              storage.insert(
+                  slot,
+                  key,
+                  stack.getCount(),
+                  simulate ? Actionable.SIMULATE : Actionable.MODULATE);
+          return inserted <= 0 ? stack : stack.copyWithCount(stack.getCount() - (int) inserted);
         }
 
         @Override
@@ -165,12 +348,14 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
 
         @Override
         public int getSlotLimit(int slot) {
-          return storage.getSlotLimit(slot);
+          return 64;
         }
 
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
-          return storage.isItemValid(slot, stack);
+          AEItemKey key = AEItemKey.of(stack);
+          var storage = logic.getStorage();
+          return key != null && slot < storage.size() && storage.isAllowedIn(slot, key);
         }
       };
 
@@ -182,12 +367,12 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
       new IItemHandler() {
         @Override
         public int getSlots() {
-          return storage.getSlots();
+          return slotCount();
         }
 
         @Override
         public ItemStack getStackInSlot(int slot) {
-          return storage.getStackInSlot(slot);
+          return stackInSlot(slot);
         }
 
         @Override
@@ -197,17 +382,23 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
 
         @Override
         public ItemStack extractItem(int slot, int amount, boolean simulate) {
-          ItemStack inSlot = storage.getStackInSlot(slot);
-          if (inSlot.isEmpty()) return ItemStack.EMPTY;
+          ItemStack inSlot = stackInSlot(slot);
+          if (inSlot.isEmpty() || amount <= 0) return ItemStack.EMPTY;
           // In sell mode, don't pipe out sale stock. In buy mode, position items ARE the
           // bought goods the owner collects, so allow extracting them.
           if (!buyMode && isPositionItem(inSlot)) return ItemStack.EMPTY;
-          return storage.extractItem(slot, amount, simulate);
+          var storage = logic.getStorage();
+          AEItemKey key = AEItemKey.of(inSlot);
+          int toTake = Math.min(amount, inSlot.getMaxStackSize());
+          long taken =
+              storage.extract(
+                  slot, key, toTake, simulate ? Actionable.SIMULATE : Actionable.MODULATE);
+          return taken <= 0 ? ItemStack.EMPTY : inSlot.copyWithCount((int) taken);
         }
 
         @Override
         public int getSlotLimit(int slot) {
-          return storage.getSlotLimit(slot);
+          return 64;
         }
 
         @Override
@@ -259,8 +450,10 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
 
   public void drops() {
     if (level == null) return;
-    for (int i = 0; i < VendorStorage.SLOTS; i++) {
-      ItemStack stack = storage.getStackInSlot(i);
+    // The interface's storage and its card.
+    List<ItemStack> stacks = new ArrayList<>();
+    logic.addDrops(stacks);
+    for (ItemStack stack : stacks) {
       if (stack.isEmpty()) continue;
       int remaining = stack.getCount();
       int max = Math.max(1, stack.getMaxStackSize());
@@ -282,6 +475,7 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
   public void setOwner(Player player) {
     this.ownerID = player.getUUID();
     this.ownerUser = player.getName().getString();
+    mainNode.setOwningPlayer(player);
     setChanged();
     if (level != null && !level.isClientSide()) checkErrorState();
   }
@@ -295,6 +489,7 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
     if (player != null) {
       this.ownerID = player.getUUID();
       this.ownerUser = player.getName().getString();
+      mainNode.setOwningPlayer(player);
     } else if (this.ownerUser == null || !this.ownerUser.equals(username)) {
       this.ownerID = null;
       this.ownerUser = username;
@@ -381,7 +576,10 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
     for (Position position : positions) posList.add(position.toTag(registries));
     tag.put("positions", posList);
 
-    tag.put("storage", storage.serializeNBT(registries));
+    CompoundTag interfaceTag = new CompoundTag();
+    logic.writeToNBT(interfaceTag, registries);
+    tag.put(TAG_INTERFACE, interfaceTag);
+    mainNode.saveToNBT(tag);
     tag.put("facade", facade.saveOptional(registries));
 
     if (this.ownerID != null) tag.putUUID("ownerID", this.ownerID);
@@ -404,7 +602,8 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
       if (!position.item().isEmpty()) positions.add(position);
     }
 
-    storage.deserializeNBT(registries, tag.getCompound("storage"));
+    logic.readFromNBT(tag.getCompound(TAG_INTERFACE), registries);
+    mainNode.loadFromNBT(tag);
     this.facade = ItemStack.parseOptional(registries, tag.getCompound("facade"));
 
     if (tag.hasUUID("ownerID")) this.ownerID = tag.getUUID("ownerID");
@@ -414,6 +613,7 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
     this.infiniteInventory = tag.getBoolean("infiniteInventory");
     this.discardsPayment = tag.getBoolean("discardsPayment");
     this.buyMode = tag.getBoolean("buyMode");
+    if (tag.contains(TAG_ME_STATUS, Tag.TAG_INT)) this.meStatus = tag.getInt(TAG_ME_STATUS);
 
     if (level != null && !level.isClientSide()) checkErrorState();
   }
@@ -425,7 +625,9 @@ public class VendorBlockEntity extends BlockEntity implements OwnedBlockEntity {
 
   @Override
   public CompoundTag getUpdateTag(Provider registries) {
-    return saveWithoutMetadata(registries);
+    CompoundTag tag = saveWithoutMetadata(registries);
+    tag.putInt(TAG_ME_STATUS, meStatus);
+    return tag;
   }
 
   public void checkErrorState() {

@@ -10,6 +10,7 @@ import net.neoforged.neoforge.registries.datamaps.builtin.NeoForgeDataMaps;
 import com.roll_54.roll_mod.data.datamap.AcidityValue;
 import com.roll_54.roll_mod.data.datamap.FertilizerValue;
 import com.roll_54.roll_mod.data.datamap.ModDataMaps;
+import com.roll_54.roll_mod.data.datamap.NutrientValue;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -27,6 +28,16 @@ public class RollDataMapProvider extends DataMapProvider {
                 .add(ResourceLocation.parse("roll_mod:lignite_coal_dust"), new FurnaceFuel(1600), false);
 
         gatherHydroponicReagents();
+        gatherCropNutrients();
+    }
+
+    /**
+     * N/P/K for the MV/HV Crop Managers (crops wiki §11.7). Items are per item, fluids per bucket.
+     * Only the example lives here; real nitrogen and potassium sources are added as they are chosen.
+     */
+    private void gatherCropNutrients() {
+        this.builder(ModDataMaps.NPK_ITEM)
+                .add(ResourceLocation.parse("minecraft:bone_meal"), new NutrientValue(0, 10, 0), false);
     }
 
     /**

@@ -6,10 +6,12 @@ import com.agricraft.agricraft.api.plant.AgriPlant;
 import com.agricraft.agricraft.common.block.CropBlock;
 import com.agricraft.agricraft.common.block.entity.CropBlockEntity;
 import com.roll_54.roll_mod.registry.ComponentsRegistry;
+import com.roll_54.roll_mod.registry.FluidRegistry;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.material.Fluid;
 
 public final class HerbicideHelper {
 
@@ -58,6 +60,20 @@ public final class HerbicideHelper {
         }
         AgriPlant plant = crop.getPlant();
         return plant instanceof WeedResistant resistant && resistant.roll_mod$isWeedsResistant();
+    }
+
+    /** Herbicide in one millibucket of a liquid herbicide, 0 for any other fluid. */
+    public static double herbicidePerMb(Fluid fluid) {
+        if (fluid.isSame(FluidRegistry.HERBICIDE_TIER_1.source().get())) {
+            return CropBreedingSettings.HERBICIDE_FLUID_TIER_1_PER_MB;
+        }
+        if (fluid.isSame(FluidRegistry.HERBICIDE_TIER_2.source().get())) {
+            return CropBreedingSettings.HERBICIDE_FLUID_TIER_2_PER_MB;
+        }
+        if (fluid.isSame(FluidRegistry.HERBICIDE_TIER_3.source().get())) {
+            return CropBreedingSettings.HERBICIDE_FLUID_TIER_3_PER_MB;
+        }
+        return 0;
     }
 
     public static boolean applyHerbicide(ItemStack stack, CropBlockEntity crop) {

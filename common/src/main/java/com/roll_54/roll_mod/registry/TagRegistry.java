@@ -6,6 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.Fluid;
 
 public class TagRegistry {
     //or parse, I don't care much....
@@ -49,6 +50,10 @@ public class TagRegistry {
      * registered, so its slot filter cannot resolve a DeferredHolder.
      */
     public static final TagKey<Item> HERBICIDES = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "herbicides"));
+    /** Fluids the Crop Managers' herbicide tank accepts; same construction-time reason as {@link #HERBICIDES}. */
+    public static final TagKey<Fluid> HERBICIDE_FLUIDS = TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "herbicides"));
+    /** Fluids the HV Crop Manager's mutagen tank accepts. */
+    public static final TagKey<Fluid> MUTAGEN_FLUIDS = TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "mutagens"));
 
     //for blockogriz
     public static final TagKey<Block> MINEABLE_WITH_PAXEL = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("cucumber", "mineable/paxel"));

@@ -11,7 +11,8 @@ everything here was read from the **AgriCraft 4.0.24 (NeoForge 1.21.1) bytecode*
 > rakes, weed handling, crop datapacks or data maps, crop machines) or an AgriCraft version bump must update the
 > affected sections in the same change. Facts marked *[unverified]* were not confirmed in the bytecode or in game.
 
-Conventions: **S** = the crop's expressed Strength, **max** = a stat's maximum (default 10). `(int)` means
+Conventions: **S** = the crop's expressed Strength, **max** = a stat's maximum (**20 in roll_mod**, formulas still
+use 10 — §1, §11.7). `(int)` means
 truncation toward zero. "Growth tick" = one vanilla random tick on the crop block (≈ once per 68 s per block at
 `randomTickSpeed` 3).
 
@@ -28,7 +29,7 @@ truncation toward zero. "Growth tick" = one vanilla random tick on the crop bloc
 8. [Datapack formats](#8-datapack-formats)
 9. [AgriCraft config](#9-agricraft-config)
 10. [Information tools](#10-information-tools)
-11. [roll_mod additions and changes](#11-roll_mod-additions-and-changes)
+11. [roll_mod additions and changes](#11-roll_mod-additions-and-changes) (gene ceilings: §11.7)
 12. [Content shipped by roll_mod](#12-content-shipped-by-roll_mod)
 13. [Gotchas and upstream bugs](#13-gotchas-and-upstream-bugs)
 14. [Irrigation and greenhouses](#14-irrigation-and-greenhouses)
@@ -43,14 +44,18 @@ pair for each of six **stats**. Only one allele of each pair is *expressed* — 
 
 | Stat | Range | What the expressed value does |
 |---|---|---|
-| `gain` | 1–10 | Number of harvest rolls: `(gain + 3) / 3` (int) → 1, 1, 2, 2, 2, 3, 3, 3, 4, 4 |
-| `growth` | 1–10 | Adds `growth × growth_bonus × growth_multiplier` to the growth chance |
-| `strength` | 1–10 | Widens soil and light tolerance; bypasses biome/dimension lists, block conditions and seasons at thresholds |
-| `resistance` | 1–10 | Chance a growth tick is spent on weeds instead: 50/40/40/30/30/20/20/10/10/0 % for 1…10 |
-| `fertility` | 1–10 | Chance a mature neighbour is picked as a breeding parent (§4); higher fertility is preferred |
-| `mutativity` | 1–10 | How strongly stats drift when bred (species mutation does **not** use it) |
+| `gain` | 1–20 | Number of harvest rolls: `(gain + 3) / 3` (int) → 1, 1, 2, 2, 2, 3, 3, 3, 4, 4 for 1…10, up to 7 at 20 |
+| `growth` | 1–20 | Adds `growth × growth_bonus × growth_multiplier` to the growth chance |
+| `strength` | 1–20 | Widens soil and light tolerance; bypasses biome/dimension lists, block conditions and seasons at thresholds |
+| `resistance` | 1–20 | Chance a growth tick is spent on weeds instead: 50/40/40/30/30/20/20/10/10/0 % for 1…10, 0 % above |
+| `fertility` | 1–20 | Chance a mature neighbour is picked as a breeding parent (§4); higher fertility is preferred |
+| `mutativity` | 1–20 | How strongly stats drift when bred (species mutation does **not** use it) |
 
-Ranges come from the AgriCraft config (`<stat>_min`/`<stat>_max`, §9). Setting min = max freezes a stat.
+**roll_mod:** the max is **20** for every stat whatever `<stat>_max` says (`AgriStatMaxMixin`), but the four formulas
+that divide by the max — resistance (weed roll), fertility (parent roll), mutativity (drift) and the strength season
+bypass — keep using **10**. So 1–10 behave exactly as before; above 10, linear effects (gain rolls, growth bonus,
+soil/light tolerance) keep growing and the capped ones stay at their cap (no weeds, always picked, always +1,
+seasons ignored). How high a bred stat may climb is limited by gene ceilings, §11.7. `<stat>_min` still applies.
 
 ### Dominance
 - **Stats:** an allele is dominant when its value is **≥** the other (`GeneStat$IntAllele.isDominant`). So the
@@ -206,6 +211,10 @@ existing weeds are kept. With `compat.mysticalagriculture_cloning` *(4.0.24, def
 
 **Mutativity does not affect species mutation** — only the mutation JSON `chance` does.
 
+**roll_mod:** the species roll only happens when **both parents have ≥ 1000 mutagen**; otherwise the pair stays
+(A, B). A child produced by a mutation gets **default genes**: both species alleles the new plant, every stat at its
+minimum (1/1). See §11.7.
+
 ### Stats (`DefaultStatMutator`)
 For each stat: allele₁ from parent1 (random dom/rec) drifts using parent1's expressed Mutativity M₁; allele₂
 likewise from parent2.
@@ -214,8 +223,11 @@ changes        with P = (max + M) / (2·max)        → M1 55 %, M5 75 %, M10 10
 if it changes: +1 with P = floor((max + M) / 2) / max, else -1
 result clamped to [stat_min, stat_max]
 ```
-Net per allele: M1 → +1 27.5 % / ±0 45 % / −1 27.5 %; M5 → 52.5 / 25 / 22.5 %; M10 → always +1. Mutativity is
-itself a stat and drifts the same way. The expressed value is the higher allele.
+Net per allele: M1 → +1 27.5 % / ±0 45 % / −1 27.5 %; M5 → 52.5 / 25 / 22.5 %; M10 (and above) → always +1.
+Mutativity is itself a stat and drifts the same way. The expressed value is the higher allele.
+
+**roll_mod:** every allele is then capped at `max(gene ceiling, highest allele either parent has for that stat)` —
+the ceiling is 5 by default, see §11.7.
 
 ---
 
@@ -510,14 +522,15 @@ stats 1.
 | `seed_compost_value` | 0.3 | composter value of seeds (since 4.0.24 also written to the `compostables` data map on reload) |
 | `seed_bag_capactity` | 64 | seed bag size (typo is upstream's) |
 | `seed_bag_enchant_cost` | 10 | |
-| `<stat>_min` / `<stat>_max` / `<stat>_hidden` | 1 / 10 / false | per stat; hidden stats are omitted from tooltips, magnifying glass and Jade, but not the seed analyzer |
+| `<stat>_min` / `<stat>_max` / `<stat>_hidden` | 1 / 10 / false | per stat; hidden stats are omitted from tooltips, magnifying glass and Jade, but not the seed analyzer. **`_max` is ignored by roll_mod (always 20, §1)** |
 | compat `mysticalagriculture` | true | MA effective-farmland condition, tints, MA compat pack, MA seed conversion (functional since 4.0.24) |
 | compat `mysticalagriculture_cloning` *(4.0.24)* | false | lone MA parents clone even if not cloneable |
 | compat `pneumaticcraft`, `industrialforegoing` | true | drone / plant-gatherer harvest handlers (functional since 4.0.24) |
 | compat `starfield` *(4.0.24)* | true | Starfield Pastoral (`stardewcraft`) integration |
 | `irrigation.*`, `greenhouse.*` *(4.0.24)* | | see §14 |
 
-roll_mod has **no crop options of its own** in `MyConfig` and no crop LuckPerms keys.
+roll_mod has **no crop options of its own** in `MyConfig` and no crop LuckPerms keys; its crop numbers are
+constants in `CropBreedingSettings` (§11.7).
 
 ---
 
@@ -529,7 +542,8 @@ roll_mod has **no crop options of its own** in `MyConfig` and no crop LuckPerms 
   *(4.0.24)* server-side insertion, respects claims (`mayBuild`/`mayInteract`), 8-block reach.
 - **Magnifying glass** (either hand, or a helmet crafted with one): species pair, stats, stage (sneak),
   fertility status with the list of failed conditions, weed and its stage, soil properties when looking at soil.
-  roll_mod adds a **Herbicide** line (§11.2) and the Crop Analyzer cyberware (§11.6).
+  roll_mod adds herbicide, mutagen, N/P/K, growth-boost, gene-ceiling and mutation lines (§11.7) and the Crop
+  Analyzer cyberware (§11.6).
 - **Jade / WTHIT:** growth %, and with shift: species, stats, fertility, failed conditions, weeds. **The One Probe**
   *(4.0.24)*: growth %, extended: species, stats, weed.
 - **Journal:** per-plant pages computed at Strength 1; research now persists *(fixed in 4.0.24)*. New **Soils** pages
@@ -566,16 +580,35 @@ in `CropBlockEntityMixin`), and the Weed Manager / Crop Managers skip it.
   a weed is fully removed: `ceil(growth% × 6)`, clamped 1–6 (`HerbicideHelper`), server-side, on every rake path.
   The item path (`RakeItem.useOn`: sneaking, off hand, automation) rakes on the server only — upstream still rakes
   there on both sides and the weed comes back after the client's predicted removal.
-- Magnifying-glass tooltip shows `Herbicide: N` (`message.roll_mod.magnifying.herbicide`).
+- Magnifying-glass tooltip shows `Herbicide: N` (`message.roll_mod.magnifying.herbicide`) on every planted crop and
+  cross sticks.
+- **Liquid herbicide** (`roll_mod:herbicide_tier_1/2/3`, fluid tag `roll_mod:herbicides`): one fluid per item tier,
+  **1000 mB = one item** of that tier (0.2 / 1 / 4 herbicide per mB). Vanilla water tinted with the tier's colour
+  (0x44ff8e / 0xff4b41 / 0x632cff); buckets are NeoForge dynamic buckets. Used by the Crop Managers' herbicide tank.
+  Like every roll_mod fluid (`FluidRegistry`, registered MI-style from one colour), the fluid, its block and its
+  bucket are named in that colour.
+- Herbicide also gates gene ceilings: ≥ 1000 on both parents when they breed (§11.7).
 
 ### 11.3 Machines
 | Machine | Area | Work | Energy | Notes |
 |---|---|---|---|---|
 | Weed Manager `roll_mod:weed_manager` | 5×5, own Y | every 10 ticks | 100k FE buffer, 1000 FE/t in, 500 FE per removal | herbicide only, 1 biomass per removal; skips crops whose herbicide exceeds 2× the stack value |
 | Crop Manager `roll_mod:crop_manager` | 11×11, own Y | every tick | 100k buffer, 500 per op | **deprecated**, hidden from tabs; de-weeds and harvests |
-| MBD2 Crop Manager LV / MV (`crop_manager_mk2`) / HV | 3×3 / 5×5 / 7×7 behind the machine | every 20 ticks (`tick_interval`) | 50k / 100k / 200k buffer, 500 / 1000 / 2000 per t | trait `crop_harvester`; GUI toggles collect, herbicide, void biomass, show area; 1 biomass per weed |
+| MBD2 Crop Manager LV / MV (`crop_manager_mk2`) / HV | 3×3 / 5×5 / 7×7 behind the machine | every 20 ticks (`tick_interval`) | 50k / 100k / 200k buffer, 500 / 1000 / 2000 per t | trait `crop_harvester`; GUI toggles collect, herbicide, void biomass, show area (+ feed N/P/K on MV/HV, + apply mutagen on HV); 1 biomass per weed |
 
 MBD2 trait fields and slots: see `docs/mbd2-recipes.md`. All managers respect `weeds_resistance`.
+
+Crop Manager inputs per tier (each scan, in this order per crop: de-weed, feed, mutagen, harvest):
+
+| Input | LV | MV | HV | Notes |
+|---|---|---|---|---|
+| Herbicide item slot | ✔ | ✔ | ✔ | `#roll_mod:herbicides` items, one per weeded crop |
+| Herbicide tank (16 B) | ✔ | ✔ | ✔ | `#roll_mod:herbicides` fluids, used when the slot is empty: 1000 mB per weeded crop |
+| N/P/K item slot + tank (16 B) | – | ✔ | ✔ | anything with a `roll_mod:npk` value; filled into the machine's own N/P/K buffer (1000 each), then each planted crop is topped up to 100 N/P/K |
+| Mutagen tank (32 B) | – | – | ✔ | `#roll_mod:mutagens`; tops each planted crop up to 4000 mutagen, 1 mB = 1 |
+
+Feeding a crop (N/P/K or mutagen) costs `energy_per_feed` (100) per crop topped up. Up to 16 N/P/K items are eaten
+per scan; fluid N/P/K drains at most 1000 mB per scan, only as much as the buffer has room for.
 
 ### 11.4 Hydroponic Garden Bed
 `roll_mod:hydroponic_garden_bed` is a soil whose humidity, acidity and nutrients are set in its GUI
@@ -635,8 +668,8 @@ and the controller draws the geo model; the plant is drawn at its stage in the a
   covers machines that apply fertilizer directly. Natural spreading on random ticks is unchanged.
 - `HoeOffhandPlantGuard`: with a hoe in the main hand, off-hand planting (seeds, sticks, seed bags, plantables) is
   cancelled, so tilling doesn't also plant.
-- Client `CropRequirementCategoryRecipeMixin`: the JEI requirement page falls back to `[minecraft:bedrock]` when no
-  soil matches instead of crashing.
+- Client `CropRequirementCategoryRecipeMixin`: the JEI requirement page falls back to `[roll_mod:hydroponic_garden_bed]`
+  when no soil matches (instead of crashing), since the bed's GUI can be set to any humidity/acidity/nutrients.
 - `AgriCraftCompatPackMixin`: **AgriCraft's built-in Farmer's Delight pack is not added** (data and resources). It
   registers `farmersdelight:cabbage/tomato/rice` on the same seeds as our `roll_mod:cabbage/tomato/rice`; seed lookup
   takes the first plant, so FD's would win and break `iceberg_mint` (cabbage + sugar_cane) and everything bred from
@@ -649,6 +682,8 @@ and the controller draws the geo model; the plant is drawn at its stage in the a
 - Removed in 4.0.24 upgrade: our load fix clearing stale weed data — AgriCraft does it itself now.
 
 ### 11.6 Other crop-related features
+- **Mutagen Syringe** (`roll_mod:mutagen_syringe`): right-click a planted crop → +500 mutagen, gives back an empty
+  `roll_mod:syringe`. Mutagen bleeds 100/s, so a syringe alone lasts 5 s (§11.7).
 - **Crop Analyzer** cyberware (Create Cybernetics, eyes): `crop_analyzer_module` (humanity 5, 5 energy/t, needs
   cybereyes) and `crop_analyzer_lense` (humanity 10, 10 energy/t, needs eyeballs) show the magnifying-glass overlay
   without holding the glass.
@@ -657,6 +692,62 @@ and the controller draws the geo model; the plant is drawn at its stage in the a
 - **Creative tabs:** roll_mod crop items in `roll_crops`; herbicides and AgriCraft-based items in Addons.
 - Vanilla-style crops outside AgriCraft: `roll_mod:latex_dandelion` (age 0–6) and `roll_mod:sulfur_berry_block`
   (age 0–3, bonemealable; berries have 20 % Sulfur Poisoning).
+
+### 11.7 Gene ceilings, breeding gates and nutrients
+Code: `compat/argicraft/CropBreeding` (rules), `CropBreedingSettings` (every number below), mixins
+`AgriCrossBreedEngineMixin`, `DefaultPlantMutatorMixin`, `DefaultStatMutatorMixin`, `AgriStatMaxMixin`,
+`AgriSeasonConditionMixin`, `AgriPlantHarvestMixin`, `CropBlockEntityMixin`.
+
+**Per-crop pools** (saved with the crop, synced to clients):
+
+| NBT | What | Filled by | Drains |
+|---|---|---|---|
+| `herbicideAmount` | herbicide (§11.2) | herbicide items, Crop Managers | weed ticks |
+| `mutagenAmount` + `mutagenTick` | mutagen | Mutagen Syringe (+500), HV Crop Manager (to 4000) | **100/s**, worked out from game time (crops don't tick) |
+| `npkN`, `npkP`, `npkK` | nitrogen, phosphorus, potassium | MV/HV Crop Managers (to 100 each) | 10 each per harvest |
+
+A crop is **supplied** while each of N, P and K is ≥ 10.
+
+**Gene ceiling.** When two parents are combined (§4), each child stat allele may only climb to the ceiling both
+parents qualify for (the pair gets the lower of the two):
+
+| Ceiling | Each parent needs |
+|---|---|
+| 5 | — (default) |
+| 10 | herbicide ≥ 1000 |
+| 15 | + supplied with N/P/K |
+| 20 | + mutagen ≥ 1000, **and both parents the same species** (different species cap at 15) |
+
+The cap is `max(ceiling, highest allele either parent already has for that stat)`, so breeding never lowers what
+the parents carry — it only stops the +1 drift past the ceiling. Old crops above 5 keep their genes. Cloning
+(one parent) is untouched.
+
+**Species mutation** needs **both parents ≥ 1000 mutagen**; without it the mutation roll is skipped. A mutation
+child starts with **default genes** (homozygous new species, every stat at its minimum). Breeding within a species
+is how genes improve.
+
+**Upkeep.** On every harvest (right-click, `AgriApi.harvest`, Crop Managers, Create harvester — anything that ends
+in `AgriPlant.onHarvest`), a supplied crop pays 10 N, P and K. An unsupplied crop instead has **every stat allele
+above 10 dropped to 10** — genes from the N/P/K and mutagen ceilings need N/P/K to stay. Block-break drops don't
+count as a harvest.
+
+**Growth.** A supplied crop's growth rate is **×2** (§2's `rate`, so it still saturates at 1.0). Not on a Hydroponic
+Garden Bed: the bed's own ×6 soil doesn't stack with it.
+
+**N/P/K data map** `roll_mod:npk` (items and fluids), `data/<ns>/data_maps/{item,fluid}/npk.json`:
+```json
+{ "values": { "minecraft:bone_meal": { "p": 10 } } }
+```
+Fields `n`, `p`, `k` (ints, optional, default 0). Items are per item, fluids per bucket (1000 mB), scaled linearly.
+Shipped: bone meal = 10 P (`RollDataMapProvider`); real N and K sources are still to be chosen.
+
+**Magnifying glass** (and Crop Analyzer) on a planted crop: herbicide, mutagen (with drain), N/P/K, supplied /
+unsupplied (and whether genes will regress), growth boost state, the crop's ceiling as a parent with the next
+requirement, and whether it may mutate. On cross sticks: the ceiling and mutation status of the two most fertile
+mature neighbours (AgriCraft's pick without the fertility roll), or that a pair is missing.
+
+**EV Greenhouse** grows from a seed, not a crop: no pools, no upkeep, stats used as they are. Its JEI page groups
+gain up to 20.
 
 ---
 
@@ -678,8 +769,11 @@ and `harvest_stage` 4 unless noted. Soil = humidity / acidity / nutrients.
 
 | Plant | Soil | Light / seasons | Notes |
 |---|---|---|---|
+| black_bell_pepper | arid / acidic / very_high (≥) | 0–0 (light tol 0.1), all | → rusticdelight black 1–3 |
+| blue_bell_pepper | dry / neutral / low (≤) | 0–0 (light tol 0.2), all | → rusticdelight blue 2–3 |
 | cabbage | dry / slightly_alkaline / low | 0–10, spring | FD cabbage |
 | coffee | damp / neutral / medium | 0–15, all | → coffee_beans |
+| cotton | watery / neutral / medium (all tol 0) | 13–15, summer+autumn | growth 0.75 / bonus 0.005, 4 textures, seed `rusticdelight:cotton_seeds` → cotton boll 5–10 |
 | fluorite_pineapple | flooded / slightly_acidic (≤) / medium | 10–16, spring | |
 | green_bell_pepper | dry / slightly_alkaline / low | | → rusticdelight green pepper 1–4 |
 | hops | wet / slightly_acidic / high (≥) | | harvest stage 2 |
@@ -687,6 +781,10 @@ and `harvest_stage` 4 unless noted. Soil = humidity / acidity / nutrients.
 | latex_dandelion | dry / slightly_alkaline / low | | harvest 2, spread 0.6, **weeds_resistance** |
 | magnetite_spinach | damp / neutral / medium | all seasons | |
 | nikelia | wet / neutral / low | 0–10, all | |
+| onion | damp / neutral / medium (≤) | 0–10, all | growth 0.75, seed `farmersdelight:onion` → onion 2–5 + allium 1–2 |
+| orange_bell_pepper | wet / slightly_acidic / high (≥) | 10–16 | → rusticdelight orange 2–3 |
+| pink_bell_pepper | damp / slightly_acidic / high (≥) | 10–16 | → rusticdelight pink 2–3 |
+| purple_bell_pepper | dry / slightly_acidic / medium | 0–0 (light tol 0.2), all | → rusticdelight purple 2–3 |
 | red_bell_pepper | wet / slightly_acidic / high (≥) | | spread 0.6 |
 | rice | dry / slightly_alkaline / low | 0–10, spring | seed `farmersdelight:rice` → FD rice panicle 1–4 |
 | rutile_bell_pepper | arid / neutral / very_high (≥) | all seasons | |
@@ -694,12 +792,16 @@ and `harvest_stage` 4 unless noted. Soil = humidity / acidity / nutrients.
 | sulfur_berry | arid / neutral / very_high (≥) | 0–5 | harvest 3, 1–5 berries, **weeds_resistance** |
 | sulfur_berry_coffee | dry / acidic / low | all seasons | |
 | tomato | wet / slightly_acidic / high | | FD tomato |
+| white_bell_pepper | damp / neutral / medium | 13–16 | → rusticdelight white 2–3 |
 | wild_bell_pepper | damp / slightly_acidic / very_high (≥) | 5–16 | red/yellow/green 20 % each, **weeds_resistance** |
+| wild_dark_bell_pepper | dry / slightly_acidic / very_high (≥) | 0–4 (light tol 0.2), all | black/purple/blue 20 % each, **weeds_resistance** |
+| wild_pale_bell_pepper | damp / slightly_acidic / very_high (≥) | 5–16 | orange/white/pink 20 % each, **weeds_resistance** |
 | yellow_bell_pepper | damp / neutral / low (≤) | | |
 
-### Mutations (`roll_mod`, all chance 0.5)
+### Mutations (`roll_mod`, chance 0.5 unless noted)
 | Child | Parents |
 |---|---|
+| cotton | hops + allium (0.25) |
 | fluorite_pineapple | iceberg_mint + sweet_berries |
 | green_bell_pepper | wild_bell_pepper + cactus |
 | hops | wheat + iceberg_mint |
@@ -707,13 +809,18 @@ and `harvest_stage` 4 unless noted. Soil = humidity / acidity / nutrients.
 | latex_dandelion | dandelion + dandelion |
 | magnetite_spinach | iceberg_mint + green_bell_pepper |
 | nikelia | stonelia + sulfur_berry |
+| onion | potato + allium (0.25) |
 | red_bell_pepper | wild_bell_pepper + red_tulip |
-| rutile_bell_pepper | yellow_bell_pepper + magnetite_spinach |
+| rutile_bell_pepper | yellow_bell_pepper + magnetite_spinach (0.01) |
 | stonelia | nether_wart + melon |
 | sulfur_berry_coffee | coffee + sulfur_berry |
 | yellow_bell_pepper | wild_bell_pepper + orange_tulip |
 
 Cabbage, coffee, rice, sulfur_berry, tomato and wild_bell_pepper have no mutation (planted from seed).
+The 8 newer peppers (wild_pale, wild_dark, orange, white, pink, black, purple, blue) have **no mutation and no
+grass drop yet**, so they are only obtainable via commands/creative. Their products need **Rustic Delight ≥ 1.7.1**
+(older versions lack the orange/white/pink/black/purple/blue peppers and the plant JSONs fail to load). Their seed
+items `roll_mod:<colour>_bell_pepper_seeds` have no textures yet, so their seed models aren't generated.
 
 ### Overrides of AgriCraft's own files
 `data/minecraft/agricraft/**` copies the jar's files (identical in 4.0.8 and 4.0.24), except:
@@ -752,7 +859,14 @@ Upstream bugs and quirks seen in the bytecode *[not confirmed in game]*:
 - Fixed in 4.0.24: journal research persisting; the trowel deleting plants (genome now written back); stale client
   crop data after load.
 
+roll_mod gene rules (§11.7):
+- Mutagen bleeds even when nobody is looking; a crop holds it for `amount / 100` seconds after the last top-up.
+- The gene ceiling is checked against the parents *at the moment of breeding*: herbicide burnt down by weed ticks,
+  N/P/K spent on a harvest or mutagen bled away before then all count.
+- `<stat>_max` in `agricraft.jsonc` has no effect any more.
+
 Open TODOs (roll_mod):
+- Pick nitrogen and potassium sources for `roll_mod:npk` (only bone meal → P ships).
 - **Adopt the Farmer's Delight plants** instead of blocking AgriCraft's FD pack: drop `roll_mod:cabbage/tomato/rice`,
   move their mutations (iceberg_mint = cabbage + sugar_cane, …) to the `farmersdelight:*` ids, settle the rich soil
   values, then unblock the pack in `AgriCraftCompatPackMixin`.

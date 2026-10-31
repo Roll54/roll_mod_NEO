@@ -288,11 +288,8 @@ public class VendorBlockTransaction {
       Player seller, VendorBlockEntity vendor, ItemStack want, int amount) {
     int removed = VendorBlockInventory.removeFromPlayer(seller, want, amount);
     if (vendor.isDiscarding()) return;
-    int remaining = removed;
-    for (int slot = 0; slot < vendor.storage.getSlots() && remaining > 0; slot++) {
-      ItemStack leftover = vendor.storage.insertItem(slot, want.copyWithCount(remaining), false);
-      remaining = leftover.isEmpty() ? 0 : leftover.getCount();
-    }
+    // Into the interface storage; cabled to a network, the interface then pushes it on.
+    vendor.storeGoods(want, removed, false);
   }
 
   /** Pay the owner the courtesy notification (and sync their balance if they were paid). */

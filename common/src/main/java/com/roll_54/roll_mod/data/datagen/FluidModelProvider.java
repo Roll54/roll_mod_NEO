@@ -36,7 +36,7 @@ public class FluidModelProvider extends BlockStateProvider {
     protected void registerStatesAndModels() {
         for (RollFluid fluid : FluidRegistry.all()) {
             simpleBlock(fluid.block().get(), models().getBuilder(fluid.name())
-                    .texture("particle", RollMod.id(fluid.stillTexture())));
+                    .texture("particle", fluid.stillTextureId()));
 
             String bucket = fluid.name() + "_bucket";
             ResourceLocation bucketTexture = RollMod.id("item/" + bucket);
@@ -45,7 +45,9 @@ public class FluidModelProvider extends BlockStateProvider {
             } else {
                 itemModels().withExistingParent(bucket, ResourceLocation.fromNamespaceAndPath("neoforge", "item/bucket"))
                         .customLoader(DynamicFluidContainerModelBuilder::begin)
-                        .fluid(fluid.source().get());
+                        .fluid(fluid.source().get())
+                        // Tinted fluids are a recoloured vanilla texture; the bucket needs the tint too.
+                        .applyTint(fluid.isTinted());
             }
         }
     }

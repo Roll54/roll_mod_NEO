@@ -13,6 +13,7 @@ import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.CustomLoaderBuilder;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredBlock;
 
 public class SolarPanelBlockStateProvider extends BlockStateProvider {
     public SolarPanelBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
@@ -29,19 +30,23 @@ public class SolarPanelBlockStateProvider extends BlockStateProvider {
     /** Voltage prefix for the side/bottom textures, one per consecutive group of 3 tiers. */
     private static final String[] VOLTAGE_GROUPS = {"lv", "mv", "hv", "ev", "iv"};
 
-    /** Voltage prefix of the panel at {@code index} (tier - 1) in {@link BlockRegistry#SOLAR_PANELS}. */
-    static String voltage(int index) {
-        return VOLTAGE_GROUPS[index / 3];
+    /** Tier of a panel, parsed from its registry id {@code solar_panel_<tier>} (tiers aren't consecutive). */
+    static int tier(DeferredBlock<Block> panel) {
+        String path = panel.getId().getPath();
+        return Integer.parseInt(path.substring(path.lastIndexOf('_') + 1));
+    }
+
+    /** Voltage prefix of a panel {@code tier}: tiers 1–3 are lv, 4–6 mv, … 13–15 iv. */
+    static String voltage(int tier) {
+        return VOLTAGE_GROUPS[(tier - 1) / 3];
     }
 
     @Override
     protected void registerStatesAndModels() {
-        for (int i = 0; i < BlockRegistry.SOLAR_PANELS.size(); i++) {
-            int tier = i + 1;
-            Block block = BlockRegistry.SOLAR_PANELS.get(i).get();
+        for (DeferredBlock<Block> panel : BlockRegistry.SOLAR_PANELS) {
+            int tier = tier(panel);
             // Per-tier top texture; sides and bottom are shared per voltage group of 3 tiers.
-            String voltage = voltage(i);
-            solarPanel(block, voltage, modLoc("block/solar_panel_top_" + tier));
+            solarPanel(panel.get(), voltage(tier), modLoc("block/solar_panel_top_" + tier));
         }
     }
 

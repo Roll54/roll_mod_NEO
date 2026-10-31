@@ -403,6 +403,15 @@ public class RolltemModelProvider extends ItemModelProvider {
         seedItemModel(ItemRegistry.RED_BELL_PEPPER_SEEDS.get());
         seedItemModel(ItemRegistry.YELLOW_BELL_PEPPER_SEEDS.get());
         seedItemModel(ItemRegistry.GREEN_BELL_PEPPER_SEEDS.get());
+        // TODO no textures yet: item/crop_textures/<colour>_bell_pepper_seeds.png
+        // seedItemModel(ItemRegistry.WILD_PALE_BELL_PEPPER_SEEDS.get());
+        // seedItemModel(ItemRegistry.WILD_DARK_BELL_PEPPER_SEEDS.get());
+        // seedItemModel(ItemRegistry.ORANGE_BELL_PEPPER_SEEDS.get());
+        // seedItemModel(ItemRegistry.WHITE_BELL_PEPPER_SEEDS.get());
+        // seedItemModel(ItemRegistry.PINK_BELL_PEPPER_SEEDS.get());
+        // seedItemModel(ItemRegistry.BLACK_BELL_PEPPER_SEEDS.get());
+        // seedItemModel(ItemRegistry.PURPLE_BELL_PEPPER_SEEDS.get());
+        // seedItemModel(ItemRegistry.BLUE_BELL_PEPPER_SEEDS.get());
         seedItemModel(ItemRegistry.SULFUR_BERRY_COFFEE_BEANS.get());
         seedItemModel(ItemRegistry.SULFUR_BERRY_COFFEE_SEEDS.get());
         seedItemModel(ItemRegistry.FLUORITE_PINEAPPLE.get());
@@ -429,6 +438,17 @@ public class RolltemModelProvider extends ItemModelProvider {
         generateAgricraftPlantModels("red_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
         generateAgricraftPlantModels("yellow_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
         generateAgricraftPlantModels("green_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        // Seed PNGs (item/crop_textures/<plant>_seeds.png) are missing for these peppers, so only the
+        // crop stages are generated. Once the textures exist, switch back to generateAgricraftPlantModels
+        // and uncomment their seedItemModel calls above.
+        generateCropStageModels("wild_pale_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        generateCropStageModels("wild_dark_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        generateCropStageModels("orange_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        generateCropStageModels("white_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        generateCropStageModels("pink_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        generateCropStageModels("black_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        generateCropStageModels("purple_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        generateCropStageModels("blue_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
 
         generateAgricraftPlantModels("sulfur_berry_coffee", 6, AgricraftCropModel.CROP_CROSS);
 
@@ -442,6 +462,10 @@ public class RolltemModelProvider extends ItemModelProvider {
         generateAgricraftPlantModels("magnetite_spinach", 4, AgricraftCropModel.CROP_CROSS);
 
         generateAgricraftPlantModels("fluorite_pineapple", 5, AgricraftCropModel.CROP_CROSS);
+
+
+        generateAgricraftPlantModels("onion", 4, AgricraftCropModel.CROP_HASH);
+        generateAgricraftPlantModels("cotton", 4, AgricraftCropModel.CROP_HASH);
 
         // Hops uses hand-authored two-texture tall-crop stage models (models/crop/hops_stage*),
         // so it is NOT run through generateAgricraftPlantModels. It still needs its AgriCraft
@@ -492,6 +516,15 @@ public class RolltemModelProvider extends ItemModelProvider {
         generateSeedModel(plantName);
 
         // 2. Generate 8 crop stages (0 through 7)
+        generateCropStageModels(plantName, numTextures, cropModel);
+    }
+
+    /** Generates only the 8 crop stage models (models/crop/&lt;plantName&gt;_stage0..7.json), no seed model. */
+    public void generateCropStageModels(String plantName, int numTextures, AgricraftCropModel cropModel) {
+        if (numTextures < 1 || numTextures > 8) {
+            throw new IllegalArgumentException("numTextures must be between 1 and 8 inclusive");
+        }
+
         for (int stage = 0; stage < 8; stage++) {
             // Equally divide the 8 stages among the available textures:
             // e.g. if numTextures = 4, stage 0,1 -> texture 0; stage 2,3 -> texture 1, etc.

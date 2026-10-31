@@ -11,6 +11,8 @@ import net.minecraft.Util;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
+import net.minecraft.world.level.block.Block;
+import net.neoforged.neoforge.registries.DeferredBlock;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -81,9 +83,10 @@ public class SolarPanelConnectedTextureProvider implements DataProvider {
     /** Every texture a solar panel face uses, without the {@code block/} prefix. */
     static Set<String> faceTextures() {
         Set<String> names = new LinkedHashSet<>();
-        for (int i = 0; i < BlockRegistry.SOLAR_PANELS.size(); i++) {
-            String voltage = SolarPanelBlockStateProvider.voltage(i);
-            names.add("solar_panel_top_" + (i + 1));
+        for (DeferredBlock<Block> panel : BlockRegistry.SOLAR_PANELS) {
+            int tier = SolarPanelBlockStateProvider.tier(panel);
+            String voltage = SolarPanelBlockStateProvider.voltage(tier);
+            names.add("solar_panel_top_" + tier);
             names.add(voltage + "_solar_panel_side");
             names.add(voltage + "_solar_panel_bottom");
         }
@@ -100,8 +103,8 @@ public class SolarPanelConnectedTextureProvider implements DataProvider {
                     connectedTexture(cache, name, textureOut);
                 }
                 Path modifierOut = assets.resolve(Path.of("fusion", "model_modifiers", "blocks"));
-                for (int tier = 1; tier <= BlockRegistry.SOLAR_PANELS.size(); tier++) {
-                    String panel = "solar_panel_" + tier;
+                for (DeferredBlock<Block> block : BlockRegistry.SOLAR_PANELS) {
+                    String panel = block.getId().getPath();
                     saveJson(cache, modelModifier(panel), modifierOut.resolve(panel + ".json"));
                 }
             } catch (IOException e) {

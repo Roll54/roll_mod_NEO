@@ -1,8 +1,8 @@
 package com.roll_54.roll_mod_client.mixin.crops;
 
+import com.roll_54.roll_mod.registry.BlockRegistry;
 import java.util.List;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -18,10 +18,12 @@ public abstract class CropRequirementCategoryRecipeMixin {
     @Shadow
     private int soil;
 
+    // No registered soil matches the plant: show the hydroponic garden bed, whose GUI can be set to any
+    // humidity/acidity/nutrients combination.
     @Inject(method = "updateSoils", at = @At("TAIL"))
     private void roll_mod$ensureSoilsFallback(CallbackInfo ci) {
         if (this.soils == null || this.soils.isEmpty()) {
-            this.soils = List.of(Blocks.BEDROCK);
+            this.soils = List.of(BlockRegistry.HYDROPONIC_GARDEN_BED.get());
             this.soil = 0;
         }
     }

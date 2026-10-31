@@ -131,6 +131,10 @@ public final class RollMod {
                         return vendorBlockEntity.getInsertItemHandler();
                     }
                 });
+        // The vending block is an ME interface: cables join it like one.
+        event.registerBlockEntity(appeng.api.AECapabilities.IN_WORLD_GRID_NODE_HOST,
+                com.roll_54.roll_mod.economy.vendingblock.registry.BlockEntityRegistry.VENDOR_BE.get(),
+                (vendorBlockEntity, context) -> vendorBlockEntity);
         // Service block: the owner's cables and pipes fill (or empty) its stock from any side. Each
         // answers null for a block whose service does not trade that resource.
         var serviceBe = com.roll_54.roll_mod.economy.vendingblock.registry.BlockEntityRegistry.SERVICE_BE.get();
@@ -153,6 +157,11 @@ public final class RollMod {
         }
 
         event.enqueueWork(() -> {
+            // The vending block's interface takes the same cards an ME interface does.
+            appeng.api.upgrades.Upgrades.add(appeng.core.definitions.AEItems.CRAFTING_CARD,
+                    com.roll_54.roll_mod.economy.vendingblock.registry.BlockRegistry.VENDOR.get(), 1);
+            appeng.api.upgrades.Upgrades.add(appeng.core.definitions.AEItems.FUZZY_CARD,
+                    com.roll_54.roll_mod.economy.vendingblock.registry.BlockRegistry.VENDOR.get(), 1);
             // Both of these must happen on both dists. The registry has to match on client and
             // server because the daily-tasks screen syncs task positions in it, and the client
             // builds the same UI to receive its sync values.

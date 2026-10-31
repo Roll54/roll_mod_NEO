@@ -1,0 +1,6 @@
+{
+  "chance": 0.25,
+  "child": "roll_mod:rice",
+  "parent1": "roll_mod:cabbage",
+  "parent2": "minecraft:sugar_cane"
+}
