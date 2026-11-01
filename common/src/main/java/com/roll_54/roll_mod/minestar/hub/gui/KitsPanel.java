@@ -18,6 +18,7 @@ import com.roll_54.roll_mod.minestar.op.ClientOperatorCache;
 import com.roll_54.roll_mod.minestar.op.OperatorEntry;
 import com.roll_54.roll_mod.network.packet.OperatorTogglePacket;
 import com.roll_54.roll_mod.network.packet.KitActionPacket;
+import com.roll_54.roll_mod.network.packet.KitWindowPackets;
 import com.roll_54.roll_mod.util.Durations;
 import com.roll_54.roll_mod.util.LegacyText;
 import dev.vfyjxf.taffy.style.AlignContent;
@@ -241,13 +242,25 @@ public final class KitsPanel {
             claim.setOnClick(e -> PacketDistributor.sendToServer(KitActionPacket.claim(kit.name())));
         }
 
+        // What the kit gives, laid out as an inventory (KitWindows) — before claiming, or while waiting.
+        Button contents = new Button();
+        contents.setText(Component.translatable("gui.roll_mod.hub.kits.contents"));
+        contents.layout(l -> l.width(BUTTON_W).height(BUTTON_H).flexGrow(0).flexShrink(0).paddingAll(0));
+        HubSection.centreCaption(contents);
+        contents.setOnClick(e -> PacketDistributor.sendToServer(new KitWindowPackets.Preview(kit.name())));
+
+        UIElement buttons = new UIElement();
+        buttons.layout(l -> l.flexDirection(FlexDirection.ROW).height(BUTTON_H).gapColumn(GAP)
+                .justifyContent(AlignContent.CENTER));
+        buttons.addChildren(claim, contents);
+
         tile.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
                 List.of(LegacyText.display(kit.title()),
                         Component.translatable("gui.roll_mod.hub.kits.items", kit.itemCount())
                                 .withStyle(ChatFormatting.GRAY)),
                 null, null, ItemStack.EMPTY));
 
-        tile.addChildren(head, claim);
+        tile.addChildren(head, buttons);
         return tile;
     }
 }

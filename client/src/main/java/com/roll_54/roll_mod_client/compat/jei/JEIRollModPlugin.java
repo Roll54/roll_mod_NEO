@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod_client.compat.jei;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.compat.MBD2.machine.RollMBD2Machines;
 import com.roll_54.roll_mod.compat.MBD2.recipe.ExampleLavaRecipe;
 import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
 import com.roll_54.roll_mod.minestar.hub.gui.HubReturn;
@@ -53,7 +54,8 @@ public class JEIRollModPlugin implements IModPlugin {
                 new ResearchTableRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
                 new CauldronWashingCategory(registration.getJeiHelpers().getGuiHelper()),
                 new HydroponicReagentCategory(registration.getJeiHelpers().getGuiHelper()),
-                new GreenhouseYieldCategory(registration.getJeiHelpers().getGuiHelper())
+                new GreenhouseYieldCategory(registration.getJeiHelpers().getGuiHelper()),
+                new CropManagerInputCategory(registration.getJeiHelpers().getGuiHelper())
         );
     }
 
@@ -77,6 +79,7 @@ public class JEIRollModPlugin implements IModPlugin {
         // Built from the synced data maps, so datapack reagents appear after a /reload too.
         registration.addRecipes(HydroponicReagentCategory.TYPE, HydroponicReagentRecipe.collect());
         registration.addRecipes(GreenhouseYieldCategory.TYPE, GreenhouseYieldRecipe.collect());
+        registration.addRecipes(CropManagerInputCategory.TYPE, CropManagerInputRecipe.collect());
     }
 
     @Override
@@ -91,6 +94,9 @@ public class JEIRollModPlugin implements IModPlugin {
 
         registration.addRecipeCatalyst(new ItemStack(BlockRegistry.HYDROPONIC_GARDEN_BED), HydroponicReagentCategory.TYPE);
         registration.addRecipeCatalyst(GreenhouseYieldCategory.controllerStack(), GreenhouseYieldCategory.TYPE);
+        for (RollMBD2Machines.CropManagerTier tier : RollMBD2Machines.CropManagerTier.values()) {
+            registration.addRecipeCatalyst(CropManagerInputRecipe.machine(tier), CropManagerInputCategory.TYPE);
+        }
     }
 
     @Override

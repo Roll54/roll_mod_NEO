@@ -4,6 +4,10 @@
   ],
   "ignore_missing_targets": true,
   "default_model_overrides": [
-    "extended_industrialization:block/steel_plated_bricks_connected"
+    "extended_industrialization:block/steel_plated_bricks_connected",
+    {
+      "model": "extended_industrialization:block/steel_plated_bricks_framed",
+      "conditions": { "type": "mi_ct:is_framed_block" }
+    }
   ]
 }

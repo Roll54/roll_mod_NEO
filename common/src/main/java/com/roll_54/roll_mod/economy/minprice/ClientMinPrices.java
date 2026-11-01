@@ -20,6 +20,9 @@ public final class ClientMinPrices {
   /** Fluid id → minimal price of one bucket (1000 mB). */
   public static volatile Map<String, Double> FLUIDS = Map.of();
 
+  /** Absolute minimal price of one item / one bucket; 0 while the server sent no table. */
+  public static volatile double MINIMUM = 0;
+
   /** Same depth the server looks into containers with ({@link MinPriceService}). */
   private static final int CONTENTS_DEPTH = 4;
 
@@ -28,6 +31,7 @@ public final class ClientMinPrices {
   public static void clear() {
     ITEMS = Map.of();
     FLUIDS = Map.of();
+    MINIMUM = 0;
   }
 
   /**
@@ -41,7 +45,7 @@ public final class ClientMinPrices {
   private static double unit(Map<String, Double> items, ItemStack stack, int depth) {
     if (stack.isEmpty()) return 0;
     Double own = items.get(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
-    double total = own == null ? 0 : own;
+    double total = Math.max(own == null ? 0 : own, MINIMUM);
     if (depth <= 0) return total;
     ItemContainerContents container = stack.get(DataComponents.CONTAINER);
     if (container != null) {
@@ -56,8 +60,9 @@ public final class ClientMinPrices {
 
   /** The tooltip line for a fluid, or {@code null} when it has no floor. */
   public static Component fluidLine(String fluidId) {
-    Double price = FLUIDS.get(fluidId);
-    if (price == null || price <= 0) return null;
+    Double known = FLUIDS.get(fluidId);
+    double price = Math.max(known == null ? 0 : known, MINIMUM);
+    if (price <= 0) return null;
     return Component.translatable("tooltip.roll_mod.minprice.fluid", format(price));
   }
 

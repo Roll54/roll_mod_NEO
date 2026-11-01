@@ -72,6 +72,14 @@ public class MinPriceConfig extends Config {
   @Comment("Let shop positions with price 0 (giveaways, donations) through without a check.")
   public boolean allowFreePositions = false;
 
+  @Comment("Absolute minimal price of ONE item (and of one bucket of a fluid), in starcoins. Nothing can be listed cheaper per unit, whatever its recipes say; blacklisted and never-crafted items included.")
+  public ValidatedLong absoluteMinPrice =
+      new ValidatedLong(1L, Long.MAX_VALUE / 64, 1L, ValidatedNumber.WidgetType.TEXTBOX);
+
+  @Comment("Item id (or #tag, or fluid:<fluid id>) -> recipe id its price is computed from. Without an entry the most expensive recipe that makes it wins. See /rollmod minprice item <item> for the candidates.")
+  public ValidatedStringMap<String> itemRecipes =
+      new ValidatedStringMap<>(new LinkedHashMap<>(), new ValidatedString(), new ValidatedString());
+
   @Comment("Price of one RAW ORE piece per tier. Referenced by name from oreTiers.")
   public ValidatedStringMap<Long> tiers =
       new ValidatedStringMap<>(

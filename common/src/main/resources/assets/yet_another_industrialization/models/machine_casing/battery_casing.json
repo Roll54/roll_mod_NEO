@@ -6,5 +6,8 @@
     "all": "yet_another_industrialization:block/battery_casing_mct",
     "particle": "yet_another_industrialization:block/battery_casing"
   },
-  "connections": { "type": "match_block", "ignore_missing": true, "block": "yet_another_industrialization:battery_casing" }
+  "connections": [
+      { "type": "match_block", "ignore_missing": true, "block": "yet_another_industrialization:battery_casing" },
+      { "type": "mi_ct:machine_casing", "casings": ["yet_another_industrialization:battery_casing"] }
+    ]
 }

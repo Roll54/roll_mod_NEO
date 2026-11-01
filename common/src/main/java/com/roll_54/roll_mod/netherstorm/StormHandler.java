@@ -1,8 +1,12 @@
 package com.roll_54.roll_mod.netherstorm;
 
+import com.perigrine3.createcybernetics.item.ModItems;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.compat.createcybernetics.InstalledCyberwareChecks;
+import com.roll_54.roll_mod.data.ModTags;
 import com.roll_54.roll_mod.registry.AttributeRegistry;
 import com.roll_54.roll_mod.registry.ComponentsRegistry;
+import com.roll_54.roll_mod.registry.ItemRegistry;
 import com.roll_54.roll_mod.registry.ModConfigs;
 import com.roll_54.roll_mod.registry.ModEffects;
 import net.minecraft.core.BlockPos;
@@ -118,14 +122,35 @@ public class StormHandler {
         return protection;
     }
 
-    /** True if any worn armor piece carries the {@code roll_mod:storm_protected} component. */
+    /**
+     * True only for a full set: every one of the four armour slots holds a piece tagged
+     * {@code roll_mod:storm_protective} (or carrying the older {@code roll_mod:storm_protected}
+     * component). A single protective piece no longer keeps the storm out.
+     */
     private static boolean hasStormProtectedArmor(ServerPlayer player) {
         for (ItemStack stack : player.getArmorSlots()) {
-            if (stack.getOrDefault(ComponentsRegistry.STORM_PROTECTED.get(), false)) {
-                return true;
+            if (stack.isEmpty()) return false;
+            if (!stack.is(ModTags.STORM_PROTECTIVE_TAG)
+                    && !stack.getOrDefault(ComponentsRegistry.STORM_PROTECTED.get(), false)) {
+                return false;
             }
         }
-        return false;
+        return true;
+    }
+
+    /** Sulfur resistant cyberlungs: protect from the storm's drying air (weakness, blindness) only. */
+    public static boolean hasSulfurResistantLungs(ServerPlayer player) {
+        return InstalledCyberwareChecks.hasWorking(player, ItemRegistry.LUNGSUPGRADE_SULFUR_RESISTANCE.get());
+    }
+
+    /** Create Cybernetics' netherite skin plating: protects from the storm's sulfur poisoning only. */
+    public static boolean hasNetheritePlating(ServerPlayer player) {
+        return InstalledCyberwareChecks.hasWorking(player, ModItems.SKINUPGRADES_NETHERITEPLATING.get());
+    }
+
+    /** Lungs and plating together cover every storm effect, so they also let the player into the Nether. */
+    public static boolean hasFullCyberwareStormProtection(ServerPlayer player) {
+        return hasSulfurResistantLungs(player) && hasNetheritePlating(player);
     }
 
     public static boolean isPlayerProtectedFromStormWithOutArmor(ServerPlayer player){
@@ -151,10 +176,21 @@ public class StormHandler {
 
         for (ServerPlayer player : nether.players()) {
 
-            if (!isPlayerProtectedFromStorm(player) ){
+            if (isPlayerProtectedFromStorm(player)) {
+                player.removeEffect(ModEffects.SULFUR_POISONING);
+                player.removeEffect(MobEffects.POISON);
+                continue;
+            }
+
+            // Partial cyberware protection: the lungs only filter the drying air (weakness,
+            // blindness); netherite skin plating blocks everything else the storm applies, so any
+            // new storm effect belongs in the plating branch.
+            if (!hasSulfurResistantLungs(player)) {
                 player.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 1600, 3));
-                player.addEffect(new MobEffectInstance(ModEffects.SULFUR_POISONING, 200, 4));
                 player.addEffect(new MobEffectInstance(MobEffects.BLINDNESS, 200, 0));
+            }
+            if (!hasNetheritePlating(player)) {
+                player.addEffect(new MobEffectInstance(ModEffects.SULFUR_POISONING, 200, 4));
             } else {
                 player.removeEffect(ModEffects.SULFUR_POISONING);
                 player.removeEffect(MobEffects.POISON);

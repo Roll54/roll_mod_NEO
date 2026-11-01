@@ -54,10 +54,6 @@ config = "${mod_id}.farmersdelight.mixins.json"
 [[mixins]]
 config = "${mod_id}.createcybernetics.mixins.json"
 
-# Functional Storage, soft for the same reason: a pure performance mixin over its drawer controller.
-# Nothing else in this mod touches the mod, so if it is absent there is simply nothing to patch.
-[[mixins]]
-config = "${mod_id}.functionalstorage.mixins.json"
 
 # AE2, soft as well: a performance mixin that lets import/export buses (every addon bus inherits the
 # patched tickingRequest) sleep while the vending block they face can neither give nor take anything.
@@ -149,14 +145,6 @@ versionRange = "[4.5.0,)"
 ordering = "NONE"
 side = "BOTH"
 
-# Functional Storage carries a performance mixin only (ControllerInventoryHandler's per-slot
-# staleness check). Optional, and the range records where the targets were read: 1.5.8.
-[[dependencies."${mod_id}"]]
-modId = "functionalstorage"
-type = "optional"
-versionRange = "[1.5.8,)"
-ordering = "NONE"
-side = "BOTH"
 
 # AE2 is required: the vending block's inventory is an ME interface built on AE2's InterfaceLogic,
 # and the bus sleep mixin reads IOBusPart. The range is the version both were written against.
@@ -164,6 +152,14 @@ side = "BOTH"
 modId = "ae2"
 type = "required"
 versionRange = "[19.2.17,)"
+ordering = "NONE"
+side = "BOTH"
+
+# Advanced AE is required: roll_mod gives its quantum chestplate an oxygen tank and the oxygen tank card.
+[[dependencies."${mod_id}"]]
+modId = "advanced_ae"
+type = "required"
+versionRange = "[1.4.6,)"
 ordering = "NONE"
 side = "BOTH"
 

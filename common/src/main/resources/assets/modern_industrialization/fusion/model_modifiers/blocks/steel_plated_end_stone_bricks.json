@@ -4,6 +4,10 @@
   ],
   "ignore_missing_targets": true,
   "default_model_overrides": [
-    "yet_another_industrialization:block/steel_plated_end_stone_bricks_connected"
+    "yet_another_industrialization:block/steel_plated_end_stone_bricks_connected",
+    {
+      "model": "yet_another_industrialization:block/steel_plated_end_stone_bricks_framed",
+      "conditions": { "type": "mi_ct:is_framed_block" }
+    }
   ]
 }

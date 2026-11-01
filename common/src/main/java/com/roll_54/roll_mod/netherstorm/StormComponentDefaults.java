@@ -7,7 +7,7 @@ import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
 
 /**
  * Gives armor from other mods the {@link ComponentsRegistry#STORM_PROTECTED} component by default.
- * Wearing any armor piece whose component is {@code true} protects the player from the Nether storm
+ * A full set of armour whose pieces all carry it (or the roll_mod:storm_protective tag) protects from the Nether storm
  * (see {@link StormHandler#isPlayerProtectedFromStorm}). Items whose owning mod is absent are
  * silently skipped.
  *

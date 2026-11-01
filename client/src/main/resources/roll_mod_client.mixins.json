@@ -11,6 +11,8 @@
     "ModifyEnergyHudRendererMixin",
     "OverlayScreenNanoMixin",
     "crops.CropRequirementCategoryRecipeMixin",
+    "crops.MagnifyingGlassOverlayColourMixin",
+    "cyberware.CropLensHudAccessMixin",
     "skin.ItemRendererSkinMixin",
     "skin.GeoArmorSkinMixin",
     "storm.NetherPortalBlockParticleMixin",

@@ -252,9 +252,8 @@ public final class HubUI {
             new HubTab("radio", icon("radio_implant_tab"),
                     (player, inventory) -> RadioTab.build(player),
                     () -> ClientRadioCache.INSTALLED, () -> false),
-            // TODO(art): placeholder icon — drop a real textures/gui/hub/skins.png in and change the
-            // name here. Off by config (hub.skinsTab) until the tab is finished.
-            new HubTab("skins", icon("friends"),
+            // Off by config (hub.skinsTab) until the tab is finished.
+            new HubTab("skins", icon("skins_tab"),
                     (player, inventory) -> SkinsTab.build(player),
                     () -> MyConfig.INSTANCE.hub.skinsTab.get(), () -> false));
 

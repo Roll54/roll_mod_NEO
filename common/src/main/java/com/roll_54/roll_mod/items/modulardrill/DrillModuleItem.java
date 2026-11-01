@@ -86,12 +86,6 @@ public class DrillModuleItem extends Item {
         return tool == ToolKind.SABER ? saberCostFactor : costFactor;
     }
 
-    /** A placeholder name while the client hides new items — see {@link NewItemVisibility}. */
-    @Override
-    public Component getName(ItemStack stack) {
-        return NewItemVisibility.name(super.getName(stack));
-    }
-
     /**
      * The effect line always; with Shift, a Parameters block (tier, energy, complexity, fitting
      * tools, conflicts, the Trash Filter's fill) and then the Description lines.
@@ -200,6 +194,7 @@ public class DrillModuleItem extends Item {
             case SPEED, SWEEP, XP_MULTIPLIER -> value;
             case IRRADIATION -> (int) value;
             case VAMPIRISM, BEHEADING -> Math.round(value * 100);
+            case WAVE -> Math.round(value * 100);
             default -> "";
         };
     }

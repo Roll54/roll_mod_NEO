@@ -1205,12 +1205,27 @@ public class ItemRegistry {
             "sulfur_berry_pie_slice",
             () -> new Item(new Item.Properties().food(
                     new FoodProperties.Builder()
-                            .nutrition(3)
+                            // saturation = nutrition * modifier * 2, so doubling nutrition doubles saturation too (3.6)
+                            .nutrition(6)
                             .saturationModifier(0.3f)
                             .fast()
                             .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 600, 1), 1.0f) // дає золоті серця
                             .effect(() -> new MobEffectInstance(ModEffects.SULFUR_POISONING, 600, 0), 0.05f)
-                            .effect(() -> new MobEffectInstance(ModEffects.SULFUR_RESISTANCE, 2000, 0), 0.05f)
+                            .effect(() -> new MobEffectInstance(ModEffects.SULFUR_RESISTANCE, 2400, 0), 1.0f) // 2 хв сіркостійкості
+                            .build()
+            ))
+    );
+
+    // Карта кисневого бака (roll_mod:oxygen_tank_card) — справжня картка Advanced AE, див. compat/aae/AaeOxygenCard.
+
+    // 🥚 Буквально бите скло — 5 голоду, 10 насичення (5 * 1.0 * 2), Регенерація II на 5 хв
+    public static final DeferredHolder<Item, Item> BROKEN_GLASS_LITERALLY = ITEMS.register(
+            "broken_glass_literally",
+            () -> new Item(new Item.Properties().food(
+                    new FoodProperties.Builder()
+                            .nutrition(5)
+                            .saturationModifier(1.0f)
+                            .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 6000, 1), 1.0f)
                             .build()
             ))
     );
@@ -1617,122 +1632,6 @@ public class ItemRegistry {
                             0xDD3333
                     )
             );
-    // TODO(drill-modules): the 9 fixed drills below are deprecated in favor of the modular drills.
-    //  Kept registered so existing items in worlds survive; delete after the migration window.
-    //lv
-    public static final DeferredHolder<Item, EnergyDrillItem> LV_MINING_DRILL =
-            ITEMS.register("lv_mining_drill",
-                    () -> new EnergyDrillItem(
-                            ModToolTiers.METEORITE_METAL,
-                            new Item.Properties(),
-                            1_000_000L,
-                            1,
-                            1,
-                            500
-                    )
-            );
-
-    public static final DeferredHolder<Item, EnergyDrillItem> ADVANCED_LV_MINING_DRILL =
-            ITEMS.register("advanced_lv_mining_drill",
-                    () -> new EnergyDrillItem(
-                            ModToolTiers.METEORITE_METAL,
-                            new Item.Properties(),
-                            2_000_000L,
-                            3,
-                            1,
-                            1500
-                    )
-            );
-
-    // MV
-    public static final DeferredHolder<Item, EnergyDrillItem> MV_MINING_DRILL =
-            ITEMS.register("mv_mining_drill",
-                    () -> new EnergyDrillItem(
-                            ModToolTiers.METEORITE_METAL,
-                            new Item.Properties(),
-                            10_000_000L,
-                            1,
-                            2,
-                            1000
-                    )
-            );
-
-    public static final DeferredHolder<Item, EnergyDrillItem> ADVANCED_MV_MINING_DRILL =
-            ITEMS.register("advanced_mv_mining_drill",
-                    () -> new EnergyDrillItem(
-                            ModToolTiers.METEORITE_METAL,
-                            new Item.Properties(),
-                            20_000_000L,
-                            5,
-                            2,
-                            3000
-                    )
-            );
-
-    // HV
-    public static final DeferredHolder<Item, EnergyDrillItem> HV_MINING_DRILL =
-            ITEMS.register("hv_mining_drill",
-                    () -> new EnergyDrillItem(
-                            ModToolTiers.METEORITE_METAL,
-                            new Item.Properties(),
-                            1_000_000_000L,
-                            1,
-                            3,
-                            2000
-                    )
-            );
-
-    public static final DeferredHolder<Item, EnergyDrillItem> ADVANCED_HV_MINING_DRILL =
-            ITEMS.register("advanced_hv_mining_drill",
-                    () -> new EnergyDrillItem(
-                            ModToolTiers.METEORITE_METAL,
-                            new Item.Properties(),
-                            2_000_000_000L,
-                            7,
-                            3,
-                            6000
-                    )
-            );
-
-    // EV
-    public static final DeferredHolder<Item, EnergyDrillItem> EV_MINING_DRILL =
-            ITEMS.register("ev_mining_drill",
-                    () -> new EnergyDrillItem(
-                            ModToolTiers.METEORITE_METAL,
-                            new Item.Properties(),
-                            50_000_000_000L,
-                            1,
-                            4,
-                            4000
-
-                    )
-            );
-
-    public static final DeferredHolder<Item, EnergyDrillItem> ADVANCED_EV_MINING_DRILL =
-            ITEMS.register("advanced_ev_mining_drill",
-                    () -> new EnergyDrillItem(
-                            ModToolTiers.METEORITE_METAL,
-                            new Item.Properties(),
-                            100_000_000_000L,
-                            9,
-                            4,
-                            12000
-                    )
-            );
-
-
-    public static final DeferredHolder<Item, EnergyDrillItem> IV_ELECTRIC_PICKAXE = // IV БУР
-            ITEMS.register("iv_electric_pickaxe",
-                    () -> new EnergyDrillItem(
-                            ModToolTiers.METEORITE_METAL,
-                            new Item.Properties(),
-                            1_000_000_000_000L,
-                            11,
-                            5,
-                            36000
-                    )
-            );
-
     // Holds what a drill mined but the inventory had no room for: one entity instead of a heap.
     public static final DeferredHolder<Item, DrillOrbItem> DRILL_ORB =
             ITEMS.register("drill_orb", () -> new DrillOrbItem(new Item.Properties()));
@@ -1916,6 +1815,10 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, DrillModuleItem> METEORITE_MODULE =
             module("meteorite_module", ModuleType.METEORITE, 1, 0, 1.0, STRONG_COMPLEXITY);
 
+    // Right click shoots an energy wave like EI's nano saber: 50% of the saber's damage, blade-coloured.
+    public static final DeferredHolder<Item, DrillModuleItem> WAVE_MODULE =
+            module("wave_module", ModuleType.WAVE, 1, 0.5, 1.0);
+
     private static DeferredHolder<Item, DrillModuleItem> module(
             String id, ModuleType type, int tier, double value, double costFactor, int complexity) {
         return ITEMS.register(id, () -> new DrillModuleItem(type, tier, value, costFactor, complexity,
@@ -1989,103 +1892,6 @@ public class ItemRegistry {
                                     .jukeboxPlayable(SoundRegistry.SHCHEDRYK_KEY)
                                     .stacksTo(1)
                                     .rarity(Rarity.RARE)
-                    )
-            );
-
-    public static final DeferredHolder<Item, EnergySwordItem> ENERGY_SWORD =
-            ITEMS.register(
-                    "energy_sword",
-                    () -> new EnergySwordItem(
-                            new Item.Properties(),
-                            1_000_000L,
-                            40_000L,
-                            0.5,
-                            10.0
-                    )
-            );
-
-    public static final DeferredHolder<Item, EnergySwordItem> METEORITE_METAL_NANO_SABER =
-            ITEMS.register(
-                    "meteorite_metal_nano_saber",
-                    () -> new EnergySwordItem(
-                            new Item.Properties()
-                                    .component(
-                                            DataComponents.LORE,
-                                            new ItemLore(
-                                                    List.of(
-                                                            Component.translatable(
-                                                                            "tooltip.roll_mod.meteorite_metal_nano_saber"
-                                                                    )
-                                                                    .withStyle(style ->
-                                                                            style.withColor(METEORITE_LIGHT_BLUE)
-                                                                                    .withItalic(false)
-                                                                    )
-
-                                                    )
-                                            )
-                                    )
-                                    .component(
-                                            DataComponents.CUSTOM_NAME,
-                                            Component.translatable(
-                                                            "item.roll_mod.meteorite_metal_nano_saber"
-                                                    )
-                                                    .withStyle(style ->
-                                                            style.withColor(METEORITE_DARK_BLUE)
-                                                                    .withItalic(false)
-                                                    )
-                                    ),
-                            54_000_000L,
-                            100_000L,
-                            0.5,
-                            25.0
-                    )
-            );
-
-    public static final DeferredHolder<Item, EnergySwordItem> MV_ELECTRIC_SABER =
-            ITEMS.register(
-                    "mv_electric_saber",
-                    () -> new EnergySwordItem(
-                            new Item.Properties(),
-                            1_000_000L,
-                            50_000L,
-                            0.5,
-                            15.0
-                    )
-            );
-
-    public static final DeferredHolder<Item, EnergySwordItem> HV_ELECTRIC_SABER =
-            ITEMS.register(
-                    "hv_electric_saber",
-                    () -> new EnergySwordItem(
-                            new Item.Properties(),
-                            1_000_000_000L,
-                            1_000_000L,
-                            0.5,
-                            35.0
-                    )
-            );
-
-    public static final DeferredHolder<Item, EnergySwordItem> EV_ELECTRIC_SABER =
-            ITEMS.register(
-                    "ev_electric_saber",
-                    () -> new EnergySwordItem(
-                            new Item.Properties(),
-                            10_000_000_000L,
-                            10_000_000L,
-                            0.5,
-                            55.0
-                    )
-            );
-
-    public static final DeferredHolder<Item, EnergySwordItem> IV_ELECTRIC_SABER =
-            ITEMS.register(
-                    "iv_electric_saber",
-                    () -> new EnergySwordItem(
-                            new Item.Properties(),
-                            1_000_000_000_000L,
-                            100_000_000L,
-                            0.5,
-                            154.0
                     )
             );
 

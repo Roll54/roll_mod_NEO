@@ -25,8 +25,12 @@ public final class InnateEnchantedTools {
     }
 
     // ---------------- SWORD ----------------
-    public static class InnateSwordItem extends TooltipManager.TooltipSwordItem {
+    public static class InnateSwordItem extends TooltipManager.TooltipSwordItem implements InnateEnchantments.Carrier {
         private final InnateEnchantments innate;
+
+        @Override public InnateEnchantments innateEnchantments() {
+            return innate;
+        }
 
         public InnateSwordItem(Tier tier, float attackDamage, float attackSpeed,
                                Properties props, TooltipOptions opts, InnateEnchantments innate) {
@@ -58,8 +62,12 @@ public final class InnateEnchantedTools {
     }
 
     // ---------------- PICKAXE ----------------
-    public static class InnatePickaxeItem extends TooltipManager.TooltipPickaxeItem {
+    public static class InnatePickaxeItem extends TooltipManager.TooltipPickaxeItem implements InnateEnchantments.Carrier {
         private final InnateEnchantments innate;
+
+        @Override public InnateEnchantments innateEnchantments() {
+            return innate;
+        }
 
         public InnatePickaxeItem(Tier tier, float attackDamage, float attackSpeed,
                                  Properties props, TooltipOptions opts, InnateEnchantments innate) {
@@ -91,8 +99,12 @@ public final class InnateEnchantedTools {
     }
 
     // ---------------- AXE ----------------
-    public static class InnateAxeItem extends TooltipManager.TooltipAxeItem {
+    public static class InnateAxeItem extends TooltipManager.TooltipAxeItem implements InnateEnchantments.Carrier {
         private final InnateEnchantments innate;
+
+        @Override public InnateEnchantments innateEnchantments() {
+            return innate;
+        }
 
         public InnateAxeItem(Tier tier, float attackDamage, float attackSpeed,
                              Properties props, TooltipOptions opts, InnateEnchantments innate) {
@@ -124,8 +136,12 @@ public final class InnateEnchantedTools {
     }
 
     // ---------------- SHOVEL ----------------
-    public static class InnateShovelItem extends TooltipManager.TooltipShovelItem {
+    public static class InnateShovelItem extends TooltipManager.TooltipShovelItem implements InnateEnchantments.Carrier {
         private final InnateEnchantments innate;
+
+        @Override public InnateEnchantments innateEnchantments() {
+            return innate;
+        }
 
         public InnateShovelItem(Tier tier, float attackDamage, float attackSpeed,
                                 Properties props, TooltipOptions opts, InnateEnchantments innate) {
@@ -157,8 +173,12 @@ public final class InnateEnchantedTools {
     }
 
     // ---------------- HOE ----------------
-    public static class InnateHoeItem extends TooltipManager.TooltipHoeItem {
+    public static class InnateHoeItem extends TooltipManager.TooltipHoeItem implements InnateEnchantments.Carrier {
         private final InnateEnchantments innate;
+
+        @Override public InnateEnchantments innateEnchantments() {
+            return innate;
+        }
 
         public InnateHoeItem(Tier tier, float attackDamage, float attackSpeed,
                              Properties props, TooltipOptions opts, InnateEnchantments innate) {
@@ -190,8 +210,12 @@ public final class InnateEnchantedTools {
     }
 
     // ---------------- BLOCKOGRIZ ----------------
-    public static class InnateBlockogrizItem extends TooltipManager.TooltipBlockogrizItem {
+    public static class InnateBlockogrizItem extends TooltipManager.TooltipBlockogrizItem implements InnateEnchantments.Carrier {
         private final InnateEnchantments innate;
+
+        @Override public InnateEnchantments innateEnchantments() {
+            return innate;
+        }
 
         public InnateBlockogrizItem(Tier tier, float attackDamage, float attackSpeed, int preEfficiency,
                                     Properties props, TooltipOptions opts, InnateEnchantments innate) {
@@ -224,8 +248,12 @@ public final class InnateEnchantedTools {
 
     // ---------------- ARMOUR ----------------
     /** An armour piece with its material's enchantments; each piece of a set may carry its own. */
-    public static class InnateArmorItem extends TooltipArmorItem {
+    public static class InnateArmorItem extends TooltipArmorItem implements InnateEnchantments.Carrier {
         private final InnateEnchantments innate;
+
+        @Override public InnateEnchantments innateEnchantments() {
+            return innate;
+        }
 
         public InnateArmorItem(Holder<ArmorMaterial> material, ArmorItem.Type type, Properties props,
                                TooltipOptions opts, InnateEnchantments innate) {

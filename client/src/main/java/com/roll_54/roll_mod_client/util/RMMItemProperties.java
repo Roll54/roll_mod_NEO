@@ -3,8 +3,6 @@ package com.roll_54.roll_mod_client.util;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.registry.ItemRegistry;
-import com.roll_54.roll_mod.items.electricItems.EnergyDrillItem;
-import com.roll_54.roll_mod.items.electricItems.EnergySwordItem;
 import com.roll_54.roll_mod.items.modulardrill.DrillModuleHelper;
 import com.roll_54.roll_mod.items.modulardrill.ModuleType;
 import com.roll_54.roll_mod.items.modulardrill.NewItemVisibility;
@@ -23,47 +21,7 @@ public class RMMItemProperties {
 
         List<Item> items = StreamSupport.stream(BuiltInRegistries.ITEM.spliterator(), false)
                 .toList();
-        for (Item item : items) {
-            if (item instanceof EnergyDrillItem) {
-
-                ItemProperties.register(
-                        item,
-                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "trans"),
-                        (stack, level, entity, seed) ->
-                                stack.getOrDefault(ComponentsRegistry.TRANS.get(), 0f)
-                );
-
-                ItemProperties.register(
-                        item,
-                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "cat"),
-                        (stack, level, entity, seed) ->
-                                stack.getOrDefault(ComponentsRegistry.CAT.get(), 0f)
-                );
-
-                ItemProperties.register(
-                        item,
-                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "meteorite_skin"),
-                        (stack, level, entity, seed) ->
-                                stack.getOrDefault(ComponentsRegistry.METEORITE_SKIN.get(), 0f)
-                );
-            }
-        }
-
         for (Item item : items){
-            if (item instanceof EnergySwordItem){
-                ItemProperties.register(
-                        item,
-                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "activated"),
-                        (stack, level, entity, seed) ->
-                                stack.getOrDefault(ComponentsRegistry.FIRST_STATE_ACTIVATED.get(), false) ? 1.0F : 0.0F
-                );
-                ItemProperties.register(
-                        item,
-                        ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "murasama"),
-                        (stack, level, entity, seed) ->
-                                stack.getOrDefault(ComponentsRegistry.MURASAMA.get(), 0f)
-                );
-            }
             if (item instanceof ModularSaberItem) {
                 ItemProperties.register(
                         item,

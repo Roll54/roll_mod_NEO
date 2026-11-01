@@ -20,9 +20,13 @@ import net.neoforged.neoforge.network.PacketDistributor;
  * title). It closes the chest — which saves the kit — and opens the hub again on the moderation tab,
  * in Kits mode on the same kit. Esc and the inventory key close the chest as any chest does, back to
  * the game.
+ *
+ * @deprecated The chest editor is replaced by the LdLib kit window, whose own Back button is
+ *             {@link KitWindowReturn}. Kept, inert, while {@code KitEditorMenu} is.
  */
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = RollMod.MODID, value = Dist.CLIENT)
+@Deprecated
 public final class KitEditorBackButton {
 
     private static final String TITLE_KEY = "gui.roll_mod.kit.editor.title";

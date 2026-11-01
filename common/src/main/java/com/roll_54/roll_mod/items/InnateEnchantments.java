@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.items;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.registries.Registries;
@@ -54,8 +55,14 @@ public final class InnateEnchantments {
         return new InnateEnchantments(levels);
     }
 
+    /** An item whose material carries innate enchantments; lets the tooltip handler find them. */
+    public interface Carrier {
+        InnateEnchantments innateEnchantments();
+    }
+
     /**
-     * The material's level, or the applied one when the player enchanted the tool higher.
+     * The material's level <em>plus</em> the applied one: an unenchanted tool mines with Fortune I, and
+     * the same tool enchanted with Fortune I mines with Fortune II.
      * <p>
      * Answered out of {@link #all} wherever a lookup is reachable, because NeoForge requires
      * {@code getEnchantmentLevel} and {@code getAllEnchantments} to never disagree.
@@ -68,10 +75,25 @@ public final class InnateEnchantments {
         // A direct holder carries no lookup, so match the table on the key instead.
         int applied = stack.getTagEnchantments().getLevel(enchantment);
         Integer innate = enchantment.unwrapKey().map(this.levels::get).orElse(null);
-        return innate == null ? applied : Math.max(applied, innate);
+        return innate == null ? applied : Math.min(MAX_LEVEL, applied + innate);
     }
 
-    /** The applied enchantments with the material's own merged in at the higher of the two levels. */
+    /** "I", "II", ... the way vanilla writes enchantment levels; a plain number past its table. */
+    private static Component levelName(int level) {
+        return level >= 1 && level <= 10
+                ? Component.translatable("enchantment.level." + level)
+                : Component.literal(Integer.toString(level));
+    }
+
+    /** ItemEnchantments refuses anything above this. */
+    private static final int MAX_LEVEL = 255;
+
+    /** The material's level for {@code enchantment}, or 0 when the material does not carry it. */
+    public int innateLevel(Holder<Enchantment> enchantment) {
+        return enchantment.unwrapKey().map(key -> this.levels.getOrDefault(key, 0)).orElse(0);
+    }
+
+    /** The applied enchantments with the material's own added on top of them (levels sum). */
     public ItemEnchantments all(ItemStack stack, HolderLookup.RegistryLookup<Enchantment> lookup) {
         ItemEnchantments applied = stack.getTagEnchantments();
         ItemEnchantments.Mutable merged = new ItemEnchantments.Mutable(applied);
@@ -82,7 +104,7 @@ public final class InnateEnchantments {
             for (Holder<Enchantment> other : applied.keySet()) {
                 if (!other.equals(own) && !Enchantment.areCompatible(own, other)) return;
             }
-            merged.upgrade(own, level);
+            merged.set(own, Math.min(MAX_LEVEL, applied.getLevel(own) + level));
         }));
         return merged.toImmutable();
     }
@@ -100,8 +122,8 @@ public final class InnateEnchantments {
 
         for (ResourceKey<Enchantment> key : this.levels.keySet()) {
             Holder.Reference<Enchantment> own = lookup.get(key).orElse(null);
-            // Levelling up the material's own enchantment is fine; areCompatible() rejects a holder
-            // against itself, so it has to be let through here.
+            // Applying the material's own enchantment is fine -- it stacks on top of the innate level;
+            // areCompatible() rejects a holder against itself, so it has to be let through here.
             if (own == null || own.equals(enchantment)) continue;
             if (!Enchantment.areCompatible(own, enchantment)) return false;
         }
@@ -111,6 +133,10 @@ public final class InnateEnchantments {
     /**
      * Lists the material's enchantments in the tooltip. Vanilla only renders what sits in the
      * enchantments component, so without this the player would never see them.
+     * <p>
+     * Only the ones the player has <em>not</em> also applied are added here: for those, vanilla draws its
+     * own line from the component (after this runs), and {@link #fixAppliedTooltipLines} swaps that line
+     * for the summed level once the tooltip is complete.
      */
     public void appendTooltip(Item.TooltipContext context, ItemStack stack, List<Component> tooltip) {
         HolderLookup.Provider registries = context.registries();
@@ -118,11 +144,35 @@ public final class InnateEnchantments {
 
         registries.lookup(Registries.ENCHANTMENT).ifPresent(lookup -> this.levels.forEach((key, level) ->
                 lookup.get(key).ifPresent(holder -> {
-                    // Skip anything the player already has on the stack at this level or higher; vanilla
-                    // is already drawing that line from the component.
-                    if (stack.getTagEnchantments().getLevel(holder) < level) {
-                        tooltip.add(Enchantment.getFullname(holder, level));
+                    if (stack.getTagEnchantments().getLevel(holder) <= 0) {
+                        tooltip.add(Enchantment.getFullname(holder, level).copy()
+                                .append(Component.translatable("tooltip.roll_mod.innate_enchantment.material")
+                                        .withStyle(ChatFormatting.DARK_GRAY)));
                     }
                 })));
+    }
+
+    /**
+     * Rewrites vanilla's tooltip line for each applied enchantment the material also carries, from the
+     * applied level ("Fortune I") to the level the tool actually works at ("Fortune II"). Called on the
+     * finished tooltip (ItemTooltipEvent), since vanilla adds the component's lines after
+     * {@code appendHoverText}.
+     */
+    public void fixAppliedTooltipLines(ItemStack stack, List<Component> tooltip) {
+        ItemEnchantments applied = stack.getTagEnchantments();
+        for (Holder<Enchantment> holder : applied.keySet()) {
+            int innate = innateLevel(holder);
+            if (innate <= 0) continue;
+            int appliedLevel = applied.getLevel(holder);
+            String vanillaLine = Enchantment.getFullname(holder, appliedLevel).getString();
+            for (int i = 0; i < tooltip.size(); i++) {
+                if (tooltip.get(i).getString().equals(vanillaLine)) {
+                    tooltip.set(i, Enchantment.getFullname(holder, Math.min(MAX_LEVEL, appliedLevel + innate)).copy()
+                            .append(Component.translatable("tooltip.roll_mod.innate_enchantment.bonus", levelName(innate))
+                                    .withStyle(ChatFormatting.DARK_GRAY)));
+                    break;
+                }
+            }
+        }
     }
 }

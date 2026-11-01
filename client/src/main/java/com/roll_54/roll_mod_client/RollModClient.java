@@ -20,7 +20,6 @@ import com.roll_54.roll_mod_client.client.gecko.MultiProtectingGraviChestPlateRe
 import com.roll_54.roll_mod_client.client.screen.HudRender;
 import com.roll_54.roll_mod_client.client.skin.CyberwareSkinLayer;
 import com.roll_54.roll_mod_client.compat.fusion.FusionCompatClient;
-import com.roll_54.roll_mod_client.gui.screen.CropManagerScreen;
 import com.roll_54.roll_mod_client.gui.screen.GrowthChamberScreen;
 import com.roll_54.roll_mod_client.gui.screen.PedestalScreen;
 import com.roll_54.roll_mod_client.gui.screen.ResearchWorkbenchScreen;
@@ -246,7 +245,6 @@ public final class RollModClient {
             event.register(MenuTypes.GROWTH_CHAMBER_MENU.get(), GrowthChamberScreen::new);
             event.register(MenuTypes.RESEARCH_WORKBENCH_MENU.get(), ResearchWorkbenchScreen::new);
             event.register(MenuTypes.ROCKET_CONTROLLER_MENU.get(), RocketControllerScreen::new);
-            event.register(MenuTypes.CROP_MANAGER_MENU.get(), CropManagerScreen::new);
         }
 
         @SubscribeEvent

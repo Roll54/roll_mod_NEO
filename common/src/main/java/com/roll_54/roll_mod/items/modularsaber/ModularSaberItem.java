@@ -7,10 +7,10 @@ import com.roll_54.roll_mod.items.modulardrill.DrillModuleHelper;
 import com.roll_54.roll_mod.items.modulardrill.DrillModuleItem;
 import com.roll_54.roll_mod.items.modulardrill.DrillModules;
 import com.roll_54.roll_mod.items.modulardrill.ModularTool;
-import com.roll_54.roll_mod.items.modulardrill.NewItemVisibility;
 import com.roll_54.roll_mod.items.modulardrill.ModuleType;
 import com.roll_54.roll_mod.items.modulardrill.ToolKind;
 import com.roll_54.roll_mod.radiation.RadiationHandler;
+import com.roll_54.roll_mod.registry.ComponentsRegistry;
 import com.roll_54.roll_mod.registry.ModEffects;
 import com.roll_54.roll_mod.util.EnergyFormatUtils;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
@@ -37,6 +37,9 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
+import net.swedz.extended_industrialization.EISounds;
+import net.swedz.extended_industrialization.entity.NanoSaberSweepEntity;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -76,6 +79,9 @@ public class ModularSaberItem extends Item implements ISimpleEnergyItem, OneStat
     private static final int DOSE_PER_LEVEL = 20_000;
     private static final int POISON_TICKS = 200;
 
+    /** One wave a second, as EI's nano saber. */
+    private static final int WAVE_COOLDOWN_TICKS = 20;
+
     private static final ResourceLocation DAMAGE_ID = RollMod.id("modular_saber_damage");
     private static final ResourceLocation SPEED_ID = RollMod.id("modular_saber_speed");
 
@@ -103,12 +109,6 @@ public class ModularSaberItem extends Item implements ISimpleEnergyItem, OneStat
     @Override
     public int maxComplexity() {
         return voltage.complexity();
-    }
-
-    /** A placeholder name while the client hides new items — see {@link NewItemVisibility}. */
-    @Override
-    public Component getName(ItemStack stack) {
-        return NewItemVisibility.name(super.getName(stack));
     }
 
     /* -------------------------------------------- energy -------------------------------------------- */
@@ -170,7 +170,9 @@ public class ModularSaberItem extends Item implements ISimpleEnergyItem, OneStat
     public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!player.isShiftKeyDown()) {
-            return InteractionResultHolder.pass(stack);
+            return DrillModuleHelper.get(stack).has(ModuleType.WAVE)
+                    ? fireWave(level, player, stack)
+                    : InteractionResultHolder.pass(stack);
         }
 
         if (!level.isClientSide) {
@@ -184,6 +186,73 @@ public class ModularSaberItem extends Item implements ISimpleEnergyItem, OneStat
         level.playSound(null, player.blockPosition(), SoundEvents.EXPERIENCE_ORB_PICKUP,
                 SoundSource.PLAYERS, 0.6f, 1.4f);
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+    }
+
+    /* --------------------------------------------- wave --------------------------------------------- */
+
+    /**
+     * Wave module: right click shoots Extended Industrialization's nano saber sweep — the same
+     * piercing projectile and renderer — for the module's share of the saber's attack damage, in the
+     * colour of the blade. Costs one hit's energy; one wave a second, like EI's saber.
+     */
+    private InteractionResultHolder<ItemStack> fireWave(Level level, Player player, ItemStack stack) {
+        if (!isLive(stack)) {
+            return InteractionResultHolder.pass(stack);
+        }
+        level.playSound(null, player.blockPosition(), EISounds.NANO_SABER_SWEEP_SWING.get(),
+                SoundSource.PLAYERS, 1.0f, 1.0f);
+        if (!level.isClientSide) {
+            long cost = costPerHit(stack);
+            if (getStoredEnergy(stack) < cost) {
+                switchOff(player, stack);
+                return InteractionResultHolder.fail(stack);
+            }
+            if (!player.getAbilities().instabuild) tryUseEnergy(stack, cost);
+
+            Vec3 dir = player.getLookAngle().normalize();
+            Vec3 spawn = player.position().add(0, player.getEyeHeight() / 2.0, 0).add(dir.scale(0.25));
+            Vec3 aim = player.getEyePosition().add(dir.scale(100)).subtract(spawn).normalize();
+            float damage = (float) (player.getAttributeValue(Attributes.ATTACK_DAMAGE)
+                    * DrillModuleHelper.value(stack, ModuleType.WAVE));
+            NanoSaberSweepEntity wave = new NanoSaberSweepEntity(level, player, aim, waveColor(stack),
+                    waveRainbow(stack), damage, false);
+            wave.setPos(spawn);
+            if (voltage == SaberVoltage.IV) {
+                wave.getPersistentData().putBoolean(SaberModuleEvents.ONE_SHOT_TAG, true);
+            }
+            level.addFreshEntity(wave);
+        }
+        player.getCooldowns().addCooldown(this, WAVE_COOLDOWN_TICKS);
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
+    }
+
+    /**
+     * The blade's colour: the dominant hue of the coloured part of whichever blade texture the item
+     * model shows (tier blade, or the meteorite blade and its skins — same precedence as the model
+     * overrides, the last matching skin wins). Read off the textures once, since a server has none.
+     */
+    /** The RGB skin's blade cycles colours, so its wave does too (EI's rainbow sweep). */
+    private static boolean waveRainbow(ItemStack stack) {
+        return DrillModuleHelper.get(stack).has(ModuleType.METEORITE)
+                && stack.getOrDefault(ComponentsRegistry.SKIN_RGB.get(), 0f) > 0
+                && stack.getOrDefault(ComponentsRegistry.LIME.get(), 0f) <= 0
+                && stack.getOrDefault(ComponentsRegistry.LAVENDER.get(), 0f) <= 0;
+    }
+
+    private int waveColor(ItemStack stack) {
+        if (DrillModuleHelper.get(stack).has(ModuleType.METEORITE)) {
+            if (stack.getOrDefault(ComponentsRegistry.LIME.get(), 0f) > 0) return 0x7CD260;
+            if (stack.getOrDefault(ComponentsRegistry.LAVENDER.get(), 0f) > 0) return 0xDB80CB;
+            if (stack.getOrDefault(ComponentsRegistry.FLAME.get(), 0f) > 0) return 0xE7631D;
+            if (stack.getOrDefault(ComponentsRegistry.MURASAMA.get(), 0f) > 0) return 0xE7081C;
+            return 0x61C0D2;
+        }
+        return switch (voltage) {
+            case LV, MV -> 0xB3A7DF; // LV shows the MV blade
+            case HV -> 0xFC5333;
+            case EV -> 0x1704D6;
+            case IV -> 0xEAB534;
+        };
     }
 
     /**

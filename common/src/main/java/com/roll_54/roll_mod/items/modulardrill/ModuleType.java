@@ -32,7 +32,9 @@ public enum ModuleType {
     VAMPIRISM(ToolKind.SABER),
     BEHEADING(ToolKind.SABER),
     IRRADIATION(ToolKind.SABER),
-    METEORITE(ToolKind.SABER);
+    METEORITE(ToolKind.SABER),
+    // Right click fires an energy wave (EI's nano saber sweep) for part of the saber's damage.
+    WAVE(ToolKind.SABER);
 
     private final java.util.Set<ToolKind> tools;
 

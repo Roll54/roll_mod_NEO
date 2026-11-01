@@ -65,7 +65,7 @@ Replaces FTB Essentials-style functionality:
 ### Compatibility & fixes
 - **Integrations** (`compat/`): Modern Industrialization, MBD2/LDLib2 machines
   (see [`docs/mbd2-recipes.md`](docs/mbd2-recipes.md)), FTB Teams/Quests, AgriCraft,
-  Farmer's Delight, Create Cybernetics, Functional Storage, Ad Astra, KubeJS, CraftTweaker.
+  Farmer's Delight, Create Cybernetics, Advanced AE, Ad Astra, KubeJS, CraftTweaker.
 - **Mixins** (`mixin/`): ~19 anti-dupe patches (shulkers, hoppers, pistons, rails, tridents,
   lecterns, beehives, and more), anvil level cap, command-block logging, phantom spawner
   control, and machine/armor tweaks.

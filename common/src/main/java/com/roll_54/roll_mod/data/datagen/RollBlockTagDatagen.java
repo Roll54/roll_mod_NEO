@@ -33,8 +33,6 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
 
         // Machine blocks that should be pickaxe-mineable.
         pickaxeTag.add(
-                BlockRegistry.CROP_MANAGER.get(),
-                BlockRegistry.WEED_MANAGER.get(),
                 BlockRegistry.HYDROPONIC_GARDEN_BED.get(),
                 BlockRegistry.GRINDING_WHEELS.get());
         needsStoneTag.add(BlockRegistry.HYDROPONIC_GARDEN_BED.get());

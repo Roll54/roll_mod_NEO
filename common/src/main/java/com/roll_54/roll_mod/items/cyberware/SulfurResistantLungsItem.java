@@ -62,12 +62,21 @@ public class SulfurResistantLungsItem extends Item implements ICyberwareItem {
         return true;
     }
 
+    // The lungs no longer give full storm protection (16 sulfur armor): they only block the drying
+    // air, see StormHandler#hasSulfurResistantLungs. The old modifier is only cleaned off players
+    // who installed them before; the sulfur itself is kept out by netherite skin plating.
     public void onInstalled(LivingEntity entity) {
-        CyberwareAttributeHelper.applyModifier(entity, "sulfur_resistant_lungs");
+        CyberwareAttributeHelper.removeModifier(entity, "sulfur_resistant_lungs");
     }
 
     public void onRemoved(LivingEntity entity) {
         CyberwareAttributeHelper.removeModifier(entity, "sulfur_resistant_lungs");
+    }
+
+    public void onTick(LivingEntity entity) {
+        if (entity.tickCount % 100 == 0 && CyberwareAttributeHelper.hasModifier(entity, "sulfur_resistant_lungs")) {
+            CyberwareAttributeHelper.removeModifier(entity, "sulfur_resistant_lungs");
+        }
     }
 
     static {

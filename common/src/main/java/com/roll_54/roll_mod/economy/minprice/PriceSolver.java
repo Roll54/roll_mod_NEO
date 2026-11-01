@@ -62,14 +62,21 @@ public final class PriceSolver {
   private final List<Recipe> recipes;
   private final Map<String, Double> fixed;
   private final Map<String, Double> outputWeights;
+  private final Map<String, String> forcedRecipes;
+  private final double minimum;
 
   /**
    * @param recipes every usable recipe; blacklisted ones are already left out
    * @param fixed prices that are given and never computed (whitelist, ore tiers, blacklist at 0)
    * @param outputWeights share of a recipe's cost each output takes per unit; missing means 1
+   * @param forcedRecipes key → the only recipe its price is computed from (config {@code itemRecipes})
+   * @param minimum the absolute minimal price of one unit; nothing is priced below it
    */
   public PriceSolver(
-      Collection<Recipe> recipes, Map<String, Double> fixed, Map<String, Double> outputWeights) {
+      Collection<Recipe> recipes, Map<String, Double> fixed, Map<String, Double> outputWeights,
+      Map<String, String> forcedRecipes, double minimum) {
+    this.forcedRecipes = forcedRecipes;
+    this.minimum = Math.max(0, minimum);
     this.recipes = new ArrayList<>(recipes);
     this.recipes.sort(Comparator.comparing(Recipe::id));
     this.fixed = fixed;
@@ -78,7 +85,7 @@ public final class PriceSolver {
 
   public Result solve() {
     Map<String, Entry> frozen = new HashMap<>();
-    fixed.forEach((key, price) -> frozen.put(key, new Entry(sanitize(price), Source.FIXED, null)));
+    fixed.forEach((key, price) -> frozen.put(key, new Entry(atLeastMinimum(price), Source.FIXED, null)));
 
     List<Recipe> netted = new ArrayList<>(recipes.size());
     for (Recipe recipe : recipes) {
@@ -98,9 +105,17 @@ public final class PriceSolver {
       for (Output rem : recipe.remainders()) keys.add(rem.key());
     }
 
+    // A key with a chosen recipe (config itemRecipes) is priced from that recipe alone.
+    forcedRecipes.forEach((key, recipeId) -> {
+      List<Recipe> all = makers.get(key);
+      if (all == null) return;
+      List<Recipe> chosen = all.stream().filter(r -> r.id().equals(recipeId)).toList();
+      if (!chosen.isEmpty()) makers.put(key, new ArrayList<>(chosen));
+    });
+
     for (String key : keys) {
       if (!frozen.containsKey(key) && !makers.containsKey(key)) {
-        frozen.put(key, new Entry(0, Source.LEAF, null));
+        frozen.put(key, new Entry(minimum, Source.LEAF, null));
       }
     }
 
@@ -136,7 +151,7 @@ public final class PriceSolver {
       }
       if (cut.isEmpty()) {
         for (String key : open) {
-          frozen.put(key, new Entry(0, Source.UNRESOLVED, null));
+          frozen.put(key, new Entry(minimum, Source.UNRESOLVED, null));
           unresolved.add(key);
         }
         open.clear();
@@ -167,7 +182,7 @@ public final class PriceSolver {
         if (strict) return null;
         continue;
       }
-      double unit = unitPrice(recipe, key, cost);
+      double unit = atLeastMinimum(unitPrice(recipe, key, cost));
       if (best == null || unit > best.price) best = new Best(unit, recipe.id());
     }
     return best;
@@ -260,6 +275,21 @@ public final class PriceSolver {
     if (outputs.isEmpty()) return null;
     return new Recipe(
         recipe.id(), recipe.type(), recipe.multiplier(), inputs, outputs, recipe.remainders());
+  }
+
+  /**
+   * What one {@code key} would cost through {@code recipe} with the prices in {@code prices}, or NaN
+   * when an input has no price. For {@code /rollmod minprice item}, to compare the candidates.
+   */
+  public double priceVia(Recipe recipe, String key, Map<String, Entry> prices) {
+    Recipe net = netSelfLoops(recipe);
+    if (net == null) return Double.NaN;
+    double cost = cost(net, prices, false);
+    return Double.isNaN(cost) ? Double.NaN : atLeastMinimum(unitPrice(net, key, cost));
+  }
+
+  private double atLeastMinimum(double value) {
+    return Math.max(minimum, sanitize(value));
   }
 
   private static final double CAP = Long.MAX_VALUE / 64.0;

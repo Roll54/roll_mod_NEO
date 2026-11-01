@@ -54,6 +54,7 @@ public final class RollMod {
         //need to work with energy
 
         ItemRegistry.register(eventBus);
+        com.roll_54.roll_mod.compat.aae.AaeOxygenCard.register(eventBus);
         BlockRegistry.register(eventBus);
         FluidRegistry.register(eventBus);
         // Machines registered through Tesseract's MI hooks (see RMMIHookRegistry) live in these.
@@ -185,6 +186,9 @@ public final class RollMod {
             // A moderator's window into another player's inventory or implants — see InvSeeSessions.
             PlayerUIMenuType.register(com.roll_54.roll_mod.minestar.moderation.invsee.InvSeeUI.UI_ID,
                     com.roll_54.roll_mod.minestar.moderation.invsee.InvSeeSessions::holder);
+            // A kit laid out as a player's inventory: a moderator's editor or a player's preview — see KitWindows.
+            PlayerUIMenuType.register(com.roll_54.roll_mod.minestar.kits.KitWindowUI.UI_ID,
+                    com.roll_54.roll_mod.minestar.kits.KitWindows::holder);
         });
         LOGGER.info("[{}] common setup", MODID);
     }

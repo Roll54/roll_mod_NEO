@@ -78,6 +78,11 @@ subprojects {
         }
         maven { url "https://cursemaven.com" }
         maven {
+            name = "Modrinth"
+            url = "https://api.modrinth.com/maven"
+            content { includeGroup "maven.modrinth" } // Advanced AE
+        }
+        maven {
             name = "FzzyMaven"
             url = "https://maven.fzzyhmstrs.me/"
         }

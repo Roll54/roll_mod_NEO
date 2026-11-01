@@ -38,6 +38,8 @@ public class ComponentsRegistry {
     public static final Supplier<DataComponentType<Boolean>> SKIN_APPLICATOR_USED;
 
     public static final Supplier<DataComponentType<Boolean>> STORM_PROTECTED;
+    /** On an Advanced AE quantum chestplate: the oxygen tank card is installed (tank x4). */
+    public static final Supplier<DataComponentType<Boolean>> OXYGEN_TANK_CARD;
     public static final Supplier<DataComponentType<Integer>> HERBICIDE;
 
     // Per-piece radiation resistance (0.0 .. 1.0); equipped pieces are summed and capped at 1.0.
@@ -87,6 +89,7 @@ public class ComponentsRegistry {
         SKIN_APPLICATOR_USED = create("skin_applicator_used", Codec.BOOL, ByteBufCodecs.BOOL);
 
         STORM_PROTECTED = create("storm_protected", Codec.BOOL, ByteBufCodecs.BOOL);
+        OXYGEN_TANK_CARD = create("oxygen_tank_card", Codec.BOOL, ByteBufCodecs.BOOL);
 
         HERBICIDE = create("herbicide", Codec.INT, ByteBufCodecs.INT);
 

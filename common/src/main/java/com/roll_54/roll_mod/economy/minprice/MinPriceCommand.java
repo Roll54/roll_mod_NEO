@@ -97,8 +97,39 @@ public final class MinPriceCommand {
     long stackFloor = MinPriceService.floor(stack, stack.getMaxStackSize());
     source.sendSuccess(
         () -> Component.literal("  stack of " + stack.getMaxStackSize() + ": " + stackFloor), false);
+    candidates(source, table, key);
     return 1;
   }
+
+  /**
+   * Every recipe that makes {@code key} with what it would cost through it, so an admin can pick one
+   * for the config's {@code itemRecipes}. Prices are worked out from the current table.
+   */
+  private static void candidates(CommandSourceStack source, Table table, String key) {
+    RecipeSnapshot snapshot = table.snapshot();
+    PriceSolver solver = snapshot.solver();
+    String chosen = snapshot.forcedRecipes().get(key);
+    int shown = 0;
+    for (Recipe recipe : snapshot.recipes()) {
+      if (recipe.outputs().stream().noneMatch(o -> o.key().equals(key))) continue;
+      if (shown == 0) {
+        source.sendSuccess(() -> Component.literal("  recipes that make it"
+            + (chosen != null ? " (itemRecipes picks " + chosen + ")" : " (the most expensive is used)") + ":"), false);
+      }
+      if (++shown > MAX_CANDIDATES) continue;
+      double price = solver.priceVia(recipe, key, table.entries());
+      String line = String.format("   %s %s [%s]: %s", recipe.id().equals(chosen) ? "*" : "-", recipe.id(),
+          recipe.type(), Double.isNaN(price) ? "inputs not priced" : String.format("%.2f", price));
+      source.sendSuccess(() -> Component.literal(line), false);
+    }
+    int total = shown;
+    if (total > MAX_CANDIDATES) {
+      source.sendSuccess(() -> Component.literal("   ... and " + (total - MAX_CANDIDATES) + " more"), false);
+    }
+    if (total == 0) source.sendSuccess(() -> Component.literal("  no recipe makes it"), false);
+  }
+
+  private static final int MAX_CANDIDATES = 15;
 
   private static int dump(CommandSourceStack source) {
     Table table = MinPriceService.table();

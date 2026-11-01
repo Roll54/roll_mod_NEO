@@ -116,10 +116,10 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.VENUS_CARTRIDGE.get());
         basicItem(ItemRegistry.EMPTY_CARTRIDGE.get());
 
-        // No texture of its own yet: borrows vanilla's eye of ender.
+        // Own texture: textures/item/drill_orb.png.
         getBuilder(ItemRegistry.DRILL_ORB.getId().getPath())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", ResourceLocation.withDefaultNamespace("item/ender_eye"));
+                .texture("layer0", RollMod.id("item/drill_orb"));
 
         getBuilder(ItemRegistry.RESEARCH_ROCKET_CONTROLLER.get().toString())
                 .parent(new ModelFile.UncheckedModelFile("item/handheld"))
@@ -305,10 +305,10 @@ public class RolltemModelProvider extends ItemModelProvider {
         // IV has none drawn yet and still wears the old IV pickaxe's model; parenting inherits the
         // visuals but not the parent's `overrides`, so its skin swaps stay behind with the old item.
         for (String tier : List.of("lv", "mv", "hv", "ev")) {
-            hideable(withExistingParent(tier + "_modular_drill", mcLoc("item/handheld"))
-                    .texture("layer0", modLoc("item/tool/" + tier + "_modular_drill")));
+            withExistingParent(tier + "_modular_drill", mcLoc("item/handheld"))
+                    .texture("layer0", modLoc("item/tool/" + tier + "_modular_drill"));
         }
-        hideable(withExistingParent("iv_modular_drill", modLoc("item/iv_electric_pickaxe")));
+        withExistingParent("iv_modular_drill", modLoc("item/iv_electric_pickaxe"));
 
         // Module textures live in item/tool/modules.
         drillModuleItem(ItemRegistry.SPEED_MODULE_I.get());
@@ -369,6 +369,7 @@ public class RolltemModelProvider extends ItemModelProvider {
         drillModuleItem(ItemRegistry.IRRADIATION_MODULE_II.get());
         drillModuleItem(ItemRegistry.IRRADIATION_MODULE_III.get());
         drillModuleItem(ItemRegistry.METEORITE_MODULE.get());
+        drillModuleItem(ItemRegistry.WAVE_MODULE.get());
 
         // TEXTURES ARE NOT NEDEED FOR THESE ITEMS, THEY ARE DEV ONES.
         getBuilder(ItemRegistry.EXAMPLE_ARMOR_HELMET.get().toString())
@@ -387,9 +388,6 @@ public class RolltemModelProvider extends ItemModelProvider {
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/error_item"));
         getBuilder(ItemRegistry.HERBICIDE.get().toString())
-                .parent(new ModelFile.UncheckedModelFile("item/generated"))
-                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/error_item"));
-        getBuilder(ItemRegistry.ENERGY_SWORD.get().toString())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/error_item"));
         //END OF DEV ITEMS
@@ -557,8 +555,8 @@ public class RolltemModelProvider extends ItemModelProvider {
     private ItemModelBuilder drillModuleItem(Item item) {
         ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(item);
 
-        return hideable(withExistingParent(itemId.getPath(), mcLoc("item/generated"))
-                .texture("layer0", modLoc("item/tool/modules/" + itemId.getPath())));
+        return withExistingParent(itemId.getPath(), mcLoc("item/generated"))
+                .texture("layer0", modLoc("item/tool/modules/" + itemId.getPath()));
     }
 
     /**

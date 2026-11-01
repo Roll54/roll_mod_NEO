@@ -70,6 +70,7 @@ public final class HubEvents {
     public static void onContainerClose(PlayerContainerEvent.Close event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             InvSeeSessions.onClosed(player, event.getContainer());
+            com.roll_54.roll_mod.minestar.kits.KitWindows.onClosed(player, event.getContainer());
         }
     }
 
@@ -89,6 +90,7 @@ public final class HubEvents {
         FriendViewers.remove(event.getEntity().getUUID());
         com.roll_54.roll_mod.minestar.radio.RadioService.forget(event.getEntity().getUUID());
         InvSeeSessions.forget(event.getEntity().getUUID());
+        com.roll_54.roll_mod.minestar.kits.KitWindows.forget(event.getEntity().getUUID());
         if (event.getEntity() instanceof ServerPlayer player) {
             TpaViewers.resync(player.server);
             FriendViewers.resync(player.server);

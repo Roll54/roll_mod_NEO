@@ -162,20 +162,6 @@ public class BlockRegistry {
             "telescope",
             () -> new TelescopeBlock(BlockBehaviour.Properties.of().strength(2.0F).sound(SoundType.STONE).noOcclusion()));
 
-    public static final DeferredBlock<Block> CROP_MANAGER = BLOCKS.register(
-            "crop_manager",
-            () -> new CropManagerBlock(BlockBehaviour.Properties.of()
-                    .strength(3.0F, 9.0F)
-                    .sound(SoundType.METAL)
-                    .requiresCorrectToolForDrops()));
-
-    public static final DeferredBlock<Block> WEED_MANAGER = BLOCKS.register(
-            "weed_manager",
-            () -> new WeedManagerBlock(BlockBehaviour.Properties.of()
-                    .strength(3.0F, 9.0F)
-                    .sound(SoundType.METAL)
-                    .requiresCorrectToolForDrops()));
-
     public static final DeferredBlock<Block> HYDROPONIC_GARDEN_BED = BLOCKS.register(
             "hydroponic_garden_bed",
             () -> new HydroponicGardenBedBlock(BlockBehaviour.Properties.of()
@@ -314,18 +300,6 @@ public class BlockRegistry {
             }
         });
         ITEMS.register("grinding_wheels", () -> new BlockItem(GRINDING_WHEELS.get(), new Item.Properties()));
-        // Superseded by the MBD2 machine roll_mod:crop_manager_mk2. Kept registered so blocks already
-        // placed in a world keep working; the tooltip is the only thing that changed.
-        ITEMS.register("crop_manager", () -> new BlockItem(CROP_MANAGER.get(), new Item.Properties()) {
-            @Override
-            public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
-                tooltip.add(Component.translatable("tooltip.roll_mod.crop_manager.deprecated")
-                        .withStyle(ChatFormatting.RED, ChatFormatting.BOLD));
-                super.appendHoverText(stack, context, tooltip, flag);
-            }
-        });
-        ITEMS.register("weed_manager", () -> new BlockItem(WEED_MANAGER.get(), new Item.Properties())
-        );
         ITEMS.register("netherite_frame", () -> new BlockItem(NETHERITE_FRAME.get(), new Item.Properties()));
         ITEMS.register("hueri_statue", () -> new BlockItem(HUERI_STATUE.get(), new Item.Properties()));
     }

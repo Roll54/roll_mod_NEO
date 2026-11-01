@@ -1,18 +1,20 @@
 package com.roll_54.roll_mod.registry;
 
 import aztech.modern_industrialization.api.energy.EnergyApi;
-import com.roll_54.roll_mod.blocks.entity.CropManagerBlockEntity;
 import com.roll_54.roll_mod.blocks.entity.RollSolarPanelBlockEntity;
-import com.roll_54.roll_mod.blocks.entity.WeedManagerBlockEntity;
+import com.roll_54.roll_mod.fluid.RollBucketItem;
 import com.roll_54.roll_mod.items.modulardrill.ModularDrillItem;
 import com.roll_54.roll_mod.items.modularsaber.ModularSaberItem;
 import dev.technici4n.grandpower.api.ILongEnergyStorage;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
 import net.minecraft.core.Direction;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.fluids.capability.wrappers.FluidBucketWrapper;
 import net.neoforged.neoforge.items.wrapper.SidedInvWrapper;
 
 import java.util.List;
@@ -21,6 +23,14 @@ import java.util.List;
 public class CapabilityRegistry {
     @SubscribeEvent
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
+        // NeoForge only gives BucketItem itself a fluid handler (an exact class check), so roll_mod's
+        // own buckets — mutagen included — need one too, or MI tanks and other fluid-handler blocks
+        // can't be filled from them by right-click.
+        for (Item item : BuiltInRegistries.ITEM) {
+            if (item instanceof RollBucketItem) {
+                event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new FluidBucketWrapper(stack), item);
+            }
+        }
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.TEST_BATTERY.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.REDSTONE_BATTERY.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.ENERGIUM_BATTERY.get());
@@ -31,22 +41,7 @@ public class CapabilityRegistry {
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.HV_STORM_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.LV_STORM_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.LUNAR_PHASE_CLOCK.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.LV_MINING_DRILL.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.ADVANCED_LV_MINING_DRILL.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.MV_MINING_DRILL.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.ADVANCED_MV_MINING_DRILL.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.HV_MINING_DRILL.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.ADVANCED_HV_MINING_DRILL.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.EV_MINING_DRILL.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.ADVANCED_EV_MINING_DRILL.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.ENERGY_SWORD.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.METEORITE_METAL_NANO_SABER.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.MV_ELECTRIC_SABER.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.HV_ELECTRIC_SABER.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.EV_ELECTRIC_SABER.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.IV_ELECTRIC_SABER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.MULTI_PROTECTING_GRAVI_CHESTPLATE.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.IV_ELECTRIC_PICKAXE.get());
         // Modular drills get a hand-built storage instead of registerStorage: with an XP Reactor
         // installed the drill's max input is 0, so every external charger's receive() is refused
         // and mined experience stays the only way in.
@@ -74,34 +69,6 @@ public class CapabilityRegistry {
                             0L),
                     item);
         }
-        // Crop Manager: the same AnyTierEnergyStore answers both energy capabilities, so an MI
-        // cable of any tier and an FE cable feed the one buffer at 1 FE == 1 EU. Every face is a
-        // port and no face is an output — it only ever consumes.
-        event.registerBlockEntity(
-                EnergyApi.SIDED,
-                BlockEntites.CROP_MANAGER_BE.get(),
-                (blockEntity, side) -> blockEntity.getEnergyStorage()
-        );
-        event.registerBlockEntity(
-                Capabilities.EnergyStorage.BLOCK,
-                BlockEntites.CROP_MANAGER_BE.get(),
-                (blockEntity, side) -> blockEntity.getEnergyStorage()
-        );
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                BlockEntites.CROP_MANAGER_BE.get(),
-                (blockEntity, side) -> new SidedInvWrapper((CropManagerBlockEntity) blockEntity, side)
-        );
-        event.registerBlockEntity(
-                Capabilities.EnergyStorage.BLOCK,
-                BlockEntites.WEED_MANAGER_BE.get(),
-                (blockEntity, side) -> blockEntity.getEnergyStorage()
-        );
-        event.registerBlockEntity(
-                Capabilities.ItemHandler.BLOCK,
-                BlockEntites.WEED_MANAGER_BE.get(),
-                (blockEntity, side) -> new SidedInvWrapper((WeedManagerBlockEntity) blockEntity, side)
-        );
         // Hydroponic Garden Bed: everything is backed by the shared node, so every face is a
         // valid port and no face is an output. MIEnergyStorage extends NeoForge's IEnergyStorage,
         // so the same object serves an MI cable and an FE cable at 1 FE == 1 EU.

@@ -592,8 +592,6 @@ in `CropBlockEntityMixin`), and the Weed Manager / Crop Managers skip it.
 ### 11.3 Machines
 | Machine | Area | Work | Energy | Notes |
 |---|---|---|---|---|
-| Weed Manager `roll_mod:weed_manager` | 5×5, own Y | every 10 ticks | 100k FE buffer, 1000 FE/t in, 500 FE per removal | herbicide only, 1 biomass per removal; skips crops whose herbicide exceeds 2× the stack value |
-| Crop Manager `roll_mod:crop_manager` | 11×11, own Y | every tick | 100k buffer, 500 per op | **deprecated**, hidden from tabs; de-weeds and harvests |
 | MBD2 Crop Manager LV / MV (`crop_manager_mk2`) / HV | 3×3 / 5×5 / 7×7 behind the machine | every 20 ticks (`tick_interval`) | 50k / 100k / 200k buffer, 500 / 1000 / 2000 per t | trait `crop_harvester`; GUI toggles collect, herbicide, void biomass, show area (+ feed N/P/K on MV/HV, + apply mutagen on HV); 1 biomass per weed |
 
 MBD2 trait fields and slots: see `docs/mbd2-recipes.md`. All managers respect `weeds_resistance`.

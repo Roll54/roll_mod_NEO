@@ -11,9 +11,10 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 /**
  * The minimal price table as the client shows it in tooltips: item id → price of one, fluid id →
  * price of one bucket (1000 mB). Only keys with a floor are sent; an empty packet clears the
- * client's copy (module off, or the server stopped).
+ * client's copy (module off, or the server stopped). {@code minimum} is the absolute minimal price
+ * of one unit, which every item has (0 with the module off).
  */
-public record SyncMinPricesPacket(Map<String, Double> items, Map<String, Double> fluids)
+public record SyncMinPricesPacket(Map<String, Double> items, Map<String, Double> fluids, double minimum)
     implements CustomPacketPayload {
 
   /** A sanity cap on what a client accepts; the real table is a few thousand entries. */
@@ -25,16 +26,17 @@ public record SyncMinPricesPacket(Map<String, Double> items, Map<String, Double>
       StreamCodec.of(SyncMinPricesPacket::encode, SyncMinPricesPacket::decode);
 
   public static SyncMinPricesPacket empty() {
-    return new SyncMinPricesPacket(Map.of(), Map.of());
+    return new SyncMinPricesPacket(Map.of(), Map.of(), 0);
   }
 
   private static void encode(RegistryFriendlyByteBuf buf, SyncMinPricesPacket payload) {
     write(buf, payload.items());
     write(buf, payload.fluids());
+    buf.writeDouble(payload.minimum());
   }
 
   private static SyncMinPricesPacket decode(RegistryFriendlyByteBuf buf) {
-    return new SyncMinPricesPacket(read(buf), read(buf));
+    return new SyncMinPricesPacket(read(buf), read(buf), buf.readDouble());
   }
 
   private static void write(RegistryFriendlyByteBuf buf, Map<String, Double> map) {
@@ -64,6 +66,7 @@ public record SyncMinPricesPacket(Map<String, Double> items, Map<String, Double>
         () -> {
           ClientMinPrices.ITEMS = payload.items();
           ClientMinPrices.FLUIDS = payload.fluids();
+          ClientMinPrices.MINIMUM = payload.minimum();
         });
   }
 }

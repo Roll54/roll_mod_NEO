@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod_client.compat.emi;
 
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.compat.MBD2.machine.RollMBD2Machines;
 import com.roll_54.roll_mod.compat.MBD2.recipe.ExampleLavaRecipe;
 import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
 import com.roll_54.roll_mod.minestar.hub.gui.HubReturn;
@@ -9,6 +10,7 @@ import com.roll_54.roll_mod.registry.BlockRegistry;
 import com.roll_54.roll_mod.registry.MenuTypes;
 import com.roll_54.roll_mod.registry.RecipeRegistry;
 import com.roll_54.roll_mod_client.compat.jei.CauldronWashingRecipe;
+import com.roll_54.roll_mod_client.compat.jei.CropManagerInputRecipe;
 import com.roll_54.roll_mod_client.compat.jei.GreenhouseYieldRecipe;
 import com.roll_54.roll_mod_client.compat.jei.HydroponicReagentRecipe;
 import com.roll_54.roll_mod_client.config.RecipeViewerConfig;
@@ -47,6 +49,8 @@ public class EMIRollModPlugin implements EmiPlugin {
             EmiStack.of(Items.CAULDRON), "jei.roll_mod.cauldron_washing");
     public static final EmiRecipeCategory HYDROPONIC_REAGENTS = category("hydroponic_reagents",
             EmiStack.of(BlockRegistry.HYDROPONIC_GARDEN_BED.get()), "jei.roll_mod.hydroponic_reagents");
+    public static final EmiRecipeCategory CROP_MANAGER_INPUTS = category("crop_manager_inputs",
+            EmiStack.of(CropManagerInputRecipe.machine(RollMBD2Machines.CropManagerTier.LV)), "jei.roll_mod.crop_manager_inputs");
     public static final EmiRecipeCategory EV_GREENHOUSE_YIELD = category("ev_greenhouse_yield",
             EmiStack.of(GreenhouseYieldRecipe.controllerStack()), "jei.roll_mod.ev_greenhouse_yield");
 
@@ -63,11 +67,15 @@ public class EMIRollModPlugin implements EmiPlugin {
         registry.addCategory(CAULDRON_WASHING);
         registry.addCategory(HYDROPONIC_REAGENTS);
         registry.addCategory(EV_GREENHOUSE_YIELD);
+        registry.addCategory(CROP_MANAGER_INPUTS);
 
         registry.addWorkstation(ITEM_RESEARCH, EmiStack.of(BlockRegistry.RESEARCH_WORKBENCH.get()));
         registry.addWorkstation(CAULDRON_WASHING, EmiStack.of(Items.CAULDRON));
         registry.addWorkstation(HYDROPONIC_REAGENTS, EmiStack.of(BlockRegistry.HYDROPONIC_GARDEN_BED.get()));
         registry.addWorkstation(EV_GREENHOUSE_YIELD, EmiStack.of(GreenhouseYieldRecipe.controllerStack()));
+        for (RollMBD2Machines.CropManagerTier tier : RollMBD2Machines.CropManagerTier.values()) {
+            registry.addWorkstation(CROP_MANAGER_INPUTS, EmiStack.of(CropManagerInputRecipe.machine(tier)));
+        }
 
         for (RecipeHolder<ItemResearchRecipe> holder
                 : registry.getRecipeManager().getAllRecipesFor(RecipeRegistry.ITEM_RESEARCH_RECIPE_TYPE.get())) {
@@ -79,6 +87,9 @@ public class EMIRollModPlugin implements EmiPlugin {
         // Built from the synced data maps / plant registry, so EMI's reload picks up datapack changes.
         for (HydroponicReagentRecipe recipe : HydroponicReagentRecipe.collect()) {
             registry.addRecipe(new EmiHydroponicReagentRecipe(recipe));
+        }
+        for (CropManagerInputRecipe recipe : CropManagerInputRecipe.collect()) {
+            registry.addRecipe(new EmiCropManagerInputRecipe(recipe));
         }
         for (GreenhouseYieldRecipe recipe : GreenhouseYieldRecipe.collect()) {
             registry.addRecipe(new EmiGreenhouseYieldRecipe(recipe));

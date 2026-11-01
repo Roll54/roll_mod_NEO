@@ -4,6 +4,7 @@ import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.economy.network.CurrencyNetworking;
 import com.roll_54.roll_mod.network.packet.DeathLogPackets;
 import com.roll_54.roll_mod.network.packet.InvSeePackets;
+import com.roll_54.roll_mod.network.packet.KitWindowPackets;
 import com.roll_54.roll_mod.network.packet.RadioPackets;
 import com.roll_54.roll_mod.network.packet.ClaimDailyBonusPacket;
 import com.roll_54.roll_mod.network.packet.ClaimDailyTaskPacket;
@@ -387,6 +388,16 @@ public class NetworkHandler {
                 InvSeePackets.Layout.TYPE,
                 InvSeePackets.Layout.STREAM_CODEC,
                 InvSeePackets.Layout::handle
+        );
+        registrar.playToClient(
+                KitWindowPackets.Layout.TYPE,
+                KitWindowPackets.Layout.STREAM_CODEC,
+                KitWindowPackets.Layout::handle
+        );
+        registrar.playToServer(
+                KitWindowPackets.Preview.TYPE,
+                KitWindowPackets.Preview.STREAM_CODEC,
+                KitWindowPackets.Preview::handle
         );
         registrar.playToServer(
                 DeathLogPackets.Request.TYPE,

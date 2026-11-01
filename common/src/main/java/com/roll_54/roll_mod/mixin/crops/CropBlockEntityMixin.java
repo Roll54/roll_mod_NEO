@@ -27,7 +27,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import com.agricraft.agricraft.common.block.entity.CropBlockEntity;
+import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Unique;
 import java.util.Comparator;
@@ -150,15 +152,19 @@ public abstract class CropBlockEntityMixin implements AgriHerbicide, AgriCropNut
     }
 
     /**
-     * Everything roll_mod adds to a crop, as plain lines: since 4.0.24 the overlay re-wraps lines as
-     * plain text and drops their colours, so each line has to say what it means on its own. On cross
+     * Everything roll_mod adds to a crop, each line coloured by what it means — green when it is
+     * fine, red when something is missing — and AgriCraft's own lines coloured too
+     * ({@link #roll_mod$colourAgriCraftLines}). Since 4.0.24 the overlay re-wraps lines as plain text
+     * and drops their colours; {@code MagnifyingGlassOverlayColourMixin} (client) keeps them. On cross
      * sticks it shows what the two neighbours that would be picked as parents would give a child.
      */
     @Inject(method = "addMagnifyingTooltip", at = @At("TAIL"))
     private void roll_mod$addCropTooltip(List<Component> tooltip, boolean isPlayerSneaking, CallbackInfo ci) {
+        roll_mod$colourAgriCraftLines(tooltip);
         CropBlockEntity self = (CropBlockEntity) (Object) this;
         if (this.roll_mod$herbicideAmount > 0 || self.hasPlant() || this.isCrossCropSticks()) {
-            roll_mod$line(tooltip, Component.translatable("message.roll_mod.magnifying.herbicide", this.roll_mod$herbicideAmount));
+            roll_mod$line(tooltip, Component.translatable("message.roll_mod.magnifying.herbicide", this.roll_mod$herbicideAmount),
+                    ChatFormatting.DARK_GREEN);
         }
         if (this.isCrossCropSticks()) {
             roll_mod$addBreedingPreview(self, tooltip);
@@ -171,11 +177,11 @@ public abstract class CropBlockEntityMixin implements AgriHerbicide, AgriCropNut
         roll_mod$line(tooltip, mutagen > 0
                 ? Component.translatable("message.roll_mod.magnifying.mutagen.draining", mutagen,
                         CropBreedingSettings.MUTAGEN_BLEED_PER_SECOND)
-                : Component.translatable("message.roll_mod.magnifying.mutagen", 0));
+                : Component.translatable("message.roll_mod.magnifying.mutagen", 0), ChatFormatting.LIGHT_PURPLE);
 
         boolean supplied = this.roll_mod$isNutrientSupplied();
         roll_mod$line(tooltip, Component.translatable("message.roll_mod.magnifying.nutrients",
-                this.roll_mod$nitrogen, this.roll_mod$phosphorus, this.roll_mod$potassium));
+                this.roll_mod$nitrogen, this.roll_mod$phosphorus, this.roll_mod$potassium), ChatFormatting.GOLD);
         AgriGenome genome = self.getGenome();
         boolean needsUpkeep = genome != null
                 && CropBreeding.highestAllele(genome) > CropBreedingSettings.CEILING_UNSUPPLIED;
@@ -186,24 +192,80 @@ public abstract class CropBlockEntityMixin implements AgriHerbicide, AgriCropNut
                         ? Component.translatable("message.roll_mod.magnifying.nutrients.regress",
                                 CropBreedingSettings.CEILING_UNSUPPLIED)
                         : Component.translatable("message.roll_mod.magnifying.nutrients.unsupplied",
-                                CropBreedingSettings.NUTRIENT_COST_PER_HARVEST));
+                                CropBreedingSettings.NUTRIENT_COST_PER_HARVEST),
+                supplied ? ChatFormatting.GREEN : ChatFormatting.RED);
 
         roll_mod$line(tooltip, !supplied
                 ? Component.translatable("message.roll_mod.magnifying.growth_boost.no_nutrients")
                 : this.roll_mod$onHydroponicBed()
                         ? Component.translatable("message.roll_mod.magnifying.growth_boost.hydroponic")
                         : Component.translatable("message.roll_mod.magnifying.growth_boost.active",
-                                roll_mod$multiplier()));
+                                roll_mod$multiplier()),
+                supplied && !this.roll_mod$onHydroponicBed() ? ChatFormatting.GREEN : ChatFormatting.GRAY);
 
         roll_mod$line(tooltip, Component.translatable("message.roll_mod.magnifying.ceiling",
-                CropBreeding.parentCeiling(self)));
+                CropBreeding.parentCeiling(self)), ChatFormatting.AQUA);
         Component next = CropBreeding.nextCeilingRequirement(self);
         if (next != null) {
-            roll_mod$line(tooltip, Component.literal("  ").append(next));
+            roll_mod$line(tooltip, Component.literal("  ").append(next), ChatFormatting.YELLOW);
         }
         roll_mod$line(tooltip, mutagen >= CropBreedingSettings.MUTAGEN_GATE
                 ? Component.translatable("message.roll_mod.magnifying.mutation.ready")
-                : Component.translatable("message.roll_mod.magnifying.mutation.blocked", CropBreedingSettings.MUTAGEN_GATE));
+                : Component.translatable("message.roll_mod.magnifying.mutation.blocked", CropBreedingSettings.MUTAGEN_GATE),
+                mutagen >= CropBreedingSettings.MUTAGEN_GATE ? ChatFormatting.GREEN : ChatFormatting.RED);
+    }
+
+    /**
+     * AgriCraft's own lines, which come with no colour: each gets one from its translation key —
+     * the heading gold, the species green, the stats aqua, the growth stage yellow, weeds dark green,
+     * "fertile" green, and anything that stops the plant growing red. A line that already has a
+     * colour keeps it.
+     */
+    @Unique
+    private static void roll_mod$colourAgriCraftLines(List<Component> tooltip) {
+        for (int i = 0; i < tooltip.size(); i++) {
+            Component line = tooltip.get(i);
+            if (roll_mod$hasColour(line)) continue;
+            String key = roll_mod$firstKey(line);
+            if (key == null || !key.startsWith("agricraft.")) continue;
+            tooltip.set(i, line.copy().withStyle(roll_mod$colourFor(key)));
+        }
+    }
+
+    @Unique
+    private static ChatFormatting roll_mod$colourFor(String key) {
+        if (key.equals("agricraft.tooltip.magnifying.crop") || key.equals("agricraft.tooltip.magnifying.soil")) {
+            return ChatFormatting.GOLD;
+        }
+        if (key.equals("agricraft.tooltip.magnifying.species")) return ChatFormatting.GREEN;
+        if (key.startsWith("agricraft.tooltip.magnifying.stat.")) return ChatFormatting.AQUA;
+        if (key.equals("agricraft.tooltip.magnifying.growth")) return ChatFormatting.YELLOW;
+        if (key.equals("agricraft.tooltip.magnifying.weeds")) return ChatFormatting.DARK_GREEN;
+        if (key.equals("agricraft.tooltip.magnifying.requirement.fertile")) return ChatFormatting.GREEN;
+        if (key.endsWith(".not_fertile") || key.endsWith(".lethal") || key.startsWith("agricraft.tooltip.condition.")) {
+            return ChatFormatting.RED;
+        }
+        return ChatFormatting.GRAY;
+    }
+
+    @Unique
+    private static boolean roll_mod$hasColour(Component component) {
+        if (component.getStyle().getColor() != null) return true;
+        for (Component sibling : component.getSiblings()) {
+            if (roll_mod$hasColour(sibling)) return true;
+        }
+        return false;
+    }
+
+    /** The first translation key in the line (its own, then its children's), or null. */
+    @Unique
+    private static String roll_mod$firstKey(Component component) {
+        if (component.getContents() instanceof TranslatableContents translatable) return translatable.getKey();
+        for (Component sibling : component.getSiblings()) {
+            String key = roll_mod$firstKey(sibling);
+            if (key != null) return key;
+        }
+        return null;
     }
 
     /**
@@ -219,22 +281,23 @@ public abstract class CropBlockEntityMixin implements AgriHerbicide, AgriCropNut
                 .limit(2)
                 .toList();
         if (parents.size() < 2) {
-            roll_mod$line(tooltip, Component.translatable("message.roll_mod.magnifying.breeding.no_pair"));
+            roll_mod$line(tooltip, Component.translatable("message.roll_mod.magnifying.breeding.no_pair"), ChatFormatting.GRAY);
             return;
         }
         AgriCrop a = parents.get(0);
         AgriCrop b = parents.get(1);
         roll_mod$line(tooltip, Component.translatable("message.roll_mod.magnifying.breeding.ceiling",
-                CropBreeding.pairCeiling(a, b)));
-        roll_mod$line(tooltip, CropBreeding.canMutate(a, b)
+                CropBreeding.pairCeiling(a, b)), ChatFormatting.AQUA);
+        boolean mutates = CropBreeding.canMutate(a, b);
+        roll_mod$line(tooltip, mutates
                 ? Component.translatable("message.roll_mod.magnifying.breeding.mutation_ready")
                 : Component.translatable("message.roll_mod.magnifying.breeding.mutation_blocked",
-                        CropBreedingSettings.MUTAGEN_GATE));
+                        CropBreedingSettings.MUTAGEN_GATE), mutates ? ChatFormatting.GREEN : ChatFormatting.RED);
     }
 
     @Unique
-    private static void roll_mod$line(List<Component> tooltip, Component line) {
-        tooltip.add(Component.literal("  ").append(line));
+    private static void roll_mod$line(List<Component> tooltip, Component line, ChatFormatting colour) {
+        tooltip.add(Component.literal("  ").append(line).withStyle(colour));
     }
 
     @Unique

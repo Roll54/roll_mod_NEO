@@ -60,12 +60,6 @@
         "roll_mod:lime": 1.0
       },
       "model": "roll_mod:tool/meteorite_metal_nano_saber_on_blade_lime"
-    },
-    {
-      "predicate": {
-        "roll_mod:hidden": 1.0
-      },
-      "model": "roll_mod:item/no_texture_yet_placeholder"
     }
   ]
 }

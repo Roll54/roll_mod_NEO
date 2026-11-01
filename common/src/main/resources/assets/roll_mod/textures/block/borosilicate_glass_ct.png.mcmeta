@@ -1,8 +1,0 @@
-{
-  "fusion": {
-    "type": "connecting",
-    "layout": "simple",
-    "render_type": "translucent",
-    "connections": { "type": "is_same_block" }
-  }
-}

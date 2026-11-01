@@ -23,7 +23,11 @@ import java.util.List;
  * <p>Closing the window saves the kit, in slot order: Esc or the inventory key closes it as any chest
  * does, and the "Back to kits" button over it ({@code KitEditorBackButton}) returns to the moderation
  * tab. A plain vanilla chest menu, so the client needs no screen of its own.
+ *
+ * @deprecated Replaced by the LdLib kit window ({@link KitWindows}), which lays a kit out as an
+ *             inventory with armour, offhand and curio slots. Nothing opens this chest any more.
  */
+@Deprecated
 public final class KitEditorMenu extends ChestMenu {
 
     public static final int SLOTS = 36;
@@ -55,6 +59,6 @@ public final class KitEditorMenu extends ChestMenu {
             ItemStack stack = items.getItem(i);
             if (!stack.isEmpty()) stacks.add(stack.copy());
         }
-        KitService.saveItems(serverPlayer, kit, stacks);
+        KitService.saveItems(serverPlayer, kit, stacks, List.of());
     }
 }

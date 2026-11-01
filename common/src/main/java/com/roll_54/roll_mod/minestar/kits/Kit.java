@@ -20,14 +20,30 @@ import java.util.Locale;
  * hand-editable and able to carry enchantments and other components verbatim. The codec clamps a
  * count to 1..99, which is no constraint here: a kit slot is an inventory slot.
  *
+ * <p>{@code slots} runs alongside {@code items}: where each item sits in the kit window
+ * ({@link KitSlots}) — an inventory slot, an armour slot, the offhand or a curio slot. It is only
+ * for showing the kit; a claim still just adds the items to the inventory. Older files have no
+ * {@code slots} and read as the first inventory slots, in order.
+ *
  * <p>The cooldown is in ticks, the unit {@code /kit create} takes, and it is the whole of the
  * answer: no permission and no LuckPerms meta shortens or waives it, so what this file says is what
  * every player waits. Only the stamps in {@code kits/cooldowns.json} are epoch millis.
  */
-public record Kit(String name, long cooldownTicks, String permission, List<ItemStack> items, String displayName) {
+public record Kit(String name, long cooldownTicks, String permission, List<ItemStack> items, String displayName,
+                  List<String> slots) {
 
     /** How long a display name may be, {@code &} colour codes included. */
     public static final int MAX_DISPLAY = 48;
+
+    public Kit {
+        // Exactly one slot per item, whatever was passed: missing ones become free inventory slots.
+        slots = KitSlots.fill(items, slots);
+    }
+
+    /** A kit whose items sit in the first inventory slots, in order. */
+    public Kit(String name, long cooldownTicks, String permission, List<ItemStack> items, String displayName) {
+        this(name, cooldownTicks, permission, items, displayName, List.of());
+    }
 
     /** What players see the kit as: the name a moderator set, or the id when none was. */
     public String title() {
@@ -38,7 +54,7 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
     public Kit withDisplayName(String display) {
         String clean = display == null ? "" : display.strip();
         if (clean.length() > MAX_DISPLAY) clean = clean.substring(0, MAX_DISPLAY);
-        return new Kit(name, cooldownTicks, permission, items, clean);
+        return new Kit(name, cooldownTicks, permission, items, clean, slots);
     }
 
     /** What a kit may be called: a safe file name and a safe permission-node segment. */
@@ -59,9 +75,15 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
         RegistryOps<JsonElement> ops = registries.createSerializationContext(JsonOps.INSTANCE);
 
         JsonArray array = new JsonArray();
-        for (ItemStack stack : items) {
+        JsonArray slotArray = new JsonArray();
+        for (int i = 0; i < items.size(); i++) {
+            ItemStack stack = items.get(i);
             if (stack.isEmpty()) continue;
-            ItemStack.CODEC.encodeStart(ops, stack).result().ifPresent(array::add);
+            String slot = slots.get(i);
+            ItemStack.CODEC.encodeStart(ops, stack).result().ifPresent(encoded -> {
+                array.add(encoded);
+                slotArray.add(slot);
+            });
         }
 
         JsonObject json = new JsonObject();
@@ -70,6 +92,7 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
         json.addProperty("permission", permissionOrDefault());
         if (displayName != null && !displayName.isBlank()) json.addProperty("displayName", displayName);
         json.add("items", array);
+        json.add("slots", slotArray);
         return json;
     }
 
@@ -78,16 +101,24 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
      *
      * <p>An item that no longer exists — a removed mod, a renamed id — is dropped and the rest of
      * the kit still works. Refusing the whole kit over one missing item would be the worse failure.
+     * Its slot goes with it: {@code slots} is read by the same index as {@code items}.
      */
     public static @Nullable Kit load(JsonObject json, String fallbackName, RegistryAccess registries) {
         String name = clampName(json.has("name") ? json.get("name").getAsString() : fallbackName);
         if (!validName(name)) return null;
 
         RegistryOps<JsonElement> ops = registries.createSerializationContext(JsonOps.INSTANCE);
+        JsonArray slotArray = json.has("slots") && json.get("slots").isJsonArray() ? json.getAsJsonArray("slots") : null;
         List<ItemStack> items = new ArrayList<>();
+        List<String> slots = new ArrayList<>();
         if (json.has("items") && json.get("items").isJsonArray()) {
-            for (JsonElement element : json.getAsJsonArray("items")) {
-                ItemStack.CODEC.parse(ops, element).result().ifPresent(items::add);
+            JsonArray array = json.getAsJsonArray("items");
+            for (int i = 0; i < array.size(); i++) {
+                ItemStack stack = ItemStack.CODEC.parse(ops, array.get(i)).result().orElse(null);
+                if (stack == null) continue;
+                items.add(stack);
+                slots.add(slotArray != null && i < slotArray.size() && slotArray.get(i).isJsonPrimitive()
+                        ? slotArray.get(i).getAsString() : "");
             }
         }
 
@@ -95,6 +126,6 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
         String permission = json.has("permission") ? json.get("permission").getAsString() : "";
         // Older files have no display name; the kit then shows as its id, as it always did.
         String display = json.has("displayName") ? json.get("displayName").getAsString() : "";
-        return new Kit(name, Math.max(0L, cooldown), permission, List.copyOf(items), display);
+        return new Kit(name, Math.max(0L, cooldown), permission, List.copyOf(items), display, slots);
     }
 }

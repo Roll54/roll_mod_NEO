@@ -37,13 +37,7 @@ public class BlockEntites {
             BLOCK_ENTITIES.register("telescope_be", () -> BlockEntityType.Builder.of(
                     RocketControllerBlockEntity::new, BlockRegistry.TELESCOPE.get()).build(null));
 
-    public static final Supplier<BlockEntityType<CropManagerBlockEntity>> CROP_MANAGER_BE =
-            BLOCK_ENTITIES.register("crop_manager_be", () -> BlockEntityType.Builder.of(
-                    CropManagerBlockEntity::new, BlockRegistry.CROP_MANAGER.get()).build(null));
 
-    public static final Supplier<BlockEntityType<WeedManagerBlockEntity>> WEED_MANAGER_BE =
-            BLOCK_ENTITIES.register("weed_manager_be", () -> BlockEntityType.Builder.of(
-                    WeedManagerBlockEntity::new, BlockRegistry.WEED_MANAGER.get()).build(null));
 
     public static final Supplier<BlockEntityType<HydroponicGardenBedBlockEntity>> HYDROPONIC_GARDEN_BED_BE =
             BLOCK_ENTITIES.register("hydroponic_garden_bed_be", () -> BlockEntityType.Builder.of(

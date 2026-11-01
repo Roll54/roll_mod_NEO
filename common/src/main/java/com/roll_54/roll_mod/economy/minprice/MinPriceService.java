@@ -85,8 +85,7 @@ public final class MinPriceService {
         CompletableFuture.supplyAsync(
             () -> {
               PriceSolver.Result result =
-                  new PriceSolver(snapshot.recipes(), snapshot.fixed(), snapshot.outputWeights())
-                      .solve();
+                  snapshot.solver().solve();
               return new Table(
                   Map.copyOf(result.entries()),
                   Set.copyOf(snapshot.noFloor()),
@@ -140,7 +139,7 @@ public final class MinPriceService {
             items.put(key, entry.price());
           }
         });
-    return new SyncMinPricesPacket(Map.copyOf(items), Map.copyOf(fluids));
+    return new SyncMinPricesPacket(Map.copyOf(items), Map.copyOf(fluids), snapshot.minimum());
   }
 
   /** The table for a player who just joined; nothing while there is none. */
@@ -174,6 +173,8 @@ public final class MinPriceService {
       Entry entry = t.entries().get(key);
       if (entry != null) own = entry.price();
     }
+    // The absolute minimum holds for every item: blacklisted, never crafted, or priced below it.
+    own = Math.max(own, t.snapshot().minimum());
     if (depth <= 0) return own;
     double inside = 0;
     ItemContainerContents container = stack.get(DataComponents.CONTAINER);
@@ -195,6 +196,13 @@ public final class MinPriceService {
     return (long) Math.ceil(total - 1e-9);
   }
 
+  /** The config's absolute minimal price of one unit, times {@code count}, saturated. */
+  private static long absoluteFloor(long count) {
+    long min = MinPriceConfig.MAIN.absoluteMinPrice.get();
+    if (min <= 0 || count <= 0) return 0;
+    return count > Long.MAX_VALUE / min ? Long.MAX_VALUE : min * count;
+  }
+
   /* ------------------------------------------------- checks ---------------------------------------------------- */
 
   /**
@@ -213,12 +221,11 @@ public final class MinPriceService {
   public static Optional<Component> checkPrice(ItemStack stack, long count, long price) {
     if (!enabled()) return Optional.empty();
     if (price == 0 && MinPriceConfig.MAIN.allowFreePositions) return Optional.empty();
-    if (table == null) {
-      return MinPriceConfig.MAIN.blockSalesUntilReady
-          ? Optional.of(Messages.minPriceNotReady())
-          : Optional.empty();
+    if (table == null && MinPriceConfig.MAIN.blockSalesUntilReady) {
+      return Optional.of(Messages.minPriceNotReady());
     }
-    long required = floor(stack, count);
+    // Before the first table is built only the absolute minimum is known, and it is enforced then too.
+    long required = table == null ? absoluteFloor(count) : floor(stack, count);
     if (price >= required) return Optional.empty();
     return Optional.of(Messages.minPriceTooLow(stack.getHoverName(), count, required));
   }

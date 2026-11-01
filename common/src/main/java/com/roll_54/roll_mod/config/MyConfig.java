@@ -276,7 +276,7 @@ public class MyConfig extends Config {
     }
 
 
-    @Comment("How the new modular drills, modular sabers, their modules and the Module Installation Table look.")
+    @Comment("How the Module Installation Table looks (modular drills, sabers and modules always show as they are).")
     public NewItems newItems = new NewItems();
 
     public static class NewItems extends ConfigSection {

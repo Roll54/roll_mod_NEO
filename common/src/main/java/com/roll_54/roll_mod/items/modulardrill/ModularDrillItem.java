@@ -79,12 +79,6 @@ public class ModularDrillItem extends DiggerItem implements ISimpleEnergyItem, M
         return voltage.complexity();
     }
 
-    /** A placeholder name while the client hides new items — see {@link NewItemVisibility}. */
-    @Override
-    public Component getName(ItemStack stack) {
-        return NewItemVisibility.name(super.getName(stack));
-    }
-
     /* -------------------------------------------- energy -------------------------------------------- */
 
     @Override
@@ -132,6 +126,8 @@ public class ModularDrillItem extends DiggerItem implements ISimpleEnergyItem, M
      * a module (an HV drill is ×1.3 bare, ×2.3 over a ×2.0 module).
      */
     private static final float SPEED_BONUS_PER_TIER = 0.10F;
+    /** Far past what any block needs to break in one tick (obsidian needs 1500). */
+    private static final float IV_INSTANT_SPEED = 1.0E9F;
 
     private float baseSpeedBonus() {
         return SPEED_BONUS_PER_TIER * (voltage.ordinal() + 1);
@@ -144,6 +140,11 @@ public class ModularDrillItem extends DiggerItem implements ISimpleEnergyItem, M
      */
     @Override
     public float getDestroySpeed(ItemStack stack, BlockState state) {
+        // The IV drill breaks every breakable block instantly, whatever the tool tag, modules or
+        // throttle say — as long as it can pay for the block.
+        if (voltage == DrillVoltage.IV) {
+            return getStoredEnergy(stack) < DrillModuleHelper.costPerBlock(stack, voltage) ? 1.0F : IV_INSTANT_SPEED;
+        }
         float speed = super.getDestroySpeed(stack, state);
         if (!isCorrectToolForDrops(stack, state)) {
             return speed;

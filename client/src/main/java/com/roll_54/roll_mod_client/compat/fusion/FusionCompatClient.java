@@ -18,6 +18,11 @@ public final class FusionCompatClient {
             ResourceLocation.fromNamespaceAndPath("mi_ct", "is_mi_machine"),
             IsMiMachineConnectionPredicate.SERIALIZER
         );
+        // Casings from the "MI in New" pack drop their border only towards machines showing their own casing.
+        FusionConnectionPredicateRegistry.registerConnectionPredicate(
+            ResourceLocation.fromNamespaceAndPath("mi_ct", "machine_casing"),
+            MachineCasingConnectionPredicate.SERIALIZER
+        );
         FusionBlockStateModelPredicateRegistry.registerBlockStateModelPredicate(
             ResourceLocation.fromNamespaceAndPath("mi_ct", "is_framed_block"),
             IsFramedBlockModelPredicate.SERIALIZER

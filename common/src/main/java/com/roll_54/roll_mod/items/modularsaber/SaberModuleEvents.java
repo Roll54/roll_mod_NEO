@@ -139,6 +139,30 @@ public final class SaberModuleEvents {
         return ItemStack.EMPTY;
     }
 
+    /** On a wave entity fired by an IV saber: its hits kill outright too. */
+    public static final String ONE_SHOT_TAG = "roll_mod:one_shot";
+
+    /**
+     * The IV saber kills anything in one hit — melee, Sweep and its Wave alike. Done here, after
+     * armour and enchantments, rather than through the damage attribute: ATTACK_DAMAGE is capped at
+     * 2048, which armour, Protection or a boss's own reductions could still bring under its health.
+     * Lowest priority, so it settles the final number after every other mod's changes.
+     */
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onOneShot(LivingDamageEvent.Pre event) {
+        DamageSource source = event.getSource();
+        boolean oneShot;
+        if (source.getDirectEntity() != null && source.getDirectEntity().getPersistentData().getBoolean(ONE_SHOT_TAG)) {
+            oneShot = true;
+        } else {
+            ItemStack stack = saberOf(source);
+            oneShot = stack != null && ((ModularSaberItem) stack.getItem()).voltage() == SaberVoltage.IV;
+        }
+        if (!oneShot) return;
+        LivingEntity target = event.getEntity();
+        event.setNewDamage(Math.max(event.getNewDamage(), target.getHealth() + target.getAbsorptionAmount() + 1.0F));
+    }
+
     /** Vampirism: heals the attacker by a share of the damage that actually landed. */
     @SubscribeEvent
     public static void onDamage(LivingDamageEvent.Post event) {

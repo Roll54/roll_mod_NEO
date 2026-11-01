@@ -6,7 +6,8 @@
   "plugin": "com.roll_54.roll_mod_client.compat.fusion.mixin.FusionFixMixinPlugin",
   "client": [
     "BlockModelModifierBakedModelMixin",
-    "MachineBakedModelMixin"
+    "MachineBakedModelMixin",
+    "ConnectingTextureTypeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -2,8 +2,6 @@ package com.roll_54.roll_mod.data.datagen;
 
 import com.roll_54.roll_mod.items.BlockogrizItem;
 import com.roll_54.roll_mod.items.HerbicideItem;
-import com.roll_54.roll_mod.items.electricItems.EnergyDrillItem;
-import com.roll_54.roll_mod.items.electricItems.EnergySwordItem;
 import com.roll_54.roll_mod.items.modularsaber.ModularSaberItem;
 import com.roll_54.roll_mod.items.electricItems.refactored.ComponentEnergyDrill;
 import com.roll_54.roll_mod.registry.ItemRegistry;
@@ -143,7 +141,8 @@ public class RollItemTagProvider extends ItemTagsProvider {
     private void addHerbicideTag() {
         var herbicides = tag(HERBICIDES);
         for (var holder : ItemRegistry.ITEMS.getEntries()) {
-            if (holder.get() instanceof HerbicideItem) {
+            // The plain roll_mod:herbicide is kept out on purpose: only the tiered herbicides feed the machines.
+            if (holder.get() instanceof HerbicideItem && holder.get() != ItemRegistry.HERBICIDE.get()) {
                 herbicides.add(holder.get());
             }
         }
@@ -176,10 +175,9 @@ public class RollItemTagProvider extends ItemTagsProvider {
 
             // Pickaxe is tested before axe: a paxel answers to both, and the mod treats a multi-tool
             // as a pickaxe. SkinCategory repeats this ordering for untagged third-party tools.
-            if (item instanceof EnergySwordItem || item instanceof ModularSaberItem || item instanceof SwordItem) {
+            if (item instanceof ModularSaberItem || item instanceof SwordItem) {
                 swords.add(item);
-            } else if (item instanceof EnergyDrillItem
-                    || item instanceof ComponentEnergyDrill
+            } else if (item instanceof ComponentEnergyDrill
                     || item instanceof BlockogrizItem
                     || item instanceof PickaxeItem) {
                 pickaxes.add(item);

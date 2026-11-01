@@ -7,14 +7,14 @@ import earth.terrarium.common_storage_lib.resources.fluid.FluidResource;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.item.ItemStack;
-import net.swedz.extended_industrialization.item.nanosuit.NanoSuitArmorItem;
+import com.roll_54.roll_mod.util.NanoSuitUtils;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /**
- * Draws a second inventory bar for Extended Industrialization's nano suit, showing its oxygen tank
+ * Draws a second inventory bar for Extended Industrialization's nano suit and Advanced AE's quantum chestplate, showing their oxygen tank
  * (added by {@code NanoArmorMixin}) just above the item's native energy bar. Rendered after the vanilla
  * durability bar so it sits on top; mirrors Ad Astra's {@code SpaceSuitItem} bar math.
  */
@@ -26,7 +26,7 @@ public abstract class GuiGraphicsOxygenBarMixin {
             at = @At("TAIL")
     )
     private void roll_mod$renderOxygenBar(Font font, ItemStack stack, int x, int y, String text, CallbackInfo ci) {
-        if (!(stack.getItem() instanceof NanoSuitArmorItem)) {
+        if (!NanoSuitUtils.hasOxygenTank(stack)) {
             return;
         }
         if (!FluidUtils.hasFluid(stack)) {

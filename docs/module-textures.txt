@@ -72,6 +72,7 @@ Saber modules — 23/23
 [✓] irradiation_module_ii      Irradiation Module II              tier 2  textures/item/tool/modules/irradiation_module_ii.png
 [✓] irradiation_module_iii     Irradiation Module III             tier 3  textures/item/tool/modules/irradiation_module_iii.png
 [✓] meteorite_module           Meteorite Module                   tier 1  textures/item/tool/modules/meteorite_module.png
+[✓] wave_module                Wave Module                        tier 1  textures/item/tool/modules/wave_module.png
 
 
 TODO

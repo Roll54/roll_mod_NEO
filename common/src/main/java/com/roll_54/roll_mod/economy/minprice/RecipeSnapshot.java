@@ -4,6 +4,12 @@ import static com.roll_54.roll_mod.RollMod.LOGGER;
 
 import aztech.modern_industrialization.blocks.forgehammer.ForgeHammerRecipe;
 import aztech.modern_industrialization.machines.recipe.MachineRecipe;
+import appeng.recipes.handlers.InscriberProcessType;
+import appeng.recipes.handlers.InscriberRecipe;
+import com.lowdragmc.mbd2.api.recipe.MBDRecipe;
+import com.lowdragmc.mbd2.api.recipe.content.Content;
+import com.lowdragmc.mbd2.common.capability.recipe.FluidRecipeCapability;
+import com.lowdragmc.mbd2.common.capability.recipe.ItemRecipeCapability;
 import com.roll_54.roll_mod.economy.minprice.PriceSolver.Input;
 import com.roll_54.roll_mod.economy.minprice.PriceSolver.Output;
 import com.roll_54.roll_mod.economy.minprice.PriceSolver.Recipe;
@@ -31,6 +37,12 @@ import net.minecraft.world.item.crafting.SmithingTransformRecipe;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.level.material.Fluids;
+import net.neoforged.neoforge.common.crafting.SizedIngredient;
+import net.neoforged.neoforge.fluids.FluidStack;
+import net.neoforged.neoforge.fluids.crafting.SizedFluidIngredient;
+import vectorwing.farmersdelight.common.crafting.CookingPotRecipe;
+import vectorwing.farmersdelight.common.crafting.CuttingBoardRecipe;
+import vectorwing.farmersdelight.common.crafting.ingredient.ChanceResult;
 
 /**
  * Everything the solver needs, copied out of the live game on the server thread.
@@ -48,7 +60,14 @@ public record RecipeSnapshot(
     Set<String> filledBuckets,
     Map<String, Integer> adaptedByType,
     Map<String, Integer> skippedByType,
-    List<String> problems) {
+    List<String> problems,
+    Map<String, String> forcedRecipes,
+    double minimum) {
+
+  /** A solver over this snapshot, with the config's chosen recipes and absolute minimum. */
+  public PriceSolver solver() {
+    return new PriceSolver(recipes, fixed, outputWeights, forcedRecipes, minimum);
+  }
 
   /** Must run on the server thread. */
   public static RecipeSnapshot take(MinecraftServer server, MinPriceConfig config) {
@@ -120,6 +139,10 @@ public record RecipeSnapshot(
           case MachineRecipe mi -> fromMachine(id, type, multiplier, mi);
           case ForgeHammerRecipe hammer -> fromHammer(id, type, multiplier, hammer);
           case SmithingTransformRecipe smithing -> fromSmithing(id, type, multiplier, smithing);
+          case MBDRecipe mbd -> fromMbd(id, type, multiplier, mbd);
+          case InscriberRecipe inscriber -> fromInscriber(id, type, multiplier, inscriber);
+          case CuttingBoardRecipe cutting -> fromCuttingBoard(id, type, multiplier, cutting);
+          case CookingPotRecipe pot -> fromCookingPot(id, type, multiplier, pot, server);
           default -> fromGeneric(id, type, multiplier, holder.value(), server);
         };
       } catch (Throwable t) {
@@ -152,16 +175,51 @@ public record RecipeSnapshot(
       adapted.merge("roll_mod:bucket_fill", 1, Integer::sum);
     }
 
+    // ---- chosen recipes: checked against what was actually read, so a typo is reported, not ignored.
+    Map<String, String> forced = new LinkedHashMap<>();
+    config.itemRecipes.get().forEach((ref, recipeId) -> {
+      List<String> keys;
+      if (ref.trim().startsWith(PriceSolver.FLUID_PREFIX)) {
+        ResourceLocation rl = ResourceLocation.tryParse(ref.trim().substring(PriceSolver.FLUID_PREFIX.length()));
+        if (rl == null || !BuiltInRegistries.FLUID.containsKey(rl)) {
+          problems.add("itemRecipes: unknown fluid '" + ref + "'");
+          return;
+        }
+        keys = List.of(fluidKey(BuiltInRegistries.FLUID.get(rl)));
+      } else {
+        keys = items(ref, "itemRecipes", problems);
+      }
+      Recipe recipe = recipes.stream().filter(r -> r.id().equals(recipeId)).findFirst().orElse(null);
+      if (recipe == null) {
+        problems.add("itemRecipes: '" + ref + "' -> recipe '" + recipeId
+            + "' does not exist, is blacklisted or could not be read; its usual recipes are used");
+        return;
+      }
+      for (String key : keys) {
+        if (recipe.outputs().stream().noneMatch(o -> o.key().equals(key))) {
+          problems.add("itemRecipes: recipe '" + recipeId + "' does not make '" + key + "'; its usual recipes are used");
+        } else {
+          forced.put(key, recipeId);
+        }
+      }
+    });
+
     return new RecipeSnapshot(
-        recipes, fixed, weights, noFloor, filledBuckets, adapted, skipped, problems);
+        recipes, fixed, weights, noFloor, filledBuckets, adapted, skipped, problems, forced,
+        config.absoluteMinPrice.get());
   }
 
   /* ------------------------------------------------ adapters --------------------------------------------------- */
 
+  /**
+   * Any recipe that reports its ingredients and result the vanilla way. {@code isSpecial()} is not a
+   * reason to skip: AE2's charger/transform and many mod machines set it only to stay out of the
+   * recipe book. Truly dynamic recipes (map cloning, firework stars...) report no result and are
+   * skipped by that instead.
+   */
   private static Recipe fromGeneric(
       String id, String type, double multiplier, net.minecraft.world.item.crafting.Recipe<?> recipe,
       MinecraftServer server) {
-    if (recipe.isSpecial()) return null;
     ItemStack result = recipe.getResultItem(server.registryAccess());
     if (result == null || result.isEmpty()) return null;
 
@@ -242,6 +300,94 @@ public record RecipeSnapshot(
     }
     if (outputs.isEmpty()) return null;
     return new Recipe(id, type, multiplier, inputs, outputs, List.of());
+  }
+
+  /**
+   * MBD2 machines (roll_mod's own multiblocks): items and fluids per capability. A per-tick input
+   * runs for the whole duration; chance 0 is a catalyst (never consumed); chanced outputs are left
+   * out like MI's byproducts. Energy and other capabilities are not priced.
+   */
+  private static Recipe fromMbd(String id, String type, double multiplier, MBDRecipe recipe) {
+    List<Input> inputs = new ArrayList<>();
+    for (Content content : recipe.getInputContents(ItemRecipeCapability.CAP)) {
+      if (content.chance <= 0 || !(content.content instanceof SizedIngredient sized)) continue;
+      List<String> options = options(sized.ingredient());
+      if (options.isEmpty()) return null;
+      inputs.add(new Input(options, sized.count() * (double) Math.min(1f, content.chance) * ticks(content, recipe)));
+    }
+    for (Content content : recipe.getInputContents(FluidRecipeCapability.CAP)) {
+      if (content.chance <= 0 || !(content.content instanceof SizedFluidIngredient sized)) continue;
+      List<String> options = new ArrayList<>();
+      for (FluidStack fluid : sized.getFluids()) options.add(fluidKey(fluid.getFluid()));
+      if (options.isEmpty()) return null;
+      inputs.add(new Input(dedupe(options),
+          sized.amount() / 1000.0 * Math.min(1f, content.chance) * ticks(content, recipe)));
+    }
+    List<Output> outputs = new ArrayList<>();
+    for (Content content : recipe.getOutputContents(ItemRecipeCapability.CAP)) {
+      if (content.chance < 1 || !(content.content instanceof SizedIngredient sized)) continue;
+      ItemStack[] stacks = sized.ingredient().getItems();
+      if (stacks.length == 0 || stacks[0].isEmpty()) continue;
+      outputs.add(new Output(itemKey(stacks[0].getItem()), sized.count() * ticks(content, recipe)));
+    }
+    for (Content content : recipe.getOutputContents(FluidRecipeCapability.CAP)) {
+      if (content.chance < 1 || !(content.content instanceof SizedFluidIngredient sized)) continue;
+      FluidStack[] fluids = sized.getFluids();
+      if (fluids.length == 0) continue;
+      outputs.add(new Output(fluidKey(fluids[0].getFluid()), sized.amount() / 1000.0 * ticks(content, recipe)));
+    }
+    if (outputs.isEmpty()) return null;
+    return new Recipe(id, type, multiplier, inputs, outputs, List.of());
+  }
+
+  private static int ticks(Content content, MBDRecipe recipe) {
+    return content.perTick ? Math.max(1, recipe.duration) : 1;
+  }
+
+  /** AE2 inscriber: in INSCRIBE mode the top and bottom presses stay in the machine. */
+  private static Recipe fromInscriber(String id, String type, double multiplier, InscriberRecipe recipe) {
+    ItemStack result = recipe.getResultItem();
+    if (result.isEmpty()) return null;
+    List<Ingredient> used = new ArrayList<>(List.of(recipe.getMiddleInput()));
+    if (recipe.getProcessType() == InscriberProcessType.PRESS) {
+      used.add(recipe.getTopOptional());
+      used.add(recipe.getBottomOptional());
+    }
+    List<Input> inputs = new ArrayList<>();
+    for (Ingredient ingredient : used) {
+      if (ingredient == null || ingredient.isEmpty()) continue;
+      List<String> options = options(ingredient);
+      if (options.isEmpty()) return null;
+      inputs.add(new Input(options, 1));
+    }
+    if (inputs.isEmpty()) return null;
+    return new Recipe(id, type, multiplier, inputs,
+        List.of(new Output(itemKey(result.getItem()), result.getCount())), List.of());
+  }
+
+  /** Farmer's Delight cutting board: the knife is not used up; only the sure results count. */
+  private static Recipe fromCuttingBoard(String id, String type, double multiplier, CuttingBoardRecipe recipe) {
+    List<String> options = recipe.getIngredients().isEmpty() ? List.of() : options(recipe.getIngredients().get(0));
+    if (options.isEmpty()) return null;
+    List<Output> outputs = new ArrayList<>();
+    for (ChanceResult result : recipe.getRollableResults()) {
+      if (result.chance() < 1 || result.stack().isEmpty()) continue;
+      outputs.add(new Output(itemKey(result.stack().getItem()), result.stack().getCount()));
+    }
+    if (outputs.isEmpty()) return null;
+    return new Recipe(id, type, multiplier, List.of(new Input(options, 1)), outputs, List.of());
+  }
+
+  /** Farmer's Delight cooking pot: the generic reading plus the bowl/bottle the meal is served in. */
+  private static Recipe fromCookingPot(
+      String id, String type, double multiplier, CookingPotRecipe recipe, MinecraftServer server) {
+    Recipe base = fromGeneric(id, type, multiplier, recipe, server);
+    if (base == null) return null;
+    ItemStack container = recipe.getOutputContainer();
+    if (container == null || container.isEmpty()) return base;
+    List<Input> inputs = new ArrayList<>(base.inputs());
+    inputs.add(new Input(List.of(itemKey(container.getItem())), container.getCount()));
+    return new Recipe(id, type, multiplier, inputs, base.outputs(), base.remainders());
   }
 
   /* ------------------------------------------------- helpers --------------------------------------------------- */

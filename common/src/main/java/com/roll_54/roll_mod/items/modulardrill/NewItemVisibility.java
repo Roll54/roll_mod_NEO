@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
 
 /**
  * The server option that hides the new modular items behind a placeholder — see
- * {@link MyConfig.NewItems#showNewItems}. "New" means the modular drills and sabers, every module,
- * and the Module Installation Table's item.
+ * {@link MyConfig.NewItems#showNewItems}. "New" means the Module Installation Table's item (the
+ * modular drills, sabers and modules used to be hidden too, and no longer are).
  *
  * <p>A server setting, synced to every client by Fzzy Config, so the server owner decides for
  * everyone. The model switch is a {@code roll_mod:hidden} item predicate, read every frame, so
@@ -37,9 +37,8 @@ public final class NewItemVisibility {
     }
 
     public static boolean isNew(Item item) {
-        return item instanceof ModularTool
-                || item instanceof DrillModuleItem
-                || item == BlockRegistry.MODULE_INSTALLATION_TABLE.get().asItem();
+        // Modular drills, sabers and their modules are no longer hidden: they always show as they are.
+        return item == BlockRegistry.MODULE_INSTALLATION_TABLE.get().asItem();
     }
 
     /** The name to show instead of {@code real} while hidden. */

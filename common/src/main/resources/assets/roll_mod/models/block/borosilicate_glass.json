@@ -1,7 +1,13 @@
 {
-    "parent": "minecraft:block/cube_all",
-    "render_type": "minecraft:translucent",
-    "textures": {
-        "all": "roll_mod:block/borosilicate_glass"
-    }
+  "loader": "fusion:model",
+  "type": "connecting",
+  "parent": "minecraft:block/cube_all",
+  "render_type": "minecraft:translucent",
+  "textures": {
+    "all": "roll_mod:block/borosilicate_glass",
+    "particle": "roll_mod:block/borosilicate_glass_plain"
+  },
+  "connections": {
+    "type": "is_same_block"
+  }
 }

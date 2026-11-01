@@ -1,8 +1,0 @@
-{
-    "targets": [
-        "roll_mod:borosilicate_glass"
-    ],
-    "default_model_overrides": [
-        "roll_mod:block/borosilicate_glass_connected"
-    ]
-}

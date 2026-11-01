@@ -8,7 +8,10 @@ import earth.terrarium.common_storage_lib.storage.base.CommonStorage;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.pedroksl.advanced_ae.common.items.armors.QuantumArmorBase;
+import net.pedroksl.advanced_ae.common.items.armors.QuantumChestplate;
 import net.swedz.extended_industrialization.item.nanosuit.NanoSuitArmorItem;
+import com.roll_54.roll_mod.compat.aae.AaeOxygenCard;
 
 /**
  * Shared helpers for treating Extended Industrialization's nano suit as an Ad Astra space suit.
@@ -23,14 +26,40 @@ public final class NanoSuitUtils {
     private NanoSuitUtils() {
     }
 
-    /** True only when all four armor slots are worn nano suit pieces. Mirrors {@code SpaceSuitItem.hasFullSet}. */
+    /** Oxygen tank of a nano chestplate and of a plain Advanced AE quantum chestplate, in mB. */
+    public static final long TANK_SIZE = 10_000L;
+    /** What the oxygen tank card multiplies a quantum chestplate's tank by. */
+    public static final int OXYGEN_CARD_MULTIPLIER = 4;
+
+    /**
+     * True only when all four armor slots are worn nano suit pieces, or all four are Advanced AE
+     * quantum armour (which also carries an oxygen tank, see {@code QuantumChestplateOxygenMixin}).
+     * Mirrors {@code SpaceSuitItem.hasFullSet}.
+     */
     public static boolean hasFullNanoSet(LivingEntity entity) {
+        boolean nano = true;
+        boolean quantum = true;
         for (ItemStack stack : entity.getArmorSlots()) {
-            if (!(stack.getItem() instanceof NanoSuitArmorItem)) {
-                return false;
-            }
+            nano &= stack.getItem() instanceof NanoSuitArmorItem;
+            quantum &= stack.getItem() instanceof QuantumArmorBase;
         }
-        return true;
+        return nano || quantum;
+    }
+
+    /** Whether this stack is a suit piece roll_mod gives an oxygen tank (bar in the inventory). */
+    public static boolean hasOxygenTank(ItemStack stack) {
+        return stack.getItem() instanceof NanoSuitArmorItem || stack.getItem() instanceof QuantumChestplate;
+    }
+
+    /**
+     * Tank size (mB) of an Advanced AE quantum chestplate: x4 while the oxygen tank card is installed
+     * and switched on in AAE's upgrade list.
+     */
+    public static long quantumTankSize(ItemStack chest) {
+        boolean card = AaeOxygenCard.TYPE != null
+                && chest.getItem() instanceof QuantumChestplate quantum
+                && quantum.isUpgradeEnabled(chest, AaeOxygenCard.TYPE);
+        return card ? TANK_SIZE * OXYGEN_CARD_MULTIPLIER : TANK_SIZE;
     }
 
     /** True when the worn chestplate's oxygen tank still holds oxygen. Mirrors {@code SpaceSuitItem.hasOxygen}. */

@@ -126,8 +126,13 @@ public final class KitService {
         }
 
         List<ItemStack> items = new ArrayList<>();
-        for (ItemStack stack : player.getInventory().items) {
-            if (!stack.isEmpty()) items.add(stack.copy());
+        List<String> slots = new ArrayList<>();
+        List<ItemStack> inventory = player.getInventory().items;
+        for (int i = 0; i < inventory.size(); i++) {
+            if (inventory.get(i).isEmpty()) continue;
+            items.add(inventory.get(i).copy());
+            // Where it sat, so the kit window shows the creator's own arrangement.
+            slots.add(KitSlots.main(i));
         }
         if (items.isEmpty()) {
             refuse(player, "msg.roll_mod.kit.empty", name);
@@ -138,7 +143,7 @@ public final class KitService {
         // in the hub, not about what is in it.
         Kit previous = KitStore.byName(player.server, name);
         KitStore.put(player.server, new Kit(name, Math.max(0L, cooldownTicks), "", List.copyOf(items),
-                previous == null ? "" : previous.displayName()));
+                previous == null ? "" : previous.displayName(), slots));
         // A recreated kit is a different kit; carrying the old waits over would be a trap.
         KitCooldowns.forget(name);
         player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.created",
@@ -188,7 +193,7 @@ public final class KitService {
 
     /* ------------------------------------------ moderation tab --------------------------------------- */
 
-    /** Opens the kit's items as a chest ({@link KitEditorMenu}); closing it saves them. */
+    /** Opens the kit's editor window ({@link KitWindows}); closing it saves the items. */
     public static boolean openEditor(ServerPlayer player, String rawName) {
         if (!mayRename(player)) return false;
         Kit kit = KitStore.byName(player.server, rawName);
@@ -196,16 +201,27 @@ public final class KitService {
             refuse(player, "msg.roll_mod.kit.unknown", rawName);
             return false;
         }
-        KitEditorMenu.open(player, kit);
+        KitWindows.openEditor(player, kit);
+        return true;
+    }
+
+    /** Opens a kit's contents, read-only, for a player who may see that kit ({@link #visibleTo}). */
+    public static boolean openPreview(ServerPlayer player, String rawName) {
+        Kit kit = KitStore.byName(player.server, rawName);
+        if (kit == null || !canUse(player, kit)) {
+            refuse(player, "msg.roll_mod.kit.unknown", rawName);
+            return false;
+        }
+        KitWindows.openPreview(player, kit);
         return true;
     }
 
     /**
-     * What the editor held when it closed becomes the kit's items. Everything else — cooldown,
-     * permission, display name — and the waits players already have stay as they were: the same kit,
-     * restocked.
+     * What the editor held when it closed becomes the kit's items, each with its slot. Everything
+     * else — cooldown, permission, display name — and the waits players already have stay as they
+     * were: the same kit, restocked.
      */
-    static void saveItems(ServerPlayer player, String name, List<ItemStack> items) {
+    static void saveItems(ServerPlayer player, String name, List<ItemStack> items, List<String> slots) {
         if (!mayRename(player)) return;
         Kit kit = KitStore.byName(player.server, name);
         if (kit == null) {
@@ -213,7 +229,7 @@ public final class KitService {
             kit = new Kit(name, 0L, "", List.of(), "");
         }
         KitStore.put(player.server, new Kit(kit.name(), kit.cooldownTicks(), kit.permission(), List.copyOf(items),
-                kit.displayName()));
+                kit.displayName(), slots));
         player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.itemsSaved", kit.name(), items.size()));
         KitViewers.resync(player.server);
         syncNames(player.server);
@@ -235,7 +251,7 @@ public final class KitService {
         KitCooldowns.forget(name);
         KitViewers.resync(player.server);
         syncNames(player.server);
-        KitEditorMenu.open(player, KitStore.byName(player.server, name));
+        KitWindows.openEditor(player, KitStore.byName(player.server, name));
         return true;
     }
 
@@ -248,7 +264,7 @@ public final class KitService {
             return false;
         }
         long ticks = Math.max(0L, cooldownTicks);
-        KitStore.put(player.server, new Kit(kit.name(), ticks, kit.permission(), kit.items(), kit.displayName()));
+        KitStore.put(player.server, new Kit(kit.name(), ticks, kit.permission(), kit.items(), kit.displayName(), kit.slots()));
         player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.cooldownSet", kit.name(),
                 Durations.format(ticks * 50L)));
         KitViewers.resync(player.server);

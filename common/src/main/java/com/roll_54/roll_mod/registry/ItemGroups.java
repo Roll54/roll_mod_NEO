@@ -10,8 +10,6 @@ import com.roll_54.roll_mod.items.HerbicideItem;
 import com.roll_54.roll_mod.items.InjectionItem;
 import com.roll_54.roll_mod.items.NetheriteSteamDrillItem;
 import com.roll_54.roll_mod.items.armor.geckolib.SkinAnchorItem;
-import com.roll_54.roll_mod.items.electricItems.EnergyDrillItem;
-import com.roll_54.roll_mod.items.electricItems.EnergySwordItem;
 import com.roll_54.roll_mod.items.modulardrill.DrillModuleItem;
 import com.roll_54.roll_mod.util.TooltipManager;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
@@ -208,10 +206,9 @@ public final class ItemGroups {
                         || block.getBlock() instanceof PizzaBlock));
     }
 
-    /** Kept registered so existing stacks load, but replaced: only the ALL ITEMS tab shows these. */
+    /** Kept registered so existing stacks load, but replaced: only the ALL ITEMS tab shows these. None right now. */
     private static boolean isDeprecated(Item item) {
-        return item instanceof EnergyDrillItem || item instanceof EnergySwordItem
-                || item == BlockRegistry.CROP_MANAGER.get().asItem();
+        return false;
     }
 
     private static boolean isAddon(Item item) {
