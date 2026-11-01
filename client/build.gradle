@@ -83,6 +83,12 @@ dependencies {
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
     runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
+    // EMI is client-only too. compat/emi registers native categories for everything JEIRollModPlugin
+    // shows: common's EMI plugin marks "roll_mod" as handled, so EMI would not import our JEI ones.
+    // With both loaded, EMI takes over and JEI only feeds it plugins.
+    compileOnly("dev.emi:emi-neoforge:${emi_version}:api")
+    runtimeOnly("dev.emi:emi-neoforge:${emi_version}")
+
     // AgriCraft (a common-module api dependency) requires resourcefulconfig at runtime.
     // The data run doesn't read run/mods, so put it on the dev-run classpath for datagen.
     runtimeOnly files("../run/mods/resourcefulconfig-neoforge-1.21-3.0.11.jar")

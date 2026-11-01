@@ -30,12 +30,12 @@ public final class ChatChannelState {
 
     private static final int VERSION = 1;
     /**
-     * New built-ins go last and start visible: {@link #load} appends any built-in a saved file does
-     * not list, after the player's own order, and nothing hides it until the player does.
+     * The order a fresh config starts with. A saved file keeps its own order: {@link #load} appends
+     * any built-in it does not list after the player's buttons, visible until the player hides it.
      */
     private static final List<ChatButton> BUILT_INS = List.of(
-            ChatButton.ALL_BUTTON, ChatButton.GLOBAL_BUTTON, ChatButton.LOCAL_BUTTON, ChatButton.FRIENDS_BUTTON,
-            ChatButton.TRADE_BUTTON);
+            ChatButton.ALL_BUTTON, ChatButton.LOCAL_BUTTON, ChatButton.GLOBAL_BUTTON, ChatButton.PM_BUTTON,
+            ChatButton.SPAM_BUTTON, ChatButton.TRADE_BUTTON, ChatButton.DEV_BUTTON);
 
     private static ChatChannelState instance;
 

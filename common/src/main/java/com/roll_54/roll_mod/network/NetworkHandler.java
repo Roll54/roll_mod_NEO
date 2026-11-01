@@ -12,7 +12,9 @@ import com.roll_54.roll_mod.network.packet.DailyTaskToastPacket;
 import com.roll_54.roll_mod.network.packet.OpenHubPacket;
 import com.roll_54.roll_mod.network.packet.WelcomeResponsePacket;
 import com.roll_54.roll_mod.network.packet.FriendActionPacket;
+import com.roll_54.roll_mod.network.packet.ChatAccessPacket;
 import com.roll_54.roll_mod.network.packet.ChatChannelPacket;
+import com.roll_54.roll_mod.network.packet.EmojiPackets;
 import com.roll_54.roll_mod.network.packet.HueriStatuePackets;
 import com.roll_54.roll_mod.network.packet.HueriStatueSeenPacket;
 import com.roll_54.roll_mod.network.packet.HistoryPackets;
@@ -123,6 +125,26 @@ public class NetworkHandler {
                 ChatChannelPacket.TYPE,
                 ChatChannelPacket.STREAM_CODEC,
                 ChatChannelPacket::handle
+        );
+        registrar.playToClient(
+                ChatAccessPacket.TYPE,
+                ChatAccessPacket.STREAM_CODEC,
+                ChatAccessPacket::handle
+        );
+        registrar.playToClient(
+                EmojiPackets.EmojiList.TYPE,
+                EmojiPackets.EmojiList.STREAM_CODEC,
+                EmojiPackets.EmojiList::handle
+        );
+        registrar.playToServer(
+                EmojiPackets.EmojiRequest.TYPE,
+                EmojiPackets.EmojiRequest.STREAM_CODEC,
+                EmojiPackets.EmojiRequest::handle
+        );
+        registrar.playToClient(
+                EmojiPackets.EmojiImages.TYPE,
+                EmojiPackets.EmojiImages.STREAM_CODEC,
+                EmojiPackets.EmojiImages::handle
         );
         registrar.playToServer(
                 LeaderboardPackets.Request.TYPE,
@@ -280,6 +302,11 @@ public class NetworkHandler {
                 KitNamePackets.Rename.TYPE,
                 KitNamePackets.Rename.STREAM_CODEC,
                 KitNamePackets.Rename::handle
+        );
+        registrar.playToServer(
+                KitNamePackets.Edit.TYPE,
+                KitNamePackets.Edit.STREAM_CODEC,
+                KitNamePackets.Edit::handle
         );
         registrar.playToServer(
                 InteractionSettingPacket.TYPE,

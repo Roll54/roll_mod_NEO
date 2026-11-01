@@ -27,7 +27,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 @EventBusSubscriber(modid = RollMod.MODID)
 public final class RollCauldronInteractions {
 
-    private static final float DUST_DROP_CHANCE = 0.2f; // 20% chance
+    public static final float DUST_DROP_CHANCE = 0.5f; // 50% for a dust, split evenly: 25% stone, 25% clay
 
     private RollCauldronInteractions() {
     }
@@ -41,7 +41,7 @@ public final class RollCauldronInteractions {
      * Gets the dust items array lazily to ensure items are loaded.
      * @return Array of dust items (stone and clay)
      */
-    private static Item[] getDustItems() {
+    public static Item[] getDustItems() {
         return new Item[]{
                 ItemRegistry.STONE_DUST.get(),
                 ItemRegistry.CLAY_DUST.get()
@@ -109,7 +109,7 @@ public final class RollCauldronInteractions {
             // Якщо хочеш нескінченну воду — прибери цей рядок.
             LayeredCauldronBlock.lowerFillLevel(state, level, pos);
 
-            // 20% chance to drop stone or clay dust for EACH item in the stack
+            // 50% chance to drop a dust for EACH item in the stack: 25% stone, 25% clay
             RandomSource random = level.getRandom();
             Item[] dustItems = getDustItems();
 

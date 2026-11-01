@@ -28,4 +28,9 @@ public final class ChatChannels {
         if (sender != null && !sender.equals(to.getUUID()) && InteractionSettings.ignores(to.getUUID(), sender)) return;
         deliver(to, channel, message);
     }
+
+    /** A private message line, naming {@code partner} — the other side — so the PM tab can reply to them. */
+    public static void deliverPm(ServerPlayer to, Component message, String partner) {
+        PacketDistributor.sendToPlayer(to, new ChatChannelPacket(ChatChannel.PM, message, partner));
+    }
 }

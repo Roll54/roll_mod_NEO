@@ -8,7 +8,8 @@ import java.util.List;
  */
 public final class ClientKitNamesCache {
 
-    public record Entry(String name, String displayName) {}
+    /** One kit: its id, display name ({@code ""} for none), cooldown in ticks and how many stacks it gives. */
+    public record Entry(String name, String displayName, long cooldownTicks, int itemCount) {}
 
     public static volatile boolean ALLOWED;
     public static volatile List<Entry> KITS = List.of();

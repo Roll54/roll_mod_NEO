@@ -28,15 +28,19 @@ public final class KitNamePackets {
                     int count = Math.min(MAX, payload.kits().size());
                     buf.writeVarInt(count);
                     for (int i = 0; i < count; i++) {
-                        buf.writeUtf(payload.kits().get(i).name(), 32);
-                        buf.writeUtf(payload.kits().get(i).displayName(), Kit.MAX_DISPLAY * 2);
+                        ClientKitNamesCache.Entry kit = payload.kits().get(i);
+                        buf.writeUtf(kit.name(), 32);
+                        buf.writeUtf(kit.displayName(), Kit.MAX_DISPLAY * 2);
+                        buf.writeVarLong(kit.cooldownTicks());
+                        buf.writeVarInt(kit.itemCount());
                     }
                 },
                 buf -> {
                     int count = Math.min(MAX, buf.readVarInt());
                     List<ClientKitNamesCache.Entry> kits = new ArrayList<>(count);
                     for (int i = 0; i < count; i++) {
-                        kits.add(new ClientKitNamesCache.Entry(buf.readUtf(32), buf.readUtf(Kit.MAX_DISPLAY * 2)));
+                        kits.add(new ClientKitNamesCache.Entry(buf.readUtf(32), buf.readUtf(Kit.MAX_DISPLAY * 2),
+                                buf.readVarLong(), buf.readVarInt()));
                     }
                     return new Sync(List.copyOf(kits));
                 });
@@ -51,6 +55,48 @@ public final class KitNamePackets {
                 ClientKitNamesCache.ALLOWED = true;
                 ClientKitNamesCache.KITS = payload.kits();
                 ClientKitNamesCache.VERSION++;
+            });
+        }
+    }
+
+    /**
+     * Client → server: the moderation tab's other kit buttons. {@code ticks} is the cooldown for
+     * {@link Action#CREATE} and {@link Action#COOLDOWN}, unused otherwise. Checked on the server.
+     */
+    public record Edit(Action action, String kit, long ticks) implements CustomPacketPayload {
+
+        public enum Action {
+            /** Open the kit's items as a chest; closing it saves them. */
+            ITEMS,
+            /** A new, empty kit, then its items editor. */
+            CREATE,
+            COOLDOWN,
+            DELETE
+        }
+
+        public static final Type<Edit> TYPE = new Type<>(RollMod.id("edit_kit"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Edit> STREAM_CODEC = StreamCodec.of(
+                (buf, payload) -> {
+                    buf.writeEnum(payload.action());
+                    buf.writeUtf(payload.kit(), 32);
+                    buf.writeVarLong(payload.ticks());
+                },
+                buf -> new Edit(buf.readEnum(Action.class), buf.readUtf(32), buf.readVarLong()));
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+
+        public static void handle(Edit payload, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                if (!(context.player() instanceof ServerPlayer player)) return;
+                switch (payload.action()) {
+                    case ITEMS -> KitService.openEditor(player, payload.kit());
+                    case CREATE -> KitService.createEmpty(player, payload.kit(), payload.ticks());
+                    case COOLDOWN -> KitService.setCooldown(player, payload.kit(), payload.ticks());
+                    case DELETE -> KitService.deleteFromTab(player, payload.kit());
+                }
             });
         }
     }

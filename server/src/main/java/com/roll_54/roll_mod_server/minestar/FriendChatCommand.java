@@ -4,6 +4,7 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.chat.ChatChannel;
 import com.roll_54.roll_mod.minestar.chat.ChatChannels;
+import com.roll_54.roll_mod.minestar.chat.emoji.EmojiRegistry;
 import com.roll_54.roll_mod.minestar.data.MuteStore;
 import com.roll_54.roll_mod.minestar.friends.FriendEntry;
 import com.roll_54.roll_mod.minestar.friends.FriendsService;
@@ -71,7 +72,7 @@ public final class FriendChatCommand {
                     .append(ChatHandler.lpPrefix(sender))
                     .append(sender.getDisplayName())
                     .append(Component.literal(": ").withStyle(ChatFormatting.WHITE))
-                    .append(Component.literal(text).withStyle(ChatFormatting.LIGHT_PURPLE));
+                    .append(EmojiRegistry.text(text).withStyle(ChatFormatting.LIGHT_PURPLE));
 
             ChatChannels.deliver(sender, ChatChannel.FRIENDS, line);
             online.forEach(friend -> ChatChannels.deliver(friend, ChatChannel.FRIENDS, line, sender.getUUID()));

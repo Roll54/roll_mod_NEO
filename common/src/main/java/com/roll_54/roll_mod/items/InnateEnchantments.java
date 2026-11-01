@@ -44,6 +44,16 @@ public final class InnateEnchantments {
         return new InnateEnchantments(levels);
     }
 
+    public static InnateEnchantments of(ResourceKey<Enchantment> first, int firstLevel,
+                                        ResourceKey<Enchantment> second, int secondLevel,
+                                        ResourceKey<Enchantment> third, int thirdLevel) {
+        Map<ResourceKey<Enchantment>, Integer> levels = new LinkedHashMap<>();
+        levels.put(first, firstLevel);
+        levels.put(second, secondLevel);
+        levels.put(third, thirdLevel);
+        return new InnateEnchantments(levels);
+    }
+
     /**
      * The material's level, or the applied one when the player enchanted the tool higher.
      * <p>

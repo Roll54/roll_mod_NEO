@@ -1,6 +1,7 @@
-// 1.21.1	2026-09-27T20:02:15.60787407	Tags for minecraft:item mod id roll_mod
+// 1.21.1	2026-11-01T09:20:15.5857293	Tags for minecraft:item mod id roll_mod
 86c027ee359f63ead5663d6ec9769fc4251b4cab data/c/tags/item/antimony.json
 1510cca7a87081ff56ab1224106ebe72251f0764 data/c/tags/item/apatite.json
+7943a91f7249d21ec300e23c99a83e37157c4fac data/c/tags/item/armors.json
 d977069cd601e10a74b7fabeeaf84b966aceac80 data/c/tags/item/azure_silver.json
 fdb333448df326bc3711788a50414e8068ea602f data/c/tags/item/bauxite.json
 ae6a64ba5e4a327ed1762b39d54a03a3edf43bf8 data/c/tags/item/beryllium.json
@@ -255,6 +256,11 @@ b18a2e81cdf2a87030c51492a2ff5454b00c4aff data/c/tags/item/tetrahedrite.json
 adb6abd4ddefae925c77930041c5ac138075f8d9 data/c/tags/item/vanadium_magnetite.json
 b0de1913ac41bde85735fd89cbd8d43c453fd0f6 data/c/tags/item/wulfenite.json
 1fe53e0dd980f569e4202845252202f3aac61320 data/c/tags/item/yellow_limonite.json
+43f6862fdce3ffe32f91e17f21873d4044e1df63 data/minecraft/tags/item/chest_armor.json
+60903ac85ef107b3112225c29f25677b2234656d data/minecraft/tags/item/foot_armor.json
+82ce2be106c24d06a182bd2fe2efbfb49a9049e3 data/minecraft/tags/item/head_armor.json
+b88c1ccc687d0cc6931e796f49b771d69ba0c02b data/minecraft/tags/item/leg_armor.json
+7943a91f7249d21ec300e23c99a83e37157c4fac data/minecraft/tags/item/trimmable_armor.json
 807c2b6e9d9dfca9ed957d8e034224060efac20b data/roll_mod/tags/item/crushed_ore.json
 4d3fe20de99df7f75f3269ed5066581ecca8eae6 data/roll_mod/tags/item/crushed_purified_ore.json
 fd210a44e07704fd959b87d215f76275ea787748 data/roll_mod/tags/item/crushed_refined_ore.json

@@ -140,6 +140,21 @@ public class ItemRegistry {
     }
 
 
+    /** {@link #registerTierArmor}, with enchantments the piece carries from its material. */
+    private static DeferredHolder<Item, Item> registerInnateArmor(String name,
+                                                                  DeferredHolder<ArmorMaterial, ArmorMaterial> material,
+                                                                  ArmorItem.Type type,
+                                                                  int durabilityMultiplier,
+                                                                  int nameColor,
+                                                                  InnateEnchantments innate) {
+        return ITEMS.register(name, () -> new InnateEnchantedTools.InnateArmorItem(
+                Holder.direct(material.get()),
+                type,
+                new Item.Properties().stacksTo(1).durability(type.getDurability(durabilityMultiplier)),
+                new TooltipOptions(0, nameColor, null, false),
+                innate));
+    }
+
     public static final DeferredHolder<Item, Item> COPPER_GEAR = registerSimple("copper_gear");
     public static final DeferredHolder<Item, Item> CHEMICAL_CORE = registerSimple("chemical_core", new Item.Properties().stacksTo(16));
 
@@ -178,7 +193,7 @@ public class ItemRegistry {
                             DIAMOND_ALLOY,
                             15.0F,
                             -2.8F,
-                            4, // pre-enchant: Efficiency IV
+                            0, // no crafting pre-enchant; the materials that have enchantments carry them as innate ones
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(MALACHITE_GREEEN, 2, AQUA)
                     )
@@ -203,7 +218,7 @@ public class ItemRegistry {
                             METEORITE_METAL,
                             15.0F,
                             -2.8F,
-                            4, // pre-enchant: Efficiency IV
+                            0, // no crafting pre-enchant; the materials that have enchantments carry them as innate ones
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(METEORITE_DARK_BLUE, 2, METEORITE_LIGHT_BLUE)
                     )
@@ -216,7 +231,7 @@ public class ItemRegistry {
                             IRON,
                             6.0F,
                             -2.8F,
-                            1, // pre-enchant: Efficiency I
+                            0, // no crafting pre-enchant; the materials that have enchantments carry them as innate ones
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(WHITE, 1,LIGHT_GRAY)
                     )
@@ -229,7 +244,7 @@ public class ItemRegistry {
                             STEEL,
                             11.0F,
                             -2.8F,
-                            2, // pre-enchant: Efficiency II
+                            0, // no crafting pre-enchant; the materials that have enchantments carry them as innate ones
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(BLACK_STEEL_COLOR, 1,LIGHT_GRAY)
                     )
@@ -242,48 +257,55 @@ public class ItemRegistry {
                             NETHERITE,
                             12.5F,
                             -2.8F,
-                            3, // pre-enchant: Efficiency III
+                            0, // no crafting pre-enchant; the materials that have enchantments carry them as innate ones
                             new Item.Properties(),
                             TooltipOptions.nameAndLore(WHITE, 1,LIGHT_GRAY)
                     )
             );
 
+    /** Efficiency IV, the black steel tools' mining enchantment. */
     public static final DeferredHolder<Item, BlockogrizItem> BLACK_STEEL_BLOCKOGRIZ =
             ITEMS.register(
                     "black_steel_blockogriz",
-                    () -> new TooltipManager.TooltipBlockogrizItem(
+                    () -> new InnateEnchantedTools.InnateBlockogrizItem(
                             BLACK_STEEL,
                             11.5F,
                             -2.8F,
-                            3, // pre-enchant: Efficiency III
+                            0, // no crafting pre-enchant; the materials that have enchantments carry them as innate ones
                             new Item.Properties(),
-                            TooltipOptions.nameAndLore(BLACK_STEEL_COLOR, 1,LIGHT_GRAY)
+                            TooltipOptions.nameAndLore(BLACK_STEEL_COLOR, 1,LIGHT_GRAY),
+                            InnateEnchantments.of(Enchantments.EFFICIENCY, 4)
                     )
             );
 
+    /** Unbreaking I, Sharpness II and Efficiency II: it both digs and fights. */
     public static final DeferredHolder<Item, BlockogrizItem> BISMUTH_BRONZE_BLOCKOGRIZ =
             ITEMS.register(
                     "bismuth_bronze_blockogriz",
-                    () -> new TooltipManager.TooltipBlockogrizItem(
+                    () -> new InnateEnchantedTools.InnateBlockogrizItem(
                             BISMUTH_BRONZE,
                             9.0F,
                             -2.8F,
-                            2, // pre-enchant: Efficiency II
+                            0, // no crafting pre-enchant; the materials that have enchantments carry them as innate ones
                             new Item.Properties(),
-                            TooltipOptions.nameAndLore(BISMUTH_BRONZE_COLOR, 1,LIGHT_GRAY)
+                            TooltipOptions.nameAndLore(BISMUTH_BRONZE_COLOR, 1,LIGHT_GRAY),
+                            InnateEnchantments.of(Enchantments.UNBREAKING, 1, Enchantments.SHARPNESS, 2,
+                                    Enchantments.EFFICIENCY, 2)
                     )
             );
 
+    /** Fortune I, the black bronze digging tools' enchantment. */
     public static final DeferredHolder<Item, BlockogrizItem> BLACK_BRONZE_BLOCKOGRIZ =
             ITEMS.register(
                     "black_bronze_blockogriz",
-                    () -> new TooltipManager.TooltipBlockogrizItem(
+                    () -> new InnateEnchantedTools.InnateBlockogrizItem(
                             BLACK_BRONZE,
                             9.0F,
                             -2.8F,
-                            2, // pre-enchant: Efficiency II
+                            0, // no crafting pre-enchant; the materials that have enchantments carry them as innate ones
                             new Item.Properties(),
-                            TooltipOptions.nameAndLore(BLACK_BRONZE_COLOR, 1,LIGHT_GRAY)
+                            TooltipOptions.nameAndLore(BLACK_BRONZE_COLOR, 1,LIGHT_GRAY),
+                            InnateEnchantments.of(Enchantments.FORTUNE, 1)
                     )
             );
 
@@ -474,23 +496,35 @@ public class ItemRegistry {
 
     // Armour sets matching the tool tiers in ModToolTiers: the same material that makes better tools
     // makes better armour. Durability multipliers track each tier's tool durability.
-    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_HELMET = registerTierArmor(
-            "bismuth_bronze_helmet", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.HELMET, 12, BISMUTH_BRONZE_COLOR);
-    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_CHESTPLATE = registerTierArmor(
-            "bismuth_bronze_chestplate", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.CHESTPLATE, 12, BISMUTH_BRONZE_COLOR);
-    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_LEGGINGS = registerTierArmor(
-            "bismuth_bronze_leggings", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.LEGGINGS, 12, BISMUTH_BRONZE_COLOR);
-    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_BOOTS = registerTierArmor(
-            "bismuth_bronze_boots", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.BOOTS, 12, BISMUTH_BRONZE_COLOR);
+    // Bismuth bronze: Protection II + Unbreaking I on every piece.
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_HELMET = registerInnateArmor(
+            "bismuth_bronze_helmet", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.HELMET, 12, BISMUTH_BRONZE_COLOR,
+            InnateEnchantments.of(Enchantments.PROTECTION, 2, Enchantments.UNBREAKING, 1));
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_CHESTPLATE = registerInnateArmor(
+            "bismuth_bronze_chestplate", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.CHESTPLATE, 12, BISMUTH_BRONZE_COLOR,
+            InnateEnchantments.of(Enchantments.PROTECTION, 2, Enchantments.UNBREAKING, 1));
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_LEGGINGS = registerInnateArmor(
+            "bismuth_bronze_leggings", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.LEGGINGS, 12, BISMUTH_BRONZE_COLOR,
+            InnateEnchantments.of(Enchantments.PROTECTION, 2, Enchantments.UNBREAKING, 1));
+    public static final DeferredHolder<Item, Item> BISMUTH_BRONZE_BOOTS = registerInnateArmor(
+            "bismuth_bronze_boots", ModArmorMaterials.BISMUTH_BRONZE_ARMOR, ArmorItem.Type.BOOTS, 12, BISMUTH_BRONZE_COLOR,
+            InnateEnchantments.of(Enchantments.PROTECTION, 2, Enchantments.UNBREAKING, 1));
 
-    public static final DeferredHolder<Item, Item> BLACK_BRONZE_HELMET = registerTierArmor(
-            "black_bronze_helmet", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.HELMET, 16, BLACK_BRONZE_COLOR);
-    public static final DeferredHolder<Item, Item> BLACK_BRONZE_CHESTPLATE = registerTierArmor(
-            "black_bronze_chestplate", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.CHESTPLATE, 16, BLACK_BRONZE_COLOR);
-    public static final DeferredHolder<Item, Item> BLACK_BRONZE_LEGGINGS = registerTierArmor(
-            "black_bronze_leggings", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.LEGGINGS, 16, BLACK_BRONZE_COLOR);
-    public static final DeferredHolder<Item, Item> BLACK_BRONZE_BOOTS = registerTierArmor(
-            "black_bronze_boots", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.BOOTS, 16, BLACK_BRONZE_COLOR);
+    // Black bronze: one enchantment per piece — Aqua Affinity, every protection but Protection
+    // itself, Swift Sneak, Feather Falling.
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_HELMET = registerInnateArmor(
+            "black_bronze_helmet", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.HELMET, 16, BLACK_BRONZE_COLOR,
+            InnateEnchantments.of(Enchantments.AQUA_AFFINITY, 1));
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_CHESTPLATE = registerInnateArmor(
+            "black_bronze_chestplate", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.CHESTPLATE, 16, BLACK_BRONZE_COLOR,
+            InnateEnchantments.of(Enchantments.FIRE_PROTECTION, 1, Enchantments.BLAST_PROTECTION, 1,
+                    Enchantments.PROJECTILE_PROTECTION, 1));
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_LEGGINGS = registerInnateArmor(
+            "black_bronze_leggings", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.LEGGINGS, 16, BLACK_BRONZE_COLOR,
+            InnateEnchantments.of(Enchantments.SWIFT_SNEAK, 1));
+    public static final DeferredHolder<Item, Item> BLACK_BRONZE_BOOTS = registerInnateArmor(
+            "black_bronze_boots", ModArmorMaterials.BLACK_BRONZE_ARMOR, ArmorItem.Type.BOOTS, 16, BLACK_BRONZE_COLOR,
+            InnateEnchantments.of(Enchantments.FEATHER_FALLING, 1));
 
     public static final DeferredHolder<Item, Item> STEEL_HELMET = registerTierArmor(
             "steel_helmet", ModArmorMaterials.STEEL_ARMOR, ArmorItem.Type.HELMET, 26, BLACK_STEEL_COLOR);
@@ -501,14 +535,19 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> STEEL_BOOTS = registerTierArmor(
             "steel_boots", ModArmorMaterials.STEEL_ARMOR, ArmorItem.Type.BOOTS, 26, BLACK_STEEL_COLOR);
 
-    public static final DeferredHolder<Item, Item> BLACK_STEEL_HELMET = registerTierArmor(
-            "black_steel_helmet", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.HELMET, 22, BLACK_STEEL_COLOR);
-    public static final DeferredHolder<Item, Item> BLACK_STEEL_CHESTPLATE = registerTierArmor(
-            "black_steel_chestplate", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.CHESTPLATE, 22, BLACK_STEEL_COLOR);
-    public static final DeferredHolder<Item, Item> BLACK_STEEL_LEGGINGS = registerTierArmor(
-            "black_steel_leggings", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.LEGGINGS, 22, BLACK_STEEL_COLOR);
-    public static final DeferredHolder<Item, Item> BLACK_STEEL_BOOTS = registerTierArmor(
-            "black_steel_boots", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.BOOTS, 22, BLACK_STEEL_COLOR);
+    // Black steel: Protection IV on every piece.
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_HELMET = registerInnateArmor(
+            "black_steel_helmet", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.HELMET, 22, BLACK_STEEL_COLOR,
+            InnateEnchantments.of(Enchantments.PROTECTION, 4));
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_CHESTPLATE = registerInnateArmor(
+            "black_steel_chestplate", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.CHESTPLATE, 22, BLACK_STEEL_COLOR,
+            InnateEnchantments.of(Enchantments.PROTECTION, 4));
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_LEGGINGS = registerInnateArmor(
+            "black_steel_leggings", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.LEGGINGS, 22, BLACK_STEEL_COLOR,
+            InnateEnchantments.of(Enchantments.PROTECTION, 4));
+    public static final DeferredHolder<Item, Item> BLACK_STEEL_BOOTS = registerInnateArmor(
+            "black_steel_boots", ModArmorMaterials.BLACK_STEEL_ARMOR, ArmorItem.Type.BOOTS, 22, BLACK_STEEL_COLOR,
+            InnateEnchantments.of(Enchantments.PROTECTION, 4));
 
     public static final DeferredHolder<Item, Item> DIAMOND_ALLOY_DUST = registerTooltip(
             "diamond_alloy_dust",

@@ -186,6 +186,81 @@ public final class KitService {
         return true;
     }
 
+    /* ------------------------------------------ moderation tab --------------------------------------- */
+
+    /** Opens the kit's items as a chest ({@link KitEditorMenu}); closing it saves them. */
+    public static boolean openEditor(ServerPlayer player, String rawName) {
+        if (!mayRename(player)) return false;
+        Kit kit = KitStore.byName(player.server, rawName);
+        if (kit == null) {
+            refuse(player, "msg.roll_mod.kit.unknown", rawName);
+            return false;
+        }
+        KitEditorMenu.open(player, kit);
+        return true;
+    }
+
+    /**
+     * What the editor held when it closed becomes the kit's items. Everything else — cooldown,
+     * permission, display name — and the waits players already have stay as they were: the same kit,
+     * restocked.
+     */
+    static void saveItems(ServerPlayer player, String name, List<ItemStack> items) {
+        if (!mayRename(player)) return;
+        Kit kit = KitStore.byName(player.server, name);
+        if (kit == null) {
+            // Deleted while the editor was open: what was put in is not lost, it becomes the kit again.
+            kit = new Kit(name, 0L, "", List.of(), "");
+        }
+        KitStore.put(player.server, new Kit(kit.name(), kit.cooldownTicks(), kit.permission(), List.copyOf(items),
+                kit.displayName()));
+        player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.itemsSaved", kit.name(), items.size()));
+        KitViewers.resync(player.server);
+        syncNames(player.server);
+    }
+
+    /** A new, empty kit from the moderation tab; its items go in through the editor. */
+    public static boolean createEmpty(ServerPlayer player, String rawName, long cooldownTicks) {
+        if (!mayRename(player)) return false;
+        String name = Kit.clampName(rawName);
+        if (!Kit.validName(name)) {
+            refuse(player, "msg.roll_mod.kit.badName", rawName);
+            return false;
+        }
+        if (KitStore.byName(player.server, name) != null) {
+            refuse(player, "msg.roll_mod.kit.exists", name);
+            return false;
+        }
+        KitStore.put(player.server, new Kit(name, Math.max(0L, cooldownTicks), "", List.of(), ""));
+        KitCooldowns.forget(name);
+        KitViewers.resync(player.server);
+        syncNames(player.server);
+        KitEditorMenu.open(player, KitStore.byName(player.server, name));
+        return true;
+    }
+
+    /** Changes how long players wait between claims. Waits already running are measured against the new value. */
+    public static boolean setCooldown(ServerPlayer player, String rawName, long cooldownTicks) {
+        if (!mayRename(player)) return false;
+        Kit kit = KitStore.byName(player.server, rawName);
+        if (kit == null) {
+            refuse(player, "msg.roll_mod.kit.unknown", rawName);
+            return false;
+        }
+        long ticks = Math.max(0L, cooldownTicks);
+        KitStore.put(player.server, new Kit(kit.name(), ticks, kit.permission(), kit.items(), kit.displayName()));
+        player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.cooldownSet", kit.name(),
+                Durations.format(ticks * 50L)));
+        KitViewers.resync(player.server);
+        syncNames(player.server);
+        return true;
+    }
+
+    /** {@link #delete} from the moderation tab, which — unlike the command — has to check the player itself. */
+    public static boolean deleteFromTab(ServerPlayer player, String rawName) {
+        return mayRename(player) && delete(player, rawName);
+    }
+
     /** The full kit list with display names, to everyone online who may rename kits. */
     public static void syncNames(net.minecraft.server.MinecraftServer server) {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) syncNamesTo(player);
@@ -193,10 +268,10 @@ public final class KitService {
 
     public static void syncNamesTo(ServerPlayer player) {
         if (!mayRename(player)) return;
-        List<com.roll_54.roll_mod.minestar.kits.ClientKitNamesCache.Entry> entries = new ArrayList<>();
+        List<ClientKitNamesCache.Entry> entries = new ArrayList<>();
         for (Kit kit : KitStore.all(player.server)) {
-            entries.add(new com.roll_54.roll_mod.minestar.kits.ClientKitNamesCache.Entry(kit.name(),
-                    kit.displayName() == null ? "" : kit.displayName()));
+            entries.add(new ClientKitNamesCache.Entry(kit.name(),
+                    kit.displayName() == null ? "" : kit.displayName(), kit.cooldownTicks(), kit.items().size()));
         }
         net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
                 new com.roll_54.roll_mod.network.packet.KitNamePackets.Sync(entries));

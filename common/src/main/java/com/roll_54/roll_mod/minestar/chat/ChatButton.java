@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
  * typed text (or the text is appended after a space when the template has no {@code {msg}}). A
  * template starting with {@code /} is sent as a command, e.g. {@code /msg Steve {msg}}.
  *
- * @param id       {@code all}, {@code global}, {@code local}, {@code friends}, {@code trade}, or
+ * @param id       {@code all}, a channel id ({@code global}, {@code local}, {@code pm}, {@code dev}, {@code spam}, {@code trade}), or
  *                 {@code custom:<n>}
  * @param name     the caption of a custom button; empty for built-ins, which are translated
  * @param template a custom button's template; empty for built-ins
@@ -27,8 +27,10 @@ public record ChatButton(String id, String name, String template) {
     public static final ChatButton ALL_BUTTON = new ChatButton(ALL, "", "");
     public static final ChatButton GLOBAL_BUTTON = new ChatButton(ChatChannel.GLOBAL.id(), "", "");
     public static final ChatButton LOCAL_BUTTON = new ChatButton(ChatChannel.LOCAL.id(), "", "");
-    public static final ChatButton FRIENDS_BUTTON = new ChatButton(ChatChannel.FRIENDS.id(), "", "");
     public static final ChatButton TRADE_BUTTON = new ChatButton(ChatChannel.TRADE.id(), "", "");
+    public static final ChatButton PM_BUTTON = new ChatButton(ChatChannel.PM.id(), "", "");
+    public static final ChatButton DEV_BUTTON = new ChatButton(ChatChannel.DEV.id(), "", "");
+    public static final ChatButton SPAM_BUTTON = new ChatButton(ChatChannel.SPAM.id(), "", "");
 
     /**
      * {@code text} without the {@link #GLOBAL_PREFIX}es it starts with, and the space after them:
@@ -61,11 +63,18 @@ public record ChatButton(String id, String name, String template) {
         return channel != null ? channel.title() : Component.literal(id);
     }
 
+    /** A read-only channel's button: typing there only runs commands. */
+    public boolean readOnly() {
+        ChatChannel channel = channel();
+        return channel != null && channel.readOnly();
+    }
+
     /**
      * What to send for {@code text} through this button — always a command (leading {@code /}),
      * since the server locks plain chat: Global {@code /gc}, All and Local {@code /lc}, Friends
      * {@code /fc}, Trade {@code /tc}. A custom template that is not itself a command goes to local
-     * chat through {@code /lc}.
+     * chat through {@code /lc}. PM and the read-only channels are handled by the chat box itself
+     * (they need a recipient, or take no chat at all), so they never get here.
      */
     public String outgoing(String text) {
         if (custom()) {

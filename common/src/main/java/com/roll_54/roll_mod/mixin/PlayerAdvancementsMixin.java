@@ -2,8 +2,6 @@ package com.roll_54.roll_mod.mixin;
 
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementProgress;
-import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.DisplayInfo;
 import net.minecraft.server.PlayerAdvancements;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
@@ -30,7 +28,6 @@ public abstract class PlayerAdvancementsMixin {
 
     @Overwrite
     public boolean award(AdvancementHolder advancement, String criterionKey) {
-        DisplayInfo displayinfo = advancement.value().display().orElse(null);
         if (this.player instanceof net.neoforged.neoforge.common.util.FakePlayer) return false;
         boolean flag = false;
         AdvancementProgress advancementprogress = this.getOrStartProgress(advancement);
@@ -43,10 +40,10 @@ public abstract class PlayerAdvancementsMixin {
             if (!flag1 && advancementprogress.isDone()) {
                 advancement.value().rewards().grant(this.player);
                 advancement.value().display().ifPresent(p_352686_ -> {
+                    // Every type again, not only challenges: the client sorts them into the chat's Spam tab,
+                    // so they no longer crowd the channels people talk in.
                     if (p_352686_.shouldAnnounceChat() && this.player.level().getGameRules().getBoolean(GameRules.RULE_ANNOUNCE_ADVANCEMENTS)) {
-                        if(displayinfo.getType() == AdvancementType.CHALLENGE){
-                            this.playerList.broadcastSystemMessage(p_352686_.getType().createAnnouncement(advancement, this.player), false);
-                        }
+                        this.playerList.broadcastSystemMessage(p_352686_.getType().createAnnouncement(advancement, this.player), false);
                     }
                     net.neoforged.neoforge.event.EventHooks.onAdvancementEarnedEvent(this.player, advancement);
                 });

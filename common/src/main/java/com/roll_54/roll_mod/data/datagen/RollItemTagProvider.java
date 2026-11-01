@@ -15,15 +15,19 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.data.PackOutput;
 import net.minecraft.data.tags.ItemTagsProvider;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.SwordItem;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import net.neoforged.neoforge.registries.DeferredHolder;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static com.roll_54.roll_mod.RollMod.MODID;
@@ -50,6 +54,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
     protected void addTags(HolderLookup.Provider provider) {
 
         addSkinSlotTags();
+        addTierArmorTags();
         addHerbicideTag();
 
         var raw = tag(RAW_ORE);
@@ -182,6 +187,35 @@ public class RollItemTagProvider extends ItemTagsProvider {
                 axes.add(item);
             } else if (item instanceof ArmorItem armor && armor.getType() == ArmorItem.Type.HELMET) {
                 helmets.add(item);
+            }
+        }
+    }
+
+    /**
+     * The tier armour sets — bismuth bronze, black bronze, steel, black steel — in the vanilla slot
+     * tags, which is what makes them armour to the rest of the game: vanilla's enchantable tags
+     * ({@code enchantable/armor}, {@code head_armor}, {@code durability}, {@code equippable},
+     * {@code vanishing}, …) all include {@code #minecraft:head_armor} and its siblings, so without these
+     * nothing could be put on them at a table or an anvil. Also trimmable, and {@code c:armors}.
+     */
+    private void addTierArmorTags() {
+        List<List<DeferredHolder<Item, Item>>> sets = List.of(
+                List.of(ItemRegistry.BISMUTH_BRONZE_HELMET, ItemRegistry.BISMUTH_BRONZE_CHESTPLATE,
+                        ItemRegistry.BISMUTH_BRONZE_LEGGINGS, ItemRegistry.BISMUTH_BRONZE_BOOTS),
+                List.of(ItemRegistry.BLACK_BRONZE_HELMET, ItemRegistry.BLACK_BRONZE_CHESTPLATE,
+                        ItemRegistry.BLACK_BRONZE_LEGGINGS, ItemRegistry.BLACK_BRONZE_BOOTS),
+                List.of(ItemRegistry.STEEL_HELMET, ItemRegistry.STEEL_CHESTPLATE,
+                        ItemRegistry.STEEL_LEGGINGS, ItemRegistry.STEEL_BOOTS),
+                List.of(ItemRegistry.BLACK_STEEL_HELMET, ItemRegistry.BLACK_STEEL_CHESTPLATE,
+                        ItemRegistry.BLACK_STEEL_LEGGINGS, ItemRegistry.BLACK_STEEL_BOOTS));
+        for (List<DeferredHolder<Item, Item>> set : sets) {
+            tag(ItemTags.HEAD_ARMOR).add(set.get(0).get());
+            tag(ItemTags.CHEST_ARMOR).add(set.get(1).get());
+            tag(ItemTags.LEG_ARMOR).add(set.get(2).get());
+            tag(ItemTags.FOOT_ARMOR).add(set.get(3).get());
+            for (DeferredHolder<Item, Item> piece : set) {
+                tag(ItemTags.TRIMMABLE_ARMOR).add(piece.get());
+                tag(Tags.Items.ARMORS).add(piece.get());
             }
         }
     }

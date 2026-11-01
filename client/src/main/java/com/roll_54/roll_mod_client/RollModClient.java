@@ -6,6 +6,7 @@ import com.perigrine3.createcybernetics.common.capabilities.ModAttachments;
 import com.perigrine3.createcybernetics.common.capabilities.PlayerCyberwareData;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod_client.blocks.entity.render.ModuleInstallationTableRenderer;
+import com.roll_54.roll_mod_client.config.RecipeViewerConfig;
 import com.roll_54.roll_mod_client.blocks.entity.render.PedestalBlockEntityRenderer;
 import com.roll_54.roll_mod_client.blocks.entity.render.RocketControllerBlockEntityRenderer;
 import com.roll_54.roll_mod_client.blocks.entity.render.model.rocket.normal.NormalRocketModel;
@@ -66,6 +67,7 @@ public final class RollModClient {
     public RollModClient(ModContainer container) {
         IEventBus eventBus = container.getEventBus();
         eventBus.addListener(this::onClientSetup);
+        container.registerConfig(net.neoforged.fml.config.ModConfig.Type.CLIENT, RecipeViewerConfig.SPEC);
         FusionCompatClient.init();
         RollMod.LOGGER.info("[{}] init complete.", MODID);
     }

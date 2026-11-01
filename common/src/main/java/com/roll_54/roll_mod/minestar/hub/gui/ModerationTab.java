@@ -246,6 +246,14 @@ public final class ModerationTab {
         LetterComposer composer = new LetterComposer(inventory);
         UIElement kitPane = pane();
         KitNamesPanel kits = new KitNamesPanel(kitPane);
+        // Back from a kit's items chest: straight to Kits mode, on that kit. Read on the client only —
+        // in singleplayer the server builds this tab in the same JVM and must not use it up — and once.
+        String returningKit = player.level().isClientSide() ? KitNamesPanel.takeReturnTo() : null;
+        if (returningKit != null) {
+            mode[0] = MODE_KITS;
+            modeSelector.setSelected(MODE_KITS, false);
+            kits.selected[0] = returningKit;
+        }
         UIElement deathPane = pane();
         DeathLogPanel deaths = new DeathLogPanel(deathPane, confirmer, player.level().isClientSide());
         stack.addChildren(playerPane, warpPane, composer.pane, kitPane, deathPane);

@@ -37,8 +37,10 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The channel buttons over the chat box, and what they do to the message being sent.
  *
- * <p>One small button per visible channel, in the order set in the hub's Settings tab, in a row just
- * above the input line. A built-in button switches both the view and where messages go; a custom
+ * <p>One small button per visible channel, in the order set in the hub's Settings tab, in rows just
+ * above the input line (wrapping at the screen edge). DEV only for staff the server allowed it.
+ * Read-only tabs (Spam, DEV) take commands only; the PM tab writes to its partner
+ * ({@link PmPicker}). A built-in button switches both the view and where messages go; a custom
  * one where they go, and the view to All. The button messages go through is drawn yellow, the one
  * being viewed (All, when a custom one is sending) green.
  *
@@ -78,17 +80,90 @@ public final class ChatButtonsHandler {
     public static void onScreenInit(ScreenEvent.Init.Post event) {
         if (!(event.getScreen() instanceof ChatScreen screen)) return;
         Font font = Minecraft.getInstance().font;
-        List<ChannelButton> buttons = new ArrayList<>();
+
+        // Laid out in rows first, wrapping before the screen edge; the last row sits just above the
+        // input line and the others stack upwards from it, the first one on top.
+        List<List<ChatButton>> rows = new ArrayList<>();
+        List<ChatButton> row = new ArrayList<>();
         int x = 2;
-        int y = screen.height - BOTTOM_OFFSET;
-        for (ChatButton channel : ChatChannelState.get().visible()) {
+        int maxX = screen.width - 2;
+        for (ChatButton channel : tabs()) {
             int width = font.width(channel.title()) + 10;
-            ChannelButton button = new ChannelButton(channel, x, y, width, screen, buttons);
-            buttons.add(button);
-            event.addListener(button);
+            if (x + width > maxX && !row.isEmpty()) {
+                rows.add(row);
+                row = new ArrayList<>();
+                x = 2;
+            }
+            row.add(channel);
             x += width + GAP;
         }
+        if (!row.isEmpty()) rows.add(row);
+
+        List<ChannelButton> buttons = new ArrayList<>();
+        int top = screen.height - BOTTOM_OFFSET - (rows.size() - 1) * (BUTTON_H + GAP);
+        for (int r = 0; r < rows.size(); r++) {
+            x = 2;
+            int y = top + r * (BUTTON_H + GAP);
+            for (ChatButton channel : rows.get(r)) {
+                int width = font.width(channel.title()) + 10;
+                ChannelButton button = new ChannelButton(channel, x, y, width, screen, buttons);
+                buttons.add(button);
+                event.addListener(button);
+                x += width + GAP;
+            }
+        }
         buttons.forEach(ChannelButton::restyle);
+        PmPicker.attach(screen, event::addListener, top - GAP);
+        EmojiPicker.attach(screen, event::addListener, top - GAP);
+        // The emoji square takes the right end of the input line.
+        EditBox input = input(screen);
+        if (input != null) input.setWidth(input.getWidth() - EmojiPicker.RESERVED);
+        updateHint(screen);
+    }
+
+    /**
+     * The visible buttons, the DEV ("Команди") tab always last — whatever order the player saved —
+     * and only for operators, whom the server told so at login.
+     */
+    private static List<ChatButton> tabs() {
+        List<ChatButton> tabs = new ArrayList<>(ChatChannelState.get().visible());
+        ChatButton dev = null;
+        for (ChatButton button : tabs) {
+            if (button.channel() == ChatChannel.DEV) dev = button;
+        }
+        if (dev != null) {
+            tabs.remove(dev);
+            if (ClientChatStore.devAccess()) tabs.add(dev);
+        }
+        return tabs;
+    }
+
+    /**
+     * The gray text in the empty input line: in a read-only tab, that it only takes commands; in the PM
+     * tab, who the message goes to.
+     */
+    static void updateHint(Screen screen) {
+        EditBox input = input(screen);
+        if (input == null) return;
+        ChatButton send = ChatChannelState.get().send();
+        Component hint = null;
+        if (send.readOnly()) {
+            hint = Component.translatable("gui.roll_mod.chat.hint.commands_only");
+        } else if (send.channel() == ChatChannel.PM) {
+            String partner = ClientChatStore.pmPartner();
+            hint = partner == null
+                    ? Component.translatable("gui.roll_mod.chat.hint.pm_pick")
+                    : Component.translatable("gui.roll_mod.chat.hint.pm_to", partner);
+        }
+        input.setHint(hint == null ? Component.empty() : hint.copy().withStyle(ChatFormatting.DARK_GRAY));
+    }
+
+    @Nullable
+    static EditBox input(Screen screen) {
+        for (GuiEventListener child : screen.children()) {
+            if (child instanceof EditBox box) return box;
+        }
+        return null;
     }
 
     @SubscribeEvent
@@ -108,7 +183,7 @@ public final class ChatButtonsHandler {
         cycleArmed = false;
 
         ChatChannelState state = ChatChannelState.get();
-        List<ChatButton> visible = state.visible();
+        List<ChatButton> visible = tabs();
         if (visible.size() < 2) return;
         String current = state.send().id();
         int index = 0;
@@ -123,6 +198,7 @@ public final class ChatButtonsHandler {
         for (GuiEventListener child : screen.children()) {
             if (child instanceof ChannelButton button) button.restyle();
         }
+        updateHint(screen);
     }
 
     private static boolean isControl(int key) {
@@ -140,16 +216,81 @@ public final class ChatButtonsHandler {
         ChatChannelState state = ChatChannelState.get();
         event.setCanceled(true);
         String outgoing;
+        String plain = text;
         if (state.bangGlobal() && text.startsWith(ChatButton.GLOBAL_PREFIX)) {
             String stripped = ChatButton.withoutGlobalPrefix(text);
             // Nothing but "!": nothing to say.
             if (stripped.isEmpty()) return;
             outgoing = ChatButton.GLOBAL_BUTTON.outgoing(stripped);
+            plain = stripped;
+        } else if (state.send().readOnly()) {
+            // Spam, DEV: commands only, and a command never gets here.
+            notice(Component.translatable("gui.roll_mod.chat.hint.commands_only"));
+            return;
+        } else if (state.send().channel() == ChatChannel.PM) {
+            outgoing = pmOutgoing(text);
+            if (outgoing == null) return;
         } else {
             outgoing = state.send().outgoing(text);
         }
         var connection = Minecraft.getInstance().getConnection();
-        if (connection != null) connection.sendCommand(outgoing.substring(1));
+        if (connection == null) return;
+        String command = outgoing.substring(1);
+        if (!serverHas(command)) {
+            // The chat commands live in the server jar: singleplayer and servers without it don't
+            // have them. There the message goes the vanilla way — /pm as /msg, the rest as plain chat.
+            if (command.startsWith("pm ")) {
+                command = "msg " + command.substring(3);
+            } else {
+                // Let this very event go on as chat. Never connection.sendChat() from here: it fires
+                // ClientChatEvent again, which comes straight back here — the game froze in that loop.
+                event.setCanceled(false);
+                event.setMessage(plain);
+                return;
+            }
+        }
+        connection.sendCommand(command);
+    }
+
+    /** Whether the server's command tree has {@code command}'s first word. */
+    private static boolean serverHas(String command) {
+        var connection = Minecraft.getInstance().getConnection();
+        if (connection == null) return false;
+        int space = command.indexOf(' ');
+        String root = space < 0 ? command : command.substring(0, space);
+        return connection.getCommands().getRoot().getChild(root) != null;
+    }
+
+    /**
+     * A message typed in the PM tab: {@code @name text} writes to that player (and makes them the
+     * one the tab writes to from now on), plain text to the current partner. Null when there is
+     * nothing to send — just {@code @name}, which only picks, or no partner yet.
+     */
+    @Nullable
+    private static String pmOutgoing(String text) {
+        String body = text.strip();
+        if (body.startsWith("@")) {
+            int space = body.indexOf(' ');
+            String name = space < 0 ? body.substring(1) : body.substring(1, space);
+            if (!name.isEmpty()) ClientChatStore.setPmPartner(name);
+            body = space < 0 ? "" : body.substring(space + 1).strip();
+            if (body.isEmpty()) {
+                notice(Component.translatable("gui.roll_mod.chat.hint.pm_to", name));
+                return null;
+            }
+        }
+        String partner = ClientChatStore.pmPartner();
+        if (partner == null) {
+            notice(Component.translatable("gui.roll_mod.chat.hint.pm_pick"));
+            return null;
+        }
+        return "/pm " + partner + " " + body;
+    }
+
+    /** A gray line on the player's own screen, never sent anywhere. */
+    private static void notice(Component text) {
+        var player = Minecraft.getInstance().player;
+        if (player != null) player.displayClientMessage(text.copy().withStyle(ChatFormatting.GRAY), true);
     }
 
     /** One channel button. Keeps its siblings so a click can restyle the whole row. */
@@ -163,6 +304,7 @@ public final class ChatButtonsHandler {
                 // Every pick can change what is shown: a custom button switches the view to All.
                 ClientChatStore.refresh();
                 row.forEach(ChannelButton::restyle);
+                updateHint(screen);
                 // Deferred: vanilla hands focus to the clicked widget *after* onPress returns, so a
                 // refocus here was undone at once and every keystroke went to the button — typing
                 // was locked. Queued, it runs once the click is fully handled.

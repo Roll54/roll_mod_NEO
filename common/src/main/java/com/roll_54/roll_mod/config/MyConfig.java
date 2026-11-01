@@ -387,8 +387,11 @@ public class MyConfig extends Config {
     public ChatChanges chat_changes = new ChatChanges();
 
     public static class ChatChanges extends ConfigSection {
-        @Comment("Hide the advancement announcements in chat (challenges, see PlayerAdvancementsMixin).")
+        @Comment("Hide the advancement announcements in chat (all types; shown in the Spam tab otherwise, see PlayerAdvancementsMixin).")
         public boolean hideAdvancementMessages = false;
+
+        @Comment("How lines from the Discord bridge start (case ignored). They go to the chat's Global tab with their emojis and links drawn.")
+        public String discordLineMarker = "[Discord]";
     }
 
     @Comment("The moderation tab's death log: what a player carried when they died.")

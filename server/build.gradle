@@ -46,6 +46,9 @@ dependencies {
 
 //    implementation "curse.maven:ftb-library-forge-404465:${ftb_library_file}"
 
+    // The API from Maven Central is enough to compile against (common uses the same one), so a
+    // checkout without the local LuckPerms jar still builds. The jar is what the dev server runs.
+    compileOnly "net.luckperms:api:5.4"
     implementation files("jars/luckperms-neoforge.jar")
     implementation files("jars/minestar-neoforge-1.5.0-all.jar")
     runtimeOnly files("jars/tab.jar")

@@ -43,6 +43,11 @@ public final class ModerationPermissions {
         return player.hasPermissions(2) || LuckPermsCompat.canWriteLetters(player);
     }
 
+    /** Gets the chat's DEV ("Команди") tab: admin commands with their answers, and KubeJS errors. Operators only. */
+    public static boolean canSeeDevChat(ServerPlayer player) {
+        return player.hasPermissions(2);
+    }
+
     /** May read the death log and restore deaths from it — which hands out items, so kept apart. */
     public static boolean canUseDeathlog(ServerPlayer player) {
         return player.hasPermissions(2) || LuckPermsCompat.canUseDeathlog(player);

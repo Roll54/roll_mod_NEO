@@ -28,6 +28,8 @@
     "PhantomSpawnerMixin",
     "PlayerAdvancementsMixin",
     "PlayerListBroadcastMixin",
+    "CommandSourceStackDevFeedMixin",
+    "ServerPlayerDiscordLineMixin",
     "ShearsItemMixin",
     "SingleBlockCraftingMachinesMixin",
     "adstra.StationLoaderMixin",
@@ -68,6 +70,14 @@
     "hostility.FoxAlertableEntitiesSelectorMixin",
     "hostility.IronGolemMixin",
     "hostility.SnowGolemMixin"
+  ],
+  "client": [
+    "client.FontSetEmojiMixin",
+    "client.FontManagerEmojiMixin",
+    "client.MinecraftFontManagerMixin",
+    "client.FontRenderOutputEmojiMixin",
+    "client.ChatComponentStoreMixin",
+    "client.ChatScreenEmojiBoxMixin"
   ],
   "injectors": {
     "defaultRequire": 1

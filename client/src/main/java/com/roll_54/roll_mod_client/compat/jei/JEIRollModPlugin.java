@@ -1,27 +1,27 @@
 package com.roll_54.roll_mod_client.compat.jei;
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;
+import com.roll_54.roll_mod.compat.MBD2.recipe.ExampleLavaRecipe;
 import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
 import com.roll_54.roll_mod.minestar.hub.gui.HubReturn;
 import com.roll_54.roll_mod.recipe.ItemResearchRecipe;
 import com.roll_54.roll_mod.registry.BlockRegistry;
 import com.roll_54.roll_mod.registry.MenuTypes;
 import com.roll_54.roll_mod.registry.RecipeRegistry;
+import com.roll_54.roll_mod_client.config.RecipeViewerConfig;
 import com.roll_54.roll_mod_client.gui.screen.ResearchWorkbenchScreen;
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
+import mezz.jei.api.runtime.IJeiRuntime;
 import mezz.jei.api.gui.handlers.IGuiProperties;
 import mezz.jei.api.registration.*;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @JeiPlugin
@@ -33,6 +33,18 @@ public class JEIRollModPlugin implements IModPlugin {
     @Override
     public ResourceLocation getPluginUid() {
         return ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "roll_jei_plugin");
+    }
+
+    /** Hides MBD2's example lava smeltery category unless the client config asks for it. */
+    @Override
+    public void onRuntimeAvailable(IJeiRuntime runtime) {
+        if (RecipeViewerConfig.SHOW_LAVA_SMELTERY.get()) return;
+        try {
+            runtime.getRecipeManager().getRecipeType(ExampleLavaRecipe.LAVA_SMELTERY)
+                    .ifPresent(type -> runtime.getRecipeManager().hideRecipeCategory(type));
+        } catch (RuntimeException e) {
+            // EMI's JEI bridge does not implement every runtime call; EMIRollModPlugin hides it there.
+        }
     }
 
     @Override
@@ -59,30 +71,8 @@ public class JEIRollModPlugin implements IModPlugin {
                 engineeringTableRecipes
         );
 
-        // generate cauldron washing recipes from OreDefinitions
-        List<CauldronWashingRecipe> cauldronRecipes = new ArrayList<>();
-        for (var ore : OreDefinitions.ORE_DEFINITIONS) {
-            String id = ore.id();
-            // impure_<id>_dust -> <id>_dust
-            ResourceLocation inp = ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "impure_" + id + "_dust");
-            ResourceLocation out = ResourceLocation.fromNamespaceAndPath(RollMod.MODID, id + "_dust");
-            var inOpt = BuiltInRegistries.ITEM.getOptional(inp);
-            var outOpt = BuiltInRegistries.ITEM.getOptional(out);
-            if (inOpt.isPresent() && outOpt.isPresent()) {
-                cauldronRecipes.add(new CauldronWashingRecipe(new ItemStack(inOpt.get()), new ItemStack(outOpt.get()), 0.2f));
-            }
-
-            // crushed_<id>_ore -> purified_<id>_ore
-            ResourceLocation crushed = ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "crushed_" + id + "_ore");
-            ResourceLocation purified = ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "purified_" + id + "_ore");
-            var crushedOpt = BuiltInRegistries.ITEM.getOptional(crushed);
-            var purifiedOpt = BuiltInRegistries.ITEM.getOptional(purified);
-            if (crushedOpt.isPresent() && purifiedOpt.isPresent()) {
-                cauldronRecipes.add(new CauldronWashingRecipe(new ItemStack(crushedOpt.get()), new ItemStack(purifiedOpt.get()), 0.2f));
-            }
-        }
-
-        registration.addRecipes(CauldronWashingCategory.TYPE, cauldronRecipes);
+        // generated from OreDefinitions, same as the cauldron interactions themselves
+        registration.addRecipes(CauldronWashingCategory.TYPE, CauldronWashingRecipe.collect());
 
         // Built from the synced data maps, so datapack reagents appear after a /reload too.
         registration.addRecipes(HydroponicReagentCategory.TYPE, HydroponicReagentRecipe.collect());
