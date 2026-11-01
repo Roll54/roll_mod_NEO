@@ -7,6 +7,7 @@ import aztech.modern_industrialization.inventory.SlotPositions;
 import aztech.modern_industrialization.machines.components.OverclockComponent;
 import aztech.modern_industrialization.machines.guicomponents.ProgressBar;
 import aztech.modern_industrialization.machines.init.MachineTier;
+import aztech.modern_industrialization.machines.models.MachineCasing;
 import aztech.modern_industrialization.machines.models.MachineCasings;
 import aztech.modern_industrialization.machines.multiblocks.HatchFlags;
 import aztech.modern_industrialization.machines.multiblocks.ShapeTemplate;
@@ -48,7 +49,7 @@ public final class OreWashers {
 
     public static final String STEAM_ORE_WASHER = "steam_ore_washer";
     public static final String STEAM_ORE_WASHER_NAME = "Steam Ore Washer";
-    /** The controller wears the steel plated bricks it is built from: EI's machine casing of that block. */
+    /** The controller and its hatches wear the steel plated bricks it is built from: EI's machine casing of that block. */
     public static final String STEAM_ORE_WASHER_CASING = "extended_industrialization:steel_plated_bricks";
     /** The KubeJS washer's overlay folder, which the pack ships under MI Tweaks' namespace. */
     public static final ResourceLocation STEAM_ORE_WASHER_OVERLAYS =
@@ -118,7 +119,7 @@ public final class OreWashers {
             return;
         }
         SimpleMember bricks = member("extended_industrialization:steel_plated_bricks");
-        ShapeTemplate shape = new ShapeTemplate.LayeredBuilder(MachineCasings.STEEL, STEAM_ORE_WASHER_LAYERS)
+        ShapeTemplate shape = new ShapeTemplate.LayeredBuilder(steamOreWasherHatchCasing(), STEAM_ORE_WASHER_LAYERS)
                 .key('I', bricks, hatches(ITEM_INPUT, ITEM_OUTPUT, FLUID_INPUT))
                 .key('i', bricks, HatchFlags.NO_HATCH)
                 .key('B', member("modern_industrialization:steel_machine_casing"), HatchFlags.NO_HATCH)
@@ -166,6 +167,20 @@ public final class OreWashers {
                 new ProgressBar.Params(77, 33, "triple_arrow"), type, recipe -> true, true,
                 SteamMode.ELECTRIC_ONLY));
         ReiMachineRecipes.registerWorkstation(machine, machine);
+    }
+
+    /**
+     * What the steam washer's hatches wear: the steel plated bricks they sit in, the same casing as the
+     * controller. EI registers it in its own MI hook, which runs before this one; read straight from
+     * the registry, since {@code MachineCasings.get} throws on a missing name and a pack without it
+     * should still get a working (steel-cased) washer.
+     */
+    private static MachineCasing steamOreWasherHatchCasing() {
+        MachineCasing casing = MachineCasings.registeredCasings.get(ResourceLocation.parse(STEAM_ORE_WASHER_CASING));
+        if (casing != null) return casing;
+        RollMod.LOGGER.warn("[MI] Casing '{}' is missing; '{}' hatches fall back to steel.",
+                STEAM_ORE_WASHER_CASING, STEAM_ORE_WASHER);
+        return MachineCasings.STEEL;
     }
 
     private static SimpleMember member(String id) {
