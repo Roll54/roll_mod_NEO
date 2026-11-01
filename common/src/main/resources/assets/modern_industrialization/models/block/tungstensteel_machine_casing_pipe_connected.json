@@ -1,0 +1,10 @@
+{
+  "loader": "fusion:model",
+  "type": "connecting",
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "modern_industrialization:block/tungstensteel_machine_casing_pipe_ct",
+    "particle": "modern_industrialization:block/tungstensteel_machine_casing_pipe"
+  },
+  "connections": { "type": "match_block", "ignore_missing": true, "block": "modern_industrialization:tungstensteel_machine_casing_pipe" }
+}

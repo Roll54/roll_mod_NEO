@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "hostile_neural_industrialization:block/prediction_machine_casing_framed",
+    "particle": "hostile_neural_industrialization:block/prediction_machine_casing"
+  }
+}

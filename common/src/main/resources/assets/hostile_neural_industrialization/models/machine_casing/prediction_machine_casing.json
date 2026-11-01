@@ -1,0 +1,10 @@
+{
+  "loader": "fusion:model",
+  "type": "connecting",
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "hostile_neural_industrialization:block/prediction_machine_casing_mct",
+    "particle": "hostile_neural_industrialization:block/prediction_machine_casing"
+  },
+  "connections": { "type": "match_block", "ignore_missing": true, "block": "hostile_neural_industrialization:prediction_machine_casing" }
+}

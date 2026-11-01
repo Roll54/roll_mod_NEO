@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "yet_another_industrialization:block/battery_casing_framed",
+    "particle": "yet_another_industrialization:block/battery_casing"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "extended_industrialization:block/steel_plated_bricks_framed",
+    "particle": "extended_industrialization:block/steel_plated_bricks"
+  }
+}

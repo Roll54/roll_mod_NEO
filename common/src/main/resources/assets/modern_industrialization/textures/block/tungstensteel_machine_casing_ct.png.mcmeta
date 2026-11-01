@@ -1,0 +1,10 @@
+{
+  "fusion": {
+    "type": "connecting",
+    "layout": "simple",
+    "connections": [
+      { "type": "match_block", "ignore_missing": true, "block": "modern_industrialization:tungstensteel_machine_casing" },
+      { "type": "mi_ct:machine_casing", "casings": ["tungstensteel_machine_casing"] }
+    ]
+  }
+}

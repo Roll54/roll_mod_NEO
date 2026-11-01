@@ -1,0 +1,13 @@
+{
+  "targets": [
+    "modern_industrialization:steel_machine_casing_pipe"
+  ],
+  "ignore_missing_targets": true,
+  "default_model_overrides": [
+    "modern_industrialization:block/steel_machine_casing_pipe_connected",
+    {
+      "model": "modern_industrialization:block/steel_machine_casing_pipe_framed",
+      "conditions": { "type": "mi_ct:is_framed_block" }
+    }
+  ]
+}

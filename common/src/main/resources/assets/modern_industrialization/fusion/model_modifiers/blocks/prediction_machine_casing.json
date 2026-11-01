@@ -1,0 +1,13 @@
+{
+  "targets": [
+    "hostile_neural_industrialization:prediction_machine_casing"
+  ],
+  "ignore_missing_targets": true,
+  "default_model_overrides": [
+    "hostile_neural_industrialization:block/prediction_machine_casing_connected",
+    {
+      "model": "hostile_neural_industrialization:block/prediction_machine_casing_framed",
+      "conditions": { "type": "mi_ct:is_framed_block" }
+    }
+  ]
+}

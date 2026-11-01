@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "extended_industrialization:block/polished_silver_machine_casing_framed",
+    "particle": "extended_industrialization:block/polished_silver_machine_casing"
+  }
+}

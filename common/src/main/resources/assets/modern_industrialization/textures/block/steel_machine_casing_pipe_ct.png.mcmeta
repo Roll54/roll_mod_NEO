@@ -1,0 +1,10 @@
+{
+  "fusion": {
+    "type": "connecting",
+    "layout": "simple",
+    "connections": [
+      { "type": "match_block", "ignore_missing": true, "block": "modern_industrialization:steel_machine_casing_pipe" },
+      { "type": "mi_ct:machine_casing", "casings": ["extended_industrialization:steel_pipe"] }
+    ]
+  }
+}

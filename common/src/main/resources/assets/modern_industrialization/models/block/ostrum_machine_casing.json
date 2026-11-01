@@ -1,0 +1,10 @@
+{
+  "loader": "fusion:model",
+  "type": "connecting",
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "modern_industrialization:block/ostrum_machine_casing_ct",
+    "particle": "modern_industrialization:block/ostrum_machine_casing"
+  },
+  "connections": { "type": "match_block", "ignore_missing": true, "block": "modern_industrialization:ostrum_machine_casing" }
+}

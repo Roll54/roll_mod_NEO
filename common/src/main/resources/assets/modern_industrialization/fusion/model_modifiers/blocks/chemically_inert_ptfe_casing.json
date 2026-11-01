@@ -1,0 +1,13 @@
+{
+  "targets": [
+    "modern_industrialization:chemically_inert_ptfe_casing"
+  ],
+  "ignore_missing_targets": true,
+  "default_model_overrides": [
+    "modern_industrialization:block/chemically_inert_ptfe_casing_connected",
+    {
+      "model": "modern_industrialization:block/chemically_inert_ptfe_casing_framed",
+      "conditions": { "type": "mi_ct:is_framed_block" }
+    }
+  ]
+}

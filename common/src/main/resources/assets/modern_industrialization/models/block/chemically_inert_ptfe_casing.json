@@ -1,0 +1,13 @@
+{
+  "loader": "fusion:model",
+  "type": "connecting",
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "modern_industrialization:block/chemically_inert_ptfe_casing_ct",
+    "particle": "modern_industrialization:block/chemically_inert_ptfe_casing"
+  },
+  "connections": [
+      { "type": "match_block", "ignore_missing": true, "block": "modern_industrialization:chemically_inert_ptfe_casing" },
+      { "type": "mi_ct:machine_casing", "casings": ["chemically_inert_ptfe_casing"] }
+    ]
+}

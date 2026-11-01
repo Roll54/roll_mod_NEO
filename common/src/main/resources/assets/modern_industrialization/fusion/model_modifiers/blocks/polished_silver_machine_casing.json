@@ -1,0 +1,13 @@
+{
+  "targets": [
+    "extended_industrialization:polished_silver_machine_casing"
+  ],
+  "ignore_missing_targets": true,
+  "default_model_overrides": [
+    "extended_industrialization:block/polished_silver_machine_casing_connected",
+    {
+      "model": "extended_industrialization:block/polished_silver_machine_casing_framed",
+      "conditions": { "type": "mi_ct:is_framed_block" }
+    }
+  ]
+}
