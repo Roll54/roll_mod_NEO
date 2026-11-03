@@ -294,6 +294,8 @@ public class MyConfig extends Config {
                 "roll_mod:skin_anchor", "roll_mod:skin_applicator", "roll_mod:copper_gear", "roll_mod:chemical_core",
                 "roll_mod:supersteel_gear", "roll_mod:super_circuit", "roll_mod:error_item",
                 "roll_mod:example_armor_helmet", "roll_mod:nano_battery",
+                "roll_mod:ruthenium_coin", "roll_mod:sunnarium_glass", "roll_mod:research_workbench",
+                "roll_mod:enderium_prediction_matrix", "roll_mod:nether_star_prediction_matrix",
                 "roll_mod:research_lithography", "roll_mod:research_high_efficiency_steam_turbine",
                 "roll_mod:research_better_circuits_lv", "roll_mod:research_better_circuits_mv",
                 "roll_mod:research_better_circuits_hv", "roll_mod:research_better_circuits_ev",

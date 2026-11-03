@@ -1,4 +1,9 @@
 {
+  "item.modern_industrialization.motor": "Мотор",
+  "item.modern_industrialization.advanced_motor": "Покращений мотор",
+  "item.modern_industrialization.large_motor": "Великий мотор",
+  "item.modern_industrialization.large_advanced_motor": "Великий покращений мотор",
+  "text.modern_industrialization.PutMotorToUpgrade": "Помістіть сюди будь-який мотор, щоб збільшити швидкість труби",
   "_comment_localized_by": "Локалізували (Discord): roll_54, bahbka24, ymna_ytka, vandperson, ales_original, tenwoc",
   "advancements.modern_industrialization.basic_upgrade.description": "Змайструйте модифікатор, щоб збільшити максимальну швидкість електричних рецептів",
   "advancements.modern_industrialization.bronze_mixer": "Змішуй як Гайзенберґ",

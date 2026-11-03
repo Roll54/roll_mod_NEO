@@ -1,0 +1,6 @@
+{
+    "parent": "neoforge:item/bucket",
+    "apply_tint": true,
+    "fluid": "roll_mod:boron_trichloride",
+    "loader": "neoforge:fluid_container"
+}

@@ -68,6 +68,11 @@ public class EMIRollModPlugin implements EmiPlugin {
 
     private static final ResourceLocation LDLIB_TEST_CATEGORY = ResourceLocation.fromNamespaceAndPath("ldlib2", "test_category");
 
+    /** Never in EMI's item list, on top of {@code emi.hiddenItems}: unused or not-yet-obtainable items. */
+    private static final List<String> ALWAYS_HIDDEN = List.of(
+            "roll_mod:ruthenium_coin", "roll_mod:sunnarium_glass", "roll_mod:research_workbench",
+            "roll_mod:enderium_prediction_matrix", "roll_mod:nether_star_prediction_matrix");
+
     @Override
     public void register(EmiRegistry registry) {
         registry.addCategory(ITEM_RESEARCH);
@@ -144,7 +149,10 @@ public class EMIRollModPlugin implements EmiPlugin {
     private static void hideConfiguredItems(EmiRegistry registry) {
         Set<Item> items = new HashSet<>();
         List<TagKey<Item>> tags = new ArrayList<>();
-        for (String entry : MyConfig.INSTANCE.emi.hiddenItems) {
+        List<String> entries = new ArrayList<>(MyConfig.INSTANCE.emi.hiddenItems);
+        // Hidden whatever the config says: a config file saved before these were added keeps its own list.
+        entries.addAll(ALWAYS_HIDDEN);
+        for (String entry : entries) {
             String id = entry.strip();
             if (id.startsWith("#")) {
                 ResourceLocation tag = ResourceLocation.tryParse(id.substring(1));

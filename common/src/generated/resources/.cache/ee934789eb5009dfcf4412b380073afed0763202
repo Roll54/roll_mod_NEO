@@ -1,17 +1,20 @@
-// 1.21.1	2026-11-03T13:14:26.4778662	Fluid Block States: roll_mod
+// 1.21.1	2026-11-03T19:33:32.2913306	Fluid Block States: roll_mod
 2d36e5c71768dbcf26294db28199ca72911e6904 assets/roll_mod/blockstates/block_blencium.json
+b4c475c98b9f2b94c5c8245103e584a362e4385f assets/roll_mod/blockstates/boron_trichloride.json
 57f3ecdf5d0ba5ba8e4a64729d49edf12625e212 assets/roll_mod/blockstates/herbicide_tier_1.json
 f7bb4ce6bd45e8de6f516b90d3aa01bd2d51d97b assets/roll_mod/blockstates/herbicide_tier_2.json
 c1e7f40462f749dfac9b799a81c72481e87b7505 assets/roll_mod/blockstates/herbicide_tier_3.json
 b29de8206dbd24ac0cd9ac99a1f00f42a6db4b30 assets/roll_mod/blockstates/mutagen.json
 5aba756bbd07a54d94d9e1ca7c30a10cd5dee931 assets/roll_mod/blockstates/nuclear_waste.json
 87736a2df6f76a88570b742dd6acc0f50117f258 assets/roll_mod/models/block/block_blencium.json
+996a66f03c1fa60848e8d3d64c603d5a1900af8a assets/roll_mod/models/block/boron_trichloride.json
 996a66f03c1fa60848e8d3d64c603d5a1900af8a assets/roll_mod/models/block/herbicide_tier_1.json
 996a66f03c1fa60848e8d3d64c603d5a1900af8a assets/roll_mod/models/block/herbicide_tier_2.json
 996a66f03c1fa60848e8d3d64c603d5a1900af8a assets/roll_mod/models/block/herbicide_tier_3.json
 0220c7c206e2fd19956739d09d4e2a5ea992b3e6 assets/roll_mod/models/block/mutagen.json
 25eb4c3563ec3c729c3bc10c8848b22ed545ca3d assets/roll_mod/models/block/nuclear_waste.json
 03f23a7c5491a188679e6adc9dd8b53578351736 assets/roll_mod/models/item/block_blencium_bucket.json
+4c9c0fdbfd66faf3e0da050346b4b4096bd6e7d3 assets/roll_mod/models/item/boron_trichloride_bucket.json
 b676f761708c5abe4ce58333f012c3d365a3bea7 assets/roll_mod/models/item/herbicide_tier_1_bucket.json
 94065898d99ea47d7afae0c52ade42e833db26ff assets/roll_mod/models/item/herbicide_tier_2_bucket.json
 e144fe9f15bb41dec0c2c825fc39f9e64942530d assets/roll_mod/models/item/herbicide_tier_3_bucket.json

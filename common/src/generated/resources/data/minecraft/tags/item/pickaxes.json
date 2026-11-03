@@ -1,0 +1,24 @@
+{
+    "values": [
+        "roll_mod:diamond_blockogriz",
+        "roll_mod:meteorite_metal_blockogriz",
+        "roll_mod:iron_blockogriz",
+        "roll_mod:steel_blockogriz",
+        "roll_mod:netherite_blockogriz",
+        "roll_mod:black_steel_blockogriz",
+        "roll_mod:bismuth_bronze_blockogriz",
+        "roll_mod:black_bronze_blockogriz",
+        "roll_mod:steel_pickaxe",
+        "roll_mod:meteorite_pickaxe",
+        "roll_mod:black_bronze_pickaxe",
+        "roll_mod:bismuth_bronze_pickaxe",
+        "roll_mod:black_steel_pickaxe",
+        "roll_mod:lv_modular_drill",
+        "roll_mod:mv_modular_drill",
+        "roll_mod:hv_modular_drill",
+        "roll_mod:ev_modular_drill",
+        "roll_mod:iv_modular_drill",
+        "roll_mod:prospector_pickaxe",
+        "roll_mod:meteorite_metal_prospector_pickaxe"
+    ]
+}

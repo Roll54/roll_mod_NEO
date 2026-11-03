@@ -20,6 +20,14 @@ import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.UseAnim;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.core.component.DataComponents;
+import com.roll_54.roll_mod.items.modulardrill.ModularDrillItem;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -54,6 +62,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
         addSkinSlotTags();
         addTierArmorTags();
         addHerbicideTag();
+        addVanillaLikeTags();
 
         var raw = tag(RAW_ORE);
         var crushed = tag(CRUSHED_ORE);
@@ -216,5 +225,104 @@ public class RollItemTagProvider extends ItemTagsProvider {
                 tag(Tags.Items.ARMORS).add(piece.get());
             }
         }
+    }
+
+    /**
+     * The tags vanilla and the {@code c:} convention give every item of a kind, for every roll_mod item
+     * by what it is: weapons and tools in their tool tags, armour in its slot tag, food and drinks,
+     * ingots and dusts with their material. Vanilla's enchanting tags ({@code enchantable/sword},
+     * {@code enchantable/mining}, {@code enchantable/armor}, …) are built from these, so this is also
+     * what lets the items be enchanted like their vanilla counterparts.
+     */
+    private void addVanillaLikeTags() {
+        for (var holder : ItemRegistry.ITEMS.getEntries()) {
+            Item item = holder.get();
+            String id = holder.getId().getPath();
+
+            // Weapons and tools.
+            if (item instanceof SwordItem || item instanceof ModularSaberItem) {
+                tag(ItemTags.SWORDS).add(item);
+                tag(Tags.Items.MELEE_WEAPON_TOOLS).add(item);
+                tag(Tags.Items.TOOLS).add(item);
+            } else if (item instanceof BlockogrizItem) {
+                // A paxel: a pickaxe, an axe and a shovel in one.
+                tag(ItemTags.PICKAXES).add(item);
+                tag(ItemTags.AXES).add(item);
+                tag(ItemTags.SHOVELS).add(item);
+                miningTool(item);
+            } else if (item instanceof PickaxeItem || item instanceof ModularDrillItem || item instanceof ComponentEnergyDrill) {
+                tag(ItemTags.PICKAXES).add(item);
+                miningTool(item);
+            } else if (item instanceof AxeItem) {
+                tag(ItemTags.AXES).add(item);
+                miningTool(item);
+            } else if (item instanceof ShovelItem) {
+                tag(ItemTags.SHOVELS).add(item);
+                miningTool(item);
+            } else if (item instanceof HoeItem) {
+                tag(ItemTags.HOES).add(item);
+                miningTool(item);
+            }
+
+            // Armour, by slot.
+            if (item instanceof ArmorItem armor && armor.getType() != ArmorItem.Type.BODY) {
+                tag(switch (armor.getType()) {
+                    case HELMET -> ItemTags.HEAD_ARMOR;
+                    case CHESTPLATE -> ItemTags.CHEST_ARMOR;
+                    case LEGGINGS -> ItemTags.LEG_ARMOR;
+                    default -> ItemTags.FOOT_ARMOR;
+                }).add(item);
+                tag(Tags.Items.ARMORS).add(item);
+            }
+
+            // Food and drinks.
+            ItemStack stack = item.getDefaultInstance();
+            FoodProperties food = stack.get(DataComponents.FOOD);
+            if (item.getUseAnimation(stack) == UseAnim.DRINK) {
+                tag(Tags.Items.DRINKS).add(item);
+            } else if (food != null) {
+                tag(Tags.Items.FOODS).add(item);
+                foodKind(item, id, food);
+            }
+
+            // Ingots and dusts, with their material: c:ingots/<material>, c:dusts/<material>.
+            if (id.endsWith("_ingot") && !id.startsWith("hot_")) {
+                String material = id.substring(0, id.length() - "_ingot".length());
+                tag(Tags.Items.INGOTS).add(item);
+                tag(commonTag("ingots/" + material)).add(item);
+            } else if (id.endsWith("_dust") && !id.startsWith("impure_") && !id.startsWith("pure_")
+                    && !id.startsWith("tiny_") && !id.startsWith("small_")) {
+                String material = id.substring(0, id.length() - "_dust".length());
+                tag(Tags.Items.DUSTS).add(item);
+                tag(commonTag("dusts/" + material)).add(item);
+            }
+        }
+    }
+
+    private void miningTool(Item item) {
+        tag(Tags.Items.MINING_TOOL_TOOLS).add(item);
+        tag(Tags.Items.TOOLS).add(item);
+    }
+
+    /** The {@code c:foods/*} kind a food's id names, and food poisoning when it poisons or starves. */
+    private void foodKind(Item item, String id, FoodProperties food) {
+        if (id.endsWith("_seeds")) return;
+        if (id.contains("berry") && !id.contains("pie") && !id.contains("coffee")) tag(Tags.Items.FOODS_BERRY).add(item);
+        if (id.contains("pineapple") && !id.contains("pizza")) tag(Tags.Items.FOODS_FRUIT).add(item);
+        if (id.contains("bell_pepper") || id.contains("potato")) tag(Tags.Items.FOODS_VEGETABLE).add(item);
+        if (id.contains("pie") && !id.contains("pineapple")) tag(Tags.Items.FOODS_PIE).add(item);
+        if (id.contains("candy") || id.contains("gum")) tag(Tags.Items.FOODS_CANDY).add(item);
+        if (id.startsWith("golden_")) tag(Tags.Items.FOODS_GOLDEN).add(item);
+        for (FoodProperties.PossibleEffect effect : food.effects()) {
+            var type = effect.effect().getEffect();
+            if (type.is(MobEffects.POISON) || type.is(MobEffects.HUNGER)) {
+                tag(Tags.Items.FOODS_FOOD_POISONING).add(item);
+                break;
+            }
+        }
+    }
+
+    private static TagKey<Item> commonTag(String path) {
+        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", path));
     }
 }

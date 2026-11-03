@@ -76,6 +76,9 @@ public final class FluidRegistry {
     public static final RollFluid HERBICIDE_TIER_2 = tinted("herbicide_tier_2", 0xFF4B41, MapColor.COLOR_RED);
     public static final RollFluid HERBICIDE_TIER_3 = tinted("herbicide_tier_3", 0x632CFF, MapColor.COLOR_PURPLE);
 
+    /** BCl₃: white with a light green cast. */
+    public static final RollFluid BORON_TRICHLORIDE = tinted("boron_trichloride", 0xE2F5D3, MapColor.SNOW);
+
     public record RollFluid(
             String name,
             DeferredHolder<FluidType, FluidType> type,
