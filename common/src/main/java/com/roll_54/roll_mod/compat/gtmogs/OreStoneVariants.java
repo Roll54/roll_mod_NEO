@@ -20,7 +20,7 @@ import java.util.Map;
  * ores ({@code stone_hematite}, {@code deepslate_hematite}, ...) over stone, deepslate, netherrack or one of
  * the {@link StoneVariant} rocks, the ore of the same material in that rock goes in instead — granite
  * hematite in granite, basalt pyrite in basalt — if that material has it. Vein files stay as they are.
- * See {@code mixin/OreStoneVariantPlacementMixin}.
+ * Used by the vein generators in {@code gtmogs.api.worldgen.generator.veins}.
  */
 public final class OreStoneVariants {
 

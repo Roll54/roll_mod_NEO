@@ -1,12 +1,11 @@
 package com.roll_54.roll_mod.compat.gtmogs;
 
-import com.quantumgarbage.gtmogs.api.transfer.item.CustomItemStackHandler;
+import com.roll_54.roll_mod.gtmogs.api.transfer.item.CustomItemStackHandler;
 import net.minecraft.world.item.ItemStack;
 
 /**
  * The dimension markers of one vein on its EMI/JEI page. Slot 0 shows each marker in turn, a second
- * apiece; the other slots hold them as usual. Used by {@code OreVeinDimensionCycleMixin}, outside the
- * mixin package because mixin classes cannot be instantiated.
+ * apiece; the other slots hold them as usual. Used by {@code GTOreVeinWidget}.
  */
 public class CyclingMarkerHandler extends CustomItemStackHandler {
 

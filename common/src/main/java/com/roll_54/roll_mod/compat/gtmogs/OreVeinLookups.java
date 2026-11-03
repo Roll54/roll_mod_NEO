@@ -1,8 +1,8 @@
 package com.roll_54.roll_mod.compat.gtmogs;
 
-import com.quantumgarbage.gtmogs.api.worldgen.OreVeinDefinition;
-import com.quantumgarbage.gtmogs.api.worldgen.generator.indicators.IndicatorGenerator;
-import com.quantumgarbage.gtmogs.api.worldgen.generator.indicators.SurfaceIndicatorGenerator;
+import com.roll_54.roll_mod.gtmogs.api.worldgen.OreVeinDefinition;
+import com.roll_54.roll_mod.gtmogs.api.worldgen.generator.indicators.IndicatorGenerator;
+import com.roll_54.roll_mod.gtmogs.api.worldgen.generator.indicators.SurfaceIndicatorGenerator;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinition;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;

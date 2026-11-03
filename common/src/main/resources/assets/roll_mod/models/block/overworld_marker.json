@@ -2,12 +2,12 @@
   "parent": "minecraft:block/cube",
   "gui_light": "front",
   "textures": {
-    "down": "gtmogs:block/overworld/down",
-    "east": "gtmogs:block/overworld/east",
-    "north": "gtmogs:block/overworld/north",
+    "down": "roll_mod:block/dim_markers/overworld/down",
+    "east": "roll_mod:block/dim_markers/overworld/east",
+    "north": "roll_mod:block/dim_markers/overworld/north",
     "particle": "#north",
-    "south": "gtmogs:block/overworld/south",
-    "up": "gtmogs:block/overworld/up",
-    "west": "gtmogs:block/overworld/west"
+    "south": "roll_mod:block/dim_markers/overworld/south",
+    "up": "roll_mod:block/dim_markers/overworld/up",
+    "west": "roll_mod:block/dim_markers/overworld/west"
   }
 }

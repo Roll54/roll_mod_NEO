@@ -2,12 +2,12 @@
   "parent": "minecraft:block/cube",
   "gui_light": "front",
   "textures": {
-    "down": "gtmogs:block/glacio/down",
-    "east": "gtmogs:block/glacio/side",
-    "north": "gtmogs:block/glacio/side",
+    "down": "roll_mod:block/dim_markers/glacio/down",
+    "east": "roll_mod:block/dim_markers/glacio/side",
+    "north": "roll_mod:block/dim_markers/glacio/side",
     "particle": "#north",
-    "south": "gtmogs:block/glacio/side",
-    "up": "gtmogs:block/glacio/up",
-    "west": "gtmogs:block/glacio/side"
+    "south": "roll_mod:block/dim_markers/glacio/side",
+    "up": "roll_mod:block/dim_markers/glacio/up",
+    "west": "roll_mod:block/dim_markers/glacio/side"
   }
 }

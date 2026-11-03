@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "ad_astra:moon_stone",
+    "minecraft:deepslate",
+    "minecraft:basalt",
+    "minecraft:soul_soil"
+  ]
+}

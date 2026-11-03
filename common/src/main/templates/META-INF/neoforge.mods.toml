@@ -27,7 +27,7 @@ displayName = "${mod_name}" #mandatory
 # A file name (in the root of the mod JAR) containing a logo for display
 #logoFile="roll_mod.png" #optional
 # A text field displayed in the mod UI
-#credits="" #optional
+credits="Ore veins: GregTech Modern Ore Gen Standalone (gtmogs, LGPL-3.0) by KilaBash, screret, Mikerooni, serenibyss, Tech22, YoungOnion, Ghostipedia, esoterica; see META-INF/licenses/gtmogs-LICENSE"
 # A text field displayed in the mod UI
 authors = "${mod_authors}" #optional
 
@@ -65,11 +65,9 @@ config = "${mod_id}.ae2.mixins.json"
 [[mixins]]
 config = "${mod_id}.mi_ftbquests.mixins.json"
 
-# GTMOGS: puts it under the roll_mod namespace, places ore samples on the ground, waterlogged, and only over
-# their ore, lets veins generate in the flat mining world, and tidies its EMI page. GTMOGS ships inside roll_mod
-# (jar-in-jar, common/build.gradle); the config stays soft so a moved target is skipped instead of failing boot.
+# Ore veins (GTMOGS, built into roll_mod in package gtmogs): its own mixins, chunk ore placement among them.
 [[mixins]]
-config = "${mod_id}.gtmogs.mixins.json"
+config = "${mod_id}.gtmogs_core.mixins.json"
 
 # FallingTree: tools tagged #minecraft:axes (MI/EI chainsaws) count as axes and fell whole trees.
 # Soft: FallingTree is a pack mod, not a dependency; without it the mixin is skipped.

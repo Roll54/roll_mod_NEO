@@ -11,11 +11,13 @@ Create Cybernetics, Ad Astra, Stellaris, Silent Gear — each guarded by a `neof
 the Ad Astra veins), so in the pack every ore comes from a vein. `vanilla/end/end_stibnite` has no `.json`
 extension and is not loaded, as it wasn't in the datapack.
 
-GTMOGS is bundled in roll_mod (jar-in-jar) and everything it names is in the **`roll_mod:`** namespace
-(`compat/gtmogs/mixin/GTMOGSNamespaceMixin`, `GTRegistrationNamespaceMixin`): the `roll_mod:ore_vein`
-registry, generator and indicator types, the dimension marker blocks (`roll_mod:overworld_marker`, …), the
-EMI/JEI category. Old files written for `gtmogs:` (paths `data/<ns>/gtmogs/ore_vein/`, `"type": "gtmogs:classic"`)
-are no longer read. The mod id itself is still `gtmogs`, and so is its `/gtmogs` command.
+GTMOGS is part of roll_mod's own code (package `com.roll_54.roll_mod.gtmogs`, LGPL-3.0, licence in
+`META-INF/licenses/gtmogs-LICENSE`), not a separate mod: no `gtmogs` mod id, nothing to install next to roll_mod.
+Its libraries (LDLib 1, Registrate, Configuration) ship inside roll_mod's jar. Everything it names is in the
+**`roll_mod:`** namespace (`GTMOGS.MOD_ID`): the `roll_mod:ore_vein` registry, generator and indicator types,
+the dimension marker blocks (`roll_mod:overworld_marker`, …), the EMI/JEI category. Old files written for
+`gtmogs:` (paths `data/<ns>/gtmogs/ore_vein/`, `"type": "gtmogs:classic"`) are no longer read. Its config
+(`config/gtmogs.yaml`), save data and the `/gtmogs` command keep their old names.
 
 This document covers the current state of the system, including the additions over upstream GT:M:
 the **`roll_mod:cuboid`** vein generator, **surface indicators**, and the extra **world gen layers**

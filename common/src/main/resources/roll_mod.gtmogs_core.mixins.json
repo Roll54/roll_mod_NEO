@@ -1,0 +1,32 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "com.roll_54.roll_mod.gtmogs.core.mixins",
+    "compatibilityLevel": "JAVA_21",
+    "plugin": "com.roll_54.roll_mod.gtmogs.core.mixins.GTMixinPlugin",
+    "client": [
+      "client.GuiGraphicsAccessor",
+      "ftbchunks.FTBChunksClientMixin",
+      "ftbchunks.LargeMapScreenMixin",
+      "ftbchunks.RegionMapPanelMixin",
+      "neoforge.BakedModelWrapperAccessor"
+    ],
+    "mixins": [
+      "ChunkGeneratorMixin",
+      "LevelAccessor",
+      "OreConfigurationMixin",
+      "OreVeinifierMixin",
+      "RegistryDataLoader$LoaderMixin",
+      "ResourceKeyArgumentAccessor",
+      "ServerGamePacketListenerImplAccessor",
+      "neoforge.ConfiguredModelBuilderAccessor",
+      "neoforge.ConfiguredModelListAccessor",
+      "neoforge.GameDataMixin",
+      "registrate.AbstractRegistrateAccessor",
+      "registrate.RegistrateDataProviderAccessor"
+    ],
+    "injectors": {
+        "defaultRequire": 1,
+        "maxShiftBy": 5
+    }
+}

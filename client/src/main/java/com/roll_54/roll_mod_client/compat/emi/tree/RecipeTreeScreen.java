@@ -13,6 +13,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
@@ -92,12 +93,15 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
         addRenderableWidget(Button.builder(Component.translatable("gui.roll_mod.recipe_tree.recipes"), b -> {
                     if (root != null) pick(root);
                 })
-                .bounds(cx - 62, topPos + 38, 60, 18).build());
+                .bounds(cx - 94, topPos + 38, 60, 18).build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.roll_mod.recipe_tree.auto"), b -> autoResolveAll())
+                .tooltip(Tooltip.create(Component.translatable("gui.roll_mod.recipe_tree.auto.tooltip")))
+                .bounds(cx - 30, topPos + 38, 60, 18).build());
         addRenderableWidget(Button.builder(Component.translatable("gui.roll_mod.recipe_tree.reset"), b -> {
                     RESOLUTIONS.clear();
                     rebuild();
                 })
-                .bounds(cx + 2, topPos + 38, 60, 18).build());
+                .bounds(cx + 34, topPos + 38, 60, 18).build());
         rebuild();
     }
 
@@ -152,6 +156,115 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
         } else {
             showStatus(Component.translatable("gui.roll_mod.recipe_tree.no_recipes"));
         }
+    }
+
+    // ---- auto ----
+
+    /** Passes over the tree; each one picks recipes for the ingredients the previous one added. */
+    private static final int AUTO_PASSES = 64;
+
+    /**
+     * The "Auto" button: every ingredient that has no recipe yet (the root included) gets the shortest one,
+     * down the whole tree, until only base resources are left. Recipes already picked stay as they are.
+     */
+    private void autoResolveAll() {
+        if (root == null) return;
+        List<EmiIngredient> tried = new ArrayList<>();
+        int picked = 0;
+        for (int pass = 0; pass < AUTO_PASSES; pass++) {
+            List<Open> open = new ArrayList<>();
+            collectOpen(build(root, root.getAmount(), new ArrayList<>()), new ArrayList<>(), open);
+            boolean progress = false;
+            for (Open node : open) {
+                if (resolution(node.ingredient()) != null) continue; // picked earlier in this pass
+                if (tried.stream().anyMatch(t -> EmiIngredient.areEqual(t, node.ingredient()))) continue;
+                tried.add(node.ingredient());
+                EmiRecipe recipe = shortestRecipe(node.ingredient(), node.path());
+                if (recipe == null) continue;
+                RESOLUTIONS.add(new Resolution(node.ingredient(), recipe));
+                picked++;
+                progress = true;
+            }
+            if (!progress) break;
+        }
+        rebuild();
+        showStatus(Component.translatable("gui.roll_mod.recipe_tree.auto_done", picked).withStyle(ChatFormatting.DARK_GREEN));
+    }
+
+    private record Open(EmiIngredient ingredient, List<EmiIngredient> path) {}
+
+    /** Nodes without a recipe that could have one, with the ingredients above them. */
+    private static void collectOpen(RecipeTreeNode node, List<EmiIngredient> path, List<Open> out) {
+        if (node.recipe == null) {
+            if (!node.cycle && node.craftable && path.size() < MAX_DEPTH) out.add(new Open(node.ingredient, List.copyOf(path)));
+            return;
+        }
+        path.add(node.ingredient);
+        for (RecipeTreeNode child : node.children) collectOpen(child, path, out);
+        path.remove(path.size() - 1);
+    }
+
+    /**
+     * The shortest recipe for {@code ingredient}: the fewest different inputs, then the fewest input items
+     * per item made. A tag or list is narrowed to the stack the player has, or its first one. Recipes that
+     * take something above it in the tree are skipped (they would loop), and recipes that only undo another
+     * one (ingot from block, block from ingots) come last, so iron ends at its ore, not in a block loop.
+     */
+    private @Nullable EmiRecipe shortestRecipe(EmiIngredient ingredient, List<EmiIngredient> path) {
+        List<EmiStack> stacks = ingredient.getEmiStacks();
+        if (stacks.isEmpty()) return null;
+        if (stacks.size() > 1) {
+            EmiPlayerInventory inventory = EmiPlayerInventory.of(minecraft.player);
+            EmiStack chosen = stacks.stream().filter(inventory.inventory::containsKey).findFirst().orElse(stacks.get(0));
+            return new EmiResolutionRecipe(ingredient, chosen);
+        }
+        EmiStack stack = stacks.get(0);
+        EmiRecipe best = null;
+        double[] bestScore = null;
+        for (EmiRecipe recipe : EmiApi.getRecipeManager().getRecipesByOutput(stack)) {
+            if (!recipe.supportsRecipeTree()) continue;
+            long made = recipe.getOutputs().stream().filter(stack::isEqual).mapToLong(EmiStack::getAmount).max().orElse(0);
+            if (made <= 0) continue;
+            List<EmiIngredient> inputs = mergedInputs(recipe);
+            if (inputs.isEmpty()) continue;
+            if (inputs.stream().anyMatch(in -> mentions(in, stack) || path.stream().anyMatch(p -> mentions(in, p)))) continue;
+            long items = inputs.stream().mapToLong(in -> Math.max(1, in.getAmount())).sum();
+            double[] score = {undoes(recipe, inputs, stack) ? 1 : 0, inputs.size(), (double) items / made};
+            if (bestScore == null || compare(score, bestScore) < 0) {
+                best = recipe;
+                bestScore = score;
+            }
+        }
+        return best;
+    }
+
+    private static int compare(double[] a, double[] b) {
+        for (int i = 0; i < a.length; i++) {
+            int c = Double.compare(a[i], b[i]);
+            if (c != 0) return c;
+        }
+        return 0;
+    }
+
+    /** Whether {@code input} could be {@code other} (shares a stack with it). */
+    private static boolean mentions(EmiIngredient input, EmiIngredient other) {
+        for (EmiStack a : input.getEmiStacks()) {
+            for (EmiStack b : other.getEmiStacks()) {
+                if (a.isEqual(b)) return true;
+            }
+        }
+        return false;
+    }
+
+    /** Whether one of the recipe's inputs is itself made from {@code made}: the recipe just reverses another. */
+    private static boolean undoes(EmiRecipe recipe, List<EmiIngredient> inputs, EmiStack made) {
+        for (EmiIngredient input : inputs) {
+            if (input.getEmiStacks().size() != 1) continue;
+            for (EmiRecipe back : EmiApi.getRecipeManager().getRecipesByOutput(input.getEmiStacks().get(0))) {
+                if (back != recipe && back.getInputs().stream().anyMatch(in -> mentions(in, made))) return true;
+            }
+        }
+        return false;
     }
 
     private void rebuild() {
@@ -491,7 +604,8 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
     }
 
     private void showStatus(Component text) {
-        status = text.copy().withStyle(ChatFormatting.DARK_RED);
+        // Red unless the caller gave it a colour of its own.
+        status = text.getStyle().getColor() == null ? text.copy().withStyle(ChatFormatting.DARK_RED) : text;
         statusUntil = Util.getMillis() + STATUS_MS;
     }
 

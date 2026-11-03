@@ -17,7 +17,7 @@ import java.util.Set;
 
 /**
  * Which ore a surface sample stands for, so a sample is only placed with its ore beneath it
- * ({@code SurfaceIndicatorOreBelowMixin}). A {@code <base>_<ore>_ore_sample} stands for that ore in any
+ * ({@code SurfaceIndicatorGenerator.placeIndicator}). A {@code <base>_<ore>_ore_sample} stands for that ore in any
  * base or rock variant — a stone hematite sample over deepslate or granite hematite counts.
  */
 public final class OreSampleVeins {

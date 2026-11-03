@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:clay",
+    "ad_astra:mars_stone",
+    "minecraft:deepslate",
+    "minecraft:moss_block"
+  ]
+}

@@ -2,12 +2,12 @@
   "parent": "minecraft:block/cube",
   "gui_light": "front",
   "textures": {
-    "down": "gtmogs:block/mercury/down",
-    "east": "gtmogs:block/mercury/side",
-    "north": "gtmogs:block/mercury/side",
+    "down": "roll_mod:block/dim_markers/mercury/down",
+    "east": "roll_mod:block/dim_markers/mercury/side",
+    "north": "roll_mod:block/dim_markers/mercury/side",
     "particle": "#north",
-    "south": "gtmogs:block/mercury/side",
-    "up": "gtmogs:block/mercury/up",
-    "west": "gtmogs:block/mercury/side"
+    "south": "roll_mod:block/dim_markers/mercury/side",
+    "up": "roll_mod:block/dim_markers/mercury/up",
+    "west": "roll_mod:block/dim_markers/mercury/side"
   }
 }

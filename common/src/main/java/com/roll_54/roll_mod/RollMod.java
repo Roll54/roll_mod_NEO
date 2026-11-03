@@ -60,6 +60,11 @@ public final class RollMod {
         // Machines registered through Tesseract's MI hooks (see RMMIHookRegistry) live in these.
         com.roll_54.roll_mod.compat.mi.RMMIRegistries.register(eventBus);
         GeneratedOreRegistry.register(eventBus);
+        // Ore veins: GTMOGS, built into roll_mod (package gtmogs). Its client side only on the physical client.
+        new com.roll_54.roll_mod.gtmogs.GTMOGS(eventBus);
+        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+            com.roll_54.roll_mod.gtmogs.client.GTMOGSClient.init(eventBus);
+        }
         ItemGroups.register(eventBus);
         BlockEntites.register(eventBus);
         ModEffects.register(eventBus);

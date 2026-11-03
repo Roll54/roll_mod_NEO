@@ -2,12 +2,12 @@
   "parent": "minecraft:block/cube",
   "gui_light": "front",
   "textures": {
-    "down": "gtmogs:block/mars/down",
-    "east": "gtmogs:block/mars/side",
-    "north": "gtmogs:block/mars/side",
+    "down": "roll_mod:block/dim_markers/mars/down",
+    "east": "roll_mod:block/dim_markers/mars/side",
+    "north": "roll_mod:block/dim_markers/mars/side",
     "particle": "#north",
-    "south": "gtmogs:block/mars/side",
-    "up": "gtmogs:block/mars/up",
-    "west": "gtmogs:block/mars/side"
+    "south": "roll_mod:block/dim_markers/mars/side",
+    "up": "roll_mod:block/dim_markers/mars/up",
+    "west": "roll_mod:block/dim_markers/mars/side"
   }
 }

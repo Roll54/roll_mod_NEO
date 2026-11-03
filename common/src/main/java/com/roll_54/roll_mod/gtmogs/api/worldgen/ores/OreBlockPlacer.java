@@ -1,0 +1,20 @@
+package com.roll_54.roll_mod.gtmogs.api.worldgen.ores;
+
+import net.minecraft.world.level.chunk.BulkSectionAccess;
+import net.minecraft.world.level.chunk.LevelChunkSection;
+
+/**
+ * Responsible for actually placing a vein's block.
+ * 
+ * <p>
+ * This is invoked for every block a vein needs to place, when the relevant chunk is being generated.<br>
+ * The positions are computed in advance.
+ */
+@FunctionalInterface
+public interface OreBlockPlacer {
+
+    /**
+     * Place a single block at the (precomputed) location this placer is mapped to.
+     */
+    void placeBlock(BulkSectionAccess access, LevelChunkSection section);
+}

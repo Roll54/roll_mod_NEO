@@ -114,6 +114,19 @@ subprojects {
             name = "ModMaven"
             url = "https://modmaven.dev"
         }
+        // GTMOGS (built into roll_mod): LDLib 1, Registrate, JourneyMap API.
+        maven {
+            url = "https://maven.firstdarkdev.xyz/snapshots/"
+            content { includeGroup "com.lowdragmc.ldlib" }
+        }
+        maven {
+            url = "https://mvn.devos.one/snapshots/"
+            content { includeGroup "com.tterrag.registrate" }
+        }
+        maven {
+            url = "https://jm.gserv.me/repository/maven-public/"
+            content { includeGroup "info.journeymap" }
+        }
     }
 
     idea {

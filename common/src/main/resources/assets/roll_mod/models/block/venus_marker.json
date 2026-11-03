@@ -2,12 +2,12 @@
   "parent": "minecraft:block/cube",
   "gui_light": "front",
   "textures": {
-    "down": "gtmogs:block/venus/down",
-    "east": "gtmogs:block/venus/side",
-    "north": "gtmogs:block/venus/side",
+    "down": "roll_mod:block/dim_markers/venus/down",
+    "east": "roll_mod:block/dim_markers/venus/side",
+    "north": "roll_mod:block/dim_markers/venus/side",
     "particle": "#north",
-    "south": "gtmogs:block/venus/side",
-    "up": "gtmogs:block/venus/up",
-    "west": "gtmogs:block/venus/side"
+    "south": "roll_mod:block/dim_markers/venus/side",
+    "up": "roll_mod:block/dim_markers/venus/up",
+    "west": "roll_mod:block/dim_markers/venus/side"
   }
 }

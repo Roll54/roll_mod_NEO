@@ -126,7 +126,8 @@ dependencies {
     // loaded when the mod in question is present.
     compileOnly "dev.emi:emi-neoforge:${emi_version}:api"
     compileOnly "mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}"
-    compileOnly "me.shedaniel:RoughlyEnoughItems-neoforge:26.2.820"
+    // 16.x is REI for 1.21.1 (26.x is for a later Minecraft, whose types GTMOGS's REI pages cannot compile against).
+    compileOnly "me.shedaniel:RoughlyEnoughItems-neoforge:16.0.799"
     compileOnly "curse.maven:jade-324717:7545219"
     compileOnly "curse.maven:carry-on-274259:7393892"
     compileOnly "net.luckperms:api:5.4"
@@ -140,20 +141,41 @@ dependencies {
     // the mixin config is required = false, so without FallingTree it is simply skipped.
     compileOnly files("jars/FallingTree-1.21.1-1.21.1.11.jar")
 
-    // GTMOGS (GregTech ore generation, fork 1.0.8): the pack's ore veins in data/roll_mod/roll_mod/ore_vein
-    // and the compat/gtmogs mixins need it, so roll_mod ships it jar-in-jar. Its own embedded LDLib 1,
-    // Registrate and Configuration come along inside it and live next to LDLib2 (the pack runs both).
-    // A separately installed gtmogs of the same or newer version wins over the bundled one.
-    // The strictly range is required: jar-in-jar drops an unconstrained dependency silently.
-    jarJar(implementation("local:gtmogs-1.21.1:1.0.8")) {
+    // Ore veins: GTMOGS (GregTech Modern Ore Gen Standalone, fork of 1.0.8, LGPL-3.0) is part of roll_mod, in
+    // com.roll_54.roll_mod.gtmogs, not a mod of its own. These are the libraries it shipped inside itself,
+    // now shipped by roll_mod, with the same coordinates so jar-in-jar dedupes them against other mods'
+    // copies; LDLib 1 lives next to LDLib2 (the pack runs both). The strictly range is required: jar-in-jar
+    // drops an unconstrained dependency silently.
+    jarJar(implementation("com.lowdragmc.ldlib:ldlib-neoforge-1.21.1:1.0.35.a")) {
         version {
-            strictly "[1.0.8,)"
-            prefer "1.0.8"
+            strictly "[1.0.35.a,)"
+            prefer "1.0.35.a"
         }
     }
-    // LDLib 1, which GTMOGS embeds (copied out of its META-INF/jarjar): compile-only, for the mixins in
-    // compat/gtmogs that touch its widgets. At runtime it comes in with GTMOGS.
-    compileOnly files("jars/ldlib-neoforge-1.21.1-1.0.35.a.jar")
+    jarJar(implementation("com.tterrag.registrate:Registrate:MC1.21-1.3.0+67")) {
+        version {
+            strictly "[MC1.21-1.3.0+67,)"
+            prefer "MC1.21-1.3.0+67"
+        }
+    }
+    jarJar(implementation("curse.maven:configuration-444699:6779573")) {
+        version {
+            // An exact version: CurseMaven cannot list versions, so a range does not resolve.
+            strictly "6779573"
+        }
+    }
+    compileOnly "org.projectlombok:lombok:1.18.42"
+    annotationProcessor "org.projectlombok:lombok:1.18.42"
+    // GTMOGS's optional integrations (maps, recipe viewers): compile-only, each guarded by a mod check.
+    compileOnly "dev.emi:emi-neoforge:${emi_version}"
+    compileOnly "dev.ftb.mods:ftb-chunks-neoforge:2101.1.8"
+    compileOnly "dev.ftb.mods:ftb-library-neoforge:2101.1.12"
+    compileOnly "info.journeymap:journeymap-api-neoforge:2.0.0-1.21.1-SNAPSHOT"
+    compileOnly "curse.maven:journeymap-32274:6383889"
+    // The Xaero versions GTMOGS is written against (newer ones moved their widgets into a separate lib).
+    compileOnly "curse.maven:xaeros-minimap-263420:6306189"
+    compileOnly "curse.maven:xaeros-world-map-317780:6212662"
+    compileOnly "org.jetbrains:annotations:26.0.1"
 
     // Farmer's Delight: daily-task COOK hook. implementation, not compileOnly, so every dev run loads it
     // and the cooking tasks can be tested out of the box. Still soft for the shipped mod: only the
