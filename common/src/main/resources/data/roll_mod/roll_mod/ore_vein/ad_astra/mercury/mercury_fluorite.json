@@ -1,0 +1,95 @@
+{
+  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "biomes": "#ad_astra:is_mercury",
+  "cluster_size": {
+    "min_inclusive": 72,
+    "max_inclusive": 104,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.7,
+  "dimension_filter": [
+    "ad_astra:mercury"
+  ],
+  "discard_chance_on_air_exposure": 0.6,
+  "generator": {
+    "type": "roll_mod:classic",
+    "primary": {
+      "layers": 5,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:mercury_fluorite"
+          }
+        }
+      ]
+    },
+    "secondary": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:mercury_topaz"
+          }
+        }
+      ]
+    },
+    "between": {
+      "layers": 3,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:mercury_fluorite"
+          }
+        }
+      ]
+    },
+    "sporadic": {
+      "layers": 1,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:mercury_fluosunnarite"
+          }
+        }
+      ]
+    }
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 66
+      },
+      "min_inclusive": {
+        "absolute": -30
+      }
+    }
+  },
+  "layer": "mercury_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:mercury_fluorite_ore_sample",
+        "roll_mod:mercury_fluorite_ore_sample",
+        "roll_mod:mercury_topaz_ore_sample",
+        "roll_mod:mercury_fluosunnarite_ore_sample"
+      ],
+      "tries": 378,
+      "xz_spread": 40
+    }
+  ]
+}

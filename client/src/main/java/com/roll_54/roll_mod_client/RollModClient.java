@@ -184,6 +184,18 @@ public final class RollModClient {
                 }
             }, com.roll_54.roll_mod.registry.BlockRegistry.MODULE_INSTALLATION_TABLE.get().asItem());
 
+            event.registerItem(new net.neoforged.neoforge.client.extensions.common.IClientItemExtensions() {
+                private net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer renderer;
+
+                @Override
+                public net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                    if (renderer == null) {
+                        renderer = new com.roll_54.roll_mod_client.client.gecko.block.HueriStatueItemRenderer();
+                    }
+                    return renderer;
+                }
+            }, com.roll_54.roll_mod.registry.BlockRegistry.HUERI_STATUE.get().asItem());
+
             for (com.roll_54.roll_mod.registry.FluidRegistry.RollFluid fluid : com.roll_54.roll_mod.registry.FluidRegistry.all()) {
                 net.minecraft.resources.ResourceLocation still = fluid.stillTextureId();
                 net.minecraft.resources.ResourceLocation flowing = fluid.flowingTextureId();

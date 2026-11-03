@@ -1,0 +1,25 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "railcraft"
+    }
+  ],
+  "type": "neoforge:add_features",
+  "biomes": "roll_mod:mining_overworld",
+  "features": [
+    "railcraft:lead_ore",
+    "railcraft:nickel_ore_small",
+    "railcraft:nickel_ore_middle",
+    "railcraft:nickel_ore_upper",
+    "railcraft:saltpeter",
+    "railcraft:silver_ore",
+    "railcraft:silver_ore_lower",
+    "railcraft:sulfur_ore_lower",
+    "railcraft:sulfur_ore_upper",
+    "railcraft:tin_ore_small",
+    "railcraft:tin_ore_large",
+    "railcraft:zinc_ore"
+  ],
+  "step": "underground_ores"
+}

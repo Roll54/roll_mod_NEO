@@ -182,10 +182,14 @@ public final class WarpService {
         return true;
     }
 
-    /** Whether {@code player} may use a quest-gated warp: their team finished the quest, or they moderate. */
+    /**
+     * Whether {@code player} may use a quest-gated warp: their team finished the quest, they claimed a quest
+     * reward that opens it ({@code WarpUnlockReward}), or they moderate.
+     */
     public static boolean questUnlocked(ServerPlayer player, Warp warp) {
         return !warp.questLocked() || isModerator(player)
-                || QuestGate.isCompleted(player, warp.requiredQuest());
+                || QuestGate.isCompleted(player, warp.requiredQuest())
+                || QuestGate.rewardUnlocked(player, warp);
     }
 
     /**

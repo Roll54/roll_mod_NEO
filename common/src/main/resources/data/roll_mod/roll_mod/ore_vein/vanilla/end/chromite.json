@@ -1,0 +1,94 @@
+{
+	"biomes": "#c:is_end",
+	"cluster_size": {
+		"min_inclusive": 54,
+		"max_inclusive": 58,
+		"type": "minecraft:uniform"
+	},
+	"density": 0.75,
+	"dimension_filter": [
+		"minecraft:the_end"
+	],
+	"discard_chance_on_air_exposure": 0.75,
+	"generator": {
+		"type": "roll_mod:classic",
+		"primary": {
+			"layers": 4,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:end_chromite"
+					}
+				}
+			]
+		},
+		"secondary": {
+			"layers": 3,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:end_magnetite"
+					}
+				}
+			]
+		},
+		"between": {
+			"layers": 2,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:end_chromite"
+					}
+				}
+			]
+		},
+		"sporadic": {
+			"layers": 3,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:end_gold"
+					}
+				}
+			]
+		}
+	},
+	"height_range": {
+		"height": {
+			"type": "minecraft:uniform",
+			"max_inclusive": {
+				"absolute": 200
+			},
+			"min_inclusive": {
+				"absolute": -30
+			}
+		}
+	},
+	"layer": "endstone",
+	"weight": 10,
+	"indicators": [
+		{
+			"type": "roll_mod:surface",
+			"blocks": [
+				"roll_mod:end_chromite_ore_sample",
+				"roll_mod:end_chromite_ore_sample",
+				"roll_mod:end_magnetite_ore_sample",
+				"roll_mod:end_gold_ore_sample"
+			],
+			"tries": 106,
+			"xz_spread": 25
+		}
+	]
+}

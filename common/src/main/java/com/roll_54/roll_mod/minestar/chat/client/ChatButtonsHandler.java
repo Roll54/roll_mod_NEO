@@ -223,6 +223,10 @@ public final class ChatButtonsHandler {
             if (stripped.isEmpty()) return;
             outgoing = ChatButton.GLOBAL_BUTTON.outgoing(stripped);
             plain = stripped;
+        } else if (state.send().readOnly() && text.contains("xaero-waypoint:")) {
+            // A waypoint shared from Xaero's map while Spam or DEV is picked: those take no messages,
+            // so it goes to Global. Otherwise a share goes through the picked button like anything typed.
+            outgoing = ChatButton.GLOBAL_BUTTON.outgoing(text);
         } else if (state.send().readOnly()) {
             // Spam, DEV: commands only, and a command never gets here.
             notice(Component.translatable("gui.roll_mod.chat.hint.commands_only"));

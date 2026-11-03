@@ -1,0 +1,84 @@
+{
+  "biomes": "#c:is_end",
+  "cluster_size": {
+    "min_inclusive": 45,
+    "max_inclusive": 55,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.7,
+  "dimension_filter": [
+    "minecraft:the_end"
+  ],
+  "discard_chance_on_air_exposure": 0.75,
+  "generator": {
+    "type": "roll_mod:layer",
+    "layer_patterns": [
+      [
+        {
+          "max_size": 5,
+          "min_size": 3,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:end_olivine" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 3
+        },
+        {
+          "max_size": 3,
+          "min_size": 2,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:end_peridot" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 3
+        },
+        {
+          "max_size": 3,
+          "min_size": 2,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:end_pyrope" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 2
+        }
+      ]
+    ]
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 200
+      },
+      "min_inclusive": {
+        "absolute": -30
+      }
+    }
+  },
+  "layer": "endstone",
+  "weight": 10,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:end_olivine_ore_sample",
+        "roll_mod:end_peridot_ore_sample",
+        "roll_mod:end_pyrope_ore_sample"
+      ],
+      "tries": 95,
+      "xz_spread": 22
+    }
+  ]
+}

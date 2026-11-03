@@ -1,0 +1,97 @@
+{
+  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "biomes": "#ad_astra:is_venus",
+  "cluster_size": {
+    "min_inclusive": 78,
+    "max_inclusive": 112,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.75,
+  "dimension_filter": [
+    "ad_astra:venus"
+  ],
+  "discard_chance_on_air_exposure": 0.6,
+  "generator": {
+    "type": "roll_mod:cuboid",
+    "top": {
+      "layers": 6,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:venus_sulfur"
+          }
+        }
+      ]
+    },
+    "middle": {
+      "layers": 5,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:venus_apatite"
+          }
+        }
+      ]
+    },
+    "bottom": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:venus_sulfur"
+          }
+        }
+      ]
+    },
+    "spread": {
+      "layers": 3,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:venus_sunnarium_sulfophosphoorthosilicate"
+          }
+        }
+      ]
+    },
+    "min_y": -20,
+    "max_y": 60
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 70
+      },
+      "min_inclusive": {
+        "absolute": -24
+      }
+    }
+  },
+  "layer": "venus_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:venus_sulfur_ore_sample",
+        "roll_mod:venus_sulfur_ore_sample",
+        "roll_mod:venus_apatite_ore_sample",
+        "roll_mod:venus_sunnarium_sulfophosphoorthosilicate_ore_sample"
+      ],
+      "tries": 408,
+      "xz_spread": 43
+    }
+  ]
+}

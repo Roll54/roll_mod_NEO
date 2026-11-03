@@ -20,7 +20,6 @@ public final class RecipeViewerConfig {
                 .comment("Show the example MBD2 'lava_smeltery' recipe type (EU + water -> lava) in EMI/JEI.",
                         "It only exists to demonstrate MBD2 recipes, so it is hidden by default.")
                 .define("show_lava_smeltery", false);
-
         builder.pop();
         SPEC = builder.build();
     }

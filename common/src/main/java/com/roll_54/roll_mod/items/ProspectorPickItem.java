@@ -1,11 +1,14 @@
 package com.roll_54.roll_mod.items;
 
+import com.roll_54.roll_mod.minestar.chat.ChatChannel;
+import com.roll_54.roll_mod.minestar.chat.ChatChannels;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
@@ -105,7 +108,7 @@ public class ProspectorPickItem extends PickaxeItem {
                         Block block = state.getBlock();
 
                         if (foundOres.add(block)) {
-                            player.sendSystemMessage(
+                            tell(player,
                                     Component.translatable(
                                             "message.roll_mod.prospector.found",
                                             block.getName().copy().withStyle(ChatFormatting.GRAY)
@@ -118,7 +121,7 @@ public class ProspectorPickItem extends PickaxeItem {
         }
 
         if (foundOres.isEmpty()) {
-            player.sendSystemMessage(
+            tell(player,
                     Component.translatable("message.roll_mod.prospector.none")
                             .withStyle(ChatFormatting.RED)
             );
@@ -126,5 +129,12 @@ public class ProspectorPickItem extends PickaxeItem {
 
     }
 
-
+    /** The scan's findings go to the Local tab: they are about where the player stands. */
+    private static void tell(Player player, Component message) {
+        if (player instanceof ServerPlayer serverPlayer) {
+            ChatChannels.deliver(serverPlayer, ChatChannel.LOCAL, message);
+        } else {
+            player.sendSystemMessage(message);
+        }
+    }
 }

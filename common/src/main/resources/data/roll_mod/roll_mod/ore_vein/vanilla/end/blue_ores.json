@@ -1,0 +1,74 @@
+{
+  "biomes": "#c:is_end",
+  "cluster_size": {
+    "min_inclusive": 32,
+    "max_inclusive": 60,
+    "type": "minecraft:uniform"
+  },
+  "density": 1,
+  "dimension_filter": [
+    "minecraft:the_end"
+  ],
+  "discard_chance_on_air_exposure": 0.75,
+  "generator": {
+    "type": "roll_mod:dike",
+    "blocks": [
+      {
+        "block": [
+          {
+            "state": { "Name": "roll_mod:end_sodalite" },
+            "target": { "predicate_type": "minecraft:always_true" }
+          }
+        ],
+        "weight": 4,
+        "min_y": 30,
+        "max_y": 80
+      },
+      {
+        "block": [
+          {
+            "state": { "Name": "roll_mod:end_lapis_lazuli" },
+            "target": { "predicate_type": "minecraft:always_true" }
+          }
+        ],
+        "weight": 5,
+        "min_y": 30,
+        "max_y": 80
+      },
+      {
+        "block": [
+          {
+            "state": { "Name": "roll_mod:end_lazurite" },
+            "target": { "predicate_type": "minecraft:always_true" }
+          }
+        ],
+        "weight": 2,
+        "min_y": 35,
+        "max_y": 75
+      }
+    ],
+    "min_y": 30,
+    "max_y": 80
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": { "absolute": 200 },
+      "min_inclusive": { "absolute": -30 }
+    }
+  },
+  "layer": "endstone",
+  "weight": 10,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:end_sodalite_ore_sample",
+        "roll_mod:end_lapis_lazuli_ore_sample",
+        "roll_mod:end_lazurite_ore_sample"
+      ],
+      "tries": 87,
+      "xz_spread": 21
+    }
+  ]
+}

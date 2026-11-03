@@ -1,0 +1,99 @@
+{
+  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "biomes": "#ad_astra:is_mercury",
+  "cluster_size": {
+    "min_inclusive": 70,
+    "max_inclusive": 102,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.7,
+  "dimension_filter": [
+    "ad_astra:mercury"
+  ],
+  "discard_chance_on_air_exposure": 0.6,
+  "generator": {
+    "type": "roll_mod:layer",
+    "layer_patterns": [
+      [
+        {
+          "max_size": 6,
+          "min_size": 3,
+          "targets": [
+            [
+              {
+                "state": {
+                  "Name": "roll_mod:mercury_stibnite"
+                },
+                "target": {
+                  "predicate_type": "minecraft:always_true"
+                }
+              }
+            ]
+          ],
+          "weight": 5
+        },
+        {
+          "max_size": 5,
+          "min_size": 2,
+          "targets": [
+            [
+              {
+                "state": {
+                  "Name": "roll_mod:mercury_sphalerite"
+                },
+                "target": {
+                  "predicate_type": "minecraft:always_true"
+                }
+              }
+            ]
+          ],
+          "weight": 4
+        },
+        {
+          "max_size": 3,
+          "min_size": 1,
+          "targets": [
+            [
+              {
+                "state": {
+                  "Name": "roll_mod:mercury_antimony"
+                },
+                "target": {
+                  "predicate_type": "minecraft:always_true"
+                }
+              }
+            ]
+          ],
+          "weight": 2
+        }
+      ]
+    ]
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 62
+      },
+      "min_inclusive": {
+        "absolute": -32
+      }
+    }
+  },
+  "layer": "mercury_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:mercury_stibnite_ore_sample",
+        "roll_mod:mercury_stibnite_ore_sample",
+        "roll_mod:mercury_sphalerite_ore_sample",
+        "roll_mod:mercury_sphalerite_ore_sample",
+        "roll_mod:mercury_antimony_ore_sample"
+      ],
+      "tries": 370,
+      "xz_spread": 39
+    }
+  ]
+}

@@ -11,7 +11,8 @@ public class GhostHandlerRegistry implements IModPlugin {
 
   @Override
   public ResourceLocation getPluginUid() {
-    return RollMod.id("jei_plugin");
+    // Not "jei_plugin": GTMOGS, bundled and namespaced roll_mod, takes roll_mod:jei_plugin.
+    return RollMod.id("vending_ghost_jei_plugin");
   }
 
   @Override

@@ -16,6 +16,7 @@ import com.roll_54.roll_mod.items.armor.geckolib.ExampleArmorItem;
 import com.roll_54.roll_mod.items.armor.geckolib.HazmatHelmetItem;
 import com.roll_54.roll_mod.items.armor.geckolib.MultiProtectingGraviChestItem;
 import com.roll_54.roll_mod.items.armor.geckolib.SkinAnchorItem;
+import com.roll_54.roll_mod.items.cyberware.AerialMiningStabilizerItem;
 import com.roll_54.roll_mod.items.cyberware.CropLenseItem;
 import com.roll_54.roll_mod.items.cyberware.CropModuleItem;
 import com.roll_54.roll_mod.items.cyberware.RadioImplantItem;
@@ -1226,6 +1227,7 @@ public class ItemRegistry {
                             .nutrition(5)
                             .saturationModifier(1.0f)
                             .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 6000, 1), 1.0f)
+                            .usingConvertsTo(Items.BOWL)
                             .build()
             ))
     );
@@ -1309,12 +1311,13 @@ public class ItemRegistry {
     // 🍹 Мохіто
     public static final DeferredHolder<Item, Item> MOJITO = ITEMS.register(
             "mojito",
-            () -> new Item(new Item.Properties()
+            () -> new DrinkItem(new Item.Properties()
                     .stacksTo(16)
                     .food(new FoodProperties.Builder()
                             .nutrition(4)
                             .saturationModifier(0.3f)
                             .alwaysEdible()
+                            .usingConvertsTo(Items.GLASS_BOTTLE)
                             .effect(() -> new MobEffectInstance(MobEffects.MOVEMENT_SPEED, 1800, 0), 1.0f)
                             .effect(() -> new MobEffectInstance(MobEffects.DIG_SPEED, 1800, 0), 1.0f)
                             .build())
@@ -1607,7 +1610,6 @@ public class ItemRegistry {
                     )
             );
 
-    public static final DeferredHolder<Item, LunarClockItem> LUNAR_PHASE_CLOCK = ITEMS.register("moon_phase_clock", () -> new LunarClockItem(new Item.Properties()));
 
     public static final DeferredHolder<Item, Item> POTASSIUM_DUST = ITEMS.register("potassium_dust", () -> new Item(new Item.Properties()));
     public static final DeferredHolder<Item, Item> STONE_DUST = ITEMS.register("stone_dust", () -> new Item(new Item.Properties()));
@@ -2309,6 +2311,45 @@ public class ItemRegistry {
                                 ).withStyle(ChatFormatting.RED));
 
 
+                            } else {
+                                tooltipComponents.add(Component.translatable(
+                                        "tooltip.createcybernetics.hold_shift_down"
+                                ));
+                            }
+
+                            super.appendHoverText(
+                                    stack,
+                                    context,
+                                    tooltipComponents,
+                                    tooltipFlag
+                            );
+                        }
+                    });
+
+    // No airborne mining slowdown while installed; see minestar/perks/FlightMiningSpeed.
+    public static final DeferredHolder<Item, AerialMiningStabilizerItem> BODYUPGRADE_AERIAL_MINING =
+            ITEMS.register("bodyupgrade_aerial_mining",
+                    () -> new AerialMiningStabilizerItem(new Item.Properties().stacksTo(1), 5) {
+                        @Override
+                        public void appendHoverText(
+                                ItemStack stack,
+                                Item.TooltipContext context,
+                                List<Component> tooltipComponents,
+                                TooltipFlag tooltipFlag
+                        ) {
+                            tooltipComponents.add(Component.translatable(
+                                    "tooltip.createcybernetics.basecyberware_tooltip"
+                            ));
+
+                            if (Screen.hasShiftDown()) {
+                                tooltipComponents.add(Component.translatable(
+                                        "tooltip.roll_mod.bodyupgrade_aerial_mining.desc.1"
+                                ).withStyle(ChatFormatting.GRAY));
+
+                                tooltipComponents.add(Component.translatable(
+                                        "tooltip.createcybernetics.humanity",
+                                        getHumanityCost()
+                                ).withStyle(ChatFormatting.GOLD));
                             } else {
                                 tooltipComponents.add(Component.translatable(
                                         "tooltip.createcybernetics.hold_shift_down"

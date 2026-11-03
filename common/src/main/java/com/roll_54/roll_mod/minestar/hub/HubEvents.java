@@ -56,6 +56,9 @@ public final class HubEvents {
     public static void onLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             TpaViewers.resync(player.server);
+            // The warp list up front, not only once the hub opens: the "unlock warp" quest reward's
+            // editor picks from it (WarpUnlockReward).
+            com.roll_54.roll_mod.minestar.hub.warp.WarpViewers.syncTo(player);
             // A friend arriving here changes their "online here" mark in every open friends tab.
             FriendViewers.resync(player.server);
             // Loaded once at login so the friends bookmark can already show waiting requests.

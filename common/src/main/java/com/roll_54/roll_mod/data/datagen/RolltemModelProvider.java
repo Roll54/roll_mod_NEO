@@ -224,6 +224,10 @@ public class RolltemModelProvider extends ItemModelProvider {
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/lungsupgrade_sulfur_resistance"));
 
+        getBuilder(ItemRegistry.BODYUPGRADE_AERIAL_MINING.get().toString())
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/bodyupgrade_aerial_mining"));
+
         getBuilder(ItemRegistry.BASECYBERWARE_LEFTLEG_METEORITE_METAL.get().toString())
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/cyberware/basecyberware_leftleg_meteorite_metal"));
@@ -401,15 +405,6 @@ public class RolltemModelProvider extends ItemModelProvider {
         seedItemModel(ItemRegistry.RED_BELL_PEPPER_SEEDS.get());
         seedItemModel(ItemRegistry.YELLOW_BELL_PEPPER_SEEDS.get());
         seedItemModel(ItemRegistry.GREEN_BELL_PEPPER_SEEDS.get());
-        // TODO no textures yet: item/crop_textures/<colour>_bell_pepper_seeds.png
-        // seedItemModel(ItemRegistry.WILD_PALE_BELL_PEPPER_SEEDS.get());
-        // seedItemModel(ItemRegistry.WILD_DARK_BELL_PEPPER_SEEDS.get());
-        // seedItemModel(ItemRegistry.ORANGE_BELL_PEPPER_SEEDS.get());
-        // seedItemModel(ItemRegistry.WHITE_BELL_PEPPER_SEEDS.get());
-        // seedItemModel(ItemRegistry.PINK_BELL_PEPPER_SEEDS.get());
-        // seedItemModel(ItemRegistry.BLACK_BELL_PEPPER_SEEDS.get());
-        // seedItemModel(ItemRegistry.PURPLE_BELL_PEPPER_SEEDS.get());
-        // seedItemModel(ItemRegistry.BLUE_BELL_PEPPER_SEEDS.get());
         seedItemModel(ItemRegistry.SULFUR_BERRY_COFFEE_BEANS.get());
         seedItemModel(ItemRegistry.SULFUR_BERRY_COFFEE_SEEDS.get());
         seedItemModel(ItemRegistry.FLUORITE_PINEAPPLE.get());
@@ -436,17 +431,16 @@ public class RolltemModelProvider extends ItemModelProvider {
         generateAgricraftPlantModels("red_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
         generateAgricraftPlantModels("yellow_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
         generateAgricraftPlantModels("green_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
-        // Seed PNGs (item/crop_textures/<plant>_seeds.png) are missing for these peppers, so only the
-        // crop stages are generated. Once the textures exist, switch back to generateAgricraftPlantModels
-        // and uncomment their seedItemModel calls above.
-        generateCropStageModels("wild_pale_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
-        generateCropStageModels("wild_dark_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
-        generateCropStageModels("orange_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
-        generateCropStageModels("white_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
-        generateCropStageModels("pink_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
-        generateCropStageModels("black_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
-        generateCropStageModels("purple_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
-        generateCropStageModels("blue_bell_pepper", 8, AgricraftCropModel.CROP_CROSS);
+        // These peppers share two seed textures: the pale ones item/crop_textures/light_bell_pepper_seeds,
+        // the dark ones dark_bell_pepper_seeds. Red, yellow and green have their own (all three alike).
+        generatePepperModels("wild_pale_bell_pepper", "light_bell_pepper_seeds");
+        generatePepperModels("wild_dark_bell_pepper", "dark_bell_pepper_seeds");
+        generatePepperModels("orange_bell_pepper", "light_bell_pepper_seeds");
+        generatePepperModels("white_bell_pepper", "light_bell_pepper_seeds");
+        generatePepperModels("pink_bell_pepper", "light_bell_pepper_seeds");
+        generatePepperModels("black_bell_pepper", "dark_bell_pepper_seeds");
+        generatePepperModels("purple_bell_pepper", "dark_bell_pepper_seeds");
+        generatePepperModels("blue_bell_pepper", "dark_bell_pepper_seeds");
 
         generateAgricraftPlantModels("sulfur_berry_coffee", 6, AgricraftCropModel.CROP_CROSS);
 
@@ -503,6 +497,21 @@ public class RolltemModelProvider extends ItemModelProvider {
         this.getBuilder("seed/" + plantName)
                 .parent(new ModelFile.UncheckedModelFile("item/generated"))
                 .texture("layer0", ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/crop_textures/" + plantName + "_seeds"));
+    }
+
+    /**
+     * A bell pepper whose seeds wear a shared texture (item/crop_textures/<seedTexture>): its seed item model,
+     * its AgriCraft seed model and its 8 crop stages.
+     */
+    private void generatePepperModels(String plantName, String seedTexture) {
+        ResourceLocation texture = ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "item/crop_textures/" + seedTexture);
+        this.getBuilder(plantName + "_seeds")
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", texture);
+        this.getBuilder("seed/" + plantName)
+                .parent(new ModelFile.UncheckedModelFile("item/generated"))
+                .texture("layer0", texture);
+        generateCropStageModels(plantName, 8, AgricraftCropModel.CROP_CROSS);
     }
 
     public void generateAgricraftPlantModels(String plantName, int numTextures, AgricraftCropModel cropModel) {

@@ -53,9 +53,10 @@ public class TooltipArmorItem extends ArmorItem implements GeoItem {
         TooltipManager.addLore(stack, opts, tooltip, flag);
     }
 
+    /** Glints when enchanted, as any armour does, and always when the piece is set to glow. */
     @Override
     public boolean isFoil(ItemStack stack) {
-        return opts != null && opts.glow();
+        return super.isFoil(stack) || (opts != null && opts.glow());
     }
 
     @Override

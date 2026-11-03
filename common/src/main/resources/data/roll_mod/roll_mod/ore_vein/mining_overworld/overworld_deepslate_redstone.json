@@ -1,0 +1,94 @@
+{
+	"biomes": "roll_mod:mining_overworld",
+	"cluster_size": {
+		"min_inclusive": 30,
+		"max_inclusive": 36,
+		"type": "minecraft:uniform"
+	},
+	"density": 0.75,
+	"dimension_filter": [
+		"roll_mod:mining_overworld"
+	],
+	"discard_chance_on_air_exposure": 0.75,
+	"generator": {
+		"type": "roll_mod:classic",
+		"primary": {
+			"layers": 4,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:deepslate_redstone"
+					}
+				}
+			]
+		},
+		"secondary": {
+			"layers": 3,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:deepslate_ruby"
+					}
+				}
+			]
+		},
+		"between": {
+			"layers": 2,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:deepslate_redstone"
+					}
+				}
+			]
+		},
+		"sporadic": {
+			"layers": 1,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:deepslate_ruby"
+					}
+				}
+			]
+		}
+	},
+	"height_range": {
+		"height": {
+			"type": "minecraft:uniform",
+			"max_inclusive": {
+				"absolute": -6
+			},
+			"min_inclusive": {
+				"absolute": -56
+			}
+		}
+	},
+	"layer": "mining_overworld_deepslate",
+	"weight": 20,
+	"indicators": [
+		{
+			"type": "roll_mod:surface",
+			"blocks": [
+				"roll_mod:deepslate_redstone_ore_sample",
+				"roll_mod:deepslate_redstone_ore_sample",
+				"roll_mod:deepslate_ruby_ore_sample",
+				"roll_mod:deepslate_ruby_ore_sample"
+			],
+			"tries": 4,
+			"xz_spread": 15
+		}
+	]
+}

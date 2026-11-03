@@ -40,7 +40,6 @@ public class CapabilityRegistry {
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.ULTRA_BATTERY.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.HV_STORM_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.LV_STORM_SCANNER.get());
-        ISimpleEnergyItem.registerStorage(event, ItemRegistry.LUNAR_PHASE_CLOCK.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.MULTI_PROTECTING_GRAVI_CHESTPLATE.get());
         // Modular drills get a hand-built storage instead of registerStorage: with an XP Reactor
         // installed the drill's max input is 0, so every external charger's receive() is refused

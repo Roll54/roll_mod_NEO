@@ -1,0 +1,98 @@
+{
+  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "biomes": "#ad_astra:is_mercury",
+  "cluster_size": {
+    "min_inclusive": 76,
+    "max_inclusive": 108,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.7,
+  "dimension_filter": [
+    "ad_astra:mercury"
+  ],
+  "discard_chance_on_air_exposure": 0.6,
+  "generator": {
+    "type": "roll_mod:cuboid",
+    "top": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:mercury_quartz"
+          }
+        }
+      ]
+    },
+    "middle": {
+      "layers": 6,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:mercury_monazite"
+          }
+        }
+      ]
+    },
+    "bottom": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:mercury_certus_quartz"
+          }
+        }
+      ]
+    },
+    "spread": {
+      "layers": 3,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:mercury_sunnarium_orthosilicate"
+          }
+        }
+      ]
+    },
+    "min_y": -30,
+    "max_y": 58
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 64
+      },
+      "min_inclusive": {
+        "absolute": -34
+      }
+    }
+  },
+  "layer": "mercury_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:mercury_monazite_ore_sample",
+        "roll_mod:mercury_monazite_ore_sample",
+        "roll_mod:mercury_quartz_ore_sample",
+        "roll_mod:mercury_certus_quartz_ore_sample",
+        "roll_mod:mercury_sunnarium_orthosilicate_ore_sample"
+      ],
+      "tries": 396,
+      "xz_spread": 41
+    }
+  ]
+}

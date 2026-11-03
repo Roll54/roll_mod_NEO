@@ -1,0 +1,105 @@
+{
+  "biomes": "#c:is_end",
+  "cluster_size": {
+    "min_inclusive": 50,
+    "max_inclusive": 90,
+    "type": "minecraft:uniform"
+  },
+  "density": 1.0,
+  "dimension_filter": [
+    "minecraft:the_end"
+  ],
+  "discard_chance_on_air_exposure": 0.75,
+  "generator": {
+    "type": "roll_mod:cuboid",
+    "top": {
+      "layers": 6,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:end_pyrolusite"
+          }
+        }
+      ]
+    },
+    "middle": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:end_rhodochrosite"
+          }
+        },
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:end_rhodochrosite"
+          }
+        }
+      ]
+    },
+    "bottom": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:end_magnetite"
+          }
+        }
+      ]
+    },
+    "spread": {
+      "layers": 6,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:end_pyrite"
+          }
+        }
+      ]
+    },
+    "min_y": 8,
+    "max_y": 100
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 200
+      },
+      "min_inclusive": {
+        "absolute": -30
+      }
+    }
+  },
+  "layer": "endstone",
+  "weight": 10,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:end_pyrolusite_ore_sample",
+        "roll_mod:end_rhodochrosite_ore_sample",
+        "roll_mod:end_rhodochrosite_ore_sample",
+        "roll_mod:end_magnetite_ore_sample",
+        "roll_mod:end_pyrite_ore_sample"
+      ],
+      "tries": 133,
+      "xz_spread": 28
+    }
+  ]
+}

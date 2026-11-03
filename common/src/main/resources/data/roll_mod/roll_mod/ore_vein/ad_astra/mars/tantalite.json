@@ -1,0 +1,75 @@
+{
+  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "biomes": "#ad_astra:is_mars",
+  "cluster_size": {
+    "min_inclusive": 24,
+    "max_inclusive": 48,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.9,
+  "dimension_filter": [
+    "ad_astra:mars"
+  ],
+  "discard_chance_on_air_exposure": 0.6,
+  "generator": {
+    "type": "roll_mod:dike",
+    "blocks": [
+      {
+        "block": [
+          {
+            "state": { "Name": "roll_mod:mars_tantalite" },
+            "target": { "predicate_type": "minecraft:always_true" }
+          }
+        ],
+        "weight": 5,
+        "min_y": -10,
+        "max_y": 60
+      },
+      {
+        "block": [
+          {
+            "state": { "Name": "roll_mod:mars_molybdenum" },
+            "target": { "predicate_type": "minecraft:always_true" }
+          }
+        ],
+        "weight": 3,
+        "min_y": -5,
+        "max_y": 65
+      },
+      {
+        "block": [
+          {
+            "state": { "Name": "roll_mod:mars_pyrolusite" },
+            "target": { "predicate_type": "minecraft:always_true" }
+          }
+        ],
+        "weight": 2,
+        "min_y": 0,
+        "max_y": 70
+      }
+    ],
+    "min_y": -10,
+    "max_y": 70
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": { "absolute": 70 },
+      "min_inclusive": { "absolute": -20 }
+    }
+  },
+  "layer": "mars_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:mars_tantalite_ore_sample",
+        "roll_mod:mars_molybdenum_ore_sample",
+        "roll_mod:mars_pyrolusite_ore_sample"
+      ],
+      "tries": 155,
+      "xz_spread": 16
+    }
+  ]
+}

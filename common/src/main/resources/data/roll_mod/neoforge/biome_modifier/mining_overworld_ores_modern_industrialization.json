@@ -1,0 +1,33 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "modern_industrialization"
+    }
+  ],
+  "type": "neoforge:add_features",
+  "biomes": "roll_mod:mining_overworld",
+  "features": [
+    "modern_industrialization:ore_generator_antimony",
+    "modern_industrialization:deepslate_ore_generator_antimony",
+    "modern_industrialization:ore_generator_bauxite",
+    "modern_industrialization:deepslate_ore_generator_bauxite",
+    "modern_industrialization:ore_generator_lead",
+    "modern_industrialization:deepslate_ore_generator_lead",
+    "modern_industrialization:ore_generator_lignite_coal",
+    "modern_industrialization:deepslate_ore_generator_lignite_coal",
+    "modern_industrialization:ore_generator_monazite",
+    "modern_industrialization:deepslate_ore_generator_monazite",
+    "modern_industrialization:ore_generator_nickel",
+    "modern_industrialization:deepslate_ore_generator_nickel",
+    "modern_industrialization:ore_generator_salt",
+    "modern_industrialization:deepslate_ore_generator_salt",
+    "modern_industrialization:ore_generator_tin",
+    "modern_industrialization:deepslate_ore_generator_tin",
+    "modern_industrialization:ore_generator_tungsten",
+    "modern_industrialization:deepslate_ore_generator_tungsten",
+    "modern_industrialization:ore_generator_uranium",
+    "modern_industrialization:deepslate_ore_generator_uranium"
+  ],
+  "step": "underground_ores"
+}

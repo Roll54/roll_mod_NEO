@@ -47,6 +47,14 @@ subprojects {
     ]
 
     repositories {
+        // Local jars that roll_mod ships inside itself (group "local"). Jar-in-jar needs a module
+        // (group:name:version), not files(...), so they resolve from common/jars by file name,
+        // <name>-<version>.jar. Here rather than in :common, so :client and :server, which get them
+        // through :common, can resolve them too.
+        flatDir {
+            dirs rootProject.file("common/jars")
+            content { includeGroup "local" }
+        }
         mavenLocal()
         mavenCentral()
         maven {

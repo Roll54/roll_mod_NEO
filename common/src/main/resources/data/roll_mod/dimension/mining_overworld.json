@@ -1,9 +1,9 @@
 {
-  "type": "minecraft:overworld",
+  "type": "roll_mod:mining_overworld",
   "generator": {
     "type": "minecraft:flat",
     "settings": {
-      "features": false,
+      "features": true,
       "lakes": false,
       "biome": "roll_mod:mining_overworld",
       "structure_overrides": [],

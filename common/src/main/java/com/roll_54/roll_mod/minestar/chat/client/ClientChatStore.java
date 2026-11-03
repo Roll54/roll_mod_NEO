@@ -8,13 +8,16 @@ import com.roll_54.roll_mod.minestar.chat.emoji.EmojiRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 
@@ -87,7 +90,32 @@ public final class ClientChatStore {
     /** A channel line from the server; {@code partner} names the other side of a PM line. */
     public static void receive(ChatChannel channel, Component message, String partner) {
         if (channel == ChatChannel.PM && !partner.isEmpty()) pmPartner = partner;
+        if (handToXaero(channel, message)) return;
         add(channel, message);
+    }
+
+    /** The channel a line Xaero's minimap is turning into its own goes to, while it does. */
+    @Nullable
+    private static ChatChannel handingOver;
+
+    /**
+     * A waypoint shared from Xaero's map arrives on a channel like any message, but Xaero only reads shares
+     * from vanilla chat. So the line is handed to it as one; Xaero answers with its own line (the waypoint,
+     * with an "add" button), which {@link #intercept} files under the same channel. False when Xaero is
+     * absent or did not take it — the line is then shown as it is.
+     */
+    private static boolean handToXaero(ChatChannel channel, Component message) {
+        if (!ModList.get().isLoaded("xaerominimap")) return false;
+        String text = message.getString();
+        if (!text.contains("xaero-waypoint:") && !text.contains("xaero_waypoint:")) return false;
+        handingOver = channel;
+        try {
+            ClientChatReceivedEvent.System event = new ClientChatReceivedEvent.System(message, false);
+            NeoForge.EVENT_BUS.post(event);
+            return event.isCanceled();
+        } finally {
+            handingOver = null;
+        }
     }
 
     /**
@@ -99,6 +127,8 @@ public final class ClientChatStore {
     public static void onReceived(ClientChatReceivedEvent event) {
         // The action bar is not chat.
         if (event instanceof ClientChatReceivedEvent.System system && system.isOverlay()) return;
+        // Our own hand-over to Xaero (handToXaero): the channel line itself is filed there.
+        if (handingOver != null) return;
         Component message = event.getMessage();
         ChatChannel channel = classify(message, event instanceof ClientChatReceivedEvent.Player);
         event.setCanceled(true);
@@ -128,6 +158,8 @@ public final class ClientChatStore {
             // "[Name: did something]", the echo of other operators' commands.
             if (key.equals("chat.type.admin") && devAccess) return ChatChannel.DEV;
         }
+        // KubeJS's own lines — reload results, script errors, /kubejs answers — are staff business.
+        if (devAccess && isKubeJs(message)) return ChatChannel.DEV;
         // Advancements, deaths, joins and leaves, announcements and everything else.
         return ChatChannel.SPAM;
     }
@@ -230,10 +262,10 @@ public final class ClientChatStore {
 
     /** Refills the vanilla chat with what the current view shows — after a channel button is clicked. */
     public static void refresh() {
-        // The view now on screen has been read: All shows every channel, a channel view its own.
+        // The view now on screen has been read: All the channels it shows, a channel view its own.
         ChatButton view = ChatChannelState.get().view();
         if (ChatButton.ALL.equals(view.id())) {
-            UNREAD.clear();
+            UNREAD.removeIf(ChatChannelState.get()::inAll);
         } else if (view.channel() != null) {
             UNREAD.remove(view.channel());
         }
@@ -268,14 +300,29 @@ public final class ClientChatStore {
      */
     public static boolean intercept(Component message) {
         if (showing) return false;
-        add(classify(message, false), message);
+        add(handingOver != null ? handingOver : classify(message, false), message);
         return true;
+    }
+
+    /** A line from KubeJS: it names itself, or one of its parts is a KubeJS translation or {@code /kubejs} link. */
+    private static boolean isKubeJs(Component message) {
+        if (message.getString().toLowerCase(Locale.ROOT).contains("kubejs")) return true;
+        if (message.getContents() instanceof TranslatableContents translatable
+                && translatable.getKey().startsWith("kubejs")) return true;
+        ClickEvent click = message.getStyle().getClickEvent();
+        if (click != null && click.getValue().startsWith("/kubejs")) return true;
+        for (Component sibling : message.getSiblings()) {
+            if (isKubeJs(sibling)) return true;
+        }
+        return false;
     }
 
     /** Whether the current view shows a line of {@code channel}. */
     private static boolean shows(ChatChannel channel) {
-        ChatButton view = ChatChannelState.get().view();
-        if (ChatButton.ALL.equals(view.id())) return true;
+        ChatChannelState state = ChatChannelState.get();
+        ChatButton view = state.view();
+        // All shows every channel the player has not taken out of it (Spam and DEV, by default).
+        if (ChatButton.ALL.equals(view.id())) return state.inAll(channel);
         return channel == view.channel();
     }
 

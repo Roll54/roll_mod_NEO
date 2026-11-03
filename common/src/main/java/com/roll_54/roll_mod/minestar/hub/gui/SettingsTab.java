@@ -20,6 +20,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.utils.UIElementProvider;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.chat.ChatButton;
 import com.roll_54.roll_mod.minestar.chat.ChatChannelState;
+import com.roll_54.roll_mod.minestar.chat.client.ClientChatStore;
 import com.roll_54.roll_mod.minestar.theme.RollUi;
 import com.roll_54.roll_mod.minestar.theme.UiTheme;
 import com.roll_54.roll_mod.minestar.theme.UiThemeState;
@@ -305,6 +306,8 @@ final class SettingsTab {
         shown.layout(l -> l.width(SMALL).height(SMALL).flexShrink(0));
         shown.setOnToggleChanged(on -> {
             state.setHidden(button.id(), !on);
+            // An unticked channel is out of All too, so the open chat redraws.
+            ClientChatStore.refresh();
             // The last visible button refuses to hide; put the tick back if so.
             if (shown.isOn() == state.isHidden(button.id())) shown.setOn(!state.isHidden(button.id()), false);
         });

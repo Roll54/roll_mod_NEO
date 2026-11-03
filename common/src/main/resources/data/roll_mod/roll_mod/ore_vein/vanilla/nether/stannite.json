@@ -1,0 +1,115 @@
+{
+  "biomes": "#minecraft:is_nether",
+  "cluster_size": {
+    "min_inclusive": 16,
+    "max_inclusive": 48,
+    "type": "minecraft:uniform"
+  },
+  "density": 1.0,
+  "dimension_filter": [
+    "minecraft:the_nether"
+  ],
+  "discard_chance_on_air_exposure": 0.75,
+  "generator": {
+    "type": "roll_mod:cuboid",
+    "top": {
+      "layers": 5,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_stannite"
+          }
+        }
+      ]
+    },
+    "middle": {
+      "layers": 5,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_stannite"
+          }
+        },
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_pyrite"
+          }
+        }
+      ]
+    },
+    "bottom": {
+      "layers": 5,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_pyrite"
+          }
+        },
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_sphalerite"
+          }
+        }
+      ]
+    },
+    "spread": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_sphalerite"
+          }
+        }
+      ]
+    },
+    "min_y": 8,
+    "max_y": 100
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 100
+      },
+      "min_inclusive": {
+        "absolute": 8
+      }
+    }
+  },
+  "layer": "netherrack",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:netherrack_stannite_ore_sample",
+        "roll_mod:netherrack_stannite_ore_sample",
+        "roll_mod:netherrack_pyrite_ore_sample",
+        "roll_mod:netherrack_pyrite_ore_sample",
+        "roll_mod:netherrack_sphalerite_ore_sample",
+        "roll_mod:netherrack_sphalerite_ore_sample"
+      ],
+      "attachment": "either",
+      "tries": 29,
+      "xz_spread": 14
+    }
+  ]
+}

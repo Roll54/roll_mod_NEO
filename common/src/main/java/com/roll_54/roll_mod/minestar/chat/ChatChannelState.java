@@ -41,7 +41,11 @@ public final class ChatChannelState {
 
     /** Every button, hidden ones included, in display order. */
     private final List<ChatButton> order = new ArrayList<>(BUILT_INS);
-    private final Set<String> hidden = new HashSet<>();
+    /**
+     * Unticked buttons: not over the chat box, and their channel left out of All too. Spam and DEV start
+     * unticked — noise next to people talking — until the player ticks them in Settings.
+     */
+    private final Set<String> hidden = new HashSet<>(Set.of(ChatChannel.SPAM.id(), ChatChannel.DEV.id()));
     /** The built-in button whose channel the chat shows; always All while a custom one sends. */
     private String view = ChatButton.ALL;
     /** The button messages go through: a built-in or a custom one. */
@@ -81,6 +85,11 @@ public final class ChatChannelState {
 
     public synchronized ChatButton send() {
         return find(send, view());
+    }
+
+    /** Whether the All tab shows lines of {@code channel}: those of every ticked button. */
+    public synchronized boolean inAll(ChatChannel channel) {
+        return !hidden.contains(channel.id());
     }
 
     public synchronized boolean bangGlobal() {
@@ -204,6 +213,7 @@ public final class ChatChannelState {
             }
             state.order.addAll(known.values());
             if (json.has("hidden")) {
+                state.hidden.clear();
                 for (JsonElement element : json.getAsJsonArray("hidden")) state.hidden.add(element.getAsString());
             }
             if (state.visible().isEmpty()) state.hidden.clear();
@@ -211,6 +221,10 @@ public final class ChatChannelState {
             if (json.has("send")) state.send = json.get("send").getAsString();
             if (json.has("nextCustom")) state.nextCustom = Math.max(1, json.get("nextCustom").getAsInt());
             if (json.has("bangGlobal")) state.bangGlobal = json.get("bangGlobal").getAsBoolean();
+            // An earlier build kept "left out of All" apart from the buttons; those channels are unticked now.
+            if (json.has("notInAll")) {
+                for (JsonElement element : json.getAsJsonArray("notInAll")) state.hidden.add(element.getAsString());
+            }
         } catch (RuntimeException e) {
             RollMod.LOGGER.warn("[Chat] {} is malformed; using the default chat buttons", file(), e);
             return new ChatChannelState();

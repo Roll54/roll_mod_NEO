@@ -3,6 +3,7 @@ package com.roll_54.roll_mod_client.compat.emi;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.compat.MBD2.machine.RollMBD2Machines;
 import com.roll_54.roll_mod.compat.MBD2.recipe.ExampleLavaRecipe;
+import com.roll_54.roll_mod.config.MyConfig;
 import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
 import com.roll_54.roll_mod.minestar.hub.gui.HubReturn;
 import com.roll_54.roll_mod.recipe.ItemResearchRecipe;
@@ -23,6 +24,9 @@ import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.Bounds;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.Slot;
@@ -30,7 +34,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Native EMI counterpart of {@link com.roll_54.roll_mod_client.compat.jei.JEIRollModPlugin}.
@@ -102,6 +109,7 @@ public class EMIRollModPlugin implements EmiPlugin {
         if (!RecipeViewerConfig.SHOW_LAVA_SMELTERY.get()) {
             registry.removeRecipes(recipe -> ExampleLavaRecipe.LAVA_SMELTERY.equals(recipe.getCategory().getId()));
         }
+        hideConfiguredItems(registry);
 
         registry.addRecipeHandler(MenuTypes.RESEARCH_WORKBENCH_MENU.get(), new StandardRecipeHandler<ResearchWorkbenchMenu>() {
             @Override
@@ -126,6 +134,35 @@ public class EMIRollModPlugin implements EmiPlugin {
             float[] rect = HubReturn.windowRect(screen);
             if (rect == null) return null;
             return new Bounds(Math.round(rect[0]), Math.round(rect[1]), Math.round(rect[2]), Math.round(rect[3]));
+        });
+    }
+
+    /**
+     * Leaves the items in roll_mod's config ({@code /configure roll_mod}, emi.hiddenItems) out of EMI's item list: by id, or by tag
+     * when the entry starts with {@code #}. Entries that name nothing are skipped.
+     */
+    private static void hideConfiguredItems(EmiRegistry registry) {
+        Set<Item> items = new HashSet<>();
+        List<TagKey<Item>> tags = new ArrayList<>();
+        for (String entry : MyConfig.INSTANCE.emi.hiddenItems) {
+            String id = entry.strip();
+            if (id.startsWith("#")) {
+                ResourceLocation tag = ResourceLocation.tryParse(id.substring(1));
+                if (tag != null) tags.add(TagKey.create(Registries.ITEM, tag));
+            } else {
+                ResourceLocation item = ResourceLocation.tryParse(id);
+                if (item != null) BuiltInRegistries.ITEM.getOptional(item).ifPresent(items::add);
+            }
+        }
+        if (items.isEmpty() && tags.isEmpty()) return;
+        registry.removeEmiStacks(stack -> {
+            ItemStack itemStack = stack.getItemStack();
+            if (itemStack.isEmpty()) return false;
+            if (items.contains(itemStack.getItem())) return true;
+            for (TagKey<Item> tag : tags) {
+                if (itemStack.is(tag)) return true;
+            }
+            return false;
         });
     }
 

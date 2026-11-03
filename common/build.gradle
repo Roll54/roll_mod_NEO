@@ -135,6 +135,21 @@ dependencies {
     // GuideME, which AE2 needs, is already an implementation dependency above.
     implementation files("jars/appliedenergistics2-19.2.17.jar")
 
+    // GTMOGS (GregTech ore generation, fork 1.0.8): the pack's ore veins in data/roll_mod/roll_mod/ore_vein
+    // and the compat/gtmogs mixins need it, so roll_mod ships it jar-in-jar. Its own embedded LDLib 1,
+    // Registrate and Configuration come along inside it and live next to LDLib2 (the pack runs both).
+    // A separately installed gtmogs of the same or newer version wins over the bundled one.
+    // The strictly range is required: jar-in-jar drops an unconstrained dependency silently.
+    jarJar(implementation("local:gtmogs-1.21.1:1.0.8")) {
+        version {
+            strictly "[1.0.8,)"
+            prefer "1.0.8"
+        }
+    }
+    // LDLib 1, which GTMOGS embeds (copied out of its META-INF/jarjar): compile-only, for the mixins in
+    // compat/gtmogs that touch its widgets. At runtime it comes in with GTMOGS.
+    compileOnly files("jars/ldlib-neoforge-1.21.1-1.0.35.a.jar")
+
     // Farmer's Delight: daily-task COOK hook. implementation, not compileOnly, so every dev run loads it
     // and the cooking tasks can be tested out of the box. Still soft for the shipped mod: only the
     // mixins in compat/farmersdelight name its classes, their config is required = false, and

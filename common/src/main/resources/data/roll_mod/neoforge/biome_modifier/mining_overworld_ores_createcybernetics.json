@@ -1,0 +1,12 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "createcybernetics"
+    }
+  ],
+  "type": "neoforge:add_features",
+  "biomes": "roll_mod:mining_overworld",
+  "features": "createcybernetics:titaniumore_placed_key",
+  "step": "underground_ores"
+}

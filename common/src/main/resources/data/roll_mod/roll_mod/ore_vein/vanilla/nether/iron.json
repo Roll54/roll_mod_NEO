@@ -1,0 +1,106 @@
+{
+  "biomes": "#minecraft:is_nether",
+  "cluster_size": {
+    "min_inclusive": 10,
+    "max_inclusive": 40,
+    "type": "minecraft:uniform"
+  },
+  "density": 1.0,
+  "dimension_filter": [
+    "minecraft:the_nether"
+  ],
+  "discard_chance_on_air_exposure": 0.75,
+  "generator": {
+    "type": "roll_mod:cuboid",
+    "top": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_hematite"
+          }
+        }
+      ]
+    },
+    "middle": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_gold"
+          }
+        },
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_hematite"
+          }
+        }
+      ]
+    },
+    "bottom": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_chalcopyrite"
+          }
+        }
+      ]
+    },
+    "spread": {
+      "layers": 3,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:netherrack_crimson_iron"
+          }
+        }
+      ]
+    },
+    "min_y": 8,
+    "max_y": 100
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 100
+      },
+      "min_inclusive": {
+        "absolute": 8
+      }
+    }
+  },
+  "layer": "netherrack",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:netherrack_hematite_ore_sample",
+        "roll_mod:netherrack_hematite_ore_sample",
+        "roll_mod:netherrack_gold_ore_sample",
+        "roll_mod:netherrack_chalcopyrite_ore_sample",
+        "roll_mod:netherrack_crimson_iron_ore_sample"
+      ],
+      "attachment": "either",
+      "tries": 22,
+      "xz_spread": 11
+    }
+  ]
+}

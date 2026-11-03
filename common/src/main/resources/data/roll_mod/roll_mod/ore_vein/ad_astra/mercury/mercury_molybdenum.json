@@ -1,0 +1,109 @@
+{
+  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "biomes": "#ad_astra:is_mercury",
+  "cluster_size": {
+    "min_inclusive": 74,
+    "max_inclusive": 106,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.65,
+  "dimension_filter": [
+    "ad_astra:mercury"
+  ],
+  "discard_chance_on_air_exposure": 0.6,
+  "generator": {
+    "type": "roll_mod:dike",
+    "blocks": [
+      {
+        "block": [
+          {
+            "state": {
+              "Name": "roll_mod:mercury_molybdenite"
+            },
+            "target": {
+              "predicate_type": "minecraft:always_true"
+            }
+          }
+        ],
+        "weight": 5,
+        "min_y": -30,
+        "max_y": 50
+      },
+      {
+        "block": [
+          {
+            "state": {
+              "Name": "roll_mod:mercury_powellite"
+            },
+            "target": {
+              "predicate_type": "minecraft:always_true"
+            }
+          }
+        ],
+        "weight": 4,
+        "min_y": -30,
+        "max_y": 55
+      },
+      {
+        "block": [
+          {
+            "state": {
+              "Name": "roll_mod:mercury_scheelite"
+            },
+            "target": {
+              "predicate_type": "minecraft:always_true"
+            }
+          }
+        ],
+        "weight": 3,
+        "min_y": -20,
+        "max_y": 60
+      },
+      {
+        "block": [
+          {
+            "state": {
+              "Name": "roll_mod:mercury_rheniite"
+            },
+            "target": {
+              "predicate_type": "minecraft:always_true"
+            }
+          }
+        ],
+        "weight": 1,
+        "min_y": 0,
+        "max_y": 60
+      }
+    ],
+    "min_y": -30,
+    "max_y": 60
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 62
+      },
+      "min_inclusive": {
+        "absolute": -32
+      }
+    }
+  },
+  "layer": "mercury_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:mercury_molybdenite_ore_sample",
+        "roll_mod:mercury_molybdenite_ore_sample",
+        "roll_mod:mercury_powellite_ore_sample",
+        "roll_mod:mercury_powellite_ore_sample",
+        "roll_mod:mercury_scheelite_ore_sample",
+        "roll_mod:mercury_rheniite_ore_sample"
+      ],
+      "tries": 387,
+      "xz_spread": 40
+    }
+  ]
+}

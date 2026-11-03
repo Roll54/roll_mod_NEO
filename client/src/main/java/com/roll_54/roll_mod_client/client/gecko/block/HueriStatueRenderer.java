@@ -73,6 +73,8 @@ public class HueriStatueRenderer extends GeoBlockRenderer<HueriStatueBlockEntity
     public void render(HueriStatueBlockEntity animatable, float partialTick, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         super.render(animatable, partialTick, poseStack, bufferSource, packedLight, packedOverlay);
+        // No level: drawn as the item (HueriStatueItemRenderer), which is the statue alone.
+        if (animatable.getLevel() == null) return;
         if (!ClientHueriStatue.seen) renderMark(animatable, partialTick, poseStack, bufferSource);
         if (!animatable.flowers().isEmpty()) renderFlowers(animatable, partialTick, poseStack, bufferSource);
     }

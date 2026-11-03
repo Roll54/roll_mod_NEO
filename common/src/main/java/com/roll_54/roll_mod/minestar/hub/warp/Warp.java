@@ -76,6 +76,12 @@ public record Warp(UUID id, UUID owner, String ownerName, String name, String de
                 price, created, approval, moderator, reports, visitors, visitorsDay, visitsTotal, quest);
     }
 
+    /**
+     * {@link #requiredQuest} for a warp no quest opens: only claiming an "unlock warp" quest reward does
+     * ({@code WarpUnlockReward}). FTB quest ids are positive, so this never names a real quest.
+     */
+    public static final long REWARD_ONLY = -1L;
+
     /** Whether reaching it needs a quest. Only official warps can be gated. */
     public boolean questLocked() {
         return requiredQuest != 0 && isAdmin();

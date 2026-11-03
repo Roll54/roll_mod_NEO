@@ -1,0 +1,16 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ultramarine"
+    }
+  ],
+  "type": "neoforge:add_features",
+  "biomes": "roll_mod:mining_overworld",
+  "features": [
+    "ultramarine:overworld_hematite_ore_placed",
+    "ultramarine:overworld_jade_ore_placed",
+    "ultramarine:overworld_magnesite_ore_placed"
+  ],
+  "step": "underground_ores"
+}

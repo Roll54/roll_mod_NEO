@@ -1,0 +1,95 @@
+{
+  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+	"biomes": "#ad_astra:is_mars",
+	"cluster_size": {
+		"min_inclusive": 36,
+		"max_inclusive": 56,
+		"type": "minecraft:uniform"
+	},
+	"density": 0.7,
+	"dimension_filter": [
+		"ad_astra:mars"
+	],
+	"discard_chance_on_air_exposure": 0.65,
+	"generator": {
+		"type": "roll_mod:classic",
+		"primary": {
+			"layers": 9,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:mars_bornite"
+					}
+				}
+			]
+		},
+		"secondary": {
+			"layers": 9,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:mars_sheldonite"
+					}
+				}
+			]
+		},
+		"between": {
+			"layers": 1,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:mars_iridium"
+					}
+				}
+			]
+		},
+		"sporadic": {
+			"layers": 1,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:mars_iridium"
+					}
+				}
+			]
+		}
+	},
+	"height_range": {
+		"height": {
+			"type": "minecraft:uniform",
+			"max_inclusive": {
+				"absolute": 64
+			},
+			"min_inclusive": {
+				"absolute": -32
+			}
+		}
+	},
+	"layer": "mars_stone",
+	"weight": 100,
+	"indicators": [
+		{
+			"type": "roll_mod:surface",
+			"blocks": [
+				"roll_mod:mars_bornite_ore_sample",
+				"roll_mod:mars_sheldonite_ore_sample",
+				"roll_mod:mars_iridium_ore_sample",
+				"roll_mod:mars_iridium_ore_sample"
+			],
+			"tries": 198,
+			"xz_spread": 21
+		}
+	]
+}

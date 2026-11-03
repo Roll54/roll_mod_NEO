@@ -1,24 +1,37 @@
 # GTMOGS — Ore Generation Reference
 
 Everything GTMOGS generates comes from **ore vein definitions**: JSON files in a datapack registry.
-No veins ship with the mod, and vanilla ore generation is disabled by default, so a pack that adds
+No veins ship with GTMOGS itself, and vanilla ore generation is disabled by default, so a pack that adds
 GTMOGS without adding vein files will generate no ores at all.
 
+**ModernTech's veins ship inside roll_mod** (`common/src/main/resources/data/roll_mod/roll_mod/ore_vein/`,
+moved from the old "roll_ore_generation" server datapack — don't install that datapack alongside). The same move
+brought the overrides that turn other mods' own ore features into `minecraft:no_op` (MI, Railcraft, Ultramarine,
+Create Cybernetics, Ad Astra, Stellaris, Silent Gear — each guarded by a `neoforge:mod_loaded` condition, as are
+the Ad Astra veins), so in the pack every ore comes from a vein. `vanilla/end/end_stibnite` has no `.json`
+extension and is not loaded, as it wasn't in the datapack.
+
+GTMOGS is bundled in roll_mod (jar-in-jar) and everything it names is in the **`roll_mod:`** namespace
+(`compat/gtmogs/mixin/GTMOGSNamespaceMixin`, `GTRegistrationNamespaceMixin`): the `roll_mod:ore_vein`
+registry, generator and indicator types, the dimension marker blocks (`roll_mod:overworld_marker`, …), the
+EMI/JEI category. Old files written for `gtmogs:` (paths `data/<ns>/gtmogs/ore_vein/`, `"type": "gtmogs:classic"`)
+are no longer read. The mod id itself is still `gtmogs`, and so is its `/gtmogs` command.
+
 This document covers the current state of the system, including the additions over upstream GT:M:
-the **`gtmogs:cuboid`** vein generator, **surface indicators**, and the extra **world gen layers**
+the **`roll_mod:cuboid`** vein generator, **surface indicators**, and the extra **world gen layers**
 for Ad Astra planets and the `roll_mod:mining_overworld` dimension.
 
 ---
 
 ## 1. Where vein files go
 
-The registry is `gtmogs:ore_vein`, so files live at:
+The registry is `roll_mod:ore_vein`, so files live at:
 
 ```
-data/<your_namespace>/gtmogs/ore_vein/<vein_name>.json
+data/<your_namespace>/roll_mod/ore_vein/<vein_name>.json
 ```
 
-Example: `data/roll_mod/gtmogs/ore_vein/moon_borax.json` registers the vein `roll_mod:moon_borax`.
+Example: `data/roll_mod/roll_mod/ore_vein/moon_borax.json` registers the vein `roll_mod:moon_borax`.
 
 Files are reloaded with the world (they are a *datapack* registry, not a reloadable resource — use
 `/reload` for tags, but re-enter the world after changing vein files).
@@ -133,6 +146,14 @@ Wraps vanilla's `HeightRangePlacement`, so the value goes under a `height` key:
 | `mining_overworld_stone` | `#minecraft:stone_ore_replaceables` | `roll_mod:mining_overworld` |
 | `mining_overworld_deepslate` | `#minecraft:deepslate_ore_replaceables` | `roll_mod:mining_overworld` |
 
+The mining world (flat: deepslate Y −63…0, stone Y 1…64, grass at 68) has veins of its own,
+`data/roll_mod/roll_mod/ore_vein/mining_overworld/` — the overworld veins on the `mining_overworld_*` layers, with
+heights squeezed into its bands — so EMI lists them apart from the overworld ones. Overworld veins do not roll there.
+GTMOGS skips superflat worlds (its `doSuperflatOres` dev option); `OrePlacerMiningWorldMixin` lets veins and samples
+generate in the mining world anyway.
+It also gets the overworld's feature ores (MI, Railcraft, Ultramarine, Create Cybernetics) from
+`data/roll_mod/neoforge/biome_modifier/mining_overworld_ores_*.json`.
+
 The planet tags ship with the mod and can be extended from any datapack —
 `data/c/tags/block/moon_stones.json`:
 
@@ -157,8 +178,8 @@ The planet tags ship with the mod and can be extended from any datapack —
 
 ## 5. Vein generators
 
-Registered types: `gtmogs:cuboid`, `gtmogs:classic`, `gtmogs:layer`, `gtmogs:standard`,
-`gtmogs:dike`, `gtmogs:veined`, `gtmogs:geode`, `gtmogs:no_op`.
+Registered types: `roll_mod:cuboid`, `roll_mod:classic`, `roll_mod:layer`, `roll_mod:standard`,
+`roll_mod:dike`, `roll_mod:veined`, `roll_mod:geode`, `roll_mod:no_op`.
 
 ### 5.1 Target entries
 
@@ -192,7 +213,7 @@ Block states with properties:
 "state": { "Name": "minecraft:redstone_ore", "Properties": { "lit": "false" } }
 ```
 
-### 5.2 `gtmogs:cuboid`
+### 5.2 `roll_mod:cuboid`
 
 A blocky, layered slab of ore — the shape used for the planet veins. Ore is banded vertically
 (bottom → middle → top) with a "spread" filler mixed throughout, and density falls off with
@@ -210,7 +231,7 @@ horizontal distance from the vein center, so the middle of a vein is much richer
 - The vein's starting Y is picked inside `[min_y, max_y]`, so keep `max_y` at least ~6 above `min_y`.
 - `min_y`/`max_y` are separate from `height_range`; set both consistently.
 
-**Full sample** — `data/roll_mod/gtmogs/ore_vein/moon_borax.json`:
+**Full sample** — `data/roll_mod/roll_mod/ore_vein/moon_borax.json`:
 
 ```json
 {
@@ -226,7 +247,7 @@ horizontal distance from the vein center, so the middle of a vein is much richer
   ],
   "discard_chance_on_air_exposure": 0.6,
   "generator": {
-    "type": "gtmogs:cuboid",
+    "type": "roll_mod:cuboid",
     "top": {
       "layers": 6,
       "targets": [
@@ -279,7 +300,7 @@ horizontal distance from the vein center, so the middle of a vein is much richer
   },
   "indicators": [
     {
-      "type": "gtmogs:surface",
+      "type": "roll_mod:surface",
       "blocks": [
         "roll_mod:moon_borax_ore_sample",
         "roll_mod:moon_rock_salt_ore_sample",
@@ -383,8 +404,8 @@ borax.
 Existing veins are unaffected: a target list with no `random_*` predicate keeps its current
 first-match-wins behaviour exactly.
 
-If you'd rather have honest `"weight": 3` fields than a probability chain, `gtmogs:dike` and
-`gtmogs:veined` already roll their block definitions through a real weighted pick per position — at
+If you'd rather have honest `"weight": 3` fields than a probability chain, `roll_mod:dike` and
+`roll_mod:veined` already roll their block definitions through a real weighted pick per position — at
 the cost of the cuboid's crisp banding.
 
 A minimal Overworld cuboid vein:
@@ -405,7 +426,7 @@ A minimal Overworld cuboid vein:
     }
   },
   "generator": {
-    "type": "gtmogs:cuboid",
+    "type": "roll_mod:cuboid",
     "min_y": -60,
     "max_y": 10,
     "top":    { "layers": 3, "targets": [ { "target": { "predicate_type": "minecraft:tag_match", "tag": "minecraft:deepslate_ore_replaceables" }, "state": { "Name": "minecraft:deepslate_iron_ore" } } ] },
@@ -416,14 +437,14 @@ A minimal Overworld cuboid vein:
 }
 ```
 
-### 5.3 `gtmogs:classic`
+### 5.3 `roll_mod:classic`
 
 The GT ellipsoid vein: `primary` / `secondary` / `between` / `sporadic` layers plus a `y_radius`.
 Same `Layer` shape as `cuboid` (`targets` + optional `layers`).
 
 ```json
 "generator": {
-  "type": "gtmogs:classic",
+  "type": "roll_mod:classic",
   "y_radius": 4,
   "primary":   { "targets": [ { "target": { "predicate_type": "minecraft:tag_match", "tag": "minecraft:stone_ore_replaceables" }, "state": { "Name": "minecraft:iron_ore" } } ] },
   "secondary": { "targets": [ { "target": { "predicate_type": "minecraft:tag_match", "tag": "minecraft:stone_ore_replaceables" }, "state": { "Name": "minecraft:copper_ore" } } ] },
@@ -432,13 +453,13 @@ Same `Layer` shape as `cuboid` (`targets` + optional `layers`).
 }
 ```
 
-### 5.4 `gtmogs:standard`
+### 5.4 `roll_mod:standard`
 
 Vanilla-style blob. Either a list of targets, or the three-block short form.
 
 ```json
 "generator": {
-  "type": "gtmogs:standard",
+  "type": "roll_mod:standard",
   "targets": [
     { "target": { "predicate_type": "minecraft:tag_match", "tag": "minecraft:stone_ore_replaceables" }, "state": { "Name": "minecraft:iron_ore" } },
     { "target": { "predicate_type": "minecraft:tag_match", "tag": "minecraft:deepslate_ore_replaceables" }, "state": { "Name": "minecraft:deepslate_iron_ore" } }
@@ -448,14 +469,14 @@ Vanilla-style blob. Either a list of targets, or the three-block short form.
 
 ```json
 "generator": {
-  "type": "gtmogs:standard",
+  "type": "roll_mod:standard",
   "block": "minecraft:iron_ore",
   "deep_block": "minecraft:deepslate_iron_ore",
   "nether_block": "minecraft:nether_gold_ore"
 }
 ```
 
-### 5.5 `gtmogs:layer`
+### 5.5 `roll_mod:layer`
 
 Stacked, randomly-picked horizontal layer patterns. `layer_patterns` is a list of *patterns*, and each
 pattern is itself a list of *layer* objects (no wrapper key). Every layer needs `targets`, `min_size`,
@@ -466,7 +487,7 @@ within it the usual first-match-wins rule applies.
 
 ```json
 "generator": {
-  "type": "gtmogs:layer",
+  "type": "roll_mod:layer",
   "layer_patterns": [
     [
       {
@@ -491,13 +512,13 @@ within it the usual first-match-wins rule applies.
 }
 ```
 
-### 5.6 `gtmogs:dike`
+### 5.6 `roll_mod:dike`
 
 Vertical dike/pipe, with each block bound to its own Y band.
 
 ```json
 "generator": {
-  "type": "gtmogs:dike",
+  "type": "roll_mod:dike",
   "min_y": -50,
   "max_y": 60,
   "blocks": [
@@ -517,7 +538,7 @@ Vertical dike/pipe, with each block bound to its own Y band.
 }
 ```
 
-### 5.7 `gtmogs:veined`
+### 5.7 `roll_mod:veined`
 
 Noise-driven, vanilla-large-vein style. This is the one generator that falls back to the **layer's**
 rule test — for the filler block — so the filler respects `#c:moon_stones` and friends without a
@@ -527,7 +548,7 @@ per-target predicate. Ore/rare blocks still use their own target predicates.
 
 ```json
 "generator": {
-  "type": "gtmogs:veined",
+  "type": "roll_mod:veined",
   "min_y": -60,
   "max_y": 50,
   "veininess_threshold": 0.4,
@@ -553,13 +574,13 @@ per-target predicate. Ore/rare blocks still use their own target predicates.
 Other optional fields: `edge_roundoff_begin` (20), `max_edge_roundoff` (0.2),
 `max_richness_threshold` (0.6).
 
-### 5.8 `gtmogs:geode` / `gtmogs:no_op`
+### 5.8 `roll_mod:geode` / `roll_mod:no_op`
 
 `geode` takes vanilla's geode configuration (`blocks`, `layers`, `crack`, `outer_wall_distance`, …).
 `no_op` generates nothing and is used to disable an inherited vein:
 
 ```json
-"generator": { "type": "gtmogs:no_op" }
+"generator": { "type": "roll_mod:no_op" }
 ```
 
 ---
@@ -576,7 +597,7 @@ Ore samples for the moon vein — one indicator block per ore the vein contains:
 ```json
 "indicators": [
   {
-    "type": "gtmogs:surface",
+    "type": "roll_mod:surface",
     "blocks": [
       "roll_mod:moon_borax_ore_sample",
       "roll_mod:moon_rock_salt_ore_sample",
@@ -589,7 +610,7 @@ Ore samples for the moon vein — one indicator block per ore the vein contains:
 
 | Field | Required | Meaning |
 |---|---|---|
-| `type` | ✅ | `gtmogs:surface` |
+| `type` | ✅ | `roll_mod:surface` |
 | `blocks` | ✅ | Candidate blocks, picked with equal weight. Empty list = nothing placed. |
 | `chance` | ❌ | Per-position placement chance, `0.0`–`1.0`. Default `0.05`. |
 
@@ -610,8 +631,8 @@ across the whole footprint and another rare:
 
 ```json
 "indicators": [
-  { "type": "gtmogs:surface", "blocks": ["roll_mod:moon_borax_ore_sample"], "chance": 0.06 },
-  { "type": "gtmogs:surface", "blocks": ["roll_mod:moon_rock_salt_ore_sample", "roll_mod:moon_lepidolite_ore_sample"], "chance": 0.015 }
+  { "type": "roll_mod:surface", "blocks": ["roll_mod:moon_borax_ore_sample"], "chance": 0.06 },
+  { "type": "roll_mod:surface", "blocks": ["roll_mod:moon_rock_salt_ore_sample", "roll_mod:moon_lepidolite_ore_sample"], "chance": 0.015 }
 ]
 ```
 

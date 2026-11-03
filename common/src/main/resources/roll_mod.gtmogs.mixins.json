@@ -4,7 +4,15 @@
   "package": "com.roll_54.roll_mod.compat.gtmogs.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "SurfaceIndicatorWaterlogMixin"
+    "SurfaceIndicatorWaterlogMixin",
+    "SurfaceIndicatorGroundMixin",
+    "SurfaceIndicatorOreBelowMixin",
+    "OrePlacerMiningWorldMixin",
+    "OreVeinWidgetWrapMixin",
+    "OreVeinDimensionCycleMixin",
+    "GTMOGSNamespaceMixin",
+    "GTRegistrationNamespaceMixin",
+    "GTRegistrateNoDatagenMixin"
   ],
   "injectors": {
     "defaultRequire": 0

@@ -1,0 +1,95 @@
+{
+  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "biomes": "#ad_astra:is_moon",
+  "cluster_size": {
+    "min_inclusive": 38,
+    "max_inclusive": 48,
+    "type": "minecraft:uniform"
+  },
+  "density": 1.0,
+  "dimension_filter": [
+    "ad_astra:moon"
+  ],
+  "discard_chance_on_air_exposure": 0.6,
+  "generator": {
+    "type": "roll_mod:layer",
+    "layer_patterns": [
+      [
+        {
+          "max_size": 5,
+          "min_size": 3,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:moon_rutile" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 4
+        },
+        {
+          "max_size": 4,
+          "min_size": 2,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:moon_bauxite" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 3
+        },
+        {
+          "max_size": 3,
+          "min_size": 2,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:moon_hematite" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 2
+        },
+        {
+          "max_size": 2,
+          "min_size": 1,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:moon_rutile" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 1
+        }
+      ]
+    ]
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": { "absolute": 70 },
+      "min_inclusive": { "absolute": -20 }
+    }
+  },
+  "layer": "moon_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:moon_rutile_ore_sample",
+        "roll_mod:moon_rutile_ore_sample",
+        "roll_mod:moon_bauxite_ore_sample",
+        "roll_mod:moon_hematite_ore_sample"
+      ],
+      "tries": 185,
+      "xz_spread": 19
+    }
+  ]
+}

@@ -155,6 +155,7 @@ public final class RollMod {
         if (ModList.get().isLoaded("ftbquests")) {
             CurrencyTaskType.init();
             CurrencyRewardType.init();
+            com.roll_54.roll_mod.minestar.hub.warp.ftb.WarpUnlockRewardType.init();
         }
 
         event.enqueueWork(() -> {

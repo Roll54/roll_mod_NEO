@@ -1,0 +1,98 @@
+{
+  "biomes": "#c:is_end",
+  "cluster_size": {
+    "min_inclusive": 45,
+    "max_inclusive": 55,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.7,
+  "dimension_filter": [
+    "minecraft:the_end"
+  ],
+  "discard_chance_on_air_exposure": 0.75,
+  "generator": {
+    "type": "roll_mod:layer",
+    "layer_patterns": [
+      [
+        {
+          "min_size": 3,
+          "max_size": 5,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:end_azure_silver" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 1
+        },
+        {
+          "min_size": 2,
+          "max_size": 4,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:end_gold" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 3
+        },
+        {
+          "min_size": 1,
+          "max_size": 3,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:end_silver_amalgam" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 2
+        },
+        {
+          "min_size": 3,
+          "max_size": 6,
+          "targets": [
+            [
+              {
+                "state": { "Name": "roll_mod:end_quartz" },
+                "target": { "predicate_type": "minecraft:always_true" }
+              }
+            ]
+          ],
+          "weight": 3
+        }
+      ]
+    ]
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "min_inclusive": {
+        "absolute": -30
+      },
+      "max_inclusive": {
+        "absolute": 200
+      }
+    }
+  },
+  "layer": "endstone",
+  "weight": 10,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:end_azure_silver_ore_sample",
+        "roll_mod:end_gold_ore_sample",
+        "roll_mod:end_silver_amalgam_ore_sample",
+        "roll_mod:end_quartz_ore_sample"
+      ],
+      "tries": 95,
+      "xz_spread": 22
+    }
+  ]
+}

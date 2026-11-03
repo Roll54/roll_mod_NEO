@@ -92,6 +92,8 @@ final class WarpEditor {
         questRow.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H).gapColumn(GAP));
         questRow.addChildren(
                 button("gui.roll_mod.hub.moderation.warps.quest.pick", picker::open),
+                button("gui.roll_mod.hub.moderation.warps.quest.rewardOnly", () ->
+                        PacketDistributor.sendToServer(WarpActionPacket.setQuest(warp.id(), Warp.REWARD_ONLY))),
                 button("gui.roll_mod.hub.moderation.warps.quest.clear", () ->
                         PacketDistributor.sendToServer(WarpActionPacket.setQuest(warp.id(), 0))));
 
@@ -121,6 +123,8 @@ final class WarpEditor {
 
         quest.setText(current.requiredQuest() == 0
                 ? Component.translatable("gui.roll_mod.hub.moderation.warps.quest.none").withStyle(ChatFormatting.GRAY)
+                : current.requiredQuest() == Warp.REWARD_ONLY
+                ? QuestGate.title(true, Warp.REWARD_ONLY).copy().withStyle(ChatFormatting.YELLOW)
                 : QuestGate.title(true, current.requiredQuest()).copy().withStyle(ChatFormatting.YELLOW)
                         .append(Component.literal("  " + QuestGate.code(current.requiredQuest()))
                                 .withStyle(ChatFormatting.DARK_GRAY)));

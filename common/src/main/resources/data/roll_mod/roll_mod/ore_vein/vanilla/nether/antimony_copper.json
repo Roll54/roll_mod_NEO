@@ -1,0 +1,75 @@
+{
+  "biomes": "#minecraft:is_nether",
+  "cluster_size": {
+    "min_inclusive": 32,
+    "max_inclusive": 60,
+    "type": "minecraft:uniform"
+  },
+  "density": 1,
+  "dimension_filter": [
+    "minecraft:the_nether"
+  ],
+  "discard_chance_on_air_exposure": 0.75,
+  "generator": {
+    "type": "roll_mod:dike",
+    "blocks": [
+      {
+        "block": [
+          {
+            "state": { "Name": "roll_mod:netherrack_tetrahedrite" },
+            "target": { "predicate_type": "minecraft:always_true" }
+          }
+        ],
+        "weight": 4,
+        "min_y": 30,
+        "max_y": 80
+      },
+      {
+        "block": [
+          {
+            "state": { "Name": "roll_mod:netherrack_stibnite" },
+            "target": { "predicate_type": "minecraft:always_true" }
+          }
+        ],
+        "weight": 3,
+        "min_y": 30,
+        "max_y": 80
+      },
+      {
+        "block": [
+          {
+            "state": { "Name": "roll_mod:netherrack_chalcocite" },
+            "target": { "predicate_type": "minecraft:always_true" }
+          }
+        ],
+        "weight": 2,
+        "min_y": 35,
+        "max_y": 75
+      }
+    ],
+    "min_y": 30,
+    "max_y": 80
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": { "absolute": 80 },
+      "min_inclusive": { "absolute": 30 }
+    }
+  },
+  "layer": "netherrack",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:netherrack_tetrahedrite_ore_sample",
+        "roll_mod:netherrack_stibnite_ore_sample",
+        "roll_mod:netherrack_chalcocite_ore_sample"
+      ],
+      "attachment": "either",
+      "tries": 41,
+      "xz_spread": 21
+    }
+  ]
+}

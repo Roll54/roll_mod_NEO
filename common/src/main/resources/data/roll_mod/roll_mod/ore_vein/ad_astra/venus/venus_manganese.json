@@ -1,0 +1,95 @@
+{
+  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "biomes": "#ad_astra:is_venus",
+  "cluster_size": {
+    "min_inclusive": 70,
+    "max_inclusive": 100,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.7,
+  "dimension_filter": [
+    "ad_astra:venus"
+  ],
+  "discard_chance_on_air_exposure": 0.6,
+  "generator": {
+    "type": "roll_mod:classic",
+    "primary": {
+      "layers": 5,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:venus_rhodochrosite"
+          }
+        }
+      ]
+    },
+    "secondary": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:venus_chalcopyrite"
+          }
+        }
+      ]
+    },
+    "between": {
+      "layers": 3,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:venus_rhodochrosite"
+          }
+        }
+      ]
+    },
+    "sporadic": {
+      "layers": 1,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:always_true"
+          },
+          "state": {
+            "Name": "roll_mod:venus_cinnabar"
+          }
+        }
+      ]
+    }
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 64
+      },
+      "min_inclusive": {
+        "absolute": -32
+      }
+    }
+  },
+  "layer": "venus_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:venus_rhodochrosite_ore_sample",
+        "roll_mod:venus_rhodochrosite_ore_sample",
+        "roll_mod:venus_chalcopyrite_ore_sample",
+        "roll_mod:venus_cinnabar_ore_sample"
+      ],
+      "tries": 366,
+      "xz_spread": 38
+    }
+  ]
+}

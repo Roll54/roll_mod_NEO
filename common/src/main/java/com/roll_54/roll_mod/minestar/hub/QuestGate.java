@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.minestar.hub;
 
+import com.roll_54.roll_mod.minestar.hub.warp.Warp;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.fml.ModList;
@@ -35,6 +36,8 @@ public final class QuestGate {
     /** Whether {@code player}'s team has finished {@code questId}. Works on either side. */
     public static boolean isCompleted(Player player, long questId) {
         if (questId == 0 || !LOADED) return true;
+        // No quest opens it: only an "unlock warp" reward does (rewardUnlocked).
+        if (questId == Warp.REWARD_ONLY) return false;
         try {
             return Ftb.isCompleted(player, questId);
         } catch (Throwable ignored) {
@@ -43,8 +46,22 @@ public final class QuestGate {
         }
     }
 
+    /**
+     * Whether {@code player} has claimed an "unlock warp" quest reward naming {@code warp}
+     * ({@code WarpUnlockReward}). Works on either side: FTB Quests syncs who claimed what.
+     */
+    public static boolean rewardUnlocked(Player player, Warp warp) {
+        if (!LOADED) return false;
+        try {
+            return Ftb.rewardUnlocked(player, warp);
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
     /** The quest's title, or its hex id if this side has no such quest. */
     public static Component title(boolean client, long questId) {
+        if (questId == Warp.REWARD_ONLY) return Component.translatable("gui.roll_mod.hub.warp.rewardOnly");
         if (LOADED) {
             try {
                 Component title = Ftb.title(client, questId);
@@ -91,6 +108,18 @@ public final class QuestGate {
             if (quest == null) return true; // Deleted from the book: see the class javadoc.
             dev.ftb.mods.ftbquests.quest.TeamData data = file.getTeamData(player).orElse(null);
             return data != null && data.isCompleted(quest);
+        }
+
+        static boolean rewardUnlocked(Player player, Warp warp) {
+            dev.ftb.mods.ftbquests.quest.BaseQuestFile file = file(player.level().isClientSide());
+            if (file == null) return false;
+            dev.ftb.mods.ftbquests.quest.TeamData data = file.getTeamData(player).orElse(null);
+            if (data == null) return false;
+            for (com.roll_54.roll_mod.minestar.hub.warp.ftb.WarpUnlockReward reward
+                    : file.collect(com.roll_54.roll_mod.minestar.hub.warp.ftb.WarpUnlockReward.class)) {
+                if (reward.opens(warp) && data.isRewardClaimed(player.getUUID(), reward)) return true;
+            }
+            return false;
         }
 
         static Component title(boolean client, long questId) {

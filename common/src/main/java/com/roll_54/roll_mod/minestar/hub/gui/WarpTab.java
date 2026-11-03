@@ -324,7 +324,8 @@ public final class WarpTab {
      */
     static boolean locked(Player player, Warp warp) {
         return warp.questLocked() && !ClientModerationCache.ALLOWED
-                && !QuestGate.isCompleted(player, warp.requiredQuest());
+                && !QuestGate.isCompleted(player, warp.requiredQuest())
+                && !QuestGate.rewardUnlocked(player, warp);
     }
 
     private static void rebuildList(Player player, ScrollerView list, List<Warp> warps,

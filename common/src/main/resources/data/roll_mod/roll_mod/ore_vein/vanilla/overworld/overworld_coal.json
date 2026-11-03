@@ -1,0 +1,94 @@
+{
+	"biomes": "#minecraft:is_overworld",
+	"cluster_size": {
+		"min_inclusive": 32,
+		"max_inclusive": 40,
+		"type": "minecraft:uniform"
+	},
+	"density": 0.75,
+	"dimension_filter": [
+		"minecraft:overworld"
+	],
+	"discard_chance_on_air_exposure": 0.75,
+	"generator": {
+		"type": "roll_mod:classic",
+		"primary": {
+			"layers": 4,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:stone_coal"
+					}
+				}
+			]
+		},
+		"secondary": {
+			"layers": 3,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:stone_coal"
+					}
+				}
+			]
+		},
+		"between": {
+			"layers": 2,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:stone_lignite_coal"
+					}
+				}
+			]
+		},
+		"sporadic": {
+			"layers": 1,
+			"targets": [
+				{
+					"target": {
+						"predicate_type": "minecraft:always_true"
+					},
+					"state": {
+						"Name": "roll_mod:stone_lignite_coal"
+					}
+				}
+			]
+		}
+	},
+	"height_range": {
+		"height": {
+			"type": "minecraft:uniform",
+			"max_inclusive": {
+				"absolute": 100
+			},
+			"min_inclusive": {
+				"absolute": 20
+			}
+		}
+	},
+	"layer": "stone",
+	"weight": 60,
+	"indicators": [
+		{
+			"type": "roll_mod:surface",
+			"blocks": [
+				"roll_mod:stone_coal_ore_sample",
+				"roll_mod:stone_coal_ore_sample",
+				"roll_mod:stone_lignite_coal_ore_sample",
+				"roll_mod:stone_lignite_coal_ore_sample"
+			],
+			"tries": 65,
+			"xz_spread": 16
+		}
+	]
+}

@@ -1,0 +1,96 @@
+{
+	"biomes": "roll_mod:mining_overworld",
+	"cluster_size": {
+		"min_inclusive": 30,
+		"max_inclusive": 40,
+		"type": "minecraft:uniform"
+	},
+	"density": 0.75,
+	"dimension_filter": [
+		"roll_mod:mining_overworld"
+	],
+	"discard_chance_on_air_exposure": 0.75,
+	"generator": {
+		"type": "roll_mod:layer",
+		"layer_patterns": [
+			[
+				{
+					"max_size": 4,
+					"min_size": 2,
+					"targets": [
+						[
+							{
+								"state": {
+									"Name": "roll_mod:stone_bauxite"
+								},
+								"target": {
+									"predicate_type": "minecraft:always_true"
+								}
+							}
+						]
+					],
+					"weight": 3
+				},
+				{
+					"max_size": 3,
+					"min_size": 2,
+					"targets": [
+						[
+							{
+								"state": {
+									"Name": "roll_mod:stone_hematite"
+								},
+								"target": {
+									"predicate_type": "minecraft:always_true"
+								}
+							}
+						]
+					],
+					"weight": 2
+				},
+				{
+					"max_size": 3,
+					"min_size": 2,
+					"targets": [
+						[
+							{
+								"state": {
+									"Name": "roll_mod:stone_pyrite"
+								},
+								"target": {
+									"predicate_type": "minecraft:always_true"
+								}
+							}
+						]
+					],
+					"weight": 1
+				}
+			]
+		]
+	},
+	"height_range": {
+		"height": {
+			"type": "minecraft:uniform",
+			"max_inclusive": {
+				"absolute": 48
+			},
+			"min_inclusive": {
+				"absolute": 20
+			}
+		}
+	},
+	"layer": "mining_overworld_stone",
+	"weight": 65,
+	"indicators": [
+		{
+			"type": "roll_mod:surface",
+			"blocks": [
+				"roll_mod:stone_bauxite_ore_sample",
+				"roll_mod:stone_hematite_ore_sample",
+				"roll_mod:stone_pyrite_ore_sample"
+			],
+			"tries": 63,
+			"xz_spread": 16
+		}
+	]
+}

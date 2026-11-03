@@ -1,0 +1,114 @@
+{
+	"biomes": "#minecraft:is_overworld",
+	"cluster_size": {
+		"min_inclusive": 30,
+		"max_inclusive": 50,
+		"type": "minecraft:uniform"
+	},
+	"density": 0.45,
+	"dimension_filter": [
+		"minecraft:overworld"
+	],
+	"discard_chance_on_air_exposure": 0.75,
+	"generator": {
+		"type": "roll_mod:layer",
+		"layer_patterns": [
+			[
+				{
+					"max_size": 4,
+					"min_size": 3,
+					"targets": [
+						[
+							{
+								"state": {
+									"Name": "roll_mod:deepslate_malachite"
+								},
+								"target": {
+									"predicate_type": "minecraft:always_true"
+								}
+							}
+						]
+					],
+					"weight": 5
+				},
+				{
+					"max_size": 3,
+					"min_size": 2,
+					"targets": [
+						[
+							{
+								"state": {
+									"Name": "roll_mod:deepslate_goethite"
+								},
+								"target": {
+									"predicate_type": "minecraft:always_true"
+								}
+							}
+						]
+					],
+					"weight": 2
+				},
+              	{
+					"max_size": 3,
+					"min_size": 2,
+					"targets": [
+						[
+							{
+								"state": {
+									"Name": "roll_mod:deepslate_yellow_limonite"
+								},
+								"target": {
+									"predicate_type": "minecraft:always_true"
+								}
+							}
+						]
+					],
+					"weight": 2
+				},
+				{
+					"max_size": 3,
+					"min_size": 2,
+					"targets": [
+						[
+							{
+								"state": {
+									"Name": "roll_mod:deepslate_hematite"
+								},
+								"target": {
+									"predicate_type": "minecraft:always_true"
+								}
+							}
+						]
+					],
+					"weight": 1
+				}
+			]
+		]
+	},
+	"height_range": {
+		"height": {
+			"type": "minecraft:uniform",
+			"max_inclusive": {
+				"absolute": -10
+			},
+			"min_inclusive": {
+				"absolute": -55
+			}
+		}
+	},
+	"layer": "deepslate",
+	"weight": 65,
+	"indicators": [
+		{
+			"type": "roll_mod:surface",
+			"blocks": [
+				"roll_mod:deepslate_malachite_ore_sample",
+				"roll_mod:deepslate_goethite_ore_sample",
+				"roll_mod:deepslate_yellow_limonite_ore_sample",
+				"roll_mod:deepslate_hematite_ore_sample"
+			],
+			"tries": 6,
+			"xz_spread": 18
+		}
+	]
+}

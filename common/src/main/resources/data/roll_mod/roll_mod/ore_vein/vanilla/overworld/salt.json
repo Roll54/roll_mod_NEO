@@ -1,0 +1,84 @@
+{
+  "biomes": "#minecraft:is_overworld",
+  "cluster_size": {
+    "min_inclusive": 28,
+    "max_inclusive": 48,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.8,
+  "dimension_filter": [
+    "minecraft:overworld"
+  ],
+  "discard_chance_on_air_exposure": 0.2,
+  "generator": {
+    "type": "roll_mod:classic",
+    "primary": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": { "predicate_type": "minecraft:always_true" },
+          "state": { "Name": "roll_mod:stone_rock_salt" }
+        },
+        {
+          "target": { "predicate_type": "minecraft:always_true" },
+          "state": { "Name": "roll_mod:stone_salt" }
+        }
+      ]
+    },
+    "secondary": {
+      "layers": 3,
+      "targets": [
+        {
+          "target": { "predicate_type": "minecraft:always_true" },
+          "state": { "Name": "roll_mod:stone_salt" }
+        },
+        {
+          "target": { "predicate_type": "minecraft:always_true" },
+          "state": { "Name": "roll_mod:stone_lepidolite" }
+        }
+      ]
+    },
+    "between": {
+      "layers": 2,
+      "targets": [
+        {
+          "target": { "predicate_type": "minecraft:always_true" },
+          "state": { "Name": "roll_mod:stone_rock_salt" }
+        }
+      ]
+    },
+    "sporadic": {
+      "layers": 1,
+      "targets": [
+        {
+          "target": { "predicate_type": "minecraft:always_true" },
+          "state": { "Name": "roll_mod:stone_lepidolite" }
+        }
+      ]
+    }
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": { "absolute": 70 },
+      "min_inclusive": { "absolute": 10 }
+    }
+  },
+  "layer": "stone",
+  "weight": 65,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:stone_rock_salt_ore_sample",
+        "roll_mod:stone_rock_salt_ore_sample",
+        "roll_mod:stone_salt_ore_sample",
+        "roll_mod:stone_salt_ore_sample",
+        "roll_mod:stone_lepidolite_ore_sample",
+        "roll_mod:stone_lepidolite_ore_sample"
+      ],
+      "tries": 68,
+      "xz_spread": 17
+    }
+  ]
+}
