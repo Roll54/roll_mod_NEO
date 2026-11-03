@@ -1,0 +1,13 @@
+{
+    "values": {
+        "extended_industrialization:composted_manure": {
+            "amount": 2500
+        },
+        "extended_industrialization:manure": {
+            "amount": 1000
+        },
+        "extended_industrialization:npk_fertilizer": {
+            "amount": 10000
+        }
+    }
+}

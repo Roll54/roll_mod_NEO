@@ -1,0 +1,13 @@
+{
+    "values": {
+        "modern_industrialization:hydrochloric_acid": {
+            "value": 5000
+        },
+        "modern_industrialization:sodium_hydroxide": {
+            "value": -10000
+        },
+        "modern_industrialization:sulfuric_acid": {
+            "value": 10000
+        }
+    }
+}

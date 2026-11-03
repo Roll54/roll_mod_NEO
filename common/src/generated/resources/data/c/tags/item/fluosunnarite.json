@@ -1,0 +1,32 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:raw_fluosunnarite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:crushed_fluosunnarite_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:refined_fluosunnarite_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:purified_fluosunnarite_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:fluosunnarite_dust",
+            "required": false
+        },
+        {
+            "id": "roll_mod:pure_fluosunnarite_dust",
+            "required": false
+        },
+        {
+            "id": "roll_mod:impure_fluosunnarite_dust",
+            "required": false
+        }
+    ]
+}

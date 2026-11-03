@@ -1,0 +1,25 @@
+{
+    "values": {
+        "roll_mod:calcium_carbonate": {
+            "value": -150
+        },
+        "roll_mod:calcium_hydroxide": {
+            "value": -400
+        },
+        "roll_mod:calcium_oxide": {
+            "value": -500
+        },
+        "roll_mod:potassium_dust": {
+            "value": -300
+        },
+        "roll_mod:sulfur_berry": {
+            "value": 50
+        },
+        "roll_mod:sulfur_dust": {
+            "value": 250
+        },
+        "roll_mod:trona_dust": {
+            "value": -250
+        }
+    }
+}

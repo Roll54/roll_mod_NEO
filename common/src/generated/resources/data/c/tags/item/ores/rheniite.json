@@ -1,0 +1,40 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:raw_rheniite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:stone_rheniite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:deepslate_rheniite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:netherrack_rheniite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:mars_rheniite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:moon_rheniite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:venus_rheniite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:mercury_rheniite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:end_rheniite",
+            "required": false
+        }
+    ]
+}

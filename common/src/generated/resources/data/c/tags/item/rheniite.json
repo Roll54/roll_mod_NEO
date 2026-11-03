@@ -1,0 +1,32 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:raw_rheniite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:crushed_rheniite_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:refined_rheniite_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:purified_rheniite_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:rheniite_dust",
+            "required": false
+        },
+        {
+            "id": "roll_mod:pure_rheniite_dust",
+            "required": false
+        },
+        {
+            "id": "roll_mod:impure_rheniite_dust",
+            "required": false
+        }
+    ]
+}

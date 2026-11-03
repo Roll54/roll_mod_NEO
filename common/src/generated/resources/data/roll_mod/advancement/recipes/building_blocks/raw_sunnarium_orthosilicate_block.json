@@ -1,0 +1,32 @@
+{
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "has_raw_sunnarium_orthosilicate": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": "roll_mod:raw_sunnarium_orthosilicate"
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipe": "roll_mod:raw_sunnarium_orthosilicate_block"
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
+    },
+    "requirements": [
+        [
+            "has_the_recipe",
+            "has_raw_sunnarium_orthosilicate"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "roll_mod:raw_sunnarium_orthosilicate_block"
+        ]
+    }
+}

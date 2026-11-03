@@ -1,0 +1,14 @@
+{
+    "type": "connecting",
+    "parent": "minecraft:block/cube_bottom_top",
+    "connections": {
+        "type": "is_same_block"
+    },
+    "loader": "fusion:model",
+    "textures": {
+        "bottom": "roll_mod:block/iv_solar_panel_bottom_ct",
+        "particle": "roll_mod:block/iv_solar_panel_side",
+        "side": "roll_mod:block/iv_solar_panel_side_ct",
+        "top": "roll_mod:block/solar_panel_top_15_ct"
+    }
+}

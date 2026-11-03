@@ -1,0 +1,13 @@
+{
+    "animation": {
+        "frametime": 3,
+        "interpolate": true
+    },
+    "fusion": {
+        "type": "connecting",
+        "connections": {
+            "type": "is_same_block"
+        },
+        "layout": "simple"
+    }
+}

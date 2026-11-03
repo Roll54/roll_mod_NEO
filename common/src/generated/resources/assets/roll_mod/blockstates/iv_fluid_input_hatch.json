@@ -1,0 +1,7 @@
+{
+    "variants": {
+        "": {
+            "model": "roll_mod:block/iv_fluid_input_hatch"
+        }
+    }
+}

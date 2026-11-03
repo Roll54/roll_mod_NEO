@@ -1,0 +1,19 @@
+{
+    "values": {
+        "minecraft:bone_meal": {
+            "amount": 100
+        },
+        "minecraft:rotten_flesh": {
+            "amount": 25
+        },
+        "roll_mod:ammonium_chloride_dust": {
+            "amount": 150
+        },
+        "roll_mod:apatite_dust": {
+            "amount": 200
+        },
+        "roll_mod:saltpeter_dust": {
+            "amount": 200
+        }
+    }
+}

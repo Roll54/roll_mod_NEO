@@ -1,0 +1,11 @@
+{
+    "variants": {
+        "vertical_direction=down": {
+            "model": "roll_mod:block/mars_molybdenum_ore_sample",
+            "x": 180
+        },
+        "vertical_direction=up": {
+            "model": "roll_mod:block/mars_molybdenum_ore_sample"
+        }
+    }
+}

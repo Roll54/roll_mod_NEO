@@ -1,0 +1,6 @@
+{
+    "parent": "neoforge:item/bucket",
+    "apply_tint": true,
+    "fluid": "roll_mod:herbicide_tier_1",
+    "loader": "neoforge:fluid_container"
+}

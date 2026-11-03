@@ -1,0 +1,8 @@
+{
+    "default_model_overrides": [
+        "roll_mod:block/solar_panel_3_connected"
+    ],
+    "targets": [
+        "roll_mod:solar_panel_3"
+    ]
+}

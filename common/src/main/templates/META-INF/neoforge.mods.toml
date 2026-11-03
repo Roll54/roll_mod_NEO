@@ -71,6 +71,11 @@ config = "${mod_id}.mi_ftbquests.mixins.json"
 [[mixins]]
 config = "${mod_id}.gtmogs.mixins.json"
 
+# FallingTree: tools tagged #minecraft:axes (MI/EI chainsaws) count as axes and fell whole trees.
+# Soft: FallingTree is a pack mod, not a dependency; without it the mixin is skipped.
+[[mixins]]
+config = "${mod_id}.fallingtree.mixins.json"
+
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg
 #[[accessTransformers]]

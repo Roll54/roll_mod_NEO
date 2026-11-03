@@ -1,0 +1,13 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "misc",
+    "ingredients": [
+        {
+            "item": "roll_mod:raw_vanadium_magnetite_block"
+        }
+    ],
+    "result": {
+        "count": 9,
+        "id": "roll_mod:raw_vanadium_magnetite"
+    }
+}

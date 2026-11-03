@@ -1,0 +1,6 @@
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "roll_mod:item/cyberware/eyeupgrades_crop_analyzer_module"
+    }
+}

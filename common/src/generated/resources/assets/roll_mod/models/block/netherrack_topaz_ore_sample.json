@@ -1,0 +1,7 @@
+{
+    "parent": "roll_mod:block/ore_sample",
+    "textures": {
+        "ore": "roll_mod:block/netherrack_topaz",
+        "particle": "roll_mod:block/netherrack_topaz"
+    }
+}

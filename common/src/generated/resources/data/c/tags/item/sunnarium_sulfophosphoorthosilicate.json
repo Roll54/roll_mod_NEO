@@ -1,0 +1,32 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:raw_sunnarium_sulfophosphoorthosilicate",
+            "required": false
+        },
+        {
+            "id": "roll_mod:crushed_sunnarium_sulfophosphoorthosilicate_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:refined_sunnarium_sulfophosphoorthosilicate_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:purified_sunnarium_sulfophosphoorthosilicate_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:sunnarium_sulfophosphoorthosilicate_dust",
+            "required": false
+        },
+        {
+            "id": "roll_mod:pure_sunnarium_sulfophosphoorthosilicate_dust",
+            "required": false
+        },
+        {
+            "id": "roll_mod:impure_sunnarium_sulfophosphoorthosilicate_dust",
+            "required": false
+        }
+    ]
+}

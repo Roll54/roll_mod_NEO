@@ -1,0 +1,13 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "misc",
+    "ingredients": [
+        {
+            "item": "roll_mod:raw_pentlandite_block"
+        }
+    ],
+    "result": {
+        "count": 9,
+        "id": "roll_mod:raw_pentlandite"
+    }
+}

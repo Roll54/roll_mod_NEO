@@ -1,0 +1,32 @@
+{
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "has_raw_lignite_coal": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": "roll_mod:raw_lignite_coal"
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipe": "roll_mod:raw_lignite_coal_block"
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
+    },
+    "requirements": [
+        [
+            "has_the_recipe",
+            "has_raw_lignite_coal"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "roll_mod:raw_lignite_coal_block"
+        ]
+    }
+}

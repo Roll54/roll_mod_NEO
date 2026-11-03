@@ -1,0 +1,32 @@
+{
+    "parent": "minecraft:recipes/root",
+    "criteria": {
+        "has_raw_sodalite": {
+            "conditions": {
+                "items": [
+                    {
+                        "items": "roll_mod:raw_sodalite"
+                    }
+                ]
+            },
+            "trigger": "minecraft:inventory_changed"
+        },
+        "has_the_recipe": {
+            "conditions": {
+                "recipe": "roll_mod:raw_sodalite_block"
+            },
+            "trigger": "minecraft:recipe_unlocked"
+        }
+    },
+    "requirements": [
+        [
+            "has_the_recipe",
+            "has_raw_sodalite"
+        ]
+    ],
+    "rewards": {
+        "recipes": [
+            "roll_mod:raw_sodalite_block"
+        ]
+    }
+}

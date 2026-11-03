@@ -1,0 +1,32 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:raw_livingstonite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:crushed_livingstonite_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:refined_livingstonite_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:purified_livingstonite_ore",
+            "required": false
+        },
+        {
+            "id": "roll_mod:livingstonite_dust",
+            "required": false
+        },
+        {
+            "id": "roll_mod:pure_livingstonite_dust",
+            "required": false
+        },
+        {
+            "id": "roll_mod:impure_livingstonite_dust",
+            "required": false
+        }
+    ]
+}
