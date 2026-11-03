@@ -6,6 +6,7 @@
   "mixins": [
     "AbstractFurnaceBlockEntityMixin",
     "MiningWorldWeatherMixin",
+    "OreFeatureRockOverOreMixin",
     "AnvilLevelCapMixin",
     "AnvilOverEnchantMixin",
     "BlockogrizRecipeResultMixin",

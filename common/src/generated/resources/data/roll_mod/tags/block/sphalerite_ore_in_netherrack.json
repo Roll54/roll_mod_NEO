@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_sphalerite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_sphalerite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_sphalerite",
+            "required": false
+        }
+    ]
+}

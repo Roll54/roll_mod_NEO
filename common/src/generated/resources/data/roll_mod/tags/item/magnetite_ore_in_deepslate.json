@@ -1,0 +1,12 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:deepslate_magnetite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:tuff_magnetite",
+            "required": false
+        }
+    ]
+}

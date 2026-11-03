@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_galena",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_galena",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_galena",
+            "required": false
+        }
+    ]
+}

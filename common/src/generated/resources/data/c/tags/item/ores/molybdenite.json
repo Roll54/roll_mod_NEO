@@ -1,40 +1,48 @@
 {
-  "values": [
-    {
-      "id": "roll_mod:raw_molybdenite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:stone_molybdenite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:deepslate_molybdenite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:netherrack_molybdenite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:mars_molybdenite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:moon_molybdenite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:venus_molybdenite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:mercury_molybdenite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:end_molybdenite",
-      "required": false
-    }
-  ]
+    "values": [
+        {
+            "id": "roll_mod:raw_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:stone_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:deepslate_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:netherrack_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:mars_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:moon_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:venus_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:mercury_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:end_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_molybdenite",
+            "required": false
+        }
+    ]
 }

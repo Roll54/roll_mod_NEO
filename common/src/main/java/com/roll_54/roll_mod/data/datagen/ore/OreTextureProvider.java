@@ -7,6 +7,7 @@ import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockOverlay;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.ItemBase;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.ItemLayer;
+import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.StoneVariant;
 import net.minecraft.Util;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
@@ -83,6 +84,11 @@ public class OreTextureProvider implements DataProvider {
         for (BlockSubLayer base : def.bases()) {
             String blockId = base.id() + "_" + def.id();
             createBlockTexture(cache, base, overlay, def.id(), def.hexColor(), blockTexOut, blockId);
+        }
+        for (StoneVariant variant : def.variants()) {
+            BufferedImage sub = readClasspathPng(variant.textureResource());
+            BufferedImage tintedOverlay = applyColorMultiply(readPng(overlay.resolve(blockOverlaysDir)), def.hexColor());
+            savePng(cache, alphaComposite(sub, tintedOverlay), blockTexOut.resolve(def.variantBlockId(variant) + ".png"));
         }
         // Raw storage block: recolour a pool texture with the ore's tint (block can't be composited).
         createRawBlockTexture(cache, def, blockTexOut);
@@ -169,6 +175,22 @@ public class OreTextureProvider implements DataProvider {
             return converted;
         }
         return img;
+    }
+
+    /** A texture shipped with Minecraft itself (the stone variants' bases), from the client jar on the datagen classpath. */
+    private BufferedImage readClasspathPng(String resource) throws IOException {
+        try (var in = OreTextureProvider.class.getClassLoader().getResourceAsStream(resource)) {
+            if (in == null) {
+                throw new IOException("Missing vanilla texture on the classpath: " + resource);
+            }
+            BufferedImage img = ImageIO.read(in);
+            if (img == null) {
+                throw new IOException("Failed to read image: " + resource);
+            }
+            BufferedImage converted = new BufferedImage(img.getWidth(), img.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            converted.getGraphics().drawImage(img, 0, 0, null);
+            return converted;
+        }
     }
 
     private BufferedImage applyColorMultiply(BufferedImage image, String hexColor) {

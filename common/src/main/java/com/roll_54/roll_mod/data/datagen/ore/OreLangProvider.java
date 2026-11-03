@@ -87,9 +87,23 @@ public class OreLangProvider extends LanguageProvider {
                         ? String.format("%s (Ore sample)", oreName)
                         : String.format("%s (Зразок)", oreName));
             }
+
+            for (var variant : def.variants()) {
+                String variantName = switch (variant) {
+                    case GRANITE -> isEnglish ? "Granite" : "Гранітна руда";
+                    case DIORITE -> isEnglish ? "Diorite" : "Діоритова руда";
+                    case ANDESITE -> isEnglish ? "Andesite" : "Андезитова руда";
+                    case TUFF -> isEnglish ? "Tuff" : "Туфова руда";
+                    case BLACKSTONE -> isEnglish ? "Blackstone" : "Чорнокам'яна руда";
+                    case BASALT -> isEnglish ? "Basalt" : "Базальтова руда";
+                };
+                add("block.roll_mod." + def.variantBlockId(variant), String.format("%s (%s)", oreName, variantName));
+            }
         }
 
         addMBD2EnergyTrait();
+        // Label over a vein's surface samples on its EMI/JEI page (OreVeinWidgetWrapMixin).
+        add("roll_mod.ore_vein.indicators", isEnglish ? "Indicators:" : "Індикатори:");
     }
 
     /** Config labels for the Modern Industrialization EU trait added to Multiblocked2 machines. */

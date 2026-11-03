@@ -1,0 +1,12 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:deepslate_redstone",
+            "required": false
+        },
+        {
+            "id": "roll_mod:tuff_redstone",
+            "required": false
+        }
+    ]
+}

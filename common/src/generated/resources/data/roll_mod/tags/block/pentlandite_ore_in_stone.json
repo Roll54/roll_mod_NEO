@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_pentlandite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_pentlandite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_pentlandite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_pentlandite",
+            "required": false
+        }
+    ]
+}

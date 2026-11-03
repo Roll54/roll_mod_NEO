@@ -1,0 +1,607 @@
+package com.roll_54.roll_mod_client.compat.emi.tree;
+
+import dev.emi.emi.EmiUtil;
+import dev.emi.emi.api.EmiApi;
+import dev.emi.emi.api.recipe.EmiPlayerInventory;
+import dev.emi.emi.api.recipe.EmiRecipe;
+import dev.emi.emi.api.recipe.EmiResolutionRecipe;
+import dev.emi.emi.api.stack.EmiIngredient;
+import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.widget.Bounds;
+import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.material.Fluid;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * {@code /recipetree}: a recipe tree in the style of EMI's own. An item dragged from EMI into the slot is
+ * the root; "Recipes" opens EMI's recipe screen for it, and the picked recipe's ingredients hang below it.
+ * Any ingredient takes a recipe the way EMI's tree does — click to pick it in EMI's recipe screen,
+ * Shift+click to let EMI pick one, right-click to remove it — so the tree grows down to whatever should
+ * stay a base resource; the footer sums those up.
+ *
+ * <p>It is a container screen (over a client-only, slotless menu) because EMI only shows its item list
+ * and opens recipe screens over container screens. A pick applies to every node of the same ingredient,
+ * and both the root and the picks are kept until the game closes.
+ */
+public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.Menu> {
+
+    private static final int HEADER = 64;
+    private static final int FOOTER = 24;
+    private static final int MARGIN = 6;
+    private static final int MAX_DEPTH = 24;
+    private static final float MIN_ZOOM = 0.25F;
+    private static final float MAX_ZOOM = 2.0F;
+    private static final long STATUS_MS = 3000;
+
+    private static final int PANEL = 0xFFC6C6C6;
+    private static final int DARK = 0xFF373737;
+    private static final int LIGHT = 0xFFFFFFFF;
+    private static final int SLOT = 0xFF8B8B8B;
+    private static final int LINE = 0xFF373737;
+    private static final int CRAFTABLE = 0xFFE0B040;
+    private static final int CYCLE = 0xFFC04040;
+    private static final int TITLE = 0x404040;
+
+    // Kept between openings of the screen.
+    private static @Nullable EmiIngredient root;
+    private static final List<Resolution> RESOLUTIONS = new ArrayList<>();
+
+    private record Resolution(EmiIngredient ingredient, EmiRecipe recipe) {}
+
+    private @Nullable RecipeTreeNode tree;
+    private final List<EmiIngredient> totals = new ArrayList<>();
+    private boolean viewPlaced;
+    private double panX, panY;
+    private float zoom = 1.0F;
+    private boolean panning;
+    private @Nullable Component status;
+    private long statusUntil;
+
+    public static void open() {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc.player == null) return;
+        mc.setScreen(new RecipeTreeScreen(mc.player.getInventory()));
+    }
+
+    public RecipeTreeScreen(Inventory inventory) {
+        super(new Menu(), inventory, Component.translatable("gui.roll_mod.recipe_tree.title"));
+    }
+
+    @Override
+    protected void init() {
+        imageWidth = Math.min(width - 40, Math.max(240, width / 2));
+        imageHeight = height - 30;
+        super.init();
+
+        int cx = leftPos + imageWidth / 2;
+        addRenderableWidget(Button.builder(Component.translatable("gui.roll_mod.recipe_tree.recipes"), b -> {
+                    if (root != null) pick(root);
+                })
+                .bounds(cx - 62, topPos + 38, 60, 18).build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.roll_mod.recipe_tree.reset"), b -> {
+                    RESOLUTIONS.clear();
+                    rebuild();
+                })
+                .bounds(cx + 2, topPos + 38, 60, 18).build());
+        rebuild();
+    }
+
+    // ---- tree ----
+
+    /** Called by {@link RecipeTreePicker} once a recipe was picked in EMI for {@code ingredient}. */
+    void choose(EmiIngredient ingredient, EmiRecipe recipe) {
+        RESOLUTIONS.removeIf(r -> EmiIngredient.areEqual(r.ingredient(), ingredient));
+        RESOLUTIONS.add(new Resolution(ingredient, recipe));
+        rebuild();
+    }
+
+    public void setRoot(@Nullable EmiIngredient ingredient) {
+        if (ingredient == null || ingredient.isEmpty()) {
+            root = null;
+        } else {
+            long amount = ingredient.getAmount() > 0 ? ingredient.getAmount() : isFluid(ingredient) ? 1000 : 1;
+            root = ingredient.copy().setAmount(amount);
+        }
+        viewPlaced = false;
+        rebuild();
+    }
+
+    /** Removes the recipe picked for {@code ingredient}, leaving it a base resource. */
+    void unpick(EmiIngredient ingredient) {
+        RESOLUTIONS.removeIf(r -> EmiIngredient.areEqual(r.ingredient(), ingredient));
+        rebuild();
+    }
+
+    private void pick(EmiIngredient ingredient) {
+        if (!RecipeTreePicker.pick(this, ingredient)) {
+            showStatus(Component.translatable("gui.roll_mod.recipe_tree.no_recipes"));
+        }
+    }
+
+    /**
+     * EMI's Shift+click in its tree: a tag or list takes the stack the player has (or the first one), a
+     * single stack the recipe EMI would craft it with from the player's inventory.
+     */
+    private void autoPick(EmiIngredient ingredient) {
+        List<EmiStack> stacks = ingredient.getEmiStacks();
+        EmiRecipe recipe;
+        if (stacks.size() > 1) {
+            EmiPlayerInventory inventory = EmiPlayerInventory.of(minecraft.player);
+            EmiStack chosen = stacks.stream().filter(inventory.inventory::containsKey).findFirst().orElse(stacks.get(0));
+            recipe = new EmiResolutionRecipe(ingredient, chosen);
+        } else {
+            recipe = EmiUtil.getRecipeResolution(ingredient, EmiPlayerInventory.of(minecraft.player));
+        }
+        if (recipe != null) {
+            choose(ingredient, recipe);
+        } else {
+            showStatus(Component.translatable("gui.roll_mod.recipe_tree.no_recipes"));
+        }
+    }
+
+    private void rebuild() {
+        totals.clear();
+        if (root == null) {
+            tree = null;
+            return;
+        }
+        tree = build(root, root.getAmount(), new ArrayList<>());
+        tree.layout(0, 0);
+        collectTotals(tree);
+        if (!viewPlaced && width > 0) placeView();
+    }
+
+    private RecipeTreeNode build(EmiIngredient ingredient, long amount, List<EmiIngredient> path) {
+        boolean cycle = path.stream().anyMatch(p -> EmiIngredient.areEqual(p, ingredient));
+        EmiRecipe recipe = cycle || path.size() >= MAX_DEPTH ? null : resolution(ingredient);
+        List<RecipeTreeNode> children = new ArrayList<>();
+        if (recipe != null) {
+            long crafts = crafts(recipe, ingredient, amount);
+            path.add(ingredient);
+            for (EmiIngredient input : mergedInputs(recipe)) {
+                children.add(build(input, Math.max(1, input.getAmount()) * crafts, path));
+            }
+            path.remove(path.size() - 1);
+        }
+        return new RecipeTreeNode(ingredient, amount, recipe, children, cycle, recipe != null || craftable(ingredient));
+    }
+
+    private static @Nullable EmiRecipe resolution(EmiIngredient ingredient) {
+        for (Resolution r : RESOLUTIONS) {
+            if (EmiIngredient.areEqual(r.ingredient(), ingredient)) return r.recipe();
+        }
+        return null;
+    }
+
+    /** How many times the recipe has to run for {@code amount} of {@code ingredient}. */
+    private static long crafts(EmiRecipe recipe, EmiIngredient ingredient, long amount) {
+        long perCraft = 1;
+        for (EmiStack output : recipe.getOutputs()) {
+            if (ingredient.getEmiStacks().stream().anyMatch(output::isEqual)) {
+                perCraft = Math.max(1, output.getAmount());
+                break;
+            }
+        }
+        return Math.ceilDiv(amount, perCraft);
+    }
+
+    /** The recipe's inputs with repeats (a shaped grid lists every slot) added together. */
+    private static List<EmiIngredient> mergedInputs(EmiRecipe recipe) {
+        List<EmiIngredient> merged = new ArrayList<>();
+        outer:
+        for (EmiIngredient input : recipe.getInputs()) {
+            if (input.isEmpty()) continue;
+            for (int i = 0; i < merged.size(); i++) {
+                EmiIngredient existing = merged.get(i);
+                if (EmiIngredient.areEqual(existing, input)) {
+                    merged.set(i, existing.copy().setAmount(existing.getAmount() + input.getAmount()));
+                    continue outer;
+                }
+            }
+            merged.add(input.copy());
+        }
+        return merged;
+    }
+
+    private static boolean craftable(EmiIngredient ingredient) {
+        List<EmiStack> stacks = ingredient.getEmiStacks();
+        // A tag or list first has to be narrowed to one stack, which EMI offers as a recipe of its own.
+        if (stacks.size() != 1) return true;
+        return !EmiApi.getRecipeManager().getRecipesByOutput(stacks.get(0)).isEmpty();
+    }
+
+    private void collectTotals(RecipeTreeNode node) {
+        if (node.recipe != null) {
+            for (RecipeTreeNode child : node.children) collectTotals(child);
+            return;
+        }
+        for (int i = 0; i < totals.size(); i++) {
+            EmiIngredient existing = totals.get(i);
+            if (EmiIngredient.areEqual(existing, node.ingredient)) {
+                totals.set(i, existing.copy().setAmount(existing.getAmount() + node.amount));
+                return;
+            }
+        }
+        totals.add(node.ingredient.copy().setAmount(node.amount));
+    }
+
+    // ---- geometry ----
+
+    private int areaLeft() { return leftPos + MARGIN; }
+    private int areaTop() { return topPos + HEADER; }
+    private int areaRight() { return leftPos + imageWidth - MARGIN; }
+    private int areaBottom() { return topPos + imageHeight - FOOTER; }
+
+    private boolean inArea(double mx, double my) {
+        return mx >= areaLeft() && mx < areaRight() && my >= areaTop() && my < areaBottom();
+    }
+
+    private int rootX() { return leftPos + imageWidth / 2 - 9; }
+    private int rootY() { return topPos + 16; }
+
+    /** The whole panel, for EMI to lay its sidebars out around. */
+    public Bounds panelBounds() {
+        return new Bounds(leftPos, topPos, imageWidth, imageHeight);
+    }
+
+    /** Where EMI may drop a stack: the root slot. */
+    public Bounds rootBounds() {
+        return new Bounds(rootX(), rootY(), 18, 18);
+    }
+
+    private boolean onRoot(double mx, double my) {
+        return mx >= rootX() && mx < rootX() + 18 && my >= rootY() && my < rootY() + 18;
+    }
+
+    private void placeView() {
+        zoom = 1.0F;
+        int areaWidth = areaRight() - areaLeft();
+        panX = tree == null ? 0 : (areaWidth - tree.width) / 2.0;
+        panY = 8;
+        viewPlaced = true;
+    }
+
+    private double toTreeX(double mx) { return (mx - areaLeft() - panX) / zoom; }
+    private double toTreeY(double my) { return (my - areaTop() - panY) / zoom; }
+
+    private @Nullable RecipeTreeNode nodeAt(double mx, double my) {
+        if (tree == null || !inArea(mx, my)) return null;
+        return tree.find(toTreeX(mx), toTreeY(my));
+    }
+
+    /** Stack under the mouse for EMI's own keys (recipes, uses, favourites). */
+    public @Nullable EmiIngredient ingredientAt(double mx, double my) {
+        if (root != null && onRoot(mx, my)) return root;
+        RecipeTreeNode node = nodeAt(mx, my);
+        if (node != null) return node.ingredient;
+        int index = totalAt(mx, my);
+        return index >= 0 ? totals.get(index) : null;
+    }
+
+    private int totalsX() {
+        return leftPos + MARGIN + font.width(Component.translatable("gui.roll_mod.recipe_tree.totals")) + 4;
+    }
+
+    private int totalsY() { return areaBottom() + 3; }
+
+    private int visibleTotals() {
+        return Math.max(0, Math.min(totals.size(), (areaRight() - totalsX()) / 18));
+    }
+
+    private int totalAt(double mx, double my) {
+        if (my < totalsY() || my >= totalsY() + 18 || mx < totalsX()) return -1;
+        int index = (int) ((mx - totalsX()) / 18);
+        return index < visibleTotals() ? index : -1;
+    }
+
+    // ---- rendering ----
+
+    @Override
+    protected void renderBg(GuiGraphics g, float partialTick, int mouseX, int mouseY) {
+        int l = leftPos, t = topPos, r = leftPos + imageWidth, b = topPos + imageHeight;
+        g.fill(l, t, r, b, DARK);
+        g.fill(l + 1, t + 1, r - 1, b - 1, LIGHT);
+        g.fill(l + 2, t + 2, r - 1, b - 1, 0xFF555555);
+        g.fill(l + 2, t + 2, r - 2, b - 2, PANEL);
+        recess(g, areaLeft(), areaTop(), areaRight(), areaBottom(), SLOT);
+        recess(g, rootX(), rootY(), rootX() + 18, rootY() + 18, SLOT);
+    }
+
+    @Override
+    protected void renderLabels(GuiGraphics g, int mouseX, int mouseY) {
+        g.drawString(font, title, (imageWidth - font.width(title)) / 2, 5, TITLE, false);
+    }
+
+    @Override
+    public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        super.render(g, mouseX, mouseY, partialTick);
+
+        if (root != null) {
+            root.render(g, rootX() + 1, rootY() + 1, partialTick, EmiIngredient.RENDER_ICON | EmiIngredient.RENDER_INGREDIENT);
+            drawAmount(g, root, root.getAmount(), rootX(), rootY());
+        }
+
+        if (tree != null) {
+            g.enableScissor(areaLeft() + 1, areaTop() + 1, areaRight() - 1, areaBottom() - 1);
+            g.pose().pushPose();
+            g.pose().translate(areaLeft() + panX, areaTop() + panY, 0);
+            g.pose().scale(zoom, zoom, 1);
+            drawNode(g, tree, partialTick);
+            g.pose().popPose();
+            g.disableScissor();
+        } else {
+            Component hint = Component.translatable("gui.roll_mod.recipe_tree.empty");
+            g.drawString(font, hint, (areaLeft() + areaRight() - font.width(hint)) / 2,
+                    (areaTop() + areaBottom()) / 2 - 4, 0xFFE0E0E0, true);
+        }
+
+        renderFooter(g, partialTick);
+        renderHover(g, mouseX, mouseY);
+    }
+
+    private void drawNode(GuiGraphics g, RecipeTreeNode node, float partialTick) {
+        int border = node.cycle ? CYCLE : node.recipe == null && node.craftable ? CRAFTABLE : 0;
+        if (border != 0) g.fill(node.x - 1, node.y - 1, node.x + 19, node.y + 19, border);
+        recess(g, node.x, node.y, node.x + 18, node.y + 18, SLOT);
+        node.ingredient.render(g, node.x + 1, node.y + 1, partialTick, EmiIngredient.RENDER_ICON | EmiIngredient.RENDER_INGREDIENT);
+        drawAmount(g, node.ingredient, node.amount, node.x, node.y);
+
+        if (node.recipe == null) return;
+        int cx = node.x + 9;
+        g.pose().pushPose();
+        g.pose().translate(cx - 5, node.y + 20, 0);
+        g.pose().scale(0.625F, 0.625F, 1);
+        node.recipe.getCategory().render(g, 0, 0, partialTick);
+        g.pose().popPose();
+
+        if (node.children.isEmpty()) return;
+        int barY = node.y + 35;
+        RecipeTreeNode first = node.children.get(0);
+        RecipeTreeNode last = node.children.get(node.children.size() - 1);
+        g.fill(cx, node.y + 31, cx + 1, barY, LINE);
+        g.fill(Math.min(first.x + 9, cx), barY, Math.max(last.x + 9, cx) + 1, barY + 1, LINE);
+        for (RecipeTreeNode child : node.children) {
+            g.fill(child.x + 9, barY, child.x + 10, child.y, LINE);
+            drawNode(g, child, partialTick);
+        }
+    }
+
+    private void renderFooter(GuiGraphics g, float partialTick) {
+        int y = totalsY();
+        if (status != null && Util.getMillis() < statusUntil) {
+            g.drawString(font, status, leftPos + MARGIN, y + 5, 0xFFA02020, false);
+            return;
+        }
+        if (totals.isEmpty() || tree == null || tree.recipe == null) return;
+        g.drawString(font, Component.translatable("gui.roll_mod.recipe_tree.totals"), leftPos + MARGIN, y + 5, TITLE, false);
+        int shown = visibleTotals();
+        for (int i = 0; i < shown; i++) {
+            int x = totalsX() + i * 18;
+            recess(g, x, y, x + 18, y + 18, SLOT);
+            EmiIngredient total = totals.get(i);
+            total.render(g, x + 1, y + 1, partialTick, EmiIngredient.RENDER_ICON | EmiIngredient.RENDER_INGREDIENT);
+            drawAmount(g, total, total.getAmount(), x, y);
+        }
+    }
+
+    private void renderHover(GuiGraphics g, int mouseX, int mouseY) {
+        List<Component> lines = new ArrayList<>();
+        if (onRoot(mouseX, mouseY)) {
+            if (root == null) {
+                lines.add(Component.translatable("gui.roll_mod.recipe_tree.empty"));
+            } else {
+                lines.addAll(describe(root));
+                lines.add(amountLine(root, root.getAmount()));
+                lines.add(hint("gui.roll_mod.recipe_tree.hint.pick"));
+                lines.add(hint("gui.roll_mod.recipe_tree.hint.amount"));
+                lines.add(hint("gui.roll_mod.recipe_tree.hint.root_clear"));
+            }
+        } else {
+            RecipeTreeNode node = nodeAt(mouseX, mouseY);
+            if (node != null) {
+                lines.addAll(describe(node.ingredient));
+                lines.add(amountLine(node.ingredient, node.amount));
+                if (node.recipe != null) {
+                    lines.add(Component.translatable("gui.roll_mod.recipe_tree.recipe", node.recipe.getCategory().getName())
+                            .withStyle(ChatFormatting.BLUE));
+                }
+                if (node.cycle) {
+                    lines.add(Component.translatable("gui.roll_mod.recipe_tree.cycle").withStyle(ChatFormatting.RED));
+                } else if (node.craftable) {
+                    lines.add(hint(node.recipe == null ? "gui.roll_mod.recipe_tree.hint.pick" : "gui.roll_mod.recipe_tree.hint.change"));
+                    lines.add(hint("gui.roll_mod.recipe_tree.hint.auto"));
+                }
+                if (node.recipe != null) lines.add(hint("gui.roll_mod.recipe_tree.hint.clear"));
+            } else {
+                int index = totalAt(mouseX, mouseY);
+                if (index >= 0 && tree != null && tree.recipe != null) {
+                    EmiIngredient total = totals.get(index);
+                    lines.addAll(describe(total));
+                    lines.add(amountLine(total, total.getAmount()));
+                    lines.add(hint("gui.roll_mod.recipe_tree.hint.pick"));
+                }
+            }
+        }
+        if (!lines.isEmpty()) g.renderComponentTooltip(font, lines, mouseX, mouseY);
+    }
+
+    private static List<Component> describe(EmiIngredient ingredient) {
+        List<EmiStack> stacks = ingredient.getEmiStacks();
+        if (stacks.size() == 1) return new ArrayList<>(stacks.get(0).getTooltipText());
+        return List.of(Component.translatable("gui.roll_mod.recipe_tree.any_of", stacks.get(0).getName()));
+    }
+
+    private static Component amountLine(EmiIngredient ingredient, long amount) {
+        String value = isFluid(ingredient) ? amount + " mB" : String.valueOf(amount);
+        return Component.translatable("gui.roll_mod.recipe_tree.amount", value).withStyle(ChatFormatting.GRAY);
+    }
+
+    private static Component hint(String key) {
+        return Component.translatable(key).withStyle(ChatFormatting.DARK_GRAY);
+    }
+
+    private void drawAmount(GuiGraphics g, EmiIngredient ingredient, long amount, int x, int y) {
+        boolean fluid = isFluid(ingredient);
+        if (amount == 1 && !fluid) return;
+        String text = fluid ? compact(amount) + "mB" : compact(amount);
+        float scale = font.width(text) > 16 ? 0.5F : 1.0F;
+        g.pose().pushPose();
+        g.pose().translate(x + 17 - font.width(text) * scale, y + 17 - 8 * scale, 200);
+        g.pose().scale(scale, scale, 1);
+        g.drawString(font, text, 0, 0, 0xFFFFFFFF, true);
+        g.pose().popPose();
+    }
+
+    private static String compact(long n) {
+        if (n < 10_000) return String.valueOf(n);
+        if (n < 1_000_000) return trim(n / 1_000.0) + "k";
+        if (n < 1_000_000_000) return trim(n / 1_000_000.0) + "M";
+        return trim(n / 1_000_000_000.0) + "G";
+    }
+
+    private static String trim(double v) {
+        return v >= 100 ? String.valueOf((long) v) : String.valueOf(Math.floor(v * 10) / 10).replace(".0", "");
+    }
+
+    private static boolean isFluid(EmiIngredient ingredient) {
+        List<EmiStack> stacks = ingredient.getEmiStacks();
+        return !stacks.isEmpty() && stacks.get(0).getKey() instanceof Fluid;
+    }
+
+    /** A vanilla-style sunken box: dark top-left, light bottom-right. */
+    private static void recess(GuiGraphics g, int l, int t, int r, int b, int fill) {
+        g.fill(l, t, r, b, DARK);
+        g.fill(l + 1, t + 1, r, b, LIGHT);
+        g.fill(l + 1, t + 1, r - 1, b - 1, fill);
+    }
+
+    private void showStatus(Component text) {
+        status = text.copy().withStyle(ChatFormatting.DARK_RED);
+        statusUntil = Util.getMillis() + STATUS_MS;
+    }
+
+    // ---- input ----
+    // The same mouse keys as EMI's own tree: click picks a recipe in EMI's recipe screen, Shift+click
+    // lets EMI pick one, right-click removes it. Mouse handling never reaches AbstractContainerScreen:
+    // with no slots, its click logic would only send "clicked outside" packets for a menu the server
+    // doesn't know.
+
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        for (GuiEventListener child : children()) {
+            if (child.mouseClicked(mouseX, mouseY, button)) {
+                setFocused(child);
+                if (button == 0) setDragging(true);
+                return true;
+            }
+        }
+        if (onRoot(mouseX, mouseY)) {
+            if (button == 1) setRoot(null);
+            else if (button == 0 && root != null) {
+                if (hasShiftDown()) autoPick(root);
+                else pick(root);
+            }
+            return true;
+        }
+        if (inArea(mouseX, mouseY)) {
+            RecipeTreeNode node = nodeAt(mouseX, mouseY);
+            if (node != null) {
+                if (button == 0 && !node.cycle) {
+                    if (hasShiftDown()) autoPick(node.ingredient);
+                    else pick(node.ingredient);
+                } else if (button == 1 && node.recipe != null) {
+                    unpick(node.ingredient);
+                }
+            } else if (button == 0) {
+                panning = true;
+            }
+            return true;
+        }
+        int index = totalAt(mouseX, mouseY);
+        if (index >= 0 && button == 0) {
+            EmiIngredient total = totals.get(index);
+            if (hasShiftDown()) autoPick(total);
+            else pick(total);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (panning) {
+            panX += dragX;
+            panY += dragY;
+            return true;
+        }
+        GuiEventListener focused = getFocused();
+        return focused != null && isDragging() && button == 0 && focused.mouseDragged(mouseX, mouseY, button, dragX, dragY);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        panning = false;
+        setDragging(false);
+        GuiEventListener focused = getFocused();
+        if (focused != null) focused.mouseReleased(mouseX, mouseY, button);
+        return true;
+    }
+
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollX, double scrollY) {
+        if (scrollY == 0) return false;
+        if (root != null && onRoot(mouseX, mouseY)) {
+            long step = (isFluid(root) ? 1000 : 1) * (hasShiftDown() ? 10 : 1);
+            root = root.copy().setAmount(Math.max(1, root.getAmount() + (scrollY > 0 ? step : -step)));
+            rebuild();
+            return true;
+        }
+        if (tree != null && inArea(mouseX, mouseY)) {
+            double treeX = toTreeX(mouseX), treeY = toTreeY(mouseY);
+            zoom = Mth.clamp(zoom * (scrollY > 0 ? 1.1F : 1 / 1.1F), MIN_ZOOM, MAX_ZOOM);
+            // Keep the point under the mouse where it is.
+            panX = mouseX - areaLeft() - treeX * zoom;
+            panY = mouseY - areaTop() - treeY * zoom;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onClose() {
+        // Not AbstractContainerScreen's: it tells the server to close a container the server never opened.
+        minecraft.setScreen(null);
+    }
+
+    /** Client-only and slotless; it exists because EMI only works over container screens. */
+    public static final class Menu extends AbstractContainerMenu {
+        Menu() {
+            super(null, -1);
+        }
+
+        @Override
+        public ItemStack quickMoveStack(Player player, int index) {
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public boolean stillValid(Player player) {
+            return true;
+        }
+    }
+}

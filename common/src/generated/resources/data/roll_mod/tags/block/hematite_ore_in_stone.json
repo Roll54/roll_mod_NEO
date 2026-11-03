@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_hematite",
+            "required": false
+        }
+    ]
+}

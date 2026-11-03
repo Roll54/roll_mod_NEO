@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_monazite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_monazite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_monazite",
+            "required": false
+        }
+    ]
+}

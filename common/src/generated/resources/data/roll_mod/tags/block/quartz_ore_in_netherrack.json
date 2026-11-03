@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_quartz",
+            "required": false
+        }
+    ]
+}

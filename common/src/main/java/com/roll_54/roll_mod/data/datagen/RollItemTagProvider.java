@@ -129,6 +129,18 @@ public class RollItemTagProvider extends ItemTagsProvider {
                 craftMaterialAppender.addOptional(oreBlockItem);
             }
 
+            for (OreTextureTemplates.StoneVariant variant : definition.variants()) {
+                craftMaterialAppender.addOptional(ResourceLocation.fromNamespaceAndPath(MODID, definition.variantBlockId(variant)));
+            }
+
+            // Item side of the roll_mod:<ore>_ore_in_<layer> block tags.
+            for (OreTextureTemplates.BlockSubLayer base : definition.bases()) {
+                var inLayer = tag(com.roll_54.roll_mod.registry.GeneratedOreRegistry.oreInLayerItemTag(definition, base));
+                for (String blockId : com.roll_54.roll_mod.registry.GeneratedOreRegistry.oreInLayerIds(definition, base)) {
+                    inLayer.addOptional(ResourceLocation.fromNamespaceAndPath(MODID, blockId));
+                }
+            }
+
             TagKey<Item> dustMaterial = TagKey.create(
                     Registries.ITEM,
                     ResourceLocation.fromNamespaceAndPath("c", "dusts/" + material)

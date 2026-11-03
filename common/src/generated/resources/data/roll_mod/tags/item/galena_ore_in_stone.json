@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_galena",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_galena",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_galena",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_galena",
+            "required": false
+        }
+    ]
+}

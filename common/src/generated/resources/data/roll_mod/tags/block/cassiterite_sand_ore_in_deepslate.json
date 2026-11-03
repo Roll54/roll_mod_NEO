@@ -1,0 +1,12 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:deepslate_cassiterite_sand",
+            "required": false
+        },
+        {
+            "id": "roll_mod:tuff_cassiterite_sand",
+            "required": false
+        }
+    ]
+}

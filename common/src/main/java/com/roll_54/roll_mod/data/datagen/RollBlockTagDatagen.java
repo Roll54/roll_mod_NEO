@@ -105,6 +105,28 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
                         });
             }
 
+            for (var variant : def.variants()) {
+                String blockId = def.variantBlockId(variant);
+                GeneratedOreRegistry.BLOCKS.getEntries().stream()
+                        .filter(holder -> holder.getId().getPath().equals(blockId))
+                        .findFirst()
+                        .ifPresent(blockHolder -> {
+                            var block = blockHolder.get();
+                            pickaxeTag.add(block);
+                            needsStoneTag.add(block);
+                            commonOreBlocks.add(block);
+                        });
+            }
+
+            // roll_mod:<ore>_ore_in_<layer>: the ore in its layer's rock and in every rock that comes with
+            // that layer (hematite_ore_in_stone = stone, granite, diorite and andesite hematite).
+            for (BlockSubLayer base : def.bases()) {
+                var inLayer = tag(GeneratedOreRegistry.oreInLayerBlockTag(def, base));
+                for (String blockId : GeneratedOreRegistry.oreInLayerIds(def, base)) {
+                    inLayer.addOptional(RollMod.id(blockId));
+                }
+            }
+
             String rawBlockId = "raw_" + def.id() + "_block";
             GeneratedOreRegistry.BLOCKS.getEntries().stream()
                     .filter(holder -> holder.getId().getPath().equals(rawBlockId))

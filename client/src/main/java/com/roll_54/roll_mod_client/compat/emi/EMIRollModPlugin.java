@@ -3,30 +3,30 @@ package com.roll_54.roll_mod_client.compat.emi;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.compat.MBD2.machine.RollMBD2Machines;
 import com.roll_54.roll_mod.compat.MBD2.recipe.ExampleLavaRecipe;
-import com.roll_54.roll_mod.config.MyConfig;
 import com.roll_54.roll_mod.gui.menu.ResearchWorkbenchMenu;
 import com.roll_54.roll_mod.minestar.hub.gui.HubReturn;
 import com.roll_54.roll_mod.recipe.ItemResearchRecipe;
 import com.roll_54.roll_mod.registry.BlockRegistry;
 import com.roll_54.roll_mod.registry.MenuTypes;
 import com.roll_54.roll_mod.registry.RecipeRegistry;
+import com.roll_54.roll_mod_client.compat.emi.tree.RecipeTreeScreen;
 import com.roll_54.roll_mod_client.compat.jei.CauldronWashingRecipe;
 import com.roll_54.roll_mod_client.compat.jei.CropManagerInputRecipe;
 import com.roll_54.roll_mod_client.compat.jei.GreenhouseYieldRecipe;
 import com.roll_54.roll_mod_client.compat.jei.HydroponicReagentRecipe;
 import com.roll_54.roll_mod_client.config.RecipeViewerConfig;
+import dev.emi.emi.api.EmiDragDropHandler;
 import dev.emi.emi.api.EmiEntrypoint;
 import dev.emi.emi.api.EmiPlugin;
 import dev.emi.emi.api.EmiRegistry;
 import dev.emi.emi.api.recipe.EmiRecipe;
 import dev.emi.emi.api.recipe.EmiRecipeCategory;
 import dev.emi.emi.api.recipe.handler.StandardRecipeHandler;
+import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
+import dev.emi.emi.api.stack.EmiStackInteraction;
 import dev.emi.emi.api.widget.Bounds;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.Slot;
@@ -34,10 +34,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Native EMI counterpart of {@link com.roll_54.roll_mod_client.compat.jei.JEIRollModPlugin}.
@@ -67,11 +64,6 @@ public class EMIRollModPlugin implements EmiPlugin {
     private static final int CATALYST_SLOT = PLAYER_SLOTS + 1;
 
     private static final ResourceLocation LDLIB_TEST_CATEGORY = ResourceLocation.fromNamespaceAndPath("ldlib2", "test_category");
-
-    /** Never in EMI's item list, on top of {@code emi.hiddenItems}: unused or not-yet-obtainable items. */
-    private static final List<String> ALWAYS_HIDDEN = List.of(
-            "roll_mod:ruthenium_coin", "roll_mod:sunnarium_glass", "roll_mod:research_workbench",
-            "roll_mod:enderium_prediction_matrix", "roll_mod:nether_star_prediction_matrix");
 
     @Override
     public void register(EmiRegistry registry) {
@@ -114,7 +106,6 @@ public class EMIRollModPlugin implements EmiPlugin {
         if (!RecipeViewerConfig.SHOW_LAVA_SMELTERY.get()) {
             registry.removeRecipes(recipe -> ExampleLavaRecipe.LAVA_SMELTERY.equals(recipe.getCategory().getId()));
         }
-        hideConfiguredItems(registry);
 
         registry.addRecipeHandler(MenuTypes.RESEARCH_WORKBENCH_MENU.get(), new StandardRecipeHandler<ResearchWorkbenchMenu>() {
             @Override
@@ -140,37 +131,19 @@ public class EMIRollModPlugin implements EmiPlugin {
             if (rect == null) return null;
             return new Bounds(Math.round(rect[0]), Math.round(rect[1]), Math.round(rect[2]), Math.round(rect[3]));
         });
-    }
 
-    /**
-     * Leaves the items in roll_mod's config ({@code /configure roll_mod}, emi.hiddenItems) out of EMI's item list: by id, or by tag
-     * when the entry starts with {@code #}. Entries that name nothing are skipped.
-     */
-    private static void hideConfiguredItems(EmiRegistry registry) {
-        Set<Item> items = new HashSet<>();
-        List<TagKey<Item>> tags = new ArrayList<>();
-        List<String> entries = new ArrayList<>(MyConfig.INSTANCE.emi.hiddenItems);
-        // Hidden whatever the config says: a config file saved before these were added keeps its own list.
-        entries.addAll(ALWAYS_HIDDEN);
-        for (String entry : entries) {
-            String id = entry.strip();
-            if (id.startsWith("#")) {
-                ResourceLocation tag = ResourceLocation.tryParse(id.substring(1));
-                if (tag != null) tags.add(TagKey.create(Registries.ITEM, tag));
-            } else {
-                ResourceLocation item = ResourceLocation.tryParse(id);
-                if (item != null) BuiltInRegistries.ITEM.getOptional(item).ifPresent(items::add);
-            }
-        }
-        if (items.isEmpty() && tags.isEmpty()) return;
-        registry.removeEmiStacks(stack -> {
-            ItemStack itemStack = stack.getItemStack();
-            if (itemStack.isEmpty()) return false;
-            if (items.contains(itemStack.getItem())) return true;
-            for (TagKey<Item> tag : tags) {
-                if (itemStack.is(tag)) return true;
-            }
-            return false;
+        // Recipe tree (/recipetree): stacks dragged out of EMI land in its root slot, and EMI's keys
+        // (recipes, uses, favourite) work on the tree's nodes.
+        // EMI places its sidebars around a container screen's slots, and the tree has none, so without
+        // this it would show no sidebars at all.
+        registry.addScreenBoundsProvider(RecipeTreeScreen.class, RecipeTreeScreen::panelBounds);
+        registry.addDragDropHandler(RecipeTreeScreen.class, new EmiDragDropHandler.BoundsBased<RecipeTreeScreen>(
+                (screen, consumer) -> consumer.accept(screen.rootBounds(), screen::setRoot)));
+        // Not clickable: EMI would take a click on the stack as "view recipes" and open them without the
+        // pick buttons. Clicks stay with the tree, which opens them in pick mode as EMI's own tree does.
+        registry.addStackProvider(RecipeTreeScreen.class, (screen, x, y) -> {
+            EmiIngredient hovered = screen.ingredientAt(x, y);
+            return hovered == null ? EmiStackInteraction.EMPTY : new EmiStackInteraction(hovered, null, false);
         });
     }
 

@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_gold",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_gold",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_gold",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_gold",
+            "required": false
+        }
+    ]
+}

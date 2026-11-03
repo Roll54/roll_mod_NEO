@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * Which ore a surface sample stands for, so a sample is only placed with its ore beneath it
  * ({@code SurfaceIndicatorOreBelowMixin}). A {@code <base>_<ore>_ore_sample} stands for that ore in any
- * base — a stone hematite sample over deepslate hematite counts.
+ * base or rock variant — a stone hematite sample over deepslate or granite hematite counts.
  */
 public final class OreSampleVeins {
 
@@ -48,6 +48,8 @@ public final class OreSampleVeins {
             Set<Block> ores = new HashSet<>();
             def.bases().forEach(base -> BuiltInRegistries.BLOCK
                     .getOptional(RollMod.id(base.id() + "_" + def.id())).ifPresent(ores::add));
+            def.variants().forEach(variant -> BuiltInRegistries.BLOCK
+                    .getOptional(RollMod.id(def.variantBlockId(variant))).ifPresent(ores::add));
             def.bases().forEach(base -> BuiltInRegistries.BLOCK
                     .getOptional(RollMod.id(GeneratedOreRegistry.oreSampleId(base, def.id())))
                     .ifPresent(sample -> map.put(sample, ores)));

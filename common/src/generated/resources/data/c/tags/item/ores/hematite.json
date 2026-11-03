@@ -1,40 +1,64 @@
 {
-  "values": [
-    {
-      "id": "roll_mod:raw_hematite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:stone_hematite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:deepslate_hematite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:netherrack_hematite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:mars_hematite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:moon_hematite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:venus_hematite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:mercury_hematite",
-      "required": false
-    },
-    {
-      "id": "roll_mod:end_hematite",
-      "required": false
-    }
-  ]
+    "values": [
+        {
+            "id": "roll_mod:raw_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:stone_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:deepslate_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:netherrack_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:mars_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:moon_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:venus_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:mercury_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:end_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:tuff_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_hematite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_hematite",
+            "required": false
+        }
+    ]
 }

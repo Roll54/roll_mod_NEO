@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_sulfur",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_sulfur",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_sulfur",
+            "required": false
+        }
+    ]
+}

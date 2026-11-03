@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_cassiterite_sand",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_cassiterite_sand",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_cassiterite_sand",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_cassiterite_sand",
+            "required": false
+        }
+    ]
+}

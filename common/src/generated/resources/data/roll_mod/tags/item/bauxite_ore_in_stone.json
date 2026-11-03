@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_bauxite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_bauxite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_bauxite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_bauxite",
+            "required": false
+        }
+    ]
+}

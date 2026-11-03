@@ -1,40 +1,48 @@
 {
-  "values": [
-    {
-      "id": "roll_mod:raw_certus_quartz",
-      "required": false
-    },
-    {
-      "id": "roll_mod:stone_certus_quartz",
-      "required": false
-    },
-    {
-      "id": "roll_mod:deepslate_certus_quartz",
-      "required": false
-    },
-    {
-      "id": "roll_mod:netherrack_certus_quartz",
-      "required": false
-    },
-    {
-      "id": "roll_mod:mars_certus_quartz",
-      "required": false
-    },
-    {
-      "id": "roll_mod:moon_certus_quartz",
-      "required": false
-    },
-    {
-      "id": "roll_mod:venus_certus_quartz",
-      "required": false
-    },
-    {
-      "id": "roll_mod:mercury_certus_quartz",
-      "required": false
-    },
-    {
-      "id": "roll_mod:end_certus_quartz",
-      "required": false
-    }
-  ]
+    "values": [
+        {
+            "id": "roll_mod:raw_certus_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:stone_certus_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:deepslate_certus_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:netherrack_certus_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:mars_certus_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:moon_certus_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:venus_certus_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:mercury_certus_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:end_certus_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_certus_quartz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_certus_quartz",
+            "required": false
+        }
+    ]
 }

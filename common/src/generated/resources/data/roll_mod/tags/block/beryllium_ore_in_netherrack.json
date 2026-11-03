@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_beryllium",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_beryllium",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_beryllium",
+            "required": false
+        }
+    ]
+}

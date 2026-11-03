@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_pyrite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_pyrite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_pyrite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_pyrite",
+            "required": false
+        }
+    ]
+}

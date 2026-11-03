@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_topaz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_topaz",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_topaz",
+            "required": false
+        }
+    ]
+}

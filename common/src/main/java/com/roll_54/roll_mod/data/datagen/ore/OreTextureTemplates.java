@@ -32,6 +32,40 @@ public final class OreTextureTemplates {
         }
     }
 
+    /**
+     * Rocks an ore also comes in, next to the {@link BlockSubLayer}s its definition lists. Each follows its
+     * parent layer the way vanilla's ore-replaceable tags do: stone ores get granite, diorite and andesite,
+     * deepslate ores get tuff, netherrack ores get blackstone and basalt. A definition only names the layer;
+     * the variants come with it ({@link OreDefinition#variants()}), and vein placement swaps them in over
+     * their rock ({@code compat/gtmogs/OreStoneVariants}).
+     *
+     * <p>The base texture is the vanilla block's own, read from the client jar at datagen time.
+     */
+    public enum StoneVariant {
+        GRANITE("granite", BlockSubLayer.STONE, "granite"),
+        DIORITE("diorite", BlockSubLayer.STONE, "diorite"),
+        ANDESITE("andesite", BlockSubLayer.STONE, "andesite"),
+        TUFF("tuff", BlockSubLayer.DEEPSLATE, "tuff"),
+        BLACKSTONE("blackstone", BlockSubLayer.NETHERRACK, "blackstone"),
+        BASALT("basalt", BlockSubLayer.NETHERRACK, "basalt_side");
+
+        private final String id;
+        private final BlockSubLayer parent;
+        private final String vanillaTexture;
+
+        StoneVariant(String id, BlockSubLayer parent, String vanillaTexture) {
+            this.id = id;
+            this.parent = parent;
+            this.vanillaTexture = vanillaTexture;
+        }
+
+        /** Also the vanilla block it stands in, {@code minecraft:<id>}. */
+        public String id() { return id; }
+        public BlockSubLayer parent() { return parent; }
+        /** Classpath location of the vanilla base texture. */
+        public String textureResource() { return "assets/minecraft/textures/block/" + vanillaTexture + ".png"; }
+    }
+
     public enum BlockOverlay {
         BISMUTH("bismuth"),
         COAL("coal"),

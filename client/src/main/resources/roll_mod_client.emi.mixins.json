@@ -1,0 +1,13 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.roll_54.roll_mod_client.compat.emi.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "BoMRecipeTreePickMixin",
+    "ResolutionButtonPickMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_stannite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_stannite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_stannite",
+            "required": false
+        }
+    ]
+}

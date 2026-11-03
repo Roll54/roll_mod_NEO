@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_pyrite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_pyrite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_pyrite",
+            "required": false
+        }
+    ]
+}

@@ -86,7 +86,9 @@ dependencies {
     // EMI is client-only too. compat/emi registers native categories for everything JEIRollModPlugin
     // shows: common's EMI plugin marks "roll_mod" as handled, so EMI would not import our JEI ones.
     // With both loaded, EMI takes over and JEI only feeds it plugins.
-    compileOnly("dev.emi:emi-neoforge:${emi_version}:api")
+    // Full jar, not just :api: the recipe tree (compat/emi/tree) reads RecipeScreen.resolve and its mixin
+    // patches BoM, neither of which is API.
+    compileOnly("dev.emi:emi-neoforge:${emi_version}")
     runtimeOnly("dev.emi:emi-neoforge:${emi_version}")
 
     // AgriCraft (a common-module api dependency) requires resourcefulconfig at runtime.

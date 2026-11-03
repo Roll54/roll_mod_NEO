@@ -1,0 +1,12 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:deepslate_yellow_limonite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:tuff_yellow_limonite",
+            "required": false
+        }
+    ]
+}

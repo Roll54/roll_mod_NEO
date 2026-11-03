@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_yellow_limonite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_yellow_limonite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_yellow_limonite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_yellow_limonite",
+            "required": false
+        }
+    ]
+}

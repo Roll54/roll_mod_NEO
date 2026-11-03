@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_biotite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_biotite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_biotite",
+            "required": false
+        }
+    ]
+}

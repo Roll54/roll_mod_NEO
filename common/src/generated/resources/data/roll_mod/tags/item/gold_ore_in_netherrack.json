@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_gold",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_gold",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_gold",
+            "required": false
+        }
+    ]
+}

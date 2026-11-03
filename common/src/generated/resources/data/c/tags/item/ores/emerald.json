@@ -1,40 +1,48 @@
 {
-  "values": [
-    {
-      "id": "roll_mod:raw_emerald",
-      "required": false
-    },
-    {
-      "id": "roll_mod:stone_emerald",
-      "required": false
-    },
-    {
-      "id": "roll_mod:deepslate_emerald",
-      "required": false
-    },
-    {
-      "id": "roll_mod:netherrack_emerald",
-      "required": false
-    },
-    {
-      "id": "roll_mod:mars_emerald",
-      "required": false
-    },
-    {
-      "id": "roll_mod:moon_emerald",
-      "required": false
-    },
-    {
-      "id": "roll_mod:venus_emerald",
-      "required": false
-    },
-    {
-      "id": "roll_mod:mercury_emerald",
-      "required": false
-    },
-    {
-      "id": "roll_mod:end_emerald",
-      "required": false
-    }
-  ]
+    "values": [
+        {
+            "id": "roll_mod:raw_emerald",
+            "required": false
+        },
+        {
+            "id": "roll_mod:stone_emerald",
+            "required": false
+        },
+        {
+            "id": "roll_mod:deepslate_emerald",
+            "required": false
+        },
+        {
+            "id": "roll_mod:netherrack_emerald",
+            "required": false
+        },
+        {
+            "id": "roll_mod:mars_emerald",
+            "required": false
+        },
+        {
+            "id": "roll_mod:moon_emerald",
+            "required": false
+        },
+        {
+            "id": "roll_mod:venus_emerald",
+            "required": false
+        },
+        {
+            "id": "roll_mod:mercury_emerald",
+            "required": false
+        },
+        {
+            "id": "roll_mod:end_emerald",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_emerald",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_emerald",
+            "required": false
+        }
+    ]
 }

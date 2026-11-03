@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_bismuth",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_bismuth",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_bismuth",
+            "required": false
+        }
+    ]
+}

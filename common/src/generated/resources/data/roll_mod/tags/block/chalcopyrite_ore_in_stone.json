@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_chalcopyrite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_chalcopyrite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_chalcopyrite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_chalcopyrite",
+            "required": false
+        }
+    ]
+}

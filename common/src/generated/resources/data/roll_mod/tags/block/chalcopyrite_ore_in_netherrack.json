@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_chalcopyrite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_chalcopyrite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_chalcopyrite",
+            "required": false
+        }
+    ]
+}

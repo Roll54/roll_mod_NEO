@@ -38,6 +38,17 @@ public class OreBlockStateProvider extends BlockStateProvider {
                         .ifPresent(blockHolder -> oreSample(blockHolder.get(), sampleId, blockId));
             }
 
+            for (var variant : def.variants()) {
+                String blockId = def.variantBlockId(variant);
+                GeneratedOreRegistry.BLOCKS.getEntries().stream()
+                        .filter(holder -> holder.getId().getPath().equals(blockId))
+                        .findFirst()
+                        .ifPresent(blockHolder -> {
+                            models().existingFileHelper.trackGenerated(modLoc("block/" + blockId), PackType.CLIENT_RESOURCES, ".png", "textures");
+                            simpleBlockWithItem(blockHolder.get(), cubeAll(blockHolder.get()));
+                        });
+            }
+
             String rawBlockId = "raw_" + def.id() + "_block";
             GeneratedOreRegistry.BLOCKS.getEntries().stream()
                     .filter(holder -> holder.getId().getPath().equals(rawBlockId))

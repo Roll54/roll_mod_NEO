@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_trona",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_trona",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_trona",
+            "required": false
+        }
+    ]
+}

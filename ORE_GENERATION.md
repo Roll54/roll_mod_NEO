@@ -146,6 +146,15 @@ Wraps vanilla's `HeightRangePlacement`, so the value goes under a `height` key:
 | `mining_overworld_stone` | `#minecraft:stone_ore_replaceables` | `roll_mod:mining_overworld` |
 | `mining_overworld_deepslate` | `#minecraft:deepslate_ore_replaceables` | `roll_mod:mining_overworld` |
 
+**Rock variants.** An ore defined on the `stone` layer (`OreDefinitions`) also comes as `granite_<ore>`,
+`diorite_<ore>` and `andesite_<ore>`; on `deepslate` as `tuff_<ore>`; on `netherrack` as `blackstone_<ore>` and
+`basalt_<ore>` (`OreTextureTemplates.StoneVariant`). Vein files keep naming one block: when a vein writes any
+roll_mod ore over stone, deepslate, netherrack or one of those rocks, the same material's ore in that rock goes
+in instead, if it exists (`compat/gtmogs/OreStoneVariants`). Planet layers are placed as written.
+
+The vein's EMI page lists the raw ore and those variants as outputs too, so looking up `raw_<ore>` finds its
+veins, and shows the vein's surface samples under the dimension slot.
+
 The mining world (flat: deepslate Y −63…0, stone Y 1…64, grass at 68) has veins of its own,
 `data/roll_mod/roll_mod/ore_vein/mining_overworld/` — the overworld veins on the `mining_overworld_*` layers, with
 heights squeezed into its bands — so EMI lists them apart from the overworld ones. Overworld veins do not roll there.

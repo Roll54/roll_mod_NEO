@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_silver",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_silver",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_silver",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_silver",
+            "required": false
+        }
+    ]
+}

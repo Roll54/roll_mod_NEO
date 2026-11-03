@@ -1,0 +1,20 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:stone_nickel",
+            "required": false
+        },
+        {
+            "id": "roll_mod:granite_nickel",
+            "required": false
+        },
+        {
+            "id": "roll_mod:diorite_nickel",
+            "required": false
+        },
+        {
+            "id": "roll_mod:andesite_nickel",
+            "required": false
+        }
+    ]
+}

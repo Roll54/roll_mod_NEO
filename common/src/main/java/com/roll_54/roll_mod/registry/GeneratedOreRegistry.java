@@ -5,6 +5,9 @@ import com.roll_54.roll_mod.blocks.OreSampleBlock;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinition;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
+import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.StoneVariant;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
@@ -17,6 +20,8 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Supplier;
 
 public class GeneratedOreRegistry {
@@ -52,6 +57,12 @@ public class GeneratedOreRegistry {
             registerBlockWithItem(oreSampleId(base, oreName), () -> new OreSampleBlock(ORE_SAMPLE_PROPERTIES));
         }
 
+        // The same ore in the rocks that come with those layers (granite, tuff, basalt...). No samples of
+        // their own: a vein's samples are its base layer's.
+        for (StoneVariant variant : def.variants()) {
+            registerBlockWithItem(def.variantBlockId(variant), () -> new DropExperienceBlock(UniformInt.of(def.minExperience(), def.maxExperience()), ORE_PROPERTIES));
+        }
+
         // Register raw storage block (texture chosen from the raw pool, tinted per-ore)
         registerBlockWithItem("raw_" + oreName + "_block", () -> new Block(RAW_BLOCK_PROPERTIES));
 
@@ -68,6 +79,29 @@ public class GeneratedOreRegistry {
     /** Registry path of the ore sample belonging to the {@code <base>_<ore>} ore block. */
     public static String oreSampleId(BlockSubLayer base, String oreName) {
         return base.id() + "_" + oreName + "_ore_sample";
+    }
+
+    /** {@code <ore>_ore_in_<layer>}, e.g. {@code hematite_ore_in_stone}; the same path for the block and item tag. */
+    public static String oreInLayerTagPath(OreDefinition def, BlockSubLayer base) {
+        return def.id() + "_ore_in_" + base.id();
+    }
+
+    public static TagKey<Block> oreInLayerBlockTag(OreDefinition def, BlockSubLayer base) {
+        return TagKey.create(Registries.BLOCK, RollMod.id(oreInLayerTagPath(def, base)));
+    }
+
+    public static TagKey<Item> oreInLayerItemTag(OreDefinition def, BlockSubLayer base) {
+        return TagKey.create(Registries.ITEM, RollMod.id(oreInLayerTagPath(def, base)));
+    }
+
+    /** Block ids in {@link #oreInLayerBlockTag}: the ore in the layer's own rock, then in each rock of that layer. */
+    public static List<String> oreInLayerIds(OreDefinition def, BlockSubLayer base) {
+        List<String> ids = new ArrayList<>();
+        ids.add(base.id() + "_" + def.id());
+        for (StoneVariant variant : def.variants()) {
+            if (variant.parent() == base) ids.add(def.variantBlockId(variant));
+        }
+        return ids;
     }
 
     private static <T extends Block> DeferredHolder<Block, T> registerBlockWithItem(String name, Supplier<T> blockSupplier) {

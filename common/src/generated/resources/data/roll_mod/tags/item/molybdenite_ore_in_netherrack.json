@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_molybdenite",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_molybdenite",
+            "required": false
+        }
+    ]
+}

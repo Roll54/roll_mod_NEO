@@ -1,0 +1,16 @@
+{
+    "values": [
+        {
+            "id": "roll_mod:netherrack_crimson_iron",
+            "required": false
+        },
+        {
+            "id": "roll_mod:blackstone_crimson_iron",
+            "required": false
+        },
+        {
+            "id": "roll_mod:basalt_crimson_iron",
+            "required": false
+        }
+    ]
+}

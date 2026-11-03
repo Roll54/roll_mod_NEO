@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.data.datagen.ore;
 
 import com.roll_54.roll_mod.data.datagen.SolarPanelLootProvider;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
+import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.StoneVariant;
 import com.roll_54.roll_mod.registry.GeneratedOreRegistry;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import net.minecraft.core.HolderLookup;
@@ -78,51 +79,7 @@ public class OreLootTableProvider extends LootTableProvider {
                     Item baseDustItem = getDustForBase(base);
 
                     if (block != null) {
-                        LootTable.Builder builder;
-
-                        if (rawItem != null) {
-                            // Pool for Raw Item (1-5, Fortune, No Silk Touch)
-                            LootPool.Builder rawPool = LootPool.lootPool()
-                                    .setRolls(UniformGenerator.between(1.0F, 1.0F))
-                                    .add(LootItem.lootTableItem(rawItem)
-                                            .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 5.0F)))
-                                            .apply(ApplyBonusCount.addOreBonusCount(enchantments.getOrThrow(Enchantments.FORTUNE)))
-                                            .when(this.doesNotHaveSilkTouch())
-                                    );
-
-                            // Start builder with Silk Touch pool (drops block)
-                            // If has silk touch -> drop block.
-                            // If no silk touch -> nothing from this pool.
-                            builder = LootTable.lootTable().withPool(
-                                    LootPool.lootPool()
-                                            .setRolls(UniformGenerator.between(1.0F, 1.0F))
-                                            .add(LootItem.lootTableItem(block)
-                                                    .when(this.hasSilkTouch())
-                                            )
-                            );
-
-                            // Add Raw Item pool
-                            builder.withPool(rawPool);
-
-                        } else {
-                            // If no raw item, simple drop self
-                            builder = this.createSingleItemTable(block);
-                        }
-
-                        // Add Base Dust Drop if available
-                       if (baseDustItem != null) {
-                            LootPool.Builder dustPool = LootPool.lootPool()
-                                    .setRolls(UniformGenerator.between(1.0F, 1.0F)) // One roll of the pool
-                                    .add(LootItem.lootTableItem(baseDustItem)
-                                            .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 5.0F))) // 1 to 5 items
-                                            .apply(ApplyBonusCount.addOreBonusCount(enchantments.getOrThrow(Enchantments.FORTUNE))) // Multiplied by fortune
-                                    )
-                                    .when(this.doesNotHaveSilkTouch()); // Only if no silk touch
-
-                            builder.withPool(dustPool);
-                        }
-
-                        this.add(block, builder);
+                        this.add(block, oreTable(block, rawItem, baseDustItem));
                     }
 
                     // Ore sample: silk touch keeps the block, otherwise it yields 1-2 raw material.
@@ -150,7 +107,76 @@ public class OreLootTableProvider extends LootTableProvider {
                         this.add(sampleBlock, sampleBuilder);
                     }
                 }
+
+                // Rock variants drop like their layer's ore, with their own rock's dust.
+                for (StoneVariant variant : def.variants()) {
+                    Block block = blocks.get(def.variantBlockId(variant));
+                    if (block != null) {
+                        this.add(block, oreTable(block, rawItem, getDustForVariant(variant)));
+                    }
+                }
             }
+        }
+
+        /** Silk touch keeps the block; otherwise 1-5 raw ore and 1-5 of the rock's dust, both with fortune. */
+        private LootTable.Builder oreTable(Block block, Item rawItem, Item baseDustItem) {
+            LootTable.Builder builder;
+
+            if (rawItem != null) {
+                // Pool for Raw Item (1-5, Fortune, No Silk Touch)
+                LootPool.Builder rawPool = LootPool.lootPool()
+                        .setRolls(UniformGenerator.between(1.0F, 1.0F))
+                        .add(LootItem.lootTableItem(rawItem)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 5.0F)))
+                                .apply(ApplyBonusCount.addOreBonusCount(enchantments.getOrThrow(Enchantments.FORTUNE)))
+                                .when(this.doesNotHaveSilkTouch())
+                        );
+
+                // Start builder with Silk Touch pool (drops block)
+                // If has silk touch -> drop block.
+                // If no silk touch -> nothing from this pool.
+                builder = LootTable.lootTable().withPool(
+                        LootPool.lootPool()
+                                .setRolls(UniformGenerator.between(1.0F, 1.0F))
+                                .add(LootItem.lootTableItem(block)
+                                        .when(this.hasSilkTouch())
+                                )
+                );
+
+                // Add Raw Item pool
+                builder.withPool(rawPool);
+
+            } else {
+                // If no raw item, simple drop self
+                builder = this.createSingleItemTable(block);
+            }
+
+            // Add Base Dust Drop if available
+            if (baseDustItem != null) {
+                LootPool.Builder dustPool = LootPool.lootPool()
+                        .setRolls(UniformGenerator.between(1.0F, 1.0F)) // One roll of the pool
+                        .add(LootItem.lootTableItem(baseDustItem)
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 5.0F))) // 1 to 5 items
+                                .apply(ApplyBonusCount.addOreBonusCount(enchantments.getOrThrow(Enchantments.FORTUNE))) // Multiplied by fortune
+                        )
+                        .when(this.doesNotHaveSilkTouch()); // Only if no silk touch
+
+                builder.withPool(dustPool);
+            }
+
+            return builder;
+        }
+
+        /** The rock's own dust where roll_mod has one; blackstone has none and falls back to netherrack's. */
+        private Item getDustForVariant(StoneVariant variant) {
+            return switch (variant) {
+                case GRANITE -> ItemRegistry.GRANITE_DUST.get();
+                case DIORITE -> ItemRegistry.DIORITE_DUST.get();
+                case ANDESITE -> ItemRegistry.ANDESITE_DUST.get();
+                case TUFF -> ItemRegistry.TUFF_DUST.get();
+                case BASALT -> ItemRegistry.BASALT_DUST.get();
+                case BLACKSTONE -> getDustForBase(variant.parent());
+            };
         }
 
         private Item getDustForBase(BlockSubLayer base) {
