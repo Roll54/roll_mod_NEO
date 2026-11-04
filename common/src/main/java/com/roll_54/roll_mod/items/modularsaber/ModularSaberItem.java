@@ -217,9 +217,6 @@ public class ModularSaberItem extends Item implements ISimpleEnergyItem, OneStat
             NanoSaberSweepEntity wave = new NanoSaberSweepEntity(level, player, aim, waveColor(stack),
                     waveRainbow(stack), damage, false);
             wave.setPos(spawn);
-            if (voltage == SaberVoltage.IV) {
-                wave.getPersistentData().putBoolean(SaberModuleEvents.ONE_SHOT_TAG, true);
-            }
             level.addFreshEntity(wave);
         }
         player.getCooldowns().addCooldown(this, WAVE_COOLDOWN_TICKS);

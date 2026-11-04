@@ -7,7 +7,7 @@ import com.roll_54.roll_mod.items.modulardrill.ModuleComplexity;
  * energy the bare saber holds, how hard it hits while switched on, what one hit costs before any
  * module multipliers, and what it drains every second just for being switched on.
  *
- * <p>Damage climbs linearly, +5 per tier, so modules — not the tier alone — make the big numbers.
+ * <p>Damage climbs +5 per tier up to EV; IV hits for 250 on its own. Modules make the big numbers below IV.
  * Capacity and per-hit cost carry over from the fixed sabers these replace (the LV tier is new).
  * The idle drain is roughly one-fiftieth of a hit per second, so a saber left switched on empties
  * itself over an evening rather than in a minute.
@@ -17,7 +17,7 @@ public enum SaberVoltage {
     MV(5, 10_000_000L, 15, 50_000L, 1_000L),
     HV(6, 1_000_000_000L, 20, 1_000_000L, 20_000L),
     EV(7, 10_000_000_000L, 25, 10_000_000L, 200_000L),
-    IV(7, 1_000_000_000_000L, 30, 100_000_000L, 2_000_000L);
+    IV(7, 1_000_000_000_000L, 250, 100_000_000L, 2_000_000L);
 
     public final int slots;
     public final long baseCapacity;
