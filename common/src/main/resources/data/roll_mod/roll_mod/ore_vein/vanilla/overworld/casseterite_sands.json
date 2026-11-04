@@ -7,7 +7,8 @@
   },
   "density": 1.0,
   "dimension_filter": [
-    "minecraft:overworld"
+    "minecraft:overworld",
+    "roll_mod:mining_overworld"
   ],
   "discard_chance_on_air_exposure": 0.25,
   "generator": {
@@ -29,12 +30,7 @@
       "layers": 5,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:stone_cassiterite_sand"
-          }
+          "material": "cassiterite_sand"
         }
       ]
     },
@@ -55,12 +51,7 @@
       "layers": 3,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:stone_cassiterite"
-          }
+          "material": "cassiterite"
         },
         {
           "target": {
@@ -91,13 +82,29 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:stone_cassiterite_sand_ore_sample",
-        "roll_mod:stone_cassiterite_sand_ore_sample",
-        "roll_mod:stone_cassiterite_ore_sample"
+      "materials": [
+        "cassiterite_sand",
+        "cassiterite"
       ],
       "tries": 76,
       "xz_spread": 19
     }
-  ]
+  ],
+  "dimension_overrides": {
+    "roll_mod:mining_overworld": {
+      "layer": "mining_overworld_stone",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "max_inclusive": {
+            "absolute": 58
+          },
+          "min_inclusive": {
+            "absolute": 24
+          }
+        }
+      },
+      "biomes": "roll_mod:mining_overworld"
+    }
+  }
 }

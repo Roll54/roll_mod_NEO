@@ -16,12 +16,7 @@
       "layers": 5,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_stannite"
-          }
+          "material": "stannite"
         }
       ]
     },
@@ -29,20 +24,10 @@
       "layers": 5,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_stannite"
-          }
+          "material": "stannite"
         },
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_pyrite"
-          }
+          "material": "pyrite"
         }
       ]
     },
@@ -50,20 +35,10 @@
       "layers": 5,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_pyrite"
-          }
+          "material": "pyrite"
         },
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_sphalerite"
-          }
+          "material": "sphalerite"
         }
       ]
     },
@@ -71,12 +46,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_sphalerite"
-          }
+          "material": "sphalerite"
         }
       ]
     },
@@ -99,13 +69,10 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:netherrack_stannite_ore_sample",
-        "roll_mod:netherrack_stannite_ore_sample",
-        "roll_mod:netherrack_pyrite_ore_sample",
-        "roll_mod:netherrack_pyrite_ore_sample",
-        "roll_mod:netherrack_sphalerite_ore_sample",
-        "roll_mod:netherrack_sphalerite_ore_sample"
+      "materials": [
+        "stannite",
+        "pyrite",
+        "sphalerite"
       ],
       "attachment": "either",
       "tries": 29,

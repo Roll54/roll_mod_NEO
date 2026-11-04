@@ -16,12 +16,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_ruby"
-          }
+          "material": "ruby"
         }
       ]
     },
@@ -29,20 +24,10 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_ruby"
-          }
+          "material": "ruby"
         },
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_redstone"
-          }
+          "material": "redstone"
         }
       ]
     },
@@ -50,12 +35,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_cinnabar"
-          }
+          "material": "cinnabar"
         }
       ]
     },
@@ -63,12 +43,7 @@
       "layers": 3,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_redstone"
-          }
+          "material": "redstone"
         }
       ]
     },
@@ -91,12 +66,10 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:netherrack_ruby_ore_sample",
-        "roll_mod:netherrack_ruby_ore_sample",
-        "roll_mod:netherrack_redstone_ore_sample",
-        "roll_mod:netherrack_redstone_ore_sample",
-        "roll_mod:netherrack_cinnabar_ore_sample"
+      "materials": [
+        "ruby",
+        "redstone",
+        "cinnabar"
       ],
       "attachment": "floor",
       "tries": 22,

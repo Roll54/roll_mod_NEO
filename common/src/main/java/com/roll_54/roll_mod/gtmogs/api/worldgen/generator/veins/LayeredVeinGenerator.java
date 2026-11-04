@@ -180,7 +180,7 @@ public class LayeredVeinGenerator extends VeinGenerator {
         for (var layerPattern : layerPatterns) {
             layerPattern.layers().forEach((layer) -> {
                 layer.asVeinEntries().forEach((entry) -> {
-                    GTOreVeins.addVeinOre(entry.vein().getBlock());
+                    entry.blocks().forEach(state -> GTOreVeins.addVeinOre(state.getBlock()));
                 });
             });
         }

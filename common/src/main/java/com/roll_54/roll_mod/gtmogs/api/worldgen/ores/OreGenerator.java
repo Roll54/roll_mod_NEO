@@ -1,5 +1,7 @@
 package com.roll_54.roll_mod.gtmogs.api.worldgen.ores;
 
+import net.minecraft.world.level.Level;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.QuartPos;
@@ -115,7 +117,8 @@ public class OreGenerator {
                     OreGenDiagnostics.record(OreGenDiagnostics.Phase.INDICATORS, started);
 
                     return generated.isEmpty() ? Stream.<GeneratedVein>empty() :
-                            Stream.of(new GeneratedVein(chunkPos, definition.layer(), generated));
+                            Stream.of(new GeneratedVein(chunkPos, definition.layer(level.getLevel().dimension()),
+                                    generated));
                 })
                 .toList();
     }
@@ -133,7 +136,8 @@ public class OreGenerator {
             return Optional.empty();
         }
 
-        return Optional.of(new GeneratedVein(chunkPos, definition.layer(), generatedVeins));
+        return Optional.of(new GeneratedVein(chunkPos, definition.layer(level.getLevel().dimension()),
+                generatedVeins));
     }
 
     private List<VeinConfiguration> createConfigs(WorldGenLevel level, ChunkGenerator generator, ChunkPos chunkPos) {
@@ -178,13 +182,14 @@ public class OreGenerator {
     private static Optional<BlockPos> computeVeinOrigin(WorldGenLevel level, ChunkGenerator generator, ChunkPos pos,
                                                         RandomSource random, BlockPos veinCenter,
                                                         OreVeinDefinition entry) {
-        int layerSeed = WorldGeneratorUtils.getWorldGenLayerKey(entry.layer())
+        ResourceKey<Level> dimension = level.getLevel().dimension();
+        int layerSeed = WorldGeneratorUtils.getWorldGenLayerKey(entry.layer(dimension))
                 .map(String::hashCode)
                 .orElse(0);
         var layeredRandom = new XoroshiroRandomSource(random.nextLong() ^ ((long) layerSeed));
 
         veinCenter = OreVeinUtil.getVeinCenter(pos, layeredRandom).orElse(veinCenter);
-        return entry.heightRange().getPositions(
+        return entry.heightRange(dimension).getPositions(
                 new PlacementContext(level, generator, Optional.empty()),
                 layeredRandom, veinCenter).findFirst();
     }

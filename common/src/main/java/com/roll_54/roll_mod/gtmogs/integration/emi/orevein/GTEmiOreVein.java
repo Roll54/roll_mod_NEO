@@ -7,7 +7,6 @@ import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
-import com.roll_54.roll_mod.compat.gtmogs.OreVeinLookups;
 
 import com.roll_54.roll_mod.gtmogs.api.worldgen.OreVeinDefinition;
 import com.roll_54.roll_mod.gtmogs.integration.xei.widgets.GTOreVeinWidget;
@@ -39,12 +38,11 @@ public class GTEmiOreVein extends ModularEmiRecipe<WidgetGroup> {
 
     @Override
     public List<EmiStack> getOutputs() {
-        List<ItemStack> ores = GTOreVeinWidget.getContainedOresAndBlocks(oreDefinition.value());
+        // roll_mod: everything the page's slots cycle through — ores in every rock, raw ores, samples — so
+        // looking up raw_hematite, granite_hematite or a hematite sample finds its veins (see OreVeinLookups).
         List<EmiStack> outputs = new ArrayList<>();
-        ores.forEach(item -> outputs.add(EmiStack.of(item)));
-        // roll_mod: the raw ores of those ores and the same ores in the other rocks are outputs too, so
-        // looking up raw_hematite finds its veins (see OreVeinLookups). The page itself looks the same.
-        OreVeinLookups.related(ores).forEach(item -> outputs.add(EmiStack.of(item)));
+        GTOreVeinWidget.getContainedOresAndBlocks(oreDefinition.value())
+                .forEach(item -> outputs.add(EmiStack.of(item)));
         return outputs;
     }
 }

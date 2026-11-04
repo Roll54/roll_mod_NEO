@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.gtmogs.api.worldgen;
 
+import com.roll_54.roll_mod.compat.gtmogs.OreMaterials;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -73,7 +74,7 @@ public record GTLayerPattern(List<Layer> layers) {
 
         // spotless:off
         public static final Codec<Layer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                Codec.list(TargetBlockState.CODEC.listOf()).fieldOf("targets").forGetter(layer -> layer.targets),
+                Codec.list(OreMaterials.TARGETS_CODEC).fieldOf("targets").forGetter(layer -> layer.targets),
                 Codec.intRange(0, Integer.MAX_VALUE).fieldOf("min_size").forGetter(layer -> layer.minSize),
                 Codec.intRange(0, Integer.MAX_VALUE).fieldOf("max_size").forGetter(layer -> layer.maxSize),
                 Codec.intRange(0, Integer.MAX_VALUE).fieldOf("weight").forGetter(layer -> layer.weight)
@@ -81,7 +82,7 @@ public record GTLayerPattern(List<Layer> layers) {
 
         public Stream<VeinGenerator.VeinEntry> asVeinEntries() {
             return targets.stream()
-                    .flatMap(target -> VeinGenerator.mapTarget(target, weight));
+                    .map(target -> VeinGenerator.mapTarget(target, weight));
         }
 
         public List<TargetBlockState> rollBlock(RandomSource random) {

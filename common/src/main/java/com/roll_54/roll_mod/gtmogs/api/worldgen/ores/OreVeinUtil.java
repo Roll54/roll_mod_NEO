@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.gtmogs.api.worldgen.ores;
 
+import com.roll_54.roll_mod.gtmogs.api.worldgen.IWorldGenLayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ChunkPos;
@@ -31,9 +32,9 @@ public class OreVeinUtil {
     }
 
     public static boolean canPlaceOre(BlockState pState, Function<BlockPos, BlockState> pAdjacentStateAccessor,
-                                      RandomSource pRandom, OreVeinDefinition entry,
+                                      RandomSource pRandom, OreVeinDefinition entry, IWorldGenLayer layer,
                                       BlockPos pMatablePos) {
-        if (!entry.layer().getTarget().test(pState, pRandom))
+        if (!layer.getTarget().test(pState, pRandom))
             return false;
         if (shouldSkipAirCheck(pRandom, entry.discardChanceOnAirExposure()))
             return true;

@@ -137,9 +137,10 @@ dependencies {
     implementation files("jars/appliedenergistics2-19.2.17.jar")
 
     // FallingTree: compat/fallingtree lets tools tagged #minecraft:axes (MI/EI chainsaws) fell whole
-    // trees. compileOnly from the pack's jar: soft for the shipped mod and not loaded in dev runs —
-    // the mixin config is required = false, so without FallingTree it is simply skipped.
-    compileOnly files("jars/FallingTree-1.21.1-1.21.1.11.jar")
+    // trees. implementation from the pack's jar, so every dev run loads it and the chainsaws can be
+    // tested. Still soft for the shipped mod: the mixin config is required = false, so without
+    // FallingTree it is simply skipped.
+    implementation files("jars/FallingTree-1.21.1-1.21.1.11.jar")
 
     // Ore veins: GTMOGS (GregTech Modern Ore Gen Standalone, fork of 1.0.8, LGPL-3.0) is part of roll_mod, in
     // com.roll_54.roll_mod.gtmogs, not a mod of its own. These are the libraries it shipped inside itself,

@@ -254,7 +254,7 @@ public final class TpaService {
     /* -------------------------------------------- debug --------------------------------------------- */
 
     /**
-     * Files a request as-is, with no players, checks or messages: for {@code /rollmod debug fill},
+     * Files a request as-is, with no players, checks or messages: for {@code /rollmod admin debug fill},
      * which needs requests from players who are not online. It lapses on {@link #tick} like any other.
      */
     public static void debugPut(TpaRequest request) {

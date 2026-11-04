@@ -1,5 +1,10 @@
 {
-  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
   "biomes": "#ad_astra:is_moon",
   "cluster_size": {
     "type": "minecraft:uniform",
@@ -16,8 +21,12 @@
   "height_range": {
     "height": {
       "type": "minecraft:uniform",
-      "min_inclusive": { "absolute": -40 },
-      "max_inclusive": { "absolute": 70 }
+      "min_inclusive": {
+        "absolute": -40
+      },
+      "max_inclusive": {
+        "absolute": 70
+      }
     }
   },
   "generator": {
@@ -28,8 +37,13 @@
       "layers": 6,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:tag_match", "tag": "c:moon_stones" },
-          "state": { "Name": "roll_mod:moon_borax" }
+          "target": {
+            "predicate_type": "minecraft:tag_match",
+            "tag": "c:moon_stones"
+          },
+          "state": {
+            "Name": "roll_mod:moon_borax"
+          }
         }
       ]
     },
@@ -37,24 +51,53 @@
       "layers": 8,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:random_block_match", "block": "ad_astra:moon_stone", "probability": 0.6 },
-          "state": { "Name": "roll_mod:moon_rock_salt" }
+          "target": {
+            "predicate_type": "minecraft:random_block_match",
+            "block": "ad_astra:moon_stone",
+            "probability": 0.6
+          },
+          "state": {
+            "Name": "roll_mod:moon_rock_salt"
+          }
         },
         {
-          "target": { "predicate_type": "minecraft:random_block_match", "block": "minecraft:deepslate", "probability": 0.6 },
-          "state": { "Name": "roll_mod:moon_rock_salt" }
+          "target": {
+            "predicate_type": "minecraft:random_block_match",
+            "block": "minecraft:deepslate",
+            "probability": 0.6
+          },
+          "state": {
+            "Name": "roll_mod:moon_rock_salt"
+          }
         },
         {
-          "target": { "predicate_type": "minecraft:random_block_match", "block": "minecraft:basalt", "probability": 0.6 },
-          "state": { "Name": "roll_mod:moon_rock_salt" }
+          "target": {
+            "predicate_type": "minecraft:random_block_match",
+            "block": "minecraft:basalt",
+            "probability": 0.6
+          },
+          "state": {
+            "Name": "roll_mod:moon_rock_salt"
+          }
         },
         {
-          "target": { "predicate_type": "minecraft:random_block_match", "block": "minecraft:soul_soil", "probability": 0.6 },
-          "state": { "Name": "roll_mod:moon_rock_salt" }
+          "target": {
+            "predicate_type": "minecraft:random_block_match",
+            "block": "minecraft:soul_soil",
+            "probability": 0.6
+          },
+          "state": {
+            "Name": "roll_mod:moon_rock_salt"
+          }
         },
         {
-          "target": { "predicate_type": "minecraft:tag_match", "tag": "c:moon_stones" },
-          "state": { "Name": "roll_mod:moon_lepidolite" }
+          "target": {
+            "predicate_type": "minecraft:tag_match",
+            "tag": "c:moon_stones"
+          },
+          "state": {
+            "Name": "roll_mod:moon_lepidolite"
+          }
         }
       ]
     },
@@ -62,16 +105,26 @@
       "layers": 3,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:tag_match", "tag": "c:moon_stones" },
-          "state": { "Name": "roll_mod:moon_lepidolite" }
+          "target": {
+            "predicate_type": "minecraft:tag_match",
+            "tag": "c:moon_stones"
+          },
+          "state": {
+            "Name": "roll_mod:moon_lepidolite"
+          }
         }
       ]
     },
     "spread": {
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:tag_match", "tag": "c:moon_stones" },
-          "state": { "Name": "roll_mod:moon_borax" }
+          "target": {
+            "predicate_type": "minecraft:tag_match",
+            "tag": "c:moon_stones"
+          },
+          "state": {
+            "Name": "roll_mod:moon_borax"
+          }
         }
       ]
     }
@@ -79,13 +132,10 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:moon_borax_ore_sample",
-        "roll_mod:moon_borax_ore_sample",
-        "roll_mod:moon_rock_salt_ore_sample",
-        "roll_mod:moon_rock_salt_ore_sample",
-        "roll_mod:moon_lepidolite_ore_sample",
-        "roll_mod:moon_lepidolite_ore_sample"
+      "materials": [
+        "borax",
+        "rock_salt",
+        "lepidolite"
       ],
       "tries": 185,
       "xz_spread": 19

@@ -68,6 +68,7 @@ public class WorldGeneratorUtils {
     private static class WorldOreVeinCache {
 
         private final List<Holder<OreVeinDefinition>> worldVeins;
+        private final ResourceKey<Level> dimension;
 
         /**
          * Veins applicable to a biome, already split by world gen layer.
@@ -82,6 +83,7 @@ public class WorldGeneratorUtils {
         private final Map<Holder<Biome>, Map<IWorldGenLayer, List<WeightedVein>>> biomeVeinsByLayer = new ConcurrentHashMap<>();
 
         public WorldOreVeinCache(ServerLevel level) {
+            this.dimension = level.dimension();
             this.worldVeins = level.registryAccess().registryOrThrow(GTRegistries.ORE_VEIN_REGISTRY).holders()
                     .filter(vein -> !(vein.value().veinGenerator() instanceof NoopVeinGenerator))
                     .filter(entry -> entry.value().dimensionFilter().stream()
@@ -102,12 +104,12 @@ public class WorldGeneratorUtils {
             // filter produced: GTUtil.getRandomItem walks the list accumulating weights, so a different order
             // resolves a different vein for the same random value.
             for (Holder<OreVeinDefinition> vein : worldVeins) {
-                if (!vein.value().isForBiome(biome)) continue;
+                if (!vein.value().isForBiome(dimension, biome)) continue;
 
                 int weight = vein.value().weightForBiome(biome);
                 if (weight <= 0) continue;
 
-                byLayer.computeIfAbsent(vein.value().layer(), l -> new ArrayList<>())
+                byLayer.computeIfAbsent(vein.value().layer(dimension), l -> new ArrayList<>())
                         .add(new WeightedVein(vein, weight));
             }
 

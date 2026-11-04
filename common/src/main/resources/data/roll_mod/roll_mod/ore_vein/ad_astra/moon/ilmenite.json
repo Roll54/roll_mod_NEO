@@ -1,95 +1,80 @@
 {
-  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
-	"biomes": "#ad_astra:is_moon",
-	"cluster_size": {
-		"min_inclusive": 36,
-		"max_inclusive": 56,
-		"type": "minecraft:uniform"
-	},
-	"density": 0.7,
-	"dimension_filter": [
-		"ad_astra:moon"
-	],
-	"discard_chance_on_air_exposure": 0.65,
-	"generator": {
-		"type": "roll_mod:classic",
-		"primary": {
-			"layers": 6,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:moon_ilmenite"
-					}
-				}
-			]
-		},
-		"secondary": {
-			"layers": 3,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:moon_magnetite"
-					}
-				}
-			]
-		},
-		"between": {
-			"layers": 4,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:moon_rutile"
-					}
-				}
-			]
-		},
-		"sporadic": {
-			"layers": 3,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:moon_chromite"
-					}
-				}
-			]
-		}
-	},
-	"height_range": {
-		"height": {
-			"type": "minecraft:uniform",
-			"max_inclusive": {
-				"absolute": 64
-			},
-			"min_inclusive": {
-				"absolute": -32
-			}
-		}
-	},
-	"layer": "moon_stone",
-	"weight": 100,
-	"indicators": [
-		{
-			"type": "roll_mod:surface",
-			"blocks": [
-				"roll_mod:moon_ilmenite_ore_sample",
-				"roll_mod:moon_magnetite_ore_sample",
-				"roll_mod:moon_rutile_ore_sample",
-				"roll_mod:moon_chromite_ore_sample"
-			],
-			"tries": 200,
-			"xz_spread": 22
-		}
-	]
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
+  "biomes": "#ad_astra:is_moon",
+  "cluster_size": {
+    "min_inclusive": 36,
+    "max_inclusive": 56,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.7,
+  "dimension_filter": [
+    "ad_astra:moon"
+  ],
+  "discard_chance_on_air_exposure": 0.65,
+  "generator": {
+    "type": "roll_mod:classic",
+    "primary": {
+      "layers": 6,
+      "targets": [
+        {
+          "material": "ilmenite"
+        }
+      ]
+    },
+    "secondary": {
+      "layers": 3,
+      "targets": [
+        {
+          "material": "magnetite"
+        }
+      ]
+    },
+    "between": {
+      "layers": 4,
+      "targets": [
+        {
+          "material": "rutile"
+        }
+      ]
+    },
+    "sporadic": {
+      "layers": 3,
+      "targets": [
+        {
+          "material": "chromite"
+        }
+      ]
+    }
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 64
+      },
+      "min_inclusive": {
+        "absolute": -32
+      }
+    }
+  },
+  "layer": "moon_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "materials": [
+        "ilmenite",
+        "magnetite",
+        "rutile",
+        "chromite"
+      ],
+      "tries": 200,
+      "xz_spread": 22
+    }
+  ]
 }

@@ -7,7 +7,8 @@
   },
   "density": 1,
   "dimension_filter": [
-    "minecraft:the_end"
+    "minecraft:the_end",
+    "ad_astra:moon"
   ],
   "discard_chance_on_air_exposure": 0.75,
   "generator": {
@@ -16,8 +17,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:end_sodalite" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "sodalite"
           }
         ],
         "weight": 4,
@@ -27,8 +27,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:end_lapis_lazuli" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "lapis_lazuli"
           }
         ],
         "weight": 5,
@@ -38,8 +37,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:end_lazurite" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "lazurite"
           }
         ],
         "weight": 2,
@@ -53,8 +51,12 @@
   "height_range": {
     "height": {
       "type": "minecraft:uniform",
-      "max_inclusive": { "absolute": 200 },
-      "min_inclusive": { "absolute": -30 }
+      "max_inclusive": {
+        "absolute": 200
+      },
+      "min_inclusive": {
+        "absolute": -30
+      }
     }
   },
   "layer": "endstone",
@@ -62,13 +64,30 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:end_sodalite_ore_sample",
-        "roll_mod:end_lapis_lazuli_ore_sample",
-        "roll_mod:end_lazurite_ore_sample"
+      "materials": [
+        "sodalite",
+        "lapis_lazuli",
+        "lazurite"
       ],
       "tries": 87,
       "xz_spread": 21
     }
-  ]
+  ],
+  "dimension_overrides": {
+    "ad_astra:moon": {
+      "layer": "moon_stone",
+      "biomes": "#ad_astra:is_moon",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "min_inclusive": {
+            "absolute": -40
+          },
+          "max_inclusive": {
+            "absolute": 70
+          }
+        }
+      }
+    }
+  }
 }

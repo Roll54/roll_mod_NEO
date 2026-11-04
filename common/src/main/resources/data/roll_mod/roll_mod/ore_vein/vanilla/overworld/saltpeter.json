@@ -7,12 +7,12 @@
   },
   "density": 1.0,
   "dimension_filter": [
-    "minecraft:overworld"
+    "minecraft:overworld",
+    "roll_mod:mining_overworld"
   ],
   "discard_chance_on_air_exposure": 0.75,
   "generator": {
     "type": "roll_mod:cuboid",
-
     "top": {
       "layers": 4,
       "targets": [
@@ -26,53 +26,33 @@
         }
       ]
     },
-
     "middle": {
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:stone_saltpeter"
-          }
+          "material": "saltpeter"
         }
       ]
     },
-
     "bottom": {
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:stone_rock_salt"
-          }
+          "material": "rock_salt"
         }
       ]
     },
-
     "spread": {
       "layers": 3,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:stone_saltpeter"
-          }
+          "material": "saltpeter"
         }
       ]
     },
-
     "min_y": 25,
     "max_y": 70
   },
-
   "height_range": {
     "height": {
       "type": "minecraft:uniform",
@@ -84,19 +64,34 @@
       }
     }
   },
-
   "layer": "stone",
   "weight": 60,
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:stone_saltpeter_ore_sample",
-        "roll_mod:stone_saltpeter_ore_sample",
-        "roll_mod:stone_rock_salt_ore_sample"
+      "materials": [
+        "saltpeter",
+        "rock_salt"
       ],
       "tries": 153,
       "xz_spread": 28
     }
-  ]
+  ],
+  "dimension_overrides": {
+    "roll_mod:mining_overworld": {
+      "layer": "mining_overworld_stone",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "max_inclusive": {
+            "absolute": 48
+          },
+          "min_inclusive": {
+            "absolute": 12
+          }
+        }
+      },
+      "biomes": "roll_mod:mining_overworld"
+    }
+  }
 }

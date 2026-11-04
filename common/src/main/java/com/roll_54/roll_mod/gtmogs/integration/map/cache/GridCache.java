@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.gtmogs.integration.map.cache;
 
+import com.roll_54.roll_mod.gtmogs.GTMOGS;
 import net.minecraft.core.Holder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.Registry;
@@ -66,10 +67,12 @@ public class GridCache {
 
     public synchronized void fromNBT(ListTag tag, HolderLookup.Provider provider) {
         for (Tag veinTag : tag) {
-            GeneratedVeinMetadata vein = GeneratedVeinMetadata.CODEC
+            // Skipped, not thrown: a vein whose definition was removed or merged into another file (as the
+            // mining world copies were) must not take the whole cache down with it.
+            GeneratedVeinMetadata.CODEC
                     .parse(provider.createSerializationContext(NbtOps.INSTANCE), veinTag)
-                    .getOrThrow();
-            addVein(vein);
+                    .resultOrPartial(error -> GTMOGS.LOGGER.warn("Dropping cached ore vein: {}", error))
+                    .ifPresent(this::addVein);
         }
     }
 

@@ -16,12 +16,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_sulfur"
-          }
+          "material": "sulfur"
         }
       ]
     },
@@ -29,20 +24,10 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_sulfur"
-          }
+          "material": "sulfur"
         },
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_sulfur"
-          }
+          "material": "sulfur"
         }
       ]
     },
@@ -50,12 +35,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_chalcocite"
-          }
+          "material": "chalcocite"
         }
       ]
     },
@@ -63,12 +43,7 @@
       "layers": 3,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:netherrack_chalcopyrite"
-          }
+          "material": "chalcopyrite"
         }
       ]
     },
@@ -91,11 +66,10 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:netherrack_sulfur_ore_sample",
-        "roll_mod:netherrack_sulfur_ore_sample",
-        "roll_mod:netherrack_chalcocite_ore_sample",
-        "roll_mod:netherrack_chalcopyrite_ore_sample"
+      "materials": [
+        "sulfur",
+        "chalcocite",
+        "chalcopyrite"
       ],
       "attachment": "floor",
       "tries": 22,

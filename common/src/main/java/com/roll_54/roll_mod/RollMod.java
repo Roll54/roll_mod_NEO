@@ -186,6 +186,9 @@ public final class RollMod {
             // The modular drill's config screen — block-less like the hub, opened by keybind.
             PlayerUIMenuType.register(ModularDrillConfigUI.UI_ID,
                     player -> (PlayerUIMenuType.PlayerUIHolder) ModularDrillConfigUI::createUI);
+            // The ore scanners' result screen, opened by the scanner item after it sends the scan.
+            PlayerUIMenuType.register(com.roll_54.roll_mod.items.electricItems.orescanner.gui.OreScannerUI.UI_ID,
+                    player -> (PlayerUIMenuType.PlayerUIHolder) com.roll_54.roll_mod.items.electricItems.orescanner.gui.OreScannerUI::createUI);
             // The starting screen new players have to accept — see WelcomeService.
             PlayerUIMenuType.register(WelcomeUI.UI_ID,
                     player -> (PlayerUIMenuType.PlayerUIHolder) WelcomeUI::createUI);

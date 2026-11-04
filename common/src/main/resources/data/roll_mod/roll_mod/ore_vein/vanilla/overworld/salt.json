@@ -7,7 +7,9 @@
   },
   "density": 0.8,
   "dimension_filter": [
-    "minecraft:overworld"
+    "minecraft:overworld",
+    "roll_mod:mining_overworld",
+    "ad_astra:mars"
   ],
   "discard_chance_on_air_exposure": 0.2,
   "generator": {
@@ -16,12 +18,10 @@
       "layers": 4,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:stone_rock_salt" }
+          "material": "rock_salt"
         },
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:stone_salt" }
+          "material": "salt"
         }
       ]
     },
@@ -29,12 +29,10 @@
       "layers": 3,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:stone_salt" }
+          "material": "salt"
         },
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:stone_lepidolite" }
+          "material": "lepidolite"
         }
       ]
     },
@@ -42,8 +40,7 @@
       "layers": 2,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:stone_rock_salt" }
+          "material": "rock_salt"
         }
       ]
     },
@@ -51,8 +48,7 @@
       "layers": 1,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:stone_lepidolite" }
+          "material": "lepidolite"
         }
       ]
     }
@@ -60,8 +56,12 @@
   "height_range": {
     "height": {
       "type": "minecraft:uniform",
-      "max_inclusive": { "absolute": 70 },
-      "min_inclusive": { "absolute": 10 }
+      "max_inclusive": {
+        "absolute": 70
+      },
+      "min_inclusive": {
+        "absolute": 10
+      }
     }
   },
   "layer": "stone",
@@ -69,16 +69,45 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:stone_rock_salt_ore_sample",
-        "roll_mod:stone_rock_salt_ore_sample",
-        "roll_mod:stone_salt_ore_sample",
-        "roll_mod:stone_salt_ore_sample",
-        "roll_mod:stone_lepidolite_ore_sample",
-        "roll_mod:stone_lepidolite_ore_sample"
+      "materials": [
+        "rock_salt",
+        "salt",
+        "lepidolite"
       ],
       "tries": 68,
       "xz_spread": 17
     }
-  ]
+  ],
+  "dimension_overrides": {
+    "roll_mod:mining_overworld": {
+      "layer": "mining_overworld_stone",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "max_inclusive": {
+            "absolute": 48
+          },
+          "min_inclusive": {
+            "absolute": 8
+          }
+        }
+      },
+      "biomes": "roll_mod:mining_overworld"
+    },
+    "ad_astra:mars": {
+      "layer": "mars_stone",
+      "biomes": "#ad_astra:is_mars",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "min_inclusive": {
+            "absolute": -20
+          },
+          "max_inclusive": {
+            "absolute": 70
+          }
+        }
+      }
+    }
+  }
 }

@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * What a Minestar shop letter looks like: the thank-you text, the product list in the body, and one
  * console command reward per product. Shared by the server's {@code ShopLetters}, which delivers
- * real purchases, and {@code /rollmod debug fill}, which writes samples of the same letter.
+ * real purchases, and {@code /rollmod admin debug fill}, which writes samples of the same letter.
  *
  * <p>A letter holds {@link Letter#MAX_REWARDS}; past that the products go in a further letter rather
  * than being lost, so one purchase list becomes one or more {@link Draft}s.

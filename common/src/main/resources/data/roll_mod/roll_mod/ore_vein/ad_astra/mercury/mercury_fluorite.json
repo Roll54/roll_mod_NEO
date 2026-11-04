@@ -1,5 +1,10 @@
 {
-  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
   "biomes": "#ad_astra:is_mercury",
   "cluster_size": {
     "min_inclusive": 72,
@@ -17,12 +22,7 @@
       "layers": 5,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:mercury_fluorite"
-          }
+          "material": "fluorite"
         }
       ]
     },
@@ -30,12 +30,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:mercury_topaz"
-          }
+          "material": "topaz"
         }
       ]
     },
@@ -43,12 +38,7 @@
       "layers": 3,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:mercury_fluorite"
-          }
+          "material": "fluorite"
         }
       ]
     },
@@ -56,12 +46,7 @@
       "layers": 1,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:mercury_fluosunnarite"
-          }
+          "material": "fluosunnarite"
         }
       ]
     }
@@ -82,11 +67,10 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:mercury_fluorite_ore_sample",
-        "roll_mod:mercury_fluorite_ore_sample",
-        "roll_mod:mercury_topaz_ore_sample",
-        "roll_mod:mercury_fluosunnarite_ore_sample"
+      "materials": [
+        "fluorite",
+        "topaz",
+        "fluosunnarite"
       ],
       "tries": 378,
       "xz_spread": 40

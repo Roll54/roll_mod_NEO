@@ -64,7 +64,7 @@ public class GTOreVeins {
                 ConstantInt.ZERO, 0, 0, IWorldGenLayer.NOWHERE, Set.of(),
                 HeightRangePlacement.uniform(VerticalAnchor.absolute(0), VerticalAnchor.absolute(0)),
                 0, HolderSet.empty(), BiomeWeightModifier.EMPTY, new ArrayList<>(), NoopVeinGenerator.INSTANCE,
-                biomeLookup);
+                Map.of(), biomeLookup);
     }
 
     private static void register(BootstrapContext<OreVeinDefinition> context,

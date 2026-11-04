@@ -84,7 +84,11 @@ public class GTKubeJSPlugin implements KubeJSPlugin {
             if (o instanceof CharSequence chars) return WorldGenLayers.getByName(chars.toString());
             return null;
         });
-        registry.registerMapCodec(HeightRangePlacement.class, HeightRangePlacement.CODEC);
+        // A vanilla class, so KubeJS may wrap it itself: newer builds (2101.7.2-build.374) do, and a second
+        // registration throws "Wrapper for class ... already exists!" and takes mod loading down with it.
+        if (!registry.hasTypeWrapper(HeightRangePlacement.class)) {
+            registry.registerMapCodec(HeightRangePlacement.class, HeightRangePlacement.CODEC);
+        }
         registry.registerCodec(BiomeWeightModifier.class, BiomeWeightModifier.CODEC, BiomeWeightModifier.EMPTY);
         registry.registerCodec(VeinGenerator.class, VeinGenerator.DIRECT_CODEC, NoopVeinGenerator.INSTANCE);
 

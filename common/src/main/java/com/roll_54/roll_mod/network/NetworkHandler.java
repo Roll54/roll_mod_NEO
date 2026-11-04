@@ -197,6 +197,11 @@ public class NetworkHandler {
                 DrillThrottlePacket.STREAM_CODEC,
                 DrillThrottlePacket::handle
         );
+        registrar.playToClient(
+                com.roll_54.roll_mod.network.packet.orescanner.OreScanResultPacket.TYPE,
+                com.roll_54.roll_mod.network.packet.orescanner.OreScanResultPacket.STREAM_CODEC,
+                com.roll_54.roll_mod.network.packet.orescanner.OreScanResultPacket::handle
+        );
         registrar.playToServer(
                 OpenDrillConfigPacket.TYPE,
                 OpenDrillConfigPacket.STREAM_CODEC,

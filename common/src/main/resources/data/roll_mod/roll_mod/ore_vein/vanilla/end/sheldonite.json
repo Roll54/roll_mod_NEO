@@ -16,12 +16,7 @@
       "layers": 6,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:end_sheldonite"
-          }
+          "material": "sheldonite"
         }
       ]
     },
@@ -29,12 +24,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:end_gold_amalgam"
-          }
+          "material": "gold_amalgam"
         }
       ]
     },
@@ -42,12 +32,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:end_sheldonite"
-          }
+          "material": "sheldonite"
         }
       ]
     },
@@ -55,12 +40,7 @@
       "layers": 6,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:end_bornite"
-          }
+          "material": "bornite"
         }
       ]
     },
@@ -83,11 +63,10 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:end_sheldonite_ore_sample",
-        "roll_mod:end_sheldonite_ore_sample",
-        "roll_mod:end_gold_amalgam_ore_sample",
-        "roll_mod:end_bornite_ore_sample"
+      "materials": [
+        "sheldonite",
+        "gold_amalgam",
+        "bornite"
       ],
       "tries": 200,
       "xz_spread": 28

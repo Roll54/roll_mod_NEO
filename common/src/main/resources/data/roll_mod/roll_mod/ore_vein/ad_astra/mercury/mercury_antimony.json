@@ -1,5 +1,10 @@
 {
-  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
   "biomes": "#ad_astra:is_mercury",
   "cluster_size": {
     "min_inclusive": 70,
@@ -21,12 +26,7 @@
           "targets": [
             [
               {
-                "state": {
-                  "Name": "roll_mod:mercury_stibnite"
-                },
-                "target": {
-                  "predicate_type": "minecraft:always_true"
-                }
+                "material": "stibnite"
               }
             ]
           ],
@@ -38,12 +38,7 @@
           "targets": [
             [
               {
-                "state": {
-                  "Name": "roll_mod:mercury_sphalerite"
-                },
-                "target": {
-                  "predicate_type": "minecraft:always_true"
-                }
+                "material": "sphalerite"
               }
             ]
           ],
@@ -55,12 +50,7 @@
           "targets": [
             [
               {
-                "state": {
-                  "Name": "roll_mod:mercury_antimony"
-                },
-                "target": {
-                  "predicate_type": "minecraft:always_true"
-                }
+                "material": "antimony"
               }
             ]
           ],
@@ -85,12 +75,10 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:mercury_stibnite_ore_sample",
-        "roll_mod:mercury_stibnite_ore_sample",
-        "roll_mod:mercury_sphalerite_ore_sample",
-        "roll_mod:mercury_sphalerite_ore_sample",
-        "roll_mod:mercury_antimony_ore_sample"
+      "materials": [
+        "stibnite",
+        "sphalerite",
+        "antimony"
       ],
       "tries": 370,
       "xz_spread": 39

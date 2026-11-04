@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.gtmogs.api.worldgen.generator.veins;
 
+import com.roll_54.roll_mod.compat.gtmogs.OreMaterials;
 import com.roll_54.roll_mod.compat.gtmogs.OreStoneVariants;
 
 import net.minecraft.core.BlockPos;
@@ -46,7 +47,7 @@ public class StandardVeinGenerator extends VeinGenerator {
                     BuiltInRegistries.BLOCK.byNameCodec().fieldOf("deep_block").forGetter(ext -> ext.deepBlock.get()),
                     BuiltInRegistries.BLOCK.byNameCodec().fieldOf("nether_block").forGetter(ext -> ext.netherBlock.get())
     ).apply(instance, StandardVeinGenerator::new));
-    public static final MapCodec<StandardVeinGenerator> CODEC_LIST = OreConfiguration.TargetBlockState.CODEC.listOf()
+    public static final MapCodec<StandardVeinGenerator> CODEC_LIST = OreMaterials.TARGETS_CODEC
             .fieldOf("targets")
             .xmap(StandardVeinGenerator::new, StandardVeinGenerator::getBlocks);
     // spotless:on
@@ -124,7 +125,7 @@ public class StandardVeinGenerator extends VeinGenerator {
     @Override
     public List<VeinEntry> getAllEntries() {
         if (this.blocks != null) {
-            return VeinGenerator.mapTarget(blocks, 1).toList();
+            return List.of(VeinGenerator.mapTarget(blocks, 1));
         } else {
             return getDefaultEntries();
         }

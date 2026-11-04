@@ -1,5 +1,10 @@
 {
-  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
   "biomes": "#ad_astra:is_venus",
   "cluster_size": {
     "min_inclusive": 72,
@@ -21,12 +26,7 @@
           "targets": [
             [
               {
-                "state": {
-                  "Name": "roll_mod:venus_fluorite"
-                },
-                "target": {
-                  "predicate_type": "minecraft:always_true"
-                }
+                "material": "fluorite"
               }
             ]
           ],
@@ -38,12 +38,7 @@
           "targets": [
             [
               {
-                "state": {
-                  "Name": "roll_mod:venus_topaz"
-                },
-                "target": {
-                  "predicate_type": "minecraft:always_true"
-                }
+                "material": "topaz"
               }
             ]
           ],
@@ -55,12 +50,7 @@
           "targets": [
             [
               {
-                "state": {
-                  "Name": "roll_mod:venus_fluosunnarite"
-                },
-                "target": {
-                  "predicate_type": "minecraft:always_true"
-                }
+                "material": "fluosunnarite"
               }
             ]
           ],
@@ -85,11 +75,10 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:venus_fluorite_ore_sample",
-        "roll_mod:venus_fluorite_ore_sample",
-        "roll_mod:venus_topaz_ore_sample",
-        "roll_mod:venus_fluosunnarite_ore_sample"
+      "materials": [
+        "fluorite",
+        "topaz",
+        "fluosunnarite"
       ],
       "tries": 378,
       "xz_spread": 40

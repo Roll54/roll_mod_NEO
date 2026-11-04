@@ -20,8 +20,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:end_azure_silver" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "azure_silver"
               }
             ]
           ],
@@ -33,8 +32,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:end_gold" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "gold"
               }
             ]
           ],
@@ -46,8 +44,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:end_silver_amalgam" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "silver_amalgam"
               }
             ]
           ],
@@ -59,8 +56,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:end_quartz" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "quartz"
               }
             ]
           ],
@@ -85,11 +81,11 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:end_azure_silver_ore_sample",
-        "roll_mod:end_gold_ore_sample",
-        "roll_mod:end_silver_amalgam_ore_sample",
-        "roll_mod:end_quartz_ore_sample"
+      "materials": [
+        "azure_silver",
+        "gold",
+        "silver_amalgam",
+        "quartz"
       ],
       "tries": 95,
       "xz_spread": 22

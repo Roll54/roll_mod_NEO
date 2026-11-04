@@ -1219,17 +1219,28 @@ public class ItemRegistry {
 
     // Карта кисневого бака (roll_mod:oxygen_tank_card) — справжня картка Advanced AE, див. compat/aae/AaeOxygenCard.
 
-    // 🥚 Буквально бите скло — 5 голоду, 10 насичення (5 * 1.0 * 2), Регенерація II на 5 хв
+    // 🥚 Буквально бите скло — 5 голоду, 10 насичення (5 * 1.0 * 2), Регенерація II на 5 хв, але з'їсти його коштує 3 серця
     public static final DeferredHolder<Item, Item> BROKEN_GLASS_LITERALLY = ITEMS.register(
             "broken_glass_literally",
-            () -> new Item(new Item.Properties().food(
-                    new FoodProperties.Builder()
+            () -> new Item(new Item.Properties()
+                    .component(DataComponents.LORE, new ItemLore(List.of(
+                            Component.translatable("tooltip.roll_mod.broken_glass_literally")
+                                    .withStyle(ChatFormatting.GRAY)
+                    )))
+                    .food(new FoodProperties.Builder()
                             .nutrition(5)
                             .saturationModifier(1.0f)
                             .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 6000, 1), 1.0f)
                             .usingConvertsTo(Items.BOWL)
-                            .build()
-            ))
+                            .build())) {
+                @Override
+                public ItemStack finishUsingItem(ItemStack stack, net.minecraft.world.level.Level level, LivingEntity entity) {
+                    if (!level.isClientSide) {
+                        entity.hurt(DamageTypes.brokenGlassDamageType(entity), 6.0f); // 3 серця, броня не рятує
+                    }
+                    return super.finishUsingItem(stack, level, entity);
+                }
+            }
     );
 
     // 🍍 Скибка фторитового ананаса
@@ -1521,6 +1532,11 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, BlockItem> TENWOC_PLUSH_ITEM = ITEMS.register("tenwoc__plush", () -> new BlockItem(TENWOC__PLUSH.get(), new Item.Properties()));
     public static final DeferredHolder<Item, StormScannerItem> LV_STORM_SCANNER = ITEMS.register("lv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 1, 0xff1500, 1_000_000));
     public static final DeferredHolder<Item, StormScannerItem> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 2, 0xff1500, 10_000_000));
+
+    // Ore scanners: roll_mod ore materials in 3x3 / 5x5 / 9x9 chunks around the player (radius 1 / 2 / 4).
+    public static final DeferredHolder<Item, OreScannerItem> LV_ORE_SCANNER = ITEMS.register("lv_ore_scanner", () -> new OreScannerItem(new Item.Properties().stacksTo(1), 1, 1_000_000L, 10_000L, 0x30e996));
+    public static final DeferredHolder<Item, OreScannerItem> HV_ORE_SCANNER = ITEMS.register("hv_ore_scanner", () -> new OreScannerItem(new Item.Properties().stacksTo(1), 2, 10_000_000L, 100_000L, 0x30e996));
+    public static final DeferredHolder<Item, OreScannerItem> EV_ORE_SCANNER = ITEMS.register("ev_ore_scanner", () -> new OreScannerItem(new Item.Properties().stacksTo(1), 4, 100_000_000L, 1_000_000L, 0x30e996));
 
     /** Right-click a crop: +500 mutagen (crops wiki §11.7). */
     public static final DeferredHolder<Item, Item> MUTAGEN_SYRINGE = ITEMS.register("mutagen_syringe",

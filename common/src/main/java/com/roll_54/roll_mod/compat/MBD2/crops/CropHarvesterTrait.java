@@ -109,6 +109,28 @@ public class CropHarvesterTrait extends Trait {
         return (CropHarvesterTraitDefinition) super.getDefinition();
     }
 
+    /**
+     * Restricts the N/P/K slot and tank to things with a {@code roll_mod:npk} value. MBD2's own filter
+     * only knows items, fluids and tags, so the data map check is put on the storages here instead.
+     * Runs on both sides (the data map is synced), so the client's slot refuses the same items the
+     * server does.
+     */
+    @Override
+    public void onMachineLoad() {
+        CropHarvesterTraitDefinition definition = getDefinition();
+        if (!definition.isNutrientFeeding()) {
+            return;
+        }
+        ItemSlotCapabilityTrait slot = slotTrait(definition.getNutrientSlotName());
+        if (slot != null) {
+            slot.storage.setFilter(stack -> ModDataMaps.nutrients(stack) != null);
+        }
+        FluidStorage tank = tank(definition.getNutrientTankName());
+        if (tank != null) {
+            tank.setValidator(fluid -> !fluid.isEmpty() && ModDataMaps.nutrients(fluid.getFluid()) != null);
+        }
+    }
+
     @Override
     public void serverTick() {
         CropHarvesterTraitDefinition definition = getDefinition();

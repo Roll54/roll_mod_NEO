@@ -19,6 +19,8 @@ public class OreLangProvider extends LanguageProvider {
         for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
 
             String oreName = isEnglish ? def.enUsName() : def.ukUaName();
+            // The bare material name, for screens that list materials rather than items (the ore scanner).
+            add("material.roll_mod." + def.id(), oreName);
 
             String rawSuffix;
             String crushedSuffix;
@@ -102,8 +104,6 @@ public class OreLangProvider extends LanguageProvider {
         }
 
         addMBD2EnergyTrait();
-        // Label over a vein's surface samples on its EMI/JEI page (OreVeinWidgetWrapMixin).
-        add("roll_mod.ore_vein.indicators", isEnglish ? "Indicators:" : "Індикатори:");
     }
 
     /** Config labels for the Modern Industrialization EU trait added to Multiblocked2 machines. */

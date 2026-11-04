@@ -1,5 +1,10 @@
 {
-  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
   "biomes": "#ad_astra:is_moon",
   "cluster_size": {
     "min_inclusive": 24,
@@ -17,8 +22,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:moon_pyrochlore" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "pyrochlore"
           }
         ],
         "weight": 5,
@@ -28,8 +32,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:moon_rutile" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "rutile"
           }
         ],
         "weight": 3,
@@ -39,8 +42,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:moon_apatite" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "apatite"
           }
         ],
         "weight": 2,
@@ -54,8 +56,12 @@
   "height_range": {
     "height": {
       "type": "minecraft:uniform",
-      "max_inclusive": { "absolute": 70 },
-      "min_inclusive": { "absolute": -20 }
+      "max_inclusive": {
+        "absolute": 70
+      },
+      "min_inclusive": {
+        "absolute": -20
+      }
     }
   },
   "layer": "moon_stone",
@@ -63,10 +69,10 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:moon_pyrochlore_ore_sample",
-        "roll_mod:moon_rutile_ore_sample",
-        "roll_mod:moon_apatite_ore_sample"
+      "materials": [
+        "pyrochlore",
+        "rutile",
+        "apatite"
       ],
       "tries": 155,
       "xz_spread": 16

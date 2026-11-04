@@ -206,7 +206,7 @@ public class OreVeinDefinitionBuilder extends BuilderBase<OreVeinDefinition> {
     public OreVeinDefinition createObject() {
         return new OreVeinDefinition(clusterSize, density, weight, layer,
                 Set.copyOf(dimensionFilter), heightRange, discardChanceOnAirExposure,
-                biomes, biomeWeightModifier, indicatorGenerators, veinGenerator,
+                biomes, biomeWeightModifier, indicatorGenerators, veinGenerator, Map.of(),
                 RegistryAccessContainer.current.access().lookupOrThrow(Registries.BIOME));
     }
 }

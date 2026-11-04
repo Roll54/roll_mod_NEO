@@ -218,14 +218,17 @@ public class RollMBD2Machines {
         FluidTankCapabilityTraitDefinition nutrientFluid = null;
         FluidTankCapabilityTraitDefinition mutagen = null;
         if (tier.nutrients) {
-            // No filter: any item or fluid may go in, and only those with a roll_mod:npk value are used.
-            // A data map can't drive MBD2's filter, which only knows items, fluids and tags.
+            // No MBD2 filter: it only knows items, fluids and tags, not the roll_mod:npk data map.
+            // CropHarvesterTrait#onMachineLoad puts the data map check on both storages instead.
+            // GUI IO is BOTH so a player can take back what is in there (machines placed before the
+            // filter may hold junk); pipes still only insert.
             nutrientSlot = new ItemSlotCapabilityTraitDefinition();
             nutrientSlot.setName(NUTRIENT_TRAIT);
             nutrientSlot.setSlotSize(1);
-            nutrientSlot.setGuiIO(IO.IN);
+            nutrientSlot.setGuiIO(IO.BOTH);
             nutrientSlot.getCapabilityIO().setAllIO(IO.IN);
             nutrientFluid = inputTank(NUTRIENT_FLUID_TRAIT, NUTRIENT_TANK_MB, null);
+            nutrientFluid.setGuiIO(IO.BOTH);
             traits.add(nutrientSlot);
             traits.add(nutrientFluid);
         }

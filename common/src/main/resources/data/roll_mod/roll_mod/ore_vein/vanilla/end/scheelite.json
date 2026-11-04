@@ -12,62 +12,58 @@
   "discard_chance_on_air_exposure": 0.75,
   "generator": {
     "type": "roll_mod:layer",
-     "layer_patterns": [
-    [
-      {
-        "max_size": 4,
-        "min_size": 2,
-        "targets": [
-          [
-            {
-              "state": { "Name": "roll_mod:end_tungstate" },
-              "target": { "predicate_type": "minecraft:always_true" }
-            }
-          ]
-        ],
-        "weight": 5
-      },
-      {
-        "max_size": 3,
-        "min_size": 2,
-        "targets": [
-          [
-            {
-              "state": { "Name": "roll_mod:end_scheelite" },
-              "target": { "predicate_type": "minecraft:always_true" }
-            }
-          ]
-        ],
-        "weight": 3
-      },
-      {
-        "max_size": 4,
-        "min_size": 3,
-        "targets": [
-          [
-            {
-              "state": { "Name": "roll_mod:end_magnetite" },
-              "target": { "predicate_type": "minecraft:always_true" }
-            }
-          ]
-        ],
-        "weight": 6
-      },
-      {
-        "max_size": 3,
-        "min_size": 2,
-        "targets": [
-          [
-            {
-              "state": { "Name": "roll_mod:end_lithium" },
-              "target": { "predicate_type": "minecraft:always_true" }
-            }
-          ]
-        ],
-        "weight": 1
-      }
+    "layer_patterns": [
+      [
+        {
+          "max_size": 4,
+          "min_size": 2,
+          "targets": [
+            [
+              {
+                "material": "tungstate"
+              }
+            ]
+          ],
+          "weight": 5
+        },
+        {
+          "max_size": 3,
+          "min_size": 2,
+          "targets": [
+            [
+              {
+                "material": "scheelite"
+              }
+            ]
+          ],
+          "weight": 3
+        },
+        {
+          "max_size": 4,
+          "min_size": 3,
+          "targets": [
+            [
+              {
+                "material": "magnetite"
+              }
+            ]
+          ],
+          "weight": 6
+        },
+        {
+          "max_size": 3,
+          "min_size": 2,
+          "targets": [
+            [
+              {
+                "material": "lithium"
+              }
+            ]
+          ],
+          "weight": 1
+        }
+      ]
     ]
-  ]
   },
   "height_range": {
     "height": {
@@ -85,11 +81,11 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:end_tungstate_ore_sample",
-        "roll_mod:end_scheelite_ore_sample",
-        "roll_mod:end_magnetite_ore_sample",
-        "roll_mod:end_lithium_ore_sample"
+      "materials": [
+        "tungstate",
+        "scheelite",
+        "magnetite",
+        "lithium"
       ],
       "tries": 95,
       "xz_spread": 22

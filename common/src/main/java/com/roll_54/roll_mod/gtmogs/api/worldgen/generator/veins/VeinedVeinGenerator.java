@@ -1,5 +1,7 @@
 package com.roll_54.roll_mod.gtmogs.api.worldgen.generator.veins;
 
+import com.roll_54.roll_mod.gtmogs.api.worldgen.IWorldGenLayer;
+import com.roll_54.roll_mod.compat.gtmogs.OreMaterials;
 import com.roll_54.roll_mod.compat.gtmogs.OreStoneVariants;
 
 import net.minecraft.core.BlockPos;
@@ -57,7 +59,7 @@ import java.util.function.Function;
 @Accessors(fluent = true, chain = true)
 public class VeinedVeinGenerator extends VeinGenerator {
 
-    public static final Codec<List<TargetBlockState>> BLOCK_ENTRY_CODEC = TargetBlockState.CODEC.listOf();
+    public static final Codec<List<TargetBlockState>> BLOCK_ENTRY_CODEC = OreMaterials.TARGETS_CODEC;
     // spotless:off
     public static final MapCodec<VeinedVeinGenerator> CODEC = RecordCodecBuilder.mapCodec((instance) -> instance.group(
             VeinBlockDefinition.CODEC.listOf().fieldOf("ore_blocks").forGetter(it -> it.oreBlocks),
@@ -101,10 +103,10 @@ public class VeinedVeinGenerator extends VeinGenerator {
     public List<VeinEntry> getAllEntries() {
         List<VeinEntry> entries = new ArrayList<>(oreBlocks.size() + rareBlocks.size());
         for (var def : oreBlocks) {
-            VeinGenerator.mapTarget(def.block, def.weight).forEach(entries::add);
+            entries.add(VeinGenerator.mapTarget(def.block, def.weight));
         }
         for (var def : rareBlocks) {
-            VeinGenerator.mapTarget(def.block, def.weight).forEach(entries::add);
+            entries.add(VeinGenerator.mapTarget(def.block, def.weight));
         }
         return entries;
     }
@@ -135,6 +137,7 @@ public class VeinedVeinGenerator extends VeinGenerator {
                 randomState);
 
         int size = entry.clusterSize().sample(random);
+        IWorldGenLayer layer = entry.layer(level.getLevel().dimension());
 
         int radius = Mth.ceil(size / 2f);
 
@@ -189,8 +192,8 @@ public class VeinedVeinGenerator extends VeinGenerator {
             BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, y, z);
 
             final var randomSeed = random.nextLong(); // Fully deterministic regardless of chunk order
-            generatedBlocks.put(pos, (access, section) -> placeBlock(access, section, randomSeed, entry, chance,
-                    rareBlocks, pos, oreBlocks));
+            generatedBlocks.put(pos, (access, section) -> placeBlock(access, section, randomSeed, entry, layer,
+                    chance, rareBlocks, pos, oreBlocks));
         }
 
         return generatedBlocks;
@@ -237,7 +240,7 @@ public class VeinedVeinGenerator extends VeinGenerator {
     }
 
     private void placeBlock(BulkSectionAccess access, LevelChunkSection section, long randomSeed,
-                            OreVeinDefinition entry,
+                            OreVeinDefinition entry, IWorldGenLayer layer,
                             double chance, List<VeinBlockDefinition> rareEntries,
                             BlockPos.MutableBlockPos pos,
                             List<VeinBlockDefinition> commonEntries) {
@@ -261,7 +264,7 @@ public class VeinedVeinGenerator extends VeinGenerator {
             } else {
                 if (fillerBlock == null || fillerBlock.isAir())
                     return;
-                if (!OreVeinUtil.canPlaceOre(current, access::getBlockState, random, entry, pos))
+                if (!OreVeinUtil.canPlaceOre(current, access::getBlockState, random, entry, layer, pos))
                     return;
                 section.setBlockState(sectionX, sectionY, sectionZ, fillerBlock, false);
             }

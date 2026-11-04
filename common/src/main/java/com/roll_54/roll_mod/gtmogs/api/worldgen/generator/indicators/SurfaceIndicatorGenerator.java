@@ -1,5 +1,10 @@
 package com.roll_54.roll_mod.gtmogs.api.worldgen.generator.indicators;
 
+import com.roll_54.roll_mod.gtmogs.api.worldgen.IWorldGenLayer;
+import com.roll_54.roll_mod.compat.gtmogs.OreMaterials;
+import com.roll_54.roll_mod.data.datagen.ore.OreDefinition;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.SectionPos;
@@ -101,7 +106,8 @@ public class SurfaceIndicatorGenerator extends IndicatorGenerator {
 
     // spotless:off
     public static final MapCodec<SurfaceIndicatorGenerator> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-            BuiltInRegistries.BLOCK.byNameCodec().listOf().fieldOf("blocks").forGetter(gen -> gen.blocks),
+            BuiltInRegistries.BLOCK.byNameCodec().listOf().optionalFieldOf("blocks", List.of()).forGetter(gen -> gen.blocks),
+            OreMaterials.MATERIAL_CODEC.listOf().optionalFieldOf("materials", List.of()).forGetter(gen -> gen.materials),
             Codec.intRange(1, 4096).optionalFieldOf("tries", 64).forGetter(gen -> gen.tries),
             Codec.intRange(0, 256).optionalFieldOf("xz_spread", 7).forGetter(gen -> gen.xzSpread),
             Codec.intRange(0, 256).optionalFieldOf("y_spread", 3).forGetter(gen -> gen.ySpread),
@@ -111,6 +117,12 @@ public class SurfaceIndicatorGenerator extends IndicatorGenerator {
 
     @Getter
     private List<Block> blocks = new ArrayList<>();
+    /**
+     * roll_mod: ore materials ({@code OreDefinitions}) whose sample goes in next to {@link #blocks} — the sample
+     * of the layer that belongs to the world being generated, so one vein file can serve several worlds.
+     */
+    @Getter
+    private List<OreDefinition> materials = new ArrayList<>();
     /** Attempts per vein, as in vanilla's {@code RandomPatchConfiguration#tries}. Pumpkin patches use 64. */
     @Getter
     @Setter
@@ -129,11 +141,13 @@ public class SurfaceIndicatorGenerator extends IndicatorGenerator {
     private Attachment attachment = Attachment.FLOOR;
 
     public SurfaceIndicatorGenerator(List<Block> blocks, int tries, int xzSpread, int ySpread) {
-        this(blocks, tries, xzSpread, ySpread, Attachment.FLOOR);
+        this(blocks, List.of(), tries, xzSpread, ySpread, Attachment.FLOOR);
     }
 
-    public SurfaceIndicatorGenerator(List<Block> blocks, int tries, int xzSpread, int ySpread, Attachment attachment) {
+    public SurfaceIndicatorGenerator(List<Block> blocks, List<OreDefinition> materials, int tries, int xzSpread,
+                                     int ySpread, Attachment attachment) {
         this.blocks = new ArrayList<>(blocks);
+        this.materials = new ArrayList<>(materials);
         this.tries = tries;
         this.xzSpread = xzSpread;
         this.ySpread = ySpread;
@@ -159,7 +173,9 @@ public class SurfaceIndicatorGenerator extends IndicatorGenerator {
     public Map<BlockPos, OreBlockPlacer> generate(WorldGenLevel level, RandomSource random, OreVeinDefinition entry,
                                                   BlockPos origin) {
         Map<BlockPos, OreBlockPlacer> generated = new Object2ObjectOpenHashMap<>();
-        if (blocks.isEmpty())
+        ResourceKey<Level> dimension = level.getLevel().dimension();
+        List<Block> candidates = candidates(entry.layer(dimension), dimension);
+        if (candidates.isEmpty())
             return generated;
 
         // Only a floor patch in a dimension that actually has a surface can aim at the heightmap.
@@ -193,11 +209,21 @@ public class SurfaceIndicatorGenerator extends IndicatorGenerator {
             }
 
             // Equal weight: pick uniformly at random among the configured blocks.
-            BlockState state = blocks.get(random.nextInt(blocks.size())).defaultBlockState();
+            BlockState state = candidates.get(random.nextInt(candidates.size())).defaultBlockState();
             generated.put(pos, (access, section) -> placeIndicator(access, pos, state));
         }
 
         return generated;
+    }
+
+    /** The listed blocks, then each material's sample for the vein's layer (materials with none there are skipped). */
+    private List<Block> candidates(IWorldGenLayer layer, ResourceKey<Level> dimension) {
+        if (materials.isEmpty()) return blocks;
+        List<Block> candidates = new ArrayList<>(blocks);
+        for (OreDefinition material : materials) {
+            OreMaterials.sampleFor(material, layer, dimension).ifPresent(candidates::add);
+        }
+        return candidates;
     }
 
     /**

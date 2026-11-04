@@ -1,5 +1,10 @@
 {
-  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
   "biomes": "#ad_astra:is_moon",
   "cluster_size": {
     "min_inclusive": 34,
@@ -8,7 +13,8 @@
   },
   "density": 1,
   "dimension_filter": [
-    "ad_astra:moon"
+    "ad_astra:moon",
+    "ad_astra:mercury"
   ],
   "discard_chance_on_air_exposure": 0.6,
   "generator": {
@@ -17,8 +23,7 @@
       "layers": 6,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:moon_borax" }
+          "material": "borax"
         }
       ]
     },
@@ -26,12 +31,10 @@
       "layers": 8,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:moon_rock_salt" }
+          "material": "rock_salt"
         },
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:moon_lepidolite" }
+          "material": "lepidolite"
         }
       ]
     },
@@ -39,8 +42,7 @@
       "layers": 3,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:moon_lepidolite" }
+          "material": "lepidolite"
         }
       ]
     },
@@ -48,8 +50,7 @@
       "layers": 6,
       "targets": [
         {
-          "target": { "predicate_type": "minecraft:always_true" },
-          "state": { "Name": "roll_mod:moon_borax" }
+          "material": "borax"
         }
       ]
     },
@@ -59,8 +60,12 @@
   "height_range": {
     "height": {
       "type": "minecraft:uniform",
-      "max_inclusive": { "absolute": 70 },
-      "min_inclusive": { "absolute": -40 }
+      "max_inclusive": {
+        "absolute": 70
+      },
+      "min_inclusive": {
+        "absolute": -40
+      }
     }
   },
   "layer": "moon_stone",
@@ -68,15 +73,19 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:moon_borax_ore_sample",
-        "roll_mod:moon_borax_ore_sample",
-        "roll_mod:moon_rock_salt_ore_sample",
-        "roll_mod:moon_lepidolite_ore_sample",
-        "roll_mod:moon_lepidolite_ore_sample"
+      "materials": [
+        "borax",
+        "rock_salt",
+        "lepidolite"
       ],
       "tries": 185,
       "xz_spread": 19
     }
-  ]
+  ],
+  "dimension_overrides": {
+    "ad_astra:mercury": {
+      "layer": "mercury_stone",
+      "biomes": "#ad_astra:is_mercury"
+    }
+  }
 }

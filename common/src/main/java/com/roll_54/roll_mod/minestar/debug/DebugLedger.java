@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * What {@code /rollmod debug fill} created for one player, and what it overwrote, so
- * {@code /rollmod debug clear} can undo exactly that and nothing else — even after a restart.
+ * What {@code /rollmod admin debug fill} created for one player, and what it overwrote, so
+ * {@code /rollmod admin debug clear} can undo exactly that and nothing else — even after a restart.
  *
  * <p>Kept in {@code minestar/debug_fill.json}, keyed by the target's UUID. Created entries append on
  * every fill; overwritten values ({@code prior.*}) are recorded only by the first fill, so a second

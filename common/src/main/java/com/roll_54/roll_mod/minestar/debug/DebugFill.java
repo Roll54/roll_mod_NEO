@@ -504,7 +504,7 @@ final class DebugFill {
             ledger.prior("balance", new JsonPrimitive(old));
             ledger.save();
             CurrencyService.set(server, target, CurrencyType.MAIN, TEST_BALANCE,
-                    CurrencyCause.command(source, LedgerReason.ADMIN).withDetail("/rollmod debug fill: test balance"));
+                    CurrencyCause.command(source, LedgerReason.ADMIN).withDetail("/rollmod admin debug fill: test balance"));
         }).exceptionally(e -> {
             RollMod.LOGGER.error("[Debug] could not read {}'s balance; left it alone", target, e);
             return null;
@@ -589,7 +589,7 @@ final class DebugFill {
         JsonElement balance = ledger.prior("balance");
         if (balance != null) {
             CurrencyService.set(server, target, CurrencyType.MAIN, balance.getAsLong(),
-                    CurrencyCause.command(source, LedgerReason.ADMIN).withDetail("/rollmod debug clear: balance restored"));
+                    CurrencyCause.command(source, LedgerReason.ADMIN).withDetail("/rollmod admin debug clear: balance restored"));
             report.add("currency: restored to " + balance.getAsLong());
         }
 

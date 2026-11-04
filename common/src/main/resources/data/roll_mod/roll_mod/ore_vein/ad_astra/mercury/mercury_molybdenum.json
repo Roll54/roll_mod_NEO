@@ -1,5 +1,10 @@
 {
-  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
   "biomes": "#ad_astra:is_mercury",
   "cluster_size": {
     "min_inclusive": 74,
@@ -17,12 +22,7 @@
       {
         "block": [
           {
-            "state": {
-              "Name": "roll_mod:mercury_molybdenite"
-            },
-            "target": {
-              "predicate_type": "minecraft:always_true"
-            }
+            "material": "molybdenite"
           }
         ],
         "weight": 5,
@@ -32,12 +32,7 @@
       {
         "block": [
           {
-            "state": {
-              "Name": "roll_mod:mercury_powellite"
-            },
-            "target": {
-              "predicate_type": "minecraft:always_true"
-            }
+            "material": "powellite"
           }
         ],
         "weight": 4,
@@ -47,12 +42,7 @@
       {
         "block": [
           {
-            "state": {
-              "Name": "roll_mod:mercury_scheelite"
-            },
-            "target": {
-              "predicate_type": "minecraft:always_true"
-            }
+            "material": "scheelite"
           }
         ],
         "weight": 3,
@@ -62,12 +52,7 @@
       {
         "block": [
           {
-            "state": {
-              "Name": "roll_mod:mercury_rheniite"
-            },
-            "target": {
-              "predicate_type": "minecraft:always_true"
-            }
+            "material": "rheniite"
           }
         ],
         "weight": 1,
@@ -94,13 +79,11 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:mercury_molybdenite_ore_sample",
-        "roll_mod:mercury_molybdenite_ore_sample",
-        "roll_mod:mercury_powellite_ore_sample",
-        "roll_mod:mercury_powellite_ore_sample",
-        "roll_mod:mercury_scheelite_ore_sample",
-        "roll_mod:mercury_rheniite_ore_sample"
+      "materials": [
+        "molybdenite",
+        "powellite",
+        "scheelite",
+        "rheniite"
       ],
       "tries": 387,
       "xz_spread": 40

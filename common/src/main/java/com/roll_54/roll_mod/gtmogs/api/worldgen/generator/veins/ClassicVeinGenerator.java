@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.gtmogs.api.worldgen.generator.veins;
 
+import com.roll_54.roll_mod.compat.gtmogs.OreMaterials;
 import com.roll_54.roll_mod.compat.gtmogs.OreStoneVariants;
 
 import net.minecraft.core.BlockPos;
@@ -88,10 +89,10 @@ public class ClassicVeinGenerator extends VeinGenerator {
     @Override
     public List<VeinEntry> getAllEntries() {
         List<VeinEntry> entries = new ArrayList<>(primary.size() + secondary.size() + between.size() + sporadic.size());
-        VeinGenerator.mapTarget(primary.target, primary.layers).forEach(entries::add);
-        VeinGenerator.mapTarget(secondary.target, secondary.layers).forEach(entries::add);
-        VeinGenerator.mapTarget(between.target, between.layers).forEach(entries::add);
-        VeinGenerator.mapTarget(sporadic.target, 1).forEach(entries::add);
+        entries.add(VeinGenerator.mapTarget(primary.target, primary.layers));
+        entries.add(VeinGenerator.mapTarget(secondary.target, secondary.layers));
+        entries.add(VeinGenerator.mapTarget(between.target, between.layers));
+        entries.add(VeinGenerator.mapTarget(sporadic.target, 1));
         return entries;
     }
 
@@ -239,7 +240,7 @@ public class ClassicVeinGenerator extends VeinGenerator {
 
         // spotless:off
         public static final Codec<Layer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                OreConfiguration.TargetBlockState.CODEC.listOf().fieldOf("targets").forGetter(layer -> layer.target),
+                OreMaterials.TARGETS_CODEC.fieldOf("targets").forGetter(layer -> layer.target),
                 ExtraCodecs.intRange(-1, Integer.MAX_VALUE).optionalFieldOf("layers", -1).forGetter(layer -> layer.layers)
         ).apply(instance, Layer::new));
         // spotless:on

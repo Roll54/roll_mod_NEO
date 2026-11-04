@@ -1,94 +1,73 @@
 {
-	"biomes": "#c:is_end",
-	"cluster_size": {
-		"min_inclusive": 54,
-		"max_inclusive": 80,
-		"type": "minecraft:uniform"
-	},
-	"density": 0.75,
-	"dimension_filter": [
-		"minecraft:the_end"
-	],
-	"discard_chance_on_air_exposure": 0.75,
-	"generator": {
-		"type": "roll_mod:classic",
-		"primary": {
-			"layers": 5,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:end_uraninite"
-					}
-				}
-			]
-		},
-		"secondary": {
-			"layers": 5,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:end_pitchblende"
-					}
-				}
-			]
-		},
-		"between": {
-			"layers": 5,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:end_pitchblende"
-					}
-				}
-			]
-		},
-		"sporadic": {
-			"layers": 10,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:end_thorium"
-					}
-				}
-			]
-		}
-	},
-	"height_range": {
-		"height": {
-			"type": "minecraft:uniform",
-			"max_inclusive": {
-				"absolute": 200
-			},
-			"min_inclusive": {
-				"absolute": -30
-			}
-		}
-	},
-	"layer": "endstone",
-	"weight": 10,
-	"indicators": [
-		{
-			"type": "roll_mod:surface",
-			"blocks": [
-				"roll_mod:end_uraninite_ore_sample",
-				"roll_mod:end_pitchblende_ore_sample",
-				"roll_mod:end_pitchblende_ore_sample",
-				"roll_mod:end_thorium_ore_sample"
-			],
-			"tries": 127,
-			"xz_spread": 28
-		}
-	]
+  "biomes": "#c:is_end",
+  "cluster_size": {
+    "min_inclusive": 54,
+    "max_inclusive": 80,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.75,
+  "dimension_filter": [
+    "minecraft:the_end"
+  ],
+  "discard_chance_on_air_exposure": 0.75,
+  "generator": {
+    "type": "roll_mod:classic",
+    "primary": {
+      "layers": 5,
+      "targets": [
+        {
+          "material": "uraninite"
+        }
+      ]
+    },
+    "secondary": {
+      "layers": 5,
+      "targets": [
+        {
+          "material": "pitchblende"
+        }
+      ]
+    },
+    "between": {
+      "layers": 5,
+      "targets": [
+        {
+          "material": "pitchblende"
+        }
+      ]
+    },
+    "sporadic": {
+      "layers": 10,
+      "targets": [
+        {
+          "material": "thorium"
+        }
+      ]
+    }
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 200
+      },
+      "min_inclusive": {
+        "absolute": -30
+      }
+    }
+  },
+  "layer": "endstone",
+  "weight": 10,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "materials": [
+        "uraninite",
+        "pitchblende",
+        "thorium"
+      ],
+      "tries": 127,
+      "xz_spread": 28
+    }
+  ]
 }

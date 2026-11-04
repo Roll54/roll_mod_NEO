@@ -16,8 +16,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:netherrack_tetrahedrite" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "tetrahedrite"
           }
         ],
         "weight": 4,
@@ -27,8 +26,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:netherrack_stibnite" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "stibnite"
           }
         ],
         "weight": 3,
@@ -38,8 +36,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:netherrack_chalcocite" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "chalcocite"
           }
         ],
         "weight": 2,
@@ -53,8 +50,12 @@
   "height_range": {
     "height": {
       "type": "minecraft:uniform",
-      "max_inclusive": { "absolute": 80 },
-      "min_inclusive": { "absolute": 30 }
+      "max_inclusive": {
+        "absolute": 80
+      },
+      "min_inclusive": {
+        "absolute": 30
+      }
     }
   },
   "layer": "netherrack",
@@ -62,10 +63,10 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:netherrack_tetrahedrite_ore_sample",
-        "roll_mod:netherrack_stibnite_ore_sample",
-        "roll_mod:netherrack_chalcocite_ore_sample"
+      "materials": [
+        "tetrahedrite",
+        "stibnite",
+        "chalcocite"
       ],
       "attachment": "either",
       "tries": 41,

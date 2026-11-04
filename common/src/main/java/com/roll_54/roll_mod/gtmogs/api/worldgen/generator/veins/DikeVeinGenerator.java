@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.gtmogs.api.worldgen.generator.veins;
 
+import com.roll_54.roll_mod.compat.gtmogs.OreMaterials;
 import com.roll_54.roll_mod.compat.gtmogs.OreStoneVariants;
 
 import net.minecraft.core.BlockPos;
@@ -59,7 +60,7 @@ public class DikeVeinGenerator extends VeinGenerator {
     public List<VeinEntry> getAllEntries() {
         List<VeinEntry> entries = new ArrayList<>(this.blocks.size());
         for (var def : this.blocks) {
-            VeinGenerator.mapTarget(def.block, def.weight).forEach(entries::add);
+            entries.add(VeinGenerator.mapTarget(def.block, def.weight));
         }
         return entries;
     }
@@ -171,7 +172,7 @@ public class DikeVeinGenerator extends VeinGenerator {
 
         // spotless:off
         public static final Codec<DikeBlockDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                        TargetBlockState.CODEC.listOf().fieldOf("block").forGetter(x -> x.block),
+                        OreMaterials.TARGETS_CODEC.fieldOf("block").forGetter(x -> x.block),
                         Codec.INT.fieldOf("weight").forGetter(x -> x.weight),
                         Codec.INT.fieldOf("min_y").orElse(320).forGetter(x -> x.minY),
                         Codec.INT.fieldOf("max_y").orElse(-64).forGetter(x -> x.maxY))

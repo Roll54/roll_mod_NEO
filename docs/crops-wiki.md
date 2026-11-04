@@ -602,7 +602,7 @@ Crop Manager inputs per tier (each scan, in this order per crop: de-weed, feed, 
 |---|---|---|---|---|
 | Herbicide item slot | ✔ | ✔ | ✔ | `#roll_mod:herbicides` items, one per weeded crop |
 | Herbicide tank (16 B) | ✔ | ✔ | ✔ | `#roll_mod:herbicides` fluids, used when the slot is empty: 1000 mB per weeded crop |
-| N/P/K item slot + tank (16 B) | – | ✔ | ✔ | anything with a `roll_mod:npk` value; filled into the machine's own N/P/K buffer (1000 each), then each planted crop is topped up to 100 N/P/K |
+| N/P/K item slot + tank (16 B) | – | ✔ | ✔ | only accepts items/fluids with a `roll_mod:npk` value (checked in `CropHarvesterTrait#onMachineLoad`); players can take items/fluid back out in the GUI, pipes can only insert; filled into the machine's own N/P/K buffer (1000 each), then each planted crop is topped up to 100 N/P/K |
 | Mutagen tank (32 B) | – | – | ✔ | `#roll_mod:mutagens`; tops each planted crop up to 4000 mutagen, 1 mB = 1 |
 
 Feeding a crop (N/P/K or mutagen) costs `energy_per_feed` (100) per crop topped up. Up to 16 N/P/K items are eaten

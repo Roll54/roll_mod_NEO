@@ -100,11 +100,11 @@ public class GeodeVeinGenerator extends VeinGenerator {
     public List<VeinEntry> getAllEntries() {
         RandomSource source = new LegacyRandomSource(0);
         return List.of(
-                new VeinEntry(geodeBlockSettings.fillingProvider.getState(source, BlockPos.ZERO), 1),
-                new VeinEntry(geodeBlockSettings.innerLayerProvider.getState(source, BlockPos.ZERO), 1),
-                new VeinEntry(geodeBlockSettings.alternateInnerLayerProvider.getState(source, BlockPos.ZERO), 1),
-                new VeinEntry(geodeBlockSettings.middleLayerProvider.getState(source, BlockPos.ZERO), 1),
-                new VeinEntry(geodeBlockSettings.outerLayerProvider.getState(source, BlockPos.ZERO), 1));
+                VeinEntry.ofBlock(geodeBlockSettings.fillingProvider.getState(source, BlockPos.ZERO), 1),
+                VeinEntry.ofBlock(geodeBlockSettings.innerLayerProvider.getState(source, BlockPos.ZERO), 1),
+                VeinEntry.ofBlock(geodeBlockSettings.alternateInnerLayerProvider.getState(source, BlockPos.ZERO), 1),
+                VeinEntry.ofBlock(geodeBlockSettings.middleLayerProvider.getState(source, BlockPos.ZERO), 1),
+                VeinEntry.ofBlock(geodeBlockSettings.outerLayerProvider.getState(source, BlockPos.ZERO), 1));
     }
 
     @Override

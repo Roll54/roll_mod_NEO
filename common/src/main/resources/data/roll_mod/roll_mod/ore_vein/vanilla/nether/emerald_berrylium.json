@@ -1,94 +1,73 @@
 {
-	"biomes": "#minecraft:is_nether",
-	"cluster_size": {
-		"min_inclusive": 34,
-		"max_inclusive": 38,
-		"type": "minecraft:uniform"
-	},
-	"density": 0.2,
-	"dimension_filter": [
-		"minecraft:the_nether"
-	],
-	"discard_chance_on_air_exposure": 0.75,
-	"generator": {
-		"type": "roll_mod:classic",
-		"primary": {
-			"layers": 4,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:netherrack_emerald"
-					}
-				}
-			]
-		},
-		"secondary": {
-			"layers": 3,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:netherrack_beryllium"
-					}
-				}
-			]
-		},
-		"between": {
-			"layers": 2,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:netherrack_emerald"
-					}
-				}
-			]
-		},
-		"sporadic": {
-			"layers": 6,
-			"targets": [
-				{
-					"target": {
-						"predicate_type": "minecraft:always_true"
-					},
-					"state": {
-						"Name": "roll_mod:netherrack_emerald"
-					}
-				}
-			]
-		}
-	},
-	"height_range": {
-		"height": {
-			"type": "minecraft:uniform",
-			"max_inclusive": {
-				"absolute": 120
-			},
-			"min_inclusive": {
-				"absolute": 10
-			}
-		}
-	},
-	"layer": "netherrack",
-	"weight": 100,
-	"indicators": [
-		{
-			"type": "roll_mod:surface",
-			"blocks": [
-				"roll_mod:netherrack_emerald_ore_sample",
-				"roll_mod:netherrack_emerald_ore_sample",
-				"roll_mod:netherrack_beryllium_ore_sample"
-			],
-			"attachment": "either",
-			"tries": 32,
-			"xz_spread": 16
-		}
-	]
+  "biomes": "#minecraft:is_nether",
+  "cluster_size": {
+    "min_inclusive": 34,
+    "max_inclusive": 38,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.2,
+  "dimension_filter": [
+    "minecraft:the_nether"
+  ],
+  "discard_chance_on_air_exposure": 0.75,
+  "generator": {
+    "type": "roll_mod:classic",
+    "primary": {
+      "layers": 4,
+      "targets": [
+        {
+          "material": "emerald"
+        }
+      ]
+    },
+    "secondary": {
+      "layers": 3,
+      "targets": [
+        {
+          "material": "beryllium"
+        }
+      ]
+    },
+    "between": {
+      "layers": 2,
+      "targets": [
+        {
+          "material": "emerald"
+        }
+      ]
+    },
+    "sporadic": {
+      "layers": 6,
+      "targets": [
+        {
+          "material": "emerald"
+        }
+      ]
+    }
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 120
+      },
+      "min_inclusive": {
+        "absolute": 10
+      }
+    }
+  },
+  "layer": "netherrack",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "materials": [
+        "emerald",
+        "beryllium"
+      ],
+      "attachment": "either",
+      "tries": 32,
+      "xz_spread": 16
+    }
+  ]
 }

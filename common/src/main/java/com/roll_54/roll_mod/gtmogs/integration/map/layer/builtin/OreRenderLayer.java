@@ -42,7 +42,7 @@ public class OreRenderLayer extends MapRenderLayer {
 
         for (var filler : vein.definition().value().veinGenerator().getAllEntries()) {
             tooltip.add(Component.literal(ConfigHolder.INSTANCE.compat.minimap.oreNamePrefix)
-                    .append(filler.vein().getBlock().getName()));
+                    .append(filler.blocks().getFirst().getBlock().getName()));
         }
         return tooltip;
     }

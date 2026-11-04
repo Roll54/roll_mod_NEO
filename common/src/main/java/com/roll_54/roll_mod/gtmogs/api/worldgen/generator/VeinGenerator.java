@@ -36,12 +36,12 @@ public abstract class VeinGenerator {
     public VeinGenerator() {}
 
     /**
-     * @return List of [block|material, chance]
+     * @return One entry per layer of the vein (a target list): its blocks and its chance.
      */
     public abstract List<VeinEntry> getAllEntries();
 
     public List<BlockState> getAllBlocks() {
-        return getAllEntries().stream().map(entry -> entry.vein).toList();
+        return getAllEntries().stream().flatMap(entry -> entry.blocks.stream()).toList();
     }
 
     public IntList getAllChances() {
@@ -66,10 +66,14 @@ public abstract class VeinGenerator {
 
     public abstract MapCodec<? extends VeinGenerator> codec();
 
-    public record VeinEntry(BlockState vein, int chance) {
+    /**
+     * roll_mod: one layer of a vein — every block its target list can place (a material expands into one per
+     * rock layer) — rather than one entry per block, so recipe viewers show a slot per layer.
+     */
+    public record VeinEntry(List<BlockState> blocks, int chance) {
 
         public static VeinEntry ofBlock(BlockState state, int chance) {
-            return new VeinEntry(state, chance);
+            return new VeinEntry(List.of(state), chance);
         }
     }
 
@@ -77,8 +81,7 @@ public abstract class VeinGenerator {
         return target.stream().map(tbs -> tbs.state);
     }
 
-    public static Stream<VeinEntry> mapTarget(List<OreConfiguration.TargetBlockState> target,
-                                              int weight) {
-        return mapTarget(target).map(entry -> new VeinEntry(entry, weight));
+    public static VeinEntry mapTarget(List<OreConfiguration.TargetBlockState> target, int weight) {
+        return new VeinEntry(mapTarget(target).toList(), weight);
     }
 }

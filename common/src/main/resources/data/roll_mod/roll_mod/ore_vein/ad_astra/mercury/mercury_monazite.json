@@ -1,5 +1,10 @@
 {
-  "neoforge:conditions": [{"type": "neoforge:mod_loaded", "modid": "ad_astra"}],
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
   "biomes": "#ad_astra:is_mercury",
   "cluster_size": {
     "min_inclusive": 76,
@@ -17,12 +22,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:mercury_quartz"
-          }
+          "material": "quartz"
         }
       ]
     },
@@ -30,12 +30,7 @@
       "layers": 6,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:mercury_monazite"
-          }
+          "material": "monazite"
         }
       ]
     },
@@ -43,12 +38,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:mercury_certus_quartz"
-          }
+          "material": "certus_quartz"
         }
       ]
     },
@@ -56,12 +46,7 @@
       "layers": 3,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:mercury_sunnarium_orthosilicate"
-          }
+          "material": "sunnarium_orthosilicate"
         }
       ]
     },
@@ -84,12 +69,11 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:mercury_monazite_ore_sample",
-        "roll_mod:mercury_monazite_ore_sample",
-        "roll_mod:mercury_quartz_ore_sample",
-        "roll_mod:mercury_certus_quartz_ore_sample",
-        "roll_mod:mercury_sunnarium_orthosilicate_ore_sample"
+      "materials": [
+        "monazite",
+        "quartz",
+        "certus_quartz",
+        "sunnarium_orthosilicate"
       ],
       "tries": 396,
       "xz_spread": 41

@@ -1,0 +1,12 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.roll_54.roll_mod_client.mixin.cyberware",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "CropLensHudAccessMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}

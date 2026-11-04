@@ -7,7 +7,8 @@
   },
   "density": 1,
   "dimension_filter": [
-    "minecraft:the_nether"
+    "minecraft:the_nether",
+    "ad_astra:mars"
   ],
   "discard_chance_on_air_exposure": 0.75,
   "generator": {
@@ -16,8 +17,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:netherrack_monazite" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "monazite"
           }
         ],
         "weight": 4,
@@ -27,8 +27,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:netherrack_biotite" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "biotite"
           }
         ],
         "weight": 3,
@@ -38,8 +37,7 @@
       {
         "block": [
           {
-            "state": { "Name": "roll_mod:netherrack_redstone" },
-            "target": { "predicate_type": "minecraft:always_true" }
+            "material": "redstone"
           }
         ],
         "weight": 2,
@@ -53,8 +51,12 @@
   "height_range": {
     "height": {
       "type": "minecraft:uniform",
-      "max_inclusive": { "absolute": 80 },
-      "min_inclusive": { "absolute": 30 }
+      "max_inclusive": {
+        "absolute": 80
+      },
+      "min_inclusive": {
+        "absolute": 30
+      }
     }
   },
   "layer": "netherrack",
@@ -62,14 +64,31 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:netherrack_monazite_ore_sample",
-        "roll_mod:netherrack_biotite_ore_sample",
-        "roll_mod:netherrack_redstone_ore_sample"
+      "materials": [
+        "monazite",
+        "biotite",
+        "redstone"
       ],
       "attachment": "either",
       "tries": 41,
       "xz_spread": 21
     }
-  ]
+  ],
+  "dimension_overrides": {
+    "ad_astra:mars": {
+      "layer": "mars_stone",
+      "biomes": "#ad_astra:is_mars",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "min_inclusive": {
+            "absolute": -20
+          },
+          "max_inclusive": {
+            "absolute": 70
+          }
+        }
+      }
+    }
+  }
 }

@@ -16,12 +16,7 @@
       "layers": 6,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:end_pyrolusite"
-          }
+          "material": "pyrolusite"
         }
       ]
     },
@@ -29,20 +24,10 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:end_rhodochrosite"
-          }
+          "material": "rhodochrosite"
         },
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:end_rhodochrosite"
-          }
+          "material": "rhodochrosite"
         }
       ]
     },
@@ -50,12 +35,7 @@
       "layers": 4,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:end_magnetite"
-          }
+          "material": "magnetite"
         }
       ]
     },
@@ -63,12 +43,7 @@
       "layers": 6,
       "targets": [
         {
-          "target": {
-            "predicate_type": "minecraft:always_true"
-          },
-          "state": {
-            "Name": "roll_mod:end_pyrite"
-          }
+          "material": "pyrite"
         }
       ]
     },
@@ -91,12 +66,11 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:end_pyrolusite_ore_sample",
-        "roll_mod:end_rhodochrosite_ore_sample",
-        "roll_mod:end_rhodochrosite_ore_sample",
-        "roll_mod:end_magnetite_ore_sample",
-        "roll_mod:end_pyrite_ore_sample"
+      "materials": [
+        "pyrolusite",
+        "rhodochrosite",
+        "magnetite",
+        "pyrite"
       ],
       "tries": 133,
       "xz_spread": 28

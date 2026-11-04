@@ -20,8 +20,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:netherrack_fluorite" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "fluorite"
               }
             ]
           ],
@@ -33,8 +32,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:netherrack_mica" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "mica"
               }
             ]
           ],
@@ -46,8 +44,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:netherrack_topaz" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "topaz"
               }
             ]
           ],
@@ -59,8 +56,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:netherrack_blue_topaz" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "blue_topaz"
               }
             ]
           ],
@@ -72,8 +68,12 @@
   "height_range": {
     "height": {
       "type": "minecraft:uniform",
-      "max_inclusive": { "absolute": 60 },
-      "min_inclusive": { "absolute": 8 }
+      "max_inclusive": {
+        "absolute": 60
+      },
+      "min_inclusive": {
+        "absolute": 8
+      }
     }
   },
   "layer": "netherrack",
@@ -81,11 +81,11 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:netherrack_fluorite_ore_sample",
-        "roll_mod:netherrack_mica_ore_sample",
-        "roll_mod:netherrack_topaz_ore_sample",
-        "roll_mod:netherrack_blue_topaz_ore_sample"
+      "materials": [
+        "fluorite",
+        "mica",
+        "topaz",
+        "blue_topaz"
       ],
       "attachment": "either",
       "tries": 29,

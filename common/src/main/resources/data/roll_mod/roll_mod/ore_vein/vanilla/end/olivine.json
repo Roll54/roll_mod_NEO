@@ -7,7 +7,11 @@
   },
   "density": 0.7,
   "dimension_filter": [
-    "minecraft:the_end"
+    "minecraft:the_end",
+    "ad_astra:moon",
+    "ad_astra:mars",
+    "ad_astra:mercury",
+    "ad_astra:venus"
   ],
   "discard_chance_on_air_exposure": 0.75,
   "generator": {
@@ -20,8 +24,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:end_olivine" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "olivine"
               }
             ]
           ],
@@ -33,8 +36,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:end_peridot" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "peridot"
               }
             ]
           ],
@@ -46,8 +48,7 @@
           "targets": [
             [
               {
-                "state": { "Name": "roll_mod:end_pyrope" },
-                "target": { "predicate_type": "minecraft:always_true" }
+                "material": "pyrope"
               }
             ]
           ],
@@ -72,13 +73,75 @@
   "indicators": [
     {
       "type": "roll_mod:surface",
-      "blocks": [
-        "roll_mod:end_olivine_ore_sample",
-        "roll_mod:end_peridot_ore_sample",
-        "roll_mod:end_pyrope_ore_sample"
+      "materials": [
+        "olivine",
+        "peridot",
+        "pyrope"
       ],
       "tries": 95,
       "xz_spread": 22
     }
-  ]
+  ],
+  "dimension_overrides": {
+    "ad_astra:moon": {
+      "layer": "moon_stone",
+      "biomes": "#ad_astra:is_moon",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "min_inclusive": {
+            "absolute": -40
+          },
+          "max_inclusive": {
+            "absolute": 70
+          }
+        }
+      }
+    },
+    "ad_astra:mars": {
+      "layer": "mars_stone",
+      "biomes": "#ad_astra:is_mars",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "min_inclusive": {
+            "absolute": -20
+          },
+          "max_inclusive": {
+            "absolute": 70
+          }
+        }
+      }
+    },
+    "ad_astra:mercury": {
+      "layer": "mercury_stone",
+      "biomes": "#ad_astra:is_mercury",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "min_inclusive": {
+            "absolute": -32
+          },
+          "max_inclusive": {
+            "absolute": 64
+          }
+        }
+      }
+    },
+    "ad_astra:venus": {
+      "layer": "venus_stone",
+      "biomes": "#ad_astra:is_venus",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "min_inclusive": {
+            "absolute": -30
+          },
+          "max_inclusive": {
+            "absolute": 66
+          }
+        }
+      }
+    }
+  }
 }

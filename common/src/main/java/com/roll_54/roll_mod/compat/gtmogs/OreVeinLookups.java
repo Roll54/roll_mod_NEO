@@ -1,20 +1,20 @@
 package com.roll_54.roll_mod.compat.gtmogs;
 
-import com.roll_54.roll_mod.gtmogs.api.worldgen.OreVeinDefinition;
-import com.roll_54.roll_mod.gtmogs.api.worldgen.generator.indicators.IndicatorGenerator;
-import com.roll_54.roll_mod.gtmogs.api.worldgen.generator.indicators.SurfaceIndicatorGenerator;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinition;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.BlockSubLayer;
 import com.roll_54.roll_mod.data.datagen.ore.OreTextureTemplates.StoneVariant;
+import com.roll_54.roll_mod.registry.GeneratedOreRegistry;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -23,61 +23,76 @@ import java.util.Optional;
 import java.util.Set;
 
 /**
- * What a vein's recipe page offers besides the ores it places: the raw ore those ores drop and the same
- * ores in the other rocks ({@link OreStoneVariants} may place them instead), so looking up
- * {@code raw_hematite} or {@code granite_hematite} finds the veins; and the vein's surface samples.
+ * What one slot of a vein's recipe page (one layer of the vein) cycles through: for each of roll_mod's ores in
+ * that layer, the material's surface sample, the ore in every rock it can be in within the vein's worlds
+ * ({@link OreStoneVariants} may place granite or tuff ores instead), and the raw ore. Everything a page cycles
+ * through is also what looks the vein up, so {@code raw_hematite}, {@code granite_hematite} and a hematite
+ * sample all find its veins.
  */
 public final class OreVeinLookups {
 
-    /** Any of a material's ore blocks (bases and rock variants) → raw ore first, then all those blocks. */
-    private static Map<Item, List<Item>> relatedByOre;
+    /** Any of roll_mod's ore blocks (bases and rock variants) → its material. */
+    private static Map<Block, OreDefinition> materialByOre;
 
     private OreVeinLookups() {}
 
-    /** Raw ores and rock variants of the roll_mod ores among {@code ores}, without the ores themselves. */
-    public static List<Item> related(List<ItemStack> ores) {
-        Set<Item> present = new LinkedHashSet<>();
-        for (ItemStack stack : ores) present.add(stack.getItem());
-        Set<Item> extra = new LinkedHashSet<>();
-        for (Item ore : present) {
-            List<Item> related = table().get(ore);
-            if (related != null) extra.addAll(related);
-        }
-        extra.removeAll(present);
-        return new ArrayList<>(extra);
-    }
-
-    /** The blocks a vein's surface indicators scatter, in order, once each. */
-    public static List<ItemStack> indicators(OreVeinDefinition vein) {
+    /**
+     * The stacks one vein layer's slot cycles through, in order: per block, sample(s), ores, raw ore for roll_mod's
+     * ores (limited to the rocks of {@code worlds}), or just the block's item for anything else. No duplicates.
+     */
+    public static List<ItemStack> slotStacks(List<BlockState> blocks, Set<ResourceKey<Level>> worlds) {
         Set<Item> items = new LinkedHashSet<>();
-        for (IndicatorGenerator generator : vein.indicatorGenerators()) {
-            if (!(generator instanceof SurfaceIndicatorGenerator surface) || surface.blocks() == null) continue;
-            for (Block block : surface.blocks()) {
-                Item item = block.asItem();
-                if (item != Items.AIR) items.add(item);
+        for (BlockState state : blocks) {
+            Block block = state.getBlock();
+            OreDefinition def = table().get(block);
+            if (def == null) {
+                add(items, block.asItem());
+                continue;
             }
+            List<BlockSubLayer> bases = def.bases().stream()
+                    .filter(base -> OreMaterials.runsIn(base, worlds))
+                    .toList();
+            for (BlockSubLayer base : bases) {
+                item(GeneratedOreRegistry.oreSampleId(base, def.id())).ifPresent(items::add);
+            }
+            for (BlockSubLayer base : bases) {
+                item(base.id() + "_" + def.id()).ifPresent(items::add);
+                for (StoneVariant variant : def.variants()) {
+                    if (variant.parent() == base) item(def.variantBlockId(variant)).ifPresent(items::add);
+                }
+            }
+            // The vein's own block even if it is in a rock none of its worlds has.
+            add(items, block.asItem());
+            item("raw_" + def.id()).ifPresent(items::add);
         }
         return items.stream().map(ItemStack::new).toList();
     }
 
-    private static synchronized Map<Item, List<Item>> table() {
-        if (relatedByOre != null) return relatedByOre;
-        Map<Item, List<Item>> map = new HashMap<>();
+    /** The material of one of roll_mod's ore blocks (any base or rock variant), or null for anything else. */
+    public static OreDefinition materialOf(Block block) {
+        return table().get(block);
+    }
+
+    private static void add(Set<Item> items, Item item) {
+        if (item != Items.AIR) items.add(item);
+    }
+
+    private static synchronized Map<Block, OreDefinition> table() {
+        if (materialByOre != null) return materialByOre;
+        Map<Block, OreDefinition> map = new HashMap<>();
         for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
-            List<Item> related = new ArrayList<>();
-            item("raw_" + def.id()).ifPresent(related::add);
-            List<Item> ores = new ArrayList<>();
-            for (BlockSubLayer base : def.bases()) item(base.id() + "_" + def.id()).ifPresent(ores::add);
-            for (StoneVariant variant : def.variants()) item(def.variantBlockId(variant)).ifPresent(ores::add);
-            related.addAll(ores);
-            List<Item> frozen = List.copyOf(related);
-            for (Item ore : ores) map.put(ore, frozen);
+            for (BlockSubLayer base : def.bases()) block(base.id() + "_" + def.id()).ifPresent(b -> map.put(b, def));
+            for (StoneVariant variant : def.variants()) block(def.variantBlockId(variant)).ifPresent(b -> map.put(b, def));
         }
-        relatedByOre = map;
+        materialByOre = map;
         return map;
     }
 
     private static Optional<Item> item(String path) {
         return BuiltInRegistries.ITEM.getOptional(RollMod.id(path));
+    }
+
+    private static Optional<Block> block(String path) {
+        return BuiltInRegistries.BLOCK.getOptional(RollMod.id(path));
     }
 }

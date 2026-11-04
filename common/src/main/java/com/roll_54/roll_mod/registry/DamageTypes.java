@@ -29,4 +29,14 @@ public class DamageTypes {
                 causer.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(RADIATION_DAMAGE_TYPE),
                 causer);
     }
+
+    // Literally broken glass (ItemRegistry.BROKEN_GLASS_LITERALLY): 3 hearts per bowl. Tagged
+    // #minecraft:bypasses_armor, so armor does not soften it — it is in your stomach, not on you.
+    public static final ResourceKey<DamageType> BROKEN_GLASS_DAMAGE_TYPE =
+            ResourceKey.create(Registries.DAMAGE_TYPE, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "broken_glass"));
+
+    public static DamageSource brokenGlassDamageType(Entity causer) {
+        return new DamageSource(
+                causer.level().registryAccess().registryOrThrow(Registries.DAMAGE_TYPE).getHolderOrThrow(BROKEN_GLASS_DAMAGE_TYPE));
+    }
 }

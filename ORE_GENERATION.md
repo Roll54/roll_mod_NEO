@@ -80,6 +80,30 @@ To test a vein in-game:
 | `weight_modifier` | ❌ | object | Per-biome weight adjustments. |
 | `indicators` | ❌ | list | Surface markers hinting at the vein — see §6. |
 | `generator` | ✅ | object | Vein shape — see §5. |
+| `dimension_overrides` | ❌ | map dimension id → object | roll_mod: per-world `layer`, `height_range` and `biomes` (each optional) for a vein listed in several `dimension_filter` worlds — see below. |
+
+### `dimension_overrides`
+
+One vein file can serve several worlds: list them all in `dimension_filter`, and override whatever differs in a
+world. Anything not overridden falls back to the vein's own field. Do this instead of copying the file per world.
+
+```json
+"dimension_filter": ["minecraft:overworld", "roll_mod:mining_overworld"],
+"layer": "stone",
+"biomes": "#minecraft:is_overworld",
+"height_range": { "height": { "type": "minecraft:uniform",
+  "min_inclusive": { "absolute": 10 }, "max_inclusive": { "absolute": 50 } } },
+"dimension_overrides": {
+  "roll_mod:mining_overworld": {
+    "layer": "mining_overworld_stone",
+    "biomes": "roll_mod:mining_overworld",
+    "height_range": { "height": { "type": "minecraft:uniform",
+      "min_inclusive": { "absolute": 8 }, "max_inclusive": { "absolute": 36 } } }
+  }
+}
+```
+
+The layer must be one that runs in that world (§4), so a world on a different layer needs a `layer` override.
 
 ### `cluster_size`
 
@@ -154,12 +178,15 @@ Wraps vanilla's `HeightRangePlacement`, so the value goes under a `height` key:
 roll_mod ore over stone, deepslate, netherrack or one of those rocks, the same material's ore in that rock goes
 in instead, if it exists (`compat/gtmogs/OreStoneVariants`). Planet layers are placed as written.
 
-The vein's EMI page lists the raw ore and those variants as outputs too, so looking up `raw_<ore>` finds its
-veins, and shows the vein's surface samples under the dimension slot.
+A vein's JEI/EMI/REI page has one slot per layer of the vein (a classic magnetite/gold vein: magnetite, magnetite,
+gold, gold). Each slot cycles through that layer's surface sample, its ore in every rock of the vein's worlds and its
+raw ore, and all of those look the vein up (`raw_<ore>`, `granite_<ore>`, a sample). At the bottom, every world the
+vein generates in has its own marker, whose tooltip gives the vein's Y range there.
 
-The mining world (flat: deepslate Y −63…0, stone Y 1…64, grass at 68) has veins of its own,
-`data/roll_mod/roll_mod/ore_vein/mining_overworld/` — the overworld veins on the `mining_overworld_*` layers, with
-heights squeezed into its bands — so EMI lists them apart from the overworld ones. Overworld veins do not roll there.
+The mining world (flat: deepslate Y −63…0, stone Y 1…64, grass at 68) shares the overworld vein files in
+`data/roll_mod/roll_mod/ore_vein/vanilla/overworld/`: each lists both worlds in `dimension_filter` and has a
+`dimension_overrides` entry for `roll_mod:mining_overworld` putting it on the `mining_overworld_*` layer with heights
+squeezed into that world's bands (§3).
 GTMOGS skips superflat worlds (its `doSuperflatOres` dev option); `OrePlacerMiningWorldMixin` lets veins and samples
 generate in the mining world anyway.
 It also gets the overworld's feature ores (MI, Railcraft, Ultramarine, Create Cybernetics) from
@@ -217,6 +244,20 @@ your most specific predicate first. Common predicates:
 `always_true` will happily replace air, water and player-built blocks inside the vein footprint.
 It's convenient for dedicated dimensions where the whole column is stone; use `tag_match` when you
 want the vein to respect terrain.
+
+#### Ore materials
+
+Any entry of a target list may name one of roll_mod's ore materials (`OreDefinitions`) instead of a block:
+
+```json
+"targets": [ { "material": "borax" }, { "material": "rock_salt" } ]
+```
+
+A material expands, where it stands, into one target per rock layer that material comes in — `moon_borax` guarded by
+the `moon_stone` layer's rock tag, `mercury_borax` by `mercury_stone`'s, `stone_X` by stone, `deepslate_X` by deepslate
+and so on. The same file then places the right ore in every world it generates in, and stone ores still become
+granite/tuff/basalt ores over those rocks. A material with no ore in the rock at hand places nothing there. Prefer
+materials over `roll_mod:<layer>_<ore>` blocks; plain entries remain for other mods' blocks and custom predicates.
 
 Block states with properties:
 
@@ -622,7 +663,8 @@ Ore samples for the moon vein — one indicator block per ore the vein contains:
 | Field | Required | Meaning |
 |---|---|---|
 | `type` | ✅ | `roll_mod:surface` |
-| `blocks` | ✅ | Candidate blocks, picked with equal weight. Empty list = nothing placed. |
+| `blocks` | ❌ | Candidate blocks, picked with equal weight. |
+| `materials` | ❌ | roll_mod ore materials (`OreDefinitions`); each adds its sample for the vein's layer in the world being generated (`moon_borax_ore_sample` on the Moon, `mercury_borax_ore_sample` on Mercury). Use these instead of listing `*_ore_sample` blocks. |
 | `chance` | ❌ | Per-position placement chance, `0.0`–`1.0`. Default `0.05`. |
 
 All entries in `blocks` are equally likely — there is no weight field. To bias the samples toward the

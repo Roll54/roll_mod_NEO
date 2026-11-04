@@ -54,7 +54,9 @@ public class OreVeinDefinition {
             RegistryCodecs.homogeneousList(Registries.BIOME).lenientOptionalFieldOf("biomes", HolderSet.empty()).forGetter(OreVeinDefinition::biomes),
             BiomeWeightModifier.CODEC.optionalFieldOf("weight_modifier", BiomeWeightModifier.EMPTY).forGetter(ext -> ext.biomeWeightModifier),
             IndicatorGenerator.DIRECT_CODEC.listOf().optionalFieldOf("indicators", List.of()).forGetter(OreVeinDefinition::indicatorGenerators),
-            VeinGenerator.DIRECT_CODEC.fieldOf("generator").forGetter(ft -> ft.veinGenerator)
+            VeinGenerator.DIRECT_CODEC.fieldOf("generator").forGetter(ft -> ft.veinGenerator),
+            Codec.unboundedMap(ResourceKey.codec(Registries.DIMENSION), DimensionOverride.CODEC)
+                    .optionalFieldOf("dimension_overrides", Map.of()).forGetter(OreVeinDefinition::dimensionOverrides)
     ).apply(instance, OreVeinDefinition::new));
 
     public static final Codec<Holder<OreVeinDefinition>> CODEC = RegistryFixedCodec.create(GTRegistries.ORE_VEIN_REGISTRY);
@@ -75,7 +77,6 @@ public class OreVeinDefinition {
     @Setter
     private Set<ResourceKey<Level>> dimensionFilter;
     @Getter
-    @Setter
     private HeightRangePlacement heightRange;
     @Getter
     @Setter
@@ -94,6 +95,14 @@ public class OreVeinDefinition {
     @Setter
     private VeinGenerator veinGenerator;
 
+    /**
+     * roll_mod: per-world replacements for {@link #layer}, {@link #heightRange} and {@link #biomes}, so a vein
+     * that generates in several worlds of {@link #dimensionFilter} is one file rather than a copy per world.
+     */
+    @Getter
+    @Setter
+    private Map<ResourceKey<Level>, DimensionOverride> dimensionOverrides;
+
     @ApiStatus.Internal
     @Nullable
     @Setter
@@ -103,7 +112,7 @@ public class OreVeinDefinition {
         this(other.clusterSize, other.density, other.weight, other.layer,
                 Set.copyOf(other.dimensionFilter), other.heightRange, other.discardChanceOnAirExposure,
                 other.biomes, other.biomeWeightModifier, new ArrayList<>(other.indicatorGenerators),
-                other.veinGenerator, other.biomeLookup);
+                other.veinGenerator, Map.copyOf(other.dimensionOverrides), other.biomeLookup);
     }
 
     public OreVeinDefinition(IntProvider clusterSize, float density, int weight, IWorldGenLayer layer,
@@ -111,11 +120,12 @@ public class OreVeinDefinition {
                              float discardChanceOnAirExposure, HolderSet<Biome> biomes,
                              BiomeWeightModifier biomeWeightModifier,
                              List<IndicatorGenerator> indicatorGenerators,
-                             @Nullable VeinGenerator veinGenerator) {
+                             @Nullable VeinGenerator veinGenerator,
+                             Map<ResourceKey<Level>, DimensionOverride> dimensionOverrides) {
         this(clusterSize, density, weight,
                 layer, new HashSet<>(dimensionFilter), heightRange, discardChanceOnAirExposure, biomes,
                 biomeWeightModifier, indicatorGenerators,
-                veinGenerator, null);
+                veinGenerator, dimensionOverrides, null);
     }
 
     public OreVeinDefinition(IntProvider clusterSize, float density, int weight, IWorldGenLayer layer,
@@ -124,6 +134,7 @@ public class OreVeinDefinition {
                              BiomeWeightModifier biomeWeightModifier,
                              List<IndicatorGenerator> indicatorGenerators,
                              @Nullable VeinGenerator veinGenerator,
+                             Map<ResourceKey<Level>, DimensionOverride> dimensionOverrides,
                              @Nullable HolderGetter<Biome> biomeLookup) {
         this.clusterSize = clusterSize;
         this.density = density;
@@ -136,12 +147,33 @@ public class OreVeinDefinition {
         this.biomeWeightModifier = biomeWeightModifier;
         this.indicatorGenerators = indicatorGenerators != null ? indicatorGenerators : new ArrayList<>();
         this.veinGenerator = veinGenerator;
+        this.dimensionOverrides = dimensionOverrides != null ? dimensionOverrides : Map.of();
         this.biomeLookup = biomeLookup;
     }
 
-    public boolean isForBiome(Holder<Biome> biome) {
-        if (biomes == null) return true;
-        return biomes.size() == 0 || biomes.contains(biome);
+    /** The layer this vein generates in within {@code level}: its override there, else {@link #layer}. */
+    public IWorldGenLayer layer(ResourceKey<Level> level) {
+        DimensionOverride override = dimensionOverrides.get(level);
+        return override != null && override.layer().isPresent() ? override.layer().get() : layer;
+    }
+
+    /** Explicit: Lombok skips this setter because {@link #heightRange(ResourceKey)} shares its name and arity. */
+    public OreVeinDefinition heightRange(HeightRangePlacement heightRange) {
+        this.heightRange = heightRange;
+        return this;
+    }
+
+    /** The height range in {@code level}: its override there, else {@link #heightRange}. */
+    public HeightRangePlacement heightRange(ResourceKey<Level> level) {
+        DimensionOverride override = dimensionOverrides.get(level);
+        return override != null && override.heightRange().isPresent() ? override.heightRange().get() : heightRange;
+    }
+
+    public boolean isForBiome(ResourceKey<Level> level, Holder<Biome> biome) {
+        DimensionOverride override = dimensionOverrides.get(level);
+        HolderSet<Biome> set = override != null && override.biomes().isPresent() ? override.biomes().get() : biomes;
+        if (set == null) return true;
+        return set.size() == 0 || set.contains(biome);
     }
 
     public int weightForBiome(Holder<Biome> biome) {
@@ -327,5 +359,22 @@ public class OreVeinDefinition {
     private static class InferredProperties {
 
         public IntIntPair heightRange = null;
+    }
+
+    /**
+     * roll_mod: what a vein does differently in one world of its {@code dimension_filter}. Every field is
+     * optional; a missing one falls back to the vein's own.
+     */
+    public record DimensionOverride(Optional<IWorldGenLayer> layer,
+                                    Optional<HeightRangePlacement> heightRange,
+                                    Optional<HolderSet<Biome>> biomes) {
+
+        // spotless:off
+        public static final Codec<DimensionOverride> CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                IWorldGenLayer.CODEC.optionalFieldOf("layer").forGetter(DimensionOverride::layer),
+                HeightRangePlacement.CODEC.codec().optionalFieldOf("height_range").forGetter(DimensionOverride::heightRange),
+                RegistryCodecs.homogeneousList(Registries.BIOME).optionalFieldOf("biomes").forGetter(DimensionOverride::biomes)
+        ).apply(instance, DimensionOverride::new));
+        // spotless:on
     }
 }
