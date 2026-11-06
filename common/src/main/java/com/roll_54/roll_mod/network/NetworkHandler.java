@@ -340,6 +340,11 @@ public class NetworkHandler {
                 com.roll_54.roll_mod.economy.minprice.SyncMinPricesPacket::handle
         );
         registrar.playToServer(
+                com.roll_54.roll_mod.economy.minprice.SaveMinPriceRecipesPacket.TYPE,
+                com.roll_54.roll_mod.economy.minprice.SaveMinPriceRecipesPacket.STREAM_CODEC,
+                com.roll_54.roll_mod.economy.minprice.SaveMinPriceRecipesPacket::handle
+        );
+        registrar.playToServer(
                 OperatorTogglePacket.TYPE,
                 OperatorTogglePacket.STREAM_CODEC,
                 OperatorTogglePacket::handle

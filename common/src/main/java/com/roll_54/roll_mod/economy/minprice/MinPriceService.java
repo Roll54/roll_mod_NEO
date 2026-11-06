@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
+import net.neoforged.neoforge.fluids.FluidStack;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 import net.minecraft.core.component.DataComponents;
@@ -167,11 +168,17 @@ public final class MinPriceService {
 
   private static double unitFloor(Table t, ItemStack stack, int depth) {
     if (stack.isEmpty()) return 0;
-    String key = RecipeSnapshot.itemKey(stack.getItem());
+    // A fluid container (filled bucket, MI tank) is the container plus the fluid in it.
+    FluidStack fluid = FluidContents.of(stack);
+    String key = fluid != null ? FluidContents.containerKey(stack) : RecipeSnapshot.itemKey(stack.getItem());
     double own = 0;
     if (!t.noFloor().contains(key)) {
       Entry entry = t.entries().get(key);
       if (entry != null) own = entry.price();
+    }
+    if (fluid != null) {
+      Entry entry = t.entries().get(FluidContents.fluidKey(fluid));
+      if (entry != null) own += entry.price() * FluidContents.buckets(fluid);
     }
     // The absolute minimum holds for every item: blacklisted, never crafted, or priced below it.
     own = Math.max(own, t.snapshot().minimum());

@@ -5,7 +5,8 @@
   "compatibilityLevel": "JAVA_21",
   "client": [
     "BoMRecipeTreePickMixin",
-    "ResolutionButtonPickMixin"
+    "ResolutionButtonPickMixin",
+    "EmiFluidMinPriceMixin"
   ],
   "injectors": {
     "defaultRequire": 0

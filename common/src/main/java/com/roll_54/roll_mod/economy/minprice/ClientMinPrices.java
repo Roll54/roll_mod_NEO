@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.BundleContents;
 import net.minecraft.world.item.component.ItemContainerContents;
+import net.neoforged.neoforge.fluids.FluidStack;
 
 /**
  * The client's copy of the minimal price table, as the last {@link SyncMinPricesPacket} had it.
@@ -42,9 +43,26 @@ public final class ClientMinPrices {
     return unit(ITEMS, stack, CONTENTS_DEPTH);
   }
 
+  /**
+   * For a fluid container (filled bucket, MI tank): the price of the container and of the fluid in it,
+   * in that order; {@code null} for anything that holds no fluid.
+   */
+  public static double[] fluidParts(ItemStack stack) {
+    FluidStack fluid = FluidContents.of(stack);
+    if (fluid == null) return null;
+    Double container = ITEMS.get(FluidContents.containerKey(stack));
+    Double perBucket = FLUIDS.get(BuiltInRegistries.FLUID.getKey(fluid.getFluid()).toString());
+    return new double[] {
+      container == null ? 0 : container, (perBucket == null ? 0 : perBucket) * FluidContents.buckets(fluid)
+    };
+  }
+
   private static double unit(Map<String, Double> items, ItemStack stack, int depth) {
     if (stack.isEmpty()) return 0;
-    Double own = items.get(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
+    double[] parts = fluidParts(stack);
+    Double own = parts != null
+        ? Double.valueOf(parts[0] + parts[1])
+        : items.get(BuiltInRegistries.ITEM.getKey(stack.getItem()).toString());
     double total = Math.max(own == null ? 0 : own, MINIMUM);
     if (depth <= 0) return total;
     ItemContainerContents container = stack.get(DataComponents.CONTAINER);

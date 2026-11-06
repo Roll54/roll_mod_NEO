@@ -31,7 +31,14 @@ public final class MinPriceTooltipHandler {
                 ? Component.translatable("tooltip.roll_mod.minprice.stack", ClientMinPrices.format(unit),
                         stack.getCount(), ClientMinPrices.format(unit * stack.getCount()))
                 : Component.translatable("tooltip.roll_mod.minprice.item", ClientMinPrices.format(unit));
-        event.getToolTip().add(Math.min(1, event.getToolTip().size()), line.copy().withStyle(ChatFormatting.GOLD));
+        int at = Math.min(1, event.getToolTip().size());
+        event.getToolTip().add(at, line.copy().withStyle(ChatFormatting.GOLD));
+        // A filled bucket or an MI tank: what the container and the fluid in it each add.
+        double[] parts = ClientMinPrices.fluidParts(stack);
+        if (parts != null) {
+            event.getToolTip().add(at + 1, Component.translatable("tooltip.roll_mod.minprice.fluid_container",
+                    ClientMinPrices.format(parts[0]), ClientMinPrices.format(parts[1])).withStyle(ChatFormatting.GRAY));
+        }
     }
 
     /** Another server may not have the module, or have other prices. */

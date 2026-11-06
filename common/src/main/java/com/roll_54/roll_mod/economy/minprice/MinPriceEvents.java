@@ -5,7 +5,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -47,10 +46,5 @@ public final class MinPriceEvents {
   public static void onServerStopping(ServerStoppingEvent event) {
     started = false;
     MinPriceService.clear();
-  }
-
-  @SubscribeEvent
-  public static void onRegisterCommands(RegisterCommandsEvent event) {
-    MinPriceCommand.register(event.getDispatcher(), event.getBuildContext());
   }
 }

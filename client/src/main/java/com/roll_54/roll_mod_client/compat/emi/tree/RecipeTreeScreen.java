@@ -1,5 +1,7 @@
 package com.roll_54.roll_mod_client.compat.emi.tree;
 
+import com.roll_54.roll_mod.economy.minprice.ClientMinPrices;
+import com.roll_54.roll_mod.economy.minprice.SaveMinPriceRecipesPacket;
 import dev.emi.emi.EmiUtil;
 import dev.emi.emi.api.EmiApi;
 import dev.emi.emi.api.recipe.EmiPlayerInventory;
@@ -13,27 +15,35 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.material.Fluid;
+import net.neoforged.neoforge.network.PacketDistributor;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * {@code /recipetree}: a recipe tree in the style of EMI's own. An item dragged from EMI into the slot is
- * the root; "Recipes" opens EMI's recipe screen for it, and the picked recipe's ingredients hang below it.
+ * {@code /rollmod admin minprice handset}: a recipe tree in the style of EMI's own, for choosing the
+ * recipes minimal prices are computed from. The held item, or one dragged from EMI into the slot, is the root; "Recipes" opens EMI's recipe screen for it, and the picked recipe's ingredients hang below it.
  * Any ingredient takes a recipe the way EMI's tree does — click to pick it in EMI's recipe screen,
  * Shift+click to let EMI pick one, right-click to remove it — so the tree grows down to whatever should
  * stay a base resource; the footer sums those up.
+ * "Save" sends the picked recipes to the server (config {@code itemRecipes}), which rebuilds the prices at
+ * once; the root's minimal price next to its slot follows the server's table live.
  *
  * <p>It is a container screen (over a client-only, slotless menu) because EMI only shows its item list
  * and opens recipe screens over container screens. A pick applies to every node of the same ingredient,
@@ -65,6 +75,8 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
     private record Resolution(EmiIngredient ingredient, EmiRecipe recipe) {}
 
     private @Nullable RecipeTreeNode tree;
+    /** Where the root's minimal price is shown (as the hint) and a fixed one can be typed in. */
+    private @Nullable EditBox priceBox;
     private final List<EmiIngredient> totals = new ArrayList<>();
     private boolean viewPlaced;
     private double panX, panY;
@@ -73,9 +85,12 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
     private @Nullable Component status;
     private long statusUntil;
 
-    public static void open() {
+    public static void open(ItemStack held) {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
+        // Just the item: prices go by item id, and the held stack's own data (names, tags) would make it
+        // match none of the recipes EMI lists for it.
+        if (!held.isEmpty()) root = EmiStack.of(held.getItem()).setAmount(1);
         mc.setScreen(new RecipeTreeScreen(mc.player.getInventory()));
     }
 
@@ -93,15 +108,25 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
         addRenderableWidget(Button.builder(Component.translatable("gui.roll_mod.recipe_tree.recipes"), b -> {
                     if (root != null) pick(root);
                 })
-                .bounds(cx - 94, topPos + 38, 60, 18).build());
+                .bounds(cx - 118, topPos + 38, 56, 18).build());
         addRenderableWidget(Button.builder(Component.translatable("gui.roll_mod.recipe_tree.auto"), b -> autoResolveAll())
                 .tooltip(Tooltip.create(Component.translatable("gui.roll_mod.recipe_tree.auto.tooltip")))
-                .bounds(cx - 30, topPos + 38, 60, 18).build());
+                .bounds(cx - 58, topPos + 38, 56, 18).build());
         addRenderableWidget(Button.builder(Component.translatable("gui.roll_mod.recipe_tree.reset"), b -> {
                     RESOLUTIONS.clear();
                     rebuild();
                 })
-                .bounds(cx + 34, topPos + 38, 60, 18).build());
+                .bounds(cx + 2, topPos + 38, 56, 18).build());
+        addRenderableWidget(Button.builder(Component.translatable("gui.roll_mod.recipe_tree.save"), b -> save(true))
+                .tooltip(Tooltip.create(Component.translatable("gui.roll_mod.recipe_tree.save.tooltip")))
+                .bounds(cx + 62, topPos + 38, 56, 18).build());
+        int boxX = rootX() + 24;
+        priceBox = new EditBox(font, boxX, rootY() + 1, Math.max(60, leftPos + imageWidth - MARGIN - boxX), 16,
+                Component.translatable("gui.roll_mod.recipe_tree.price"));
+        priceBox.setMaxLength(19);
+        priceBox.setFilter(s -> s.isEmpty() || s.equals("-") || s.chars().allMatch(Character::isDigit));
+        priceBox.setTooltip(Tooltip.create(Component.translatable("gui.roll_mod.recipe_tree.price.tooltip")));
+        addRenderableWidget(priceBox);
         rebuild();
     }
 
@@ -156,6 +181,82 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
         } else {
             showStatus(Component.translatable("gui.roll_mod.recipe_tree.no_recipes"));
         }
+    }
+
+    // ---- save ----
+
+    /**
+     * Sends the recipes picked in this tree to the server ({@code withRecipes}), item (or {@code fluid:<id>}) →
+     * recipe id, as the recipes their minimal prices are computed from; and the root's price typed into the
+     * price field, which then holds whatever its recipes say ("-" takes it away again). Only real recipes count: the choice of one stack of a
+     * tag, and EMI's own synthetic pages, have no recipe the server knows.
+     */
+    private void save(boolean withRecipes) {
+        Map<String, String> recipes = new LinkedHashMap<>();
+        if (withRecipes && tree != null) collectPicked(tree, recipes);
+        Map<String, Long> prices = new LinkedHashMap<>();
+        String key = rootKey();
+        String typed = priceBox == null ? "" : priceBox.getValue().trim();
+        if (key != null && !typed.isEmpty()) {
+            if (typed.equals("-")) {
+                prices.put(key, SaveMinPriceRecipesPacket.CLEAR);
+            } else {
+                try {
+                    prices.put(key, Long.parseLong(typed));
+                } catch (NumberFormatException e) {
+                    showStatus(Component.translatable("gui.roll_mod.recipe_tree.bad_price"));
+                    return;
+                }
+            }
+        }
+        if (recipes.isEmpty() && prices.isEmpty()) {
+            showStatus(Component.translatable("gui.roll_mod.recipe_tree.nothing_to_save"));
+            return;
+        }
+        PacketDistributor.sendToServer(new SaveMinPriceRecipesPacket(recipes, prices));
+        if (priceBox != null) {
+            priceBox.setValue("");
+            priceBox.setFocused(false);
+        }
+        showStatus(Component.translatable("gui.roll_mod.recipe_tree.saving", recipes.size() + prices.size())
+                .withStyle(ChatFormatting.DARK_GREEN));
+    }
+
+    /** The root's key on the server: its item id, or {@code fluid:<id>}; null without a single stack. */
+    private static @Nullable String rootKey() {
+        if (root == null || root.getEmiStacks().size() != 1) return null;
+        EmiStack stack = root.getEmiStacks().get(0);
+        return stack.getKey() instanceof Fluid ? "fluid:" + stack.getId() : stack.getId().toString();
+    }
+
+    /** "Min. price: N" of the root (for its amount when more than one), or null when it has none. */
+    private static @Nullable Component rootPrice() {
+        if (root == null || root.getEmiStacks().size() != 1) return null;
+        EmiStack stack = root.getEmiStacks().get(0);
+        long amount = Math.max(1, root.getAmount());
+        if (stack.getKey() instanceof Fluid) {
+            return ClientMinPrices.fluidLine(stack.getId().toString());
+        }
+        ItemStack item = stack.getItemStack();
+        if (item.isEmpty()) return null;
+        double unit = ClientMinPrices.unit(item);
+        if (unit <= 0) return null;
+        return amount == 1
+                ? Component.translatable("tooltip.roll_mod.minprice.item", ClientMinPrices.format(unit))
+                : Component.translatable("tooltip.roll_mod.minprice.stack", ClientMinPrices.format(unit),
+                        amount, ClientMinPrices.format(unit * amount));
+    }
+
+    private static void collectPicked(RecipeTreeNode node, Map<String, String> out) {
+        if (node.recipe == null) return;
+        List<EmiStack> stacks = node.ingredient.getEmiStacks();
+        ResourceLocation recipeId = node.recipe.getId();
+        if (stacks.size() == 1 && recipeId != null && !(node.recipe instanceof EmiResolutionRecipe)) {
+            EmiStack stack = stacks.get(0);
+            String key = stack.getKey() instanceof Fluid ? "fluid:" + stack.getId() : stack.getId().toString();
+            out.putIfAbsent(key, recipeId.toString());
+        }
+        for (RecipeTreeNode child : node.children) collectPicked(child, out);
     }
 
     // ---- auto ----
@@ -223,7 +324,7 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
         double[] bestScore = null;
         for (EmiRecipe recipe : EmiApi.getRecipeManager().getRecipesByOutput(stack)) {
             if (!recipe.supportsRecipeTree()) continue;
-            long made = recipe.getOutputs().stream().filter(stack::isEqual).mapToLong(EmiStack::getAmount).max().orElse(0);
+            long made = recipe.getOutputs().stream().filter(out -> sameKey(out, stack)).mapToLong(EmiStack::getAmount).max().orElse(0);
             if (made <= 0) continue;
             List<EmiIngredient> inputs = mergedInputs(recipe);
             if (inputs.isEmpty()) continue;
@@ -246,11 +347,16 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
         return 0;
     }
 
+    /** The same item or fluid, whatever data the stacks carry (names, tags): prices go by id. */
+    private static boolean sameKey(EmiStack a, EmiStack b) {
+        return a.getKey().equals(b.getKey());
+    }
+
     /** Whether {@code input} could be {@code other} (shares a stack with it). */
     private static boolean mentions(EmiIngredient input, EmiIngredient other) {
         for (EmiStack a : input.getEmiStacks()) {
             for (EmiStack b : other.getEmiStacks()) {
-                if (a.isEqual(b)) return true;
+                if (sameKey(a, b)) return true;
             }
         }
         return false;
@@ -305,7 +411,7 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
     private static long crafts(EmiRecipe recipe, EmiIngredient ingredient, long amount) {
         long perCraft = 1;
         for (EmiStack output : recipe.getOutputs()) {
-            if (ingredient.getEmiStacks().stream().anyMatch(output::isEqual)) {
+            if (ingredient.getEmiStacks().stream().anyMatch(s -> sameKey(s, output))) {
                 perCraft = Math.max(1, output.getAmount());
                 break;
             }
@@ -442,6 +548,14 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
 
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
+        if (priceBox != null) {
+            priceBox.visible = rootKey() != null;
+            // The server's current minimal price as the field's hint, read every frame, so a save shows up
+            // as soon as the rebuilt table reaches the client.
+            Component price = rootPrice();
+            priceBox.setHint((price != null ? price : Component.translatable("gui.roll_mod.recipe_tree.price"))
+                    .copy().withStyle(ChatFormatting.DARK_GRAY));
+        }
         super.render(g, mouseX, mouseY, partialTick);
 
         if (root != null) {
@@ -617,6 +731,7 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (priceBox != null && !priceBox.isMouseOver(mouseX, mouseY)) priceBox.setFocused(false);
         for (GuiEventListener child : children()) {
             if (child.mouseClicked(mouseX, mouseY, button)) {
                 setFocused(child);
@@ -694,6 +809,24 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (priceBox != null && priceBox.isFocused()) {
+            if (keyCode == GLFW.GLFW_KEY_ENTER || keyCode == GLFW.GLFW_KEY_KP_ENTER) {
+                save(false);
+                return true;
+            }
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
+                priceBox.setFocused(false);
+                return true;
+            }
+            // Everything else is typing, not the inventory key closing the screen.
+            priceBox.keyPressed(keyCode, scanCode, modifiers);
+            return true;
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override

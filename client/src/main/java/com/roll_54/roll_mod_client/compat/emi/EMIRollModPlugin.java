@@ -132,7 +132,7 @@ public class EMIRollModPlugin implements EmiPlugin {
             return new Bounds(Math.round(rect[0]), Math.round(rect[1]), Math.round(rect[2]), Math.round(rect[3]));
         });
 
-        // Recipe tree (/recipetree): stacks dragged out of EMI land in its root slot, and EMI's keys
+        // Handset tree (/rollmod admin minprice handset): stacks dragged out of EMI land in its root slot, and EMI's keys
         // (recipes, uses, favourite) work on the tree's nodes.
         // EMI places its sidebars around a container screen's slots, and the tree has none, so without
         // this it would show no sidebars at all.

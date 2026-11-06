@@ -64,7 +64,7 @@ public class MinPriceConfig extends Config {
   }
 
   @Comment("Master switch. Off: nothing is computed and no listing is checked.")
-  public boolean enabled = false;
+  public boolean enabled = true;
 
   @Comment("Refuse listings while the price table is still being built. Off: they pass unchecked.")
   public boolean blockSalesUntilReady = false;
@@ -76,7 +76,7 @@ public class MinPriceConfig extends Config {
   public ValidatedLong absoluteMinPrice =
       new ValidatedLong(1L, Long.MAX_VALUE / 64, 1L, ValidatedNumber.WidgetType.TEXTBOX);
 
-  @Comment("Item id (or #tag, or fluid:<fluid id>) -> recipe id its price is computed from. Without an entry the most expensive recipe that makes it wins. See /rollmod minprice item <item> for the candidates.")
+  @Comment("Item id (or #tag, or fluid:<fluid id>) -> recipe id its price is computed from. Without an entry the most expensive recipe that makes it wins. Set from the game with /rollmod admin minprice handset (Save).")
   public ValidatedStringMap<String> itemRecipes =
       new ValidatedStringMap<>(new LinkedHashMap<>(), new ValidatedString(), new ValidatedString());
 

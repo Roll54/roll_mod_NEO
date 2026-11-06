@@ -54,7 +54,7 @@ public final class PriceSolver {
     UNRESOLVED
   }
 
-  /** Why a key has the price it has, for {@code /rollmod minprice <item>}. */
+  /** A key's price and why it has it. */
   public record Entry(double price, Source source, String recipeId) {}
 
   public record Result(Map<String, Entry> entries, List<String> cycles, List<String> unresolved) {}
@@ -278,17 +278,6 @@ public final class PriceSolver {
     if (outputs.isEmpty()) return null;
     return new Recipe(
         recipe.id(), recipe.type(), recipe.multiplier(), inputs, outputs, recipe.remainders());
-  }
-
-  /**
-   * What one {@code key} would cost through {@code recipe} with the prices in {@code prices}, or NaN
-   * when an input has no price. For {@code /rollmod minprice item}, to compare the candidates.
-   */
-  public double priceVia(Recipe recipe, String key, Map<String, Entry> prices) {
-    Recipe net = netSelfLoops(recipe);
-    if (net == null) return Double.NaN;
-    double cost = cost(net, prices, false);
-    return Double.isNaN(cost) ? Double.NaN : unitPrice(net, key, cost);
   }
 
   private static final double CAP = Long.MAX_VALUE / 64.0;

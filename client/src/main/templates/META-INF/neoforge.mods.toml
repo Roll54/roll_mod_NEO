@@ -26,7 +26,7 @@ config = "${mod_id_client}.jei.mixins.json"
 [[mixins]]
 config = "${mod_id_client}.fusion.mixins.json"
 
-# Recipe tree (/recipetree): while it is picking a recipe through EMI's recipe screen, the choice EMI
+# Handset recipe tree (/rollmod admin minprice handset): while it is picking a recipe through EMI's recipe screen, the choice EMI
 # would store in its own recipe tree goes to the roll_mod tree instead. Soft because EMI is optional.
 [[mixins]]
 config = "${mod_id_client}.emi.mixins.json"
