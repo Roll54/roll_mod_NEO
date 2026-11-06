@@ -66,9 +66,9 @@ public final class ClientMinPrices {
     return Component.translatable("tooltip.roll_mod.minprice.fluid", format(price));
   }
 
-  /** Whole numbers when it is at least 1 (rounded up, like the check), two decimals below that. */
+  /** Whole numbers when it is at least 1, two decimals below that; always rounded up, like the check. */
   public static String format(double price) {
     if (price >= 1) return String.format("%,d", (long) Math.ceil(price - 1e-9));
-    return String.format("%.2f", price);
+    return String.format(java.util.Locale.ROOT, "%.2f", Math.ceil(price * 100 - 1e-6) / 100);
   }
 }

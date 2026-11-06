@@ -10,6 +10,7 @@ import com.roll_54.roll_mod.economy.minprice.PriceSolver.Output;
 import com.roll_54.roll_mod.economy.minprice.PriceSolver.Recipe;
 import com.roll_54.roll_mod.minestar.data.MinestarFiles;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import net.minecraft.commands.CommandBuildContext;
@@ -66,8 +67,9 @@ public final class MinPriceCommand {
       return 1;
     }
     source.sendSuccess(
-        () -> Component.literal(String.format("%s: %.2f per unit (%s%s)", key, entry.price(),
-            entry.source(), entry.recipeId() == null ? "" : ", " + entry.recipeId())),
+        () -> Component.literal(String.format("%s: %s per unit, sells for at least %d (%s%s)", key,
+            exact(entry.price()), MinPriceService.floor(stack, 1), entry.source(),
+            entry.recipeId() == null ? "" : ", " + entry.recipeId())),
         false);
     Recipe recipe = find(table, entry.recipeId());
     if (recipe != null) {
@@ -83,7 +85,7 @@ public final class MinPriceCommand {
             cheapest = option;
           }
         }
-        line.append(cheapest).append(String.format(" @ %.2f", best));
+        line.append(cheapest).append(" @ ").append(exact(best));
         if (in.options().size() > 1) line.append(" (cheapest of ").append(in.options().size()).append(")");
         source.sendSuccess(() -> Component.literal(line.toString()), false);
       }
@@ -119,7 +121,7 @@ public final class MinPriceCommand {
       if (++shown > MAX_CANDIDATES) continue;
       double price = solver.priceVia(recipe, key, table.entries());
       String line = String.format("   %s %s [%s]: %s", recipe.id().equals(chosen) ? "*" : "-", recipe.id(),
-          recipe.type(), Double.isNaN(price) ? "inputs not priced" : String.format("%.2f", price));
+          recipe.type(), Double.isNaN(price) ? "inputs not priced" : exact(price));
       source.sendSuccess(() -> Component.literal(line), false);
     }
     int total = shown;
@@ -197,6 +199,17 @@ public final class MinPriceCommand {
     JsonArray array = new JsonArray();
     values.forEach(array::add);
     return array;
+  }
+
+  /**
+   * A computed price as it is, never rounded down: up to three decimals, the last one rounded up, so
+   * 1.004 reads 1.004 (and a sale needs 2), not 1.00.
+   */
+  private static String exact(double value) {
+    double up = Math.ceil(value * 1000 - 1e-6) / 1000;
+    return up == Math.rint(up)
+        ? Long.toString((long) up)
+        : String.format(Locale.ROOT, "%.3f", up).replaceAll("0+$", "");
   }
 
   private static String trim(double value) {

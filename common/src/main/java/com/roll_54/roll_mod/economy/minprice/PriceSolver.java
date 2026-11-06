@@ -70,7 +70,10 @@ public final class PriceSolver {
    * @param fixed prices that are given and never computed (whitelist, ore tiers, blacklist at 0)
    * @param outputWeights share of a recipe's cost each output takes per unit; missing means 1
    * @param forcedRecipes key → the only recipe its price is computed from (config {@code itemRecipes})
-   * @param minimum the absolute minimal price of one unit; nothing is priced below it
+   * @param minimum the absolute minimal price of one unit: what an item no recipe makes is worth. It is
+   *     not applied to computed prices, which stay exact so cheap inputs (planks, sticks, water at 0) and
+   *     recipe multipliers carry through; the minimum is enforced only where a unit is sold
+   *     ({@link MinPriceService#unitFloor}, {@link ClientMinPrices#unit}).
    */
   public PriceSolver(
       Collection<Recipe> recipes, Map<String, Double> fixed, Map<String, Double> outputWeights,
@@ -85,7 +88,7 @@ public final class PriceSolver {
 
   public Result solve() {
     Map<String, Entry> frozen = new HashMap<>();
-    fixed.forEach((key, price) -> frozen.put(key, new Entry(atLeastMinimum(price), Source.FIXED, null)));
+    fixed.forEach((key, price) -> frozen.put(key, new Entry(sanitize(price), Source.FIXED, null)));
 
     List<Recipe> netted = new ArrayList<>(recipes.size());
     for (Recipe recipe : recipes) {
@@ -182,7 +185,7 @@ public final class PriceSolver {
         if (strict) return null;
         continue;
       }
-      double unit = atLeastMinimum(unitPrice(recipe, key, cost));
+      double unit = unitPrice(recipe, key, cost);
       if (best == null || unit > best.price) best = new Best(unit, recipe.id());
     }
     return best;
@@ -285,11 +288,7 @@ public final class PriceSolver {
     Recipe net = netSelfLoops(recipe);
     if (net == null) return Double.NaN;
     double cost = cost(net, prices, false);
-    return Double.isNaN(cost) ? Double.NaN : atLeastMinimum(unitPrice(net, key, cost));
-  }
-
-  private double atLeastMinimum(double value) {
-    return Math.max(minimum, sanitize(value));
+    return Double.isNaN(cost) ? Double.NaN : unitPrice(net, key, cost);
   }
 
   private static final double CAP = Long.MAX_VALUE / 64.0;
