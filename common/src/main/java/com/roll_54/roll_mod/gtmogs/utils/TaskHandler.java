@@ -10,10 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class TaskHandler {
 
-    private static final Map<ResourceKey<Level>, List<RunnableEntry>> serverTasks = new HashMap<>();
+    // Per-dimension lists, each only touched by its own dimension's thread; the index itself is shared by all of them
+    // while DimThreads ticks dimensions in parallel.
+    private static final Map<ResourceKey<Level>, List<RunnableEntry>> serverTasks = new ConcurrentHashMap<>();
     private static final Map<ResourceKey<Level>, List<RunnableEntry>> waitToAddTasks = new HashMap<>();
 
     // schedule tick event here

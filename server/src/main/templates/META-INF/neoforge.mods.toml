@@ -33,3 +33,12 @@ type = "required"
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
+
+# DimThreads (Minestar fork): parallel dimension ticking with the thread-safety fixes this server relies on.
+# roll_mod_server also hands its per-level crash guard to it (crash/DimThreadsGuard). See docs/dimthreads.md.
+[[dependencies."${mod_id_server}"]]
+modId = "dimthread"
+type = "required"
+versionRange = "[1.3.0,)"
+ordering = "NONE"
+side = "SERVER"

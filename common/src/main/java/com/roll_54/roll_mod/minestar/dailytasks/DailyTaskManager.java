@@ -17,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nullable;
 import java.time.Duration;
@@ -527,6 +528,16 @@ public final class DailyTaskManager {
 
         MinecraftServer server = player.getServer();
         if (server == null) return;
+
+        // The board is server-thread state (the saved data, the groups map, per-slot progress, toasts). With
+        // DimThreads, furnaces, cooking pots, breeding and kills report from their dimension's thread: hand those to
+        // the server thread, which runs them at the end of the same tick. A stack is copied, since the station keeps
+        // using its own.
+        if (!server.isSameThread()) {
+            Object detached = subject instanceof ItemStack stack ? stack.copy() : subject;
+            server.execute(() -> progress(player, hook, detached, amount));
+            return;
+        }
 
         DailyTasksState state = state(server);
 

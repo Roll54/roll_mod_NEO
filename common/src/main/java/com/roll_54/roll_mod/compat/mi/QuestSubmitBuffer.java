@@ -48,7 +48,13 @@ public final class QuestSubmitBuffer {
     /** One second. Long enough to collapse a tick's worth of outputs, short enough to feel live. */
     private static final int FLUSH_INTERVAL_TICKS = 20;
 
+    /**
+     * Filled from MI machines on every dimension's thread while DimThreads ticks them in parallel, emptied on the
+     * server thread; every access holds {@link #LOCK}. FTB Quests itself is only called on the server thread, outside
+     * the lock.
+     */
     private static final Map<UUID, Reference2LongMap<Item>> PENDING = new HashMap<>();
+    private static final Object LOCK = new Object();
 
     private static int ticksSinceFlush;
 
@@ -64,8 +70,10 @@ public final class QuestSubmitBuffer {
         if (uuid == null || amount <= 0 || !ModList.get().isLoaded("ftbquests")) {
             return false;
         }
-        PENDING.computeIfAbsent(uuid, ignored -> new Reference2LongOpenHashMap<>())
-                .mergeLong(item, amount, Long::sum);
+        synchronized (LOCK) {
+            PENDING.computeIfAbsent(uuid, ignored -> new Reference2LongOpenHashMap<>())
+                    .mergeLong(item, amount, Long::sum);
+        }
         return true;
     }
 
@@ -91,20 +99,26 @@ public final class QuestSubmitBuffer {
             // time this runs; there is nothing left to credit progress to, so the batch is dropped.
             RollMod.LOGGER.debug("Dropping buffered quest progress: FTB Quests already unloaded", e);
         }
-        PENDING.clear();
+        synchronized (LOCK) {
+            PENDING.clear();
+        }
         ticksSinceFlush = 0;
     }
 
     private static void flush() {
-        if (PENDING.isEmpty()) {
-            return;
+        Map<UUID, Reference2LongMap<Item>> batch;
+        synchronized (LOCK) {
+            if (PENDING.isEmpty()) {
+                return;
+            }
+            batch = new HashMap<>(PENDING);
+            PENDING.clear();
         }
-        for (Map.Entry<UUID, Reference2LongMap<Item>> perPlayer : PENDING.entrySet()) {
+        for (Map.Entry<UUID, Reference2LongMap<Item>> perPlayer : batch.entrySet()) {
             UUID uuid = perPlayer.getKey();
             for (Reference2LongMap.Entry<Item> produced : perPlayer.getValue().reference2LongEntrySet()) {
                 FTBQuestsFacade.INSTANCE.addCompleted(uuid, produced.getKey(), produced.getLongValue());
             }
         }
-        PENDING.clear();
     }
 }

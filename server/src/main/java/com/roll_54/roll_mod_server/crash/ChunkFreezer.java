@@ -38,6 +38,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Chunks that stopped ticking. A frozen chunk gets no entity ticks (players excepted), no block entity ticks,
@@ -53,7 +54,9 @@ import java.util.Map;
  *   <li>{@link Reason#OVERLOAD} — at least {@code chunkGuard.entityLimit} non-player entities. Rescanned every
  *       {@code scanIntervalTicks}; thaws once the count drops below {@code resumeBelow}.</li>
  * </ul>
- * Main-thread only, so plain maps.
+ * Threads: with DimThreads every dimension ticks on its own worker, so the per-dimension index is a concurrent map. Each
+ * dimension's inner map is only touched by that dimension's own thread (its ticks and tick guards) and by the server
+ * thread between ticks (commands), so those stay plain fastutil maps. Chat alerts are sent from the server thread.
  */
 @EventBusSubscriber(modid = RollModServer.MODID)
 public final class ChunkFreezer {
@@ -66,7 +69,7 @@ public final class ChunkFreezer {
 
     public record Frozen(Reason reason, long sinceMillis, String detail) {}
 
-    private static final Map<ResourceKey<Level>, Long2ObjectOpenHashMap<Frozen>> FROZEN = new HashMap<>();
+    private static final Map<ResourceKey<Level>, Long2ObjectOpenHashMap<Frozen>> FROZEN = new ConcurrentHashMap<>();
 
     private static final String LOG_FILE = "chunk_freeze.log";
     private static final DateTimeFormatter TIMESTAMP = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -109,9 +112,11 @@ public final class ChunkFreezer {
         CrashReporter.report(serverLevel.getServer(), t);
         String detail = what + " threw " + t;
         if (freeze(serverLevel, chunkPos, Reason.CRASH, detail)) {
-            alertOps(serverLevel.getServer(), Component.literal("[roll_mod] Froze chunk ").withStyle(ChatFormatting.RED)
+            MinecraftServer server = serverLevel.getServer();
+            Component message = Component.literal("[roll_mod] Froze chunk ").withStyle(ChatFormatting.RED)
                     .append(chunkLink(serverLevel.dimension(), new ChunkPos(chunkPos)))
-                    .append(Component.literal(" (crash): " + detail).withStyle(ChatFormatting.GRAY)));
+                    .append(Component.literal(" (crash): " + detail).withStyle(ChatFormatting.GRAY));
+            server.execute(() -> alertOps(server, message));
         }
         return true;
     }
@@ -238,9 +243,12 @@ public final class ChunkFreezer {
                 .<Component>map(top -> Component.translatable("msg.roll_mod.moderation.chunk.overload.mostly",
                         top.getKey().getDescription(), top.getValue()))
                 .orElse(Component.empty());
-        ModerationService.broadcastToModerators(level.getServer(), Component.translatable(
+        Component message = Component.translatable(
                         "msg.roll_mod.moderation.chunk.overload", chunkLink(level.dimension(), pos), count, limit, mostly)
-                .withStyle(ChatFormatting.RED));
+                .withStyle(ChatFormatting.RED);
+        // Counted on the dimension's own thread (it reads that dimension's entities); sent from the server thread.
+        MinecraftServer server = level.getServer();
+        server.execute(() -> ModerationService.broadcastToModerators(server, message));
     }
 
     /**

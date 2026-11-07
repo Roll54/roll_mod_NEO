@@ -4,7 +4,8 @@
   "package": "com.roll_54.roll_mod.compat.fallingtree.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "FallingTreeAxeTagMixin"
+    "FallingTreeAxeTagMixin",
+    "FallingTreeCommonsImplMixin"
   ],
   "injectors": {
     "defaultRequire": 0

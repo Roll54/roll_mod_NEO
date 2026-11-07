@@ -2,6 +2,7 @@ package com.roll_54.roll_mod_server;
 
 import com.roll_54.roll_mod.minestar.deathlog.DeathLogService;
 import com.roll_54.roll_mod.minestar.friends.FriendsProvider;
+import com.roll_54.roll_mod_server.crash.DimThreadsGuard;
 import com.roll_54.roll_mod_server.minestar.PrimeManager;
 import com.roll_54.roll_mod_server.minestar.MinestarFriendsProvider;
 import com.roll_54.roll_mod.RollMod;
@@ -24,6 +25,8 @@ public final class RollModServer {
         // Prime keeps a player's inventory through death; the death log marks those deaths so a
         // moderator is warned that restoring one would hand out a second copy.
         DeathLogService.setKeepsInventory(PrimeManager::hasPrime);
+        // DimThreads ticks the dimensions on their own threads; the per-level crash guard goes with them.
+        DimThreadsGuard.register();
         RollMod.LOGGER.info("[{}] init complete.", MODID);
     }
 }

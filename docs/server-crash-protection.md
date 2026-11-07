@@ -97,18 +97,37 @@ objects, because `:server` reads them and cannot see fzzy_config's types.
 
 Things that tick per level rather than per chunk — MI pipe networks, AE2 grids, anything driven by
 `LevelTickEvent` — can't be attributed to a chunk, so they are never frozen. Their exceptions are caught by
-the per-level guard instead.
+the per-level guard instead (`MinecraftServerLevelTickGuardMixin`, or `DimThreadsGuard` while DimThreads runs).
 
 ## Tick guards
 
 | Guard | Wraps | When it catches, what is lost |
 |-------|-------|-------------------------------|
 | `MinecraftServerLevelTickGuardMixin` | In `MinecraftServer.tickChildren`, separately: the level-tick pre-event, `ServerLevel.tick`, the level-tick post-event | Only the rest of that one step for that one level. Other levels, network connections, the player list and chunk sending still tick |
+| `DimThreadsGuard` | The same three steps while DimThreads ticks each dimension on its own thread (registered with `DimThreadsApi.setLevelTickExceptionHandler`) | The same as the row above |
 | `InventoryTickGuardMixin` | Each `ItemStack.inventoryTick` call in `Inventory.tick` | Only that one item's tick for that player. The player, the rest of their inventory and the server keep ticking |
 | `MinecraftServerCrashGuardMixin` | The whole `tickServer` call in `runServer` | The rest of the tick. Outer fallback for anything thrown outside the calls above |
 
-Both hand the exception to `CrashReporter`. Neither covers worker threads (worldgen, network) or
+All of them hand the exception to `CrashReporter`. None covers worldgen or network worker threads, or
 startup/shutdown.
+
+### Under DimThreads
+
+The server runs DimThreads (a required dependency of `roll_mod_server`, see `docs/dimthreads.md`), which ticks every
+dimension on its own `dimthread_server_<dimension>` thread at the same time. DimThreads replaces vanilla's level loop,
+so `MinecraftServerLevelTickGuardMixin` only runs when DimThreads is switched off
+(`/gamerule dimthread_active false`). While it is on, DimThreads guards the same three steps itself and passes the
+exception to `DimThreadsGuard`, so nothing changes for staff: same report, same "only that step of that dimension is
+lost".
+
+What differs:
+
+- `CrashReporter` and the chunk freezer are called from the dimension threads, several at once. The rate limit is
+  decided atomically, and every chat line (ops, moderators) is sent from the server thread at the end of the tick.
+- The chunk freezer's per-dimension index is a concurrent map; each dimension's own frozen-chunk map is only touched
+  by that dimension's thread and by commands between ticks.
+- The GTMOGS stall watchdog keeps a heartbeat per dimension. When the server thread stalls, the dump first lists the
+  dimensions whose tick never finished and the thread running each, then the `dimthread_server_*` stacks.
 
 ### Inventory tick guard
 

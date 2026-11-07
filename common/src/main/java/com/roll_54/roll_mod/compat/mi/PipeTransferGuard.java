@@ -21,12 +21,22 @@ public final class PipeTransferGuard {
     public static void report(String operation, Object handler, RuntimeException e) {
         String key = operation + '|' + handler.getClass().getName() + '|' + e.getClass().getName() + '|' + e.getMessage();
         long now = System.currentTimeMillis();
-        Long last = LAST_LOG.get(key);
-        if (last != null && now - last < COOLDOWN_MS) {
+        // Pipes tick on every dimension's thread with DimThreads: decide "log or count" atomically.
+        Long[] previous = {null};
+        boolean[] due = {false};
+        LAST_LOG.compute(key, (k, last) -> {
+            previous[0] = last;
+            if (last != null && now - last < COOLDOWN_MS) {
+                return last;
+            }
+            due[0] = true;
+            return now;
+        });
+        if (!due[0]) {
             SUPPRESSED.merge(key, 1, Integer::sum);
             return;
         }
-        LAST_LOG.put(key, now);
+        Long last = previous[0];
         Integer suppressed = SUPPRESSED.remove(key);
         if (last == null) {
             RollMod.LOGGER.warn("[MI pipes] {} on {} threw, transfer skipped", operation, handler.getClass().getName(), e);

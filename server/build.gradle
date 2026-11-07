@@ -28,6 +28,12 @@ neoForge {
             programArgument '--nogui'
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
             jvmArguments = ["-Xmx16G", "-XX:+UseZGC"]
+            // ./gradlew :server:runServer -PmixinAudit makes DimThreads load every class it patches at startup, so a
+            // compat mixin that no longer fits its target (after updating MI, AE2, Ad Astra...) fails at boot, with a
+            // "Mixin self-check" line in the log, instead of in play.
+            if (project.hasProperty('mixinAudit')) {
+                systemProperty 'dimthread.verifyMixins', 'true'
+            }
         }
         gameTestServer {
             type = "gameTestServer"
@@ -56,6 +62,12 @@ dependencies {
     // compileOnly: needed so GasTankItemMixin can reference StorageIO in its @WrapOperation
     // handler signature. Provided at runtime by the common_storage_lib mod, so not bundled.
     compileOnly files("jars/common-storage-lib-neoforge-1.21.1-0.0.9.jar")
+
+    // DimThreads (Minestar fork, built from ../dimthreads): ticks dimensions in parallel and carries the thread-safety
+    // fixes for MI, EI, Tesseract, AE2, Advanced AE, Ad Astra and Multiblocked2. A required dependency of this jar
+    // (neoforge.mods.toml); compiled against for its API (crash/DimThreadsGuard) and loaded by the dev server runs.
+    // Replace the jar here when the fork is rebuilt.
+    implementation files("jars/dimthread-NEOFORGE-mc1.21.1-v1.3.0.jar")
 
     // Soft dependency of :common's daily-tasks system; present at dev runtime so party
     // scaling can actually be tested. Not on any compile classpath here.

@@ -28,16 +28,31 @@ public final class CrashReporter {
     private static final ConcurrentHashMap<String, Long> LAST_REPORT = new ConcurrentHashMap<>();
     private static final ConcurrentHashMap<String, Integer> SUPPRESSED = new ConcurrentHashMap<>();
 
-    /** Log the throwable and, if not rate-limited, broadcast a summary (with full-trace hover) to ops. */
+    /**
+     * Log the throwable and, if not rate-limited, broadcast a summary (with full-trace hover) to ops.
+     *
+     * <p>Called from every dimension's thread while DimThreads ticks them in parallel (the tick guards and the chunk
+     * freezer report from there), so the rate limit is decided atomically and the chat line is sent from the server
+     * thread.
+     */
     public static void report(MinecraftServer server, Throwable t) {
         String signature = signatureOf(t);
         long now = System.currentTimeMillis();
-        Long last = LAST_REPORT.get(signature);
-        if (last != null && now - last < COOLDOWN_MS) {
+        Long[] previous = {null};
+        boolean[] due = {false};
+        LAST_REPORT.compute(signature, (key, last) -> {
+            previous[0] = last;
+            if (last != null && now - last < COOLDOWN_MS) {
+                return last;
+            }
+            due[0] = true;
+            return now;
+        });
+        if (!due[0]) {
             SUPPRESSED.merge(signature, 1, Integer::sum);
             return; // recently reported this exact failure; skip log + chat spam
         }
-        LAST_REPORT.put(signature, now);
+        Long last = previous[0];
         Integer suppressed = SUPPRESSED.remove(signature);
 
         // Full trace only the first time; repeats get one line with how many were swallowed in between.
@@ -68,11 +83,13 @@ public final class CrashReporter {
                                 .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover))))
                 .append(Component.literal(" (hover for trace)").withStyle(ChatFormatting.DARK_GRAY));
 
-        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            if (server.getPlayerList().isOp(player.getGameProfile())) {
-                player.sendSystemMessage(message);
+        server.execute(() -> {
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+                if (server.getPlayerList().isOp(player.getGameProfile())) {
+                    player.sendSystemMessage(message);
+                }
             }
-        }
+        });
     }
 
     private static String signatureOf(Throwable t) {

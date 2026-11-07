@@ -60,9 +60,17 @@ public class CommonEventListener {
     }
 
     @SubscribeEvent
+    public static void levelTickStart(LevelTickEvent.Pre event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel) {
+            ServerStallWatchdog.onLevelTickStart(serverLevel);
+        }
+    }
+
+    @SubscribeEvent
     public static void levelTick(LevelTickEvent.Post event) {
         if (event.getLevel() instanceof ServerLevel serverLevel) {
             TaskHandler.onTickUpdate(serverLevel);
+            ServerStallWatchdog.onLevelTickEnd(serverLevel);
         }
     }
 
