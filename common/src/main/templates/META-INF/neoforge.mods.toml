@@ -74,6 +74,11 @@ config = "${mod_id}.gtmogs_core.mixins.json"
 [[mixins]]
 config = "${mod_id}.fallingtree.mixins.json"
 
+# Tesseract API (Extended Industrialization's multiplied machines): checks a recipe at x1 before the costly multiplier
+# search. Soft: Tesseract comes with EI, which is optional here; without it the mixin is skipped.
+[[mixins]]
+config = "${mod_id}.tesseract.mixins.json"
+
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg
 #[[accessTransformers]]

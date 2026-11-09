@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod.registry;
 
+import appeng.api.stacks.GenericStack;
 import com.mojang.serialization.Codec;
 import com.roll_54.roll_mod.data.UpgradeComponent;
 import com.roll_54.roll_mod.items.electricItems.DrillOrbContents;
@@ -62,6 +63,8 @@ public class ComponentsRegistry {
     public static final Supplier<DataComponentType<ItemContainerContents>> TRASH_FILTER;
     // Drill orb — the drill overflow it holds, merged by item type.
     public static final Supplier<DataComponentType<DrillOrbContents>> DRILL_ORB_CONTENTS;
+    // ME item output hatch — what its buffer still held when it was broken, restored when it is placed again.
+    public static final Supplier<DataComponentType<List<GenericStack>>> ME_HATCH_BUFFER;
 
     private static <D> DeferredHolder<DataComponentType<?>, DataComponentType<D>> create(String name, Codec<D> codec, StreamCodec<? super RegistryFriendlyByteBuf, D> streamCodec) {
         return COMPONENTS.registerComponentType(name, (b) -> b.persistent(codec).networkSynchronized(streamCodec));
@@ -108,6 +111,8 @@ public class ComponentsRegistry {
         SPEAK_BLOCKS = create("speak_blocks", Codec.INT, ByteBufCodecs.VAR_INT);
         TRASH_FILTER = create("trash_filter", ItemContainerContents.CODEC, ItemContainerContents.STREAM_CODEC);
         DRILL_ORB_CONTENTS = create("drill_orb_contents", DrillOrbContents.CODEC, DrillOrbContents.STREAM_CODEC);
+        ME_HATCH_BUFFER = create("me_hatch_buffer", GenericStack.CODEC.listOf(),
+                GenericStack.STREAM_CODEC.apply(ByteBufCodecs.list()));
     }
 
 

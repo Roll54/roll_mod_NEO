@@ -67,7 +67,7 @@ dependencies {
     // fixes for MI, EI, Tesseract, AE2, Advanced AE, Ad Astra and Multiblocked2. A required dependency of this jar
     // (neoforge.mods.toml); compiled against for its API (crash/DimThreadsGuard) and loaded by the dev server runs.
     // Replace the jar here when the fork is rebuilt.
-    implementation files("jars/dimthread-NEOFORGE-mc1.21.1-v1.3.0.jar")
+    implementation files("jars/dimthread-NEOFORGE-mc1.21.1-v1.3.1.jar")
 
     // Soft dependency of :common's daily-tasks system; present at dev runtime so party
     // scaling can actually be tested. Not on any compile classpath here.

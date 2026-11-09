@@ -5,8 +5,8 @@ thread. With ~17 dimensions (overworld, nether, end, 11 Ad Astra planets and orb
 roll_mod dimensions) a tick then takes about as long as the slowest dimension instead of the sum of all of them.
 
 This is done by **DimThreads**, a fork of SrRapero720's mod that makes the parallel ticking safe for the mods on this
-server. The fork lives in `../dimthreads` (branch `minestar/1.21.1-neo`, version 1.3.0); its jar is
-`server/jars/dimthread-NEOFORGE-mc1.21.1-v1.3.0.jar`. `roll_mod_server` declares it as a required dependency, so the
+server. The fork lives in `../dimthreads` (branch `minestar/1.21.1-neo`, version 1.3.1); its jar is
+`server/jars/dimthread-NEOFORGE-mc1.21.1-v1.3.1.jar`. `roll_mod_server` declares it as a required dependency, so the
 dedicated server will not start without it. The common/client jar does not need it.
 
 ## Why the fork
@@ -60,8 +60,9 @@ The 103-second "stall" earlier in that log is the singleplayer pause screen, not
 
 ## Modern Industrialization: what behaves differently
 
-Compared with upstream DimThreads 1.2.1 (what crashed) and with MI on a server without DimThreads. MI 2.4.x only:
-2.5 changed some of the patched classes, so DimThreads refuses to start with it until those are checked.
+Compared with upstream DimThreads 1.2.1 (what crashed) and with MI on a server without DimThreads. Checked against
+the live pack's versions: MI 2.5.11, Extended Industrialization 1.16.2, Tesseract API 1.12.16 (roll_mod's dev build
+uses the same). DimThreads refuses to start with other minor versions until their patched classes are checked.
 
 | Area | Upstream DimThreads 1.2.1 | Now | Difference from MI without DimThreads |
 |---|---|---|---|
@@ -71,7 +72,7 @@ Compared with upstream DimThreads 1.2.1 (what crashed) and with MI on a server w
 | Pipe registered while its chunk loads | Threw "Can only load pipe on server from the server thread" | Works; a chunk loaded by another dimension's thread registers its pipes at the end of the tick | At most one tick later in that rare case |
 | Electric cables | All networks shared one static target list (upstream got away with it by not running in parallel) | Each network tick has its own list | None: no energy can leak into another dimension's machines |
 | Item pipes with whitelisted machine slots | One static set for all networks | One set per thread | None |
-| Recipe lookup cache (all MI and EI machine types) | Cleared and refilled in place every 20 s | Rebuilt aside and swapped in whole, still every 20 s | None; a machine never sees a half-built cache, and a recipe reload still takes up to 20 s to reach the cache |
+| Recipe lookup cache (all MI and EI machine types) | Cleared and refilled in place every 20 s | Rebuilt aside and swapped in whole, only when server data is (re)loaded | A machine never sees a half-built cache; `/reload` applies at once instead of up to 20 s later; toggling EI's runtime-generated recipes in its config needs a `/reload` |
 | Player statistics, crafted-item stats, FTB Teams sharing | Unsynchronized maps, one static set | One lock | None; totals identical |
 | FTB Quests progress from machine output | Applied on the machine's thread | Applied on the server thread | roll_mod already batches it once a second (`QuestSubmitBuffer`), so nothing visible |
 | ME wire (MI pipe ↔ AE2) | AE2 grid nodes created from dimension threads | The ME network tick runs on the server thread at the end of the tick | ME wire connections settle at most one tick later |
@@ -126,6 +127,12 @@ untouched; only where shared state lives and which thread runs a piece of work.
 - **FallingTree** (found by the stress test, fixed in roll_mod's soft FallingTree compat, not in DimThreads):
   its log/leaf/wart caches are concurrent maps. TNT going off in three dimensions on the same tick had thrown
   `ConcurrentModificationException` from its leaf-decay listener in all three.
+- **MI 2.5 additions:** multiblocks credited to FTB Quests "build multiblock" tasks and fluid "obtain" credit are
+  applied on the server thread at the end of the tick, like item credit (this also keeps MI's lazily built quest task
+  lookups server-thread-only).
+
+MI performance changes that are not about threads (capability caches, cables without storage, Tesseract recipe
+pre-check) are in `mi-performance.md`.
 
 ## Vanilla and NeoForge level
 

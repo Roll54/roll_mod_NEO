@@ -69,7 +69,7 @@ dependencies {
     // roll_mod cyberware overlays on the player. Common depends on this jar non-transitively (as
     // implementation), so it must be named explicitly here for compilation; loaded at runtime.
     compileOnly files("../common/jars/createcybernetics-0.4.8b-neoforge-1.21.1-PLAYTEST-PRERELEASE-4.jar")
-    compileOnly "curse.maven:extended-industrialization-1068418:7722451"
+    compileOnly "maven.modrinth:extended-industrialization:1.16.2-1.21.1"
 
     // compileOnly: AnvilTooExpensiveLabelMixin reads ModConfigs.MAIN.anvil.removeLevelCap, whose
     // getter returns through fzzy_config's ValidatedBoolean. Common exposes it non-transitively.

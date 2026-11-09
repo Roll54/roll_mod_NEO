@@ -13,8 +13,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.Level;
+import net.neoforged.neoforge.server.ServerLifecycleHooks;
 
 /**
  * Watches the server thread from a separate daemon thread and dumps stacks when it stops ticking.
@@ -34,6 +36,10 @@ import net.minecraft.world.level.Level;
  * thread waits for all of them. A stall then shows the server thread parked in DimThreads' pool; the dump starts with
  * the dimensions whose tick started and never finished (from a per-dimension heartbeat), and lists the dimension
  * threads before every other thread.
+ *
+ * <p>
+ * A paused singleplayer game is not a stall: {@code IntegratedServer} then skips {@code MinecraftServer.tickServer},
+ * so no {@code ServerTickEvent} fires, but its tick loop keeps running. See {@link #pausedLoopAlive}.
  */
 public final class ServerStallWatchdog {
 
@@ -50,6 +56,8 @@ public final class ServerStallWatchdog {
     private static volatile long lastTickNanos;
     private static volatile long stallStartedNanos;
     private static volatile long nextDumpNanos;
+    /** {@link MinecraftServer#getNextTickTime()} at the last poll while paused; watchdog thread only. */
+    private static long lastPausedNextTick;
 
     /** The current or last tick of one dimension: which thread runs it, when it started, and when it ended (0: running). */
     private record LevelBeat(String thread, long startNanos, long endNanos) {}
@@ -87,6 +95,7 @@ public final class ServerStallWatchdog {
         lastTickNanos = System.nanoTime();
         stallStartedNanos = 0L;
         nextDumpNanos = 0L;
+        lastPausedNextTick = 0L;
 
         Thread thread = new Thread(ServerStallWatchdog::run, "GTMOGS stall watchdog");
         thread.setDaemon(true);
@@ -134,6 +143,11 @@ public final class ServerStallWatchdog {
         if (ticking == null || !ticking.isAlive())
             return;
 
+        if (pausedLoopAlive()) {
+            onServerTick(ticking);
+            return;
+        }
+
         long now = System.nanoTime();
         long sinceTick = now - lastTickNanos;
         if (sinceTick < TimeUnit.SECONDS.toNanos(thresholdSeconds)) {
@@ -148,6 +162,23 @@ public final class ServerStallWatchdog {
         nextDumpNanos = now + REPEAT_DUMP_NANOS;
 
         dump(ticking, TimeUnit.NANOSECONDS.toSeconds(sinceTick));
+    }
+
+    /**
+     * Whether the server is paused (singleplayer pause menu) and its tick loop has gone round since the last poll.
+     * {@code runServer} advances {@link MinecraftServer#getNextTickTime()} on every pass, paused or not, and stops
+     * when {@code tickServer} hangs, including in the save that pausing starts, so a hang while paused is still
+     * caught, one poll later.
+     */
+    private static boolean pausedLoopAlive() {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null || !server.isPaused())
+            return false;
+        long nextTick = server.getNextTickTime();
+        if (nextTick == lastPausedNextTick)
+            return false;
+        lastPausedNextTick = nextTick;
+        return true;
     }
 
     private static void dump(Thread ticking, long stalledSeconds) {

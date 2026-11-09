@@ -1,7 +1,7 @@
-// 1.21.1	2026-11-04T00:47:23.307858261	Tags for minecraft:block mod id roll_mod
+// 1.21.1	2026-11-09T09:23:02.871080721	Tags for minecraft:block mod id roll_mod
 80c5858aa7afaa8e44925cd281d51f5cdb071c2a data/c/tags/block/ores.json
-b3ed69982fb552493fdde5c8053d75257839f51c data/minecraft/tags/block/mineable/pickaxe.json
-f9c0f379bb5523feaacd49aa390df6ec7fe7bae0 data/minecraft/tags/block/needs_stone_tool.json
+a9e8f8241f5d575354314b47d5bd09084cf11c71 data/minecraft/tags/block/mineable/pickaxe.json
+64b004c659c1034aeadf845efd5fc5cc93aae703 data/minecraft/tags/block/needs_stone_tool.json
 7e1d4f8a777239f55288da7217d3c19b0d22565e data/minecraft/tags/block/wither_immune.json
 59501a43e332a1599ee84d938a37ede80b964a8f data/roll_mod/tags/block/antimony_ore_in_mercury.json
 1e32f6e61b57bdbffc10b25ed4992199e02de913 data/roll_mod/tags/block/apatite_ore_in_moon.json

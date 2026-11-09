@@ -12,6 +12,7 @@ import com.roll_54.roll_mod.network.packet.RerollDailyTaskPacket;
 import com.roll_54.roll_mod.network.packet.DailyTaskToastPacket;
 import com.roll_54.roll_mod.network.packet.OpenHubPacket;
 import com.roll_54.roll_mod.network.packet.WelcomeResponsePacket;
+import com.roll_54.roll_mod.network.packet.MeHatchConfigPacket;
 import com.roll_54.roll_mod.network.packet.FriendActionPacket;
 import com.roll_54.roll_mod.network.packet.ChatAccessPacket;
 import com.roll_54.roll_mod.network.packet.ChatChannelPacket;
@@ -453,6 +454,11 @@ public class NetworkHandler {
                 LetterDismissPacket.TYPE,
                 LetterDismissPacket.STREAM_CODEC,
                 LetterDismissPacket::handle
+        );
+        registrar.playToServer(
+                MeHatchConfigPacket.TYPE,
+                MeHatchConfigPacket.STREAM_CODEC,
+                MeHatchConfigPacket::handle
         );
 
         // The economy's payloads keep their own lists, but share this registrar: NeoForge allows a

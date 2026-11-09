@@ -4,9 +4,11 @@ import com.google.gson.JsonObject;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.compat.mi.machines.CoilPyrolyseOven;
 import com.roll_54.roll_mod.compat.mi.machines.FluidHatches;
+import com.roll_54.roll_mod.compat.mi.machines.MultiFluidHatches;
 import com.roll_54.roll_mod.compat.mi.machines.OreWashers;
 import com.roll_54.roll_mod.compat.mi.machines.HighlyAdvancedDistillery;
 import com.roll_54.roll_mod.compat.mi.machines.ParallelMultiblocks;
+import com.roll_54.roll_mod.compat.mi.machines.me.MeHatches;
 import net.minecraft.data.CachedOutput;
 import net.minecraft.data.DataProvider;
 import net.minecraft.data.PackOutput;
@@ -18,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Blockstates and models for the MI machines registered under {@code roll_mod:}
- * ({@link ParallelMultiblocks}, {@link FluidHatches}).
+ * ({@link ParallelMultiblocks}, {@link FluidHatches}, {@link MultiFluidHatches}, {@link MeHatches}).
  *
  * <p>MI's runtime datagen only writes models for machines in its own namespace (see
  * {@code MIMachineModels}), so these are written here, in the same shape MI ships for its own
@@ -68,6 +70,25 @@ public class RollMachineModelProvider implements DataProvider {
             overlays.addProperty("side", "modern_industrialization:block/machines/hatch_fluid/overlay_side");
             for (String id : spec.ids()) {
                 machine(cache, writes, id, spec.casing(), overlays);
+            }
+        }
+        for (MultiFluidHatches.Spec spec : MultiFluidHatches.ALL) {
+            JsonObject overlays = new JsonObject();
+            overlays.addProperty("fluid_auto", "modern_industrialization:block/overlays/fluid_auto");
+            overlays.addProperty("output", "modern_industrialization:block/overlays/output_fluid");
+            overlays.addProperty("side", "modern_industrialization:block/machines/hatch_fluid/overlay_side");
+            for (String id : spec.ids()) {
+                machine(cache, writes, id, spec.casing(), overlays);
+            }
+        }
+        for (MeHatches.Spec spec : MeHatches.ALL) {
+            // Their own overlays; no auto-extract ones, since ME hatches do not auto-extract.
+            JsonObject overlays = new JsonObject();
+            overlays.addProperty("front", spec.overlays() + "/overlay_front");
+            overlays.addProperty("output", spec.overlays() + "/" + spec.outputOverlay());
+            overlays.addProperty("side", spec.overlays() + "/overlay_side");
+            for (String id : spec.ids()) {
+                machine(cache, writes, id, MeHatches.CASING, overlays);
             }
         }
         return CompletableFuture.allOf(writes.toArray(CompletableFuture[]::new));

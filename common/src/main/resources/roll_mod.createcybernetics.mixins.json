@@ -4,7 +4,6 @@
   "package": "com.roll_54.roll_mod.compat.createcybernetics.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "CyberpsychosisQuickhackControllerMixin",
     "RipperEntityMixin"
   ],
   "injectors": {

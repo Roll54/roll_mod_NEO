@@ -157,6 +157,25 @@ public record RecipeSnapshot(
       }
     }
 
+    // ---- tag main items: an ingredient drawn from a tag is priced as its main item, not its cheapest.
+    Map<String, Set<String>> mainOf = new LinkedHashMap<>();
+    config.tagMainItems.get().forEach((itemRef, tagRef) -> {
+      List<String> main = items(itemRef, "tagMainItems", problems);
+      if (main.size() != 1 || itemRef.trim().startsWith("#")) {
+        if (!main.isEmpty()) problems.add("tagMainItems: key '" + itemRef + "' must be one item id, not a tag");
+        return;
+      }
+      String tag = tagRef.trim();
+      List<String> members = items(tag.startsWith("#") ? tag : "#" + tag, "tagMainItems", problems);
+      if (members.isEmpty()) return;
+      if (!members.contains(main.get(0))) {
+        problems.add("tagMainItems: '" + itemRef + "' is not in tag '" + tagRef + "'");
+        return;
+      }
+      mainOf.put(main.get(0), Set.copyOf(members));
+    });
+    if (!mainOf.isEmpty()) recipes.replaceAll(recipe -> withMainItems(recipe, mainOf));
+
     // ---- filled buckets: one bucket of the fluid plus the empty bucket.
     String emptyBucket = itemKey(Items.BUCKET);
     Set<String> filledBuckets = new LinkedHashSet<>();
@@ -391,6 +410,40 @@ public record RecipeSnapshot(
   }
 
   /* ------------------------------------------------- helpers --------------------------------------------------- */
+
+  /**
+   * Narrows every input whose options all belong to a configured tag (and include its main item)
+   * down to that main item. When several tags fit, the smallest one wins: it is the most specific.
+   */
+  private static Recipe withMainItems(Recipe recipe, Map<String, Set<String>> mainOf) {
+    List<Input> inputs = new ArrayList<>(recipe.inputs().size());
+    boolean changed = false;
+    for (Input input : recipe.inputs()) {
+      String chosen = null;
+      int chosenSize = Integer.MAX_VALUE;
+      if (input.options().size() > 1) {
+        for (var e : mainOf.entrySet()) {
+          Set<String> members = e.getValue();
+          if (members.size() < chosenSize
+              && input.options().contains(e.getKey())
+              && members.containsAll(input.options())) {
+            chosen = e.getKey();
+            chosenSize = members.size();
+          }
+        }
+      }
+      if (chosen == null) {
+        inputs.add(input);
+      } else {
+        inputs.add(new Input(List.of(chosen), input.count()));
+        changed = true;
+      }
+    }
+    if (!changed) return recipe;
+    return new Recipe(
+        recipe.id(), recipe.type(), recipe.multiplier(), inputs, recipe.outputs(), recipe.remainders());
+  }
+
 
   private static List<String> options(Ingredient ingredient) {
     List<String> options = new ArrayList<>();

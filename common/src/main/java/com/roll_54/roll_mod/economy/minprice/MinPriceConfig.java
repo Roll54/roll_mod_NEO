@@ -80,6 +80,10 @@ public class MinPriceConfig extends Config {
   public ValidatedStringMap<String> itemRecipes =
       new ValidatedStringMap<>(new LinkedHashMap<>(), new ValidatedString(), new ValidatedString());
 
+  @Comment("Main item id -> #tag it stands for. A recipe ingredient made only of that tag's items (and holding the main item) is priced as the main item, instead of the cheapest item of the tag. For tags where one stray member has no recipe and would drag every recipe down to the absolute minimum.")
+  public ValidatedStringMap<String> tagMainItems =
+      new ValidatedStringMap<>(new LinkedHashMap<>(), new ValidatedString(), new ValidatedString());
+
   @Comment("Price of one RAW ORE piece per tier. Referenced by name from oreTiers.")
   public ValidatedStringMap<Long> tiers =
       new ValidatedStringMap<>(

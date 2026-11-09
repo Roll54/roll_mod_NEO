@@ -103,5 +103,6 @@ Some compile-time jars are vendored locally in `common/jars/` and `server/jars/`
 | [`docs/minestar-files.md`](docs/minestar-files.md) | JSON data files under `<gamedir>/minestar/` and `/rollmod reload` |
 | [`docs/hydroponic-data-maps.md`](docs/hydroponic-data-maps.md) | Acidity/fertilizer data maps for hydroponics |
 | [`docs/mbd2-recipes.md`](docs/mbd2-recipes.md) | Creating MBD2 recipe types and machines with EU |
+| [`docs/me-hatches.md`](docs/me-hatches.md) | ME input/output hatches for MI multiblocks: behaviour, limits, breaking |
 | [`ORE_GENERATION.md`](ORE_GENERATION.md) | GTMOGS ore-vein JSON format reference |
 | [`docs/CODE_REVIEW.md`](docs/CODE_REVIEW.md) | Code review findings (logic & performance) |

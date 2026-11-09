@@ -11,8 +11,10 @@ import com.roll_54.roll_mod.compat.mi.MICasings;
 import com.roll_54.roll_mod.compat.mi.machines.CoilPyrolyseOven;
 import com.roll_54.roll_mod.compat.mi.machines.HighlyAdvancedDistillery;
 import com.roll_54.roll_mod.compat.mi.machines.FluidHatches;
+import com.roll_54.roll_mod.compat.mi.machines.MultiFluidHatches;
 import com.roll_54.roll_mod.compat.mi.machines.OreWashers;
 import com.roll_54.roll_mod.compat.mi.machines.ParallelMultiblocks;
+import com.roll_54.roll_mod.compat.mi.machines.me.MeHatches;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModList;
 import net.swedz.tesseract.neoforge.compat.mi.hook.context.listener.HatchMIHookContext;
@@ -31,6 +33,8 @@ public class MachineRegistry {
     public static void casings(MachineCasingsMIHookContext hook) {
 
         Casings.THERMAL_VIBRATION_SAVE_CASING = hook.registerCubeAll("thermal_vibration_save_casing", "Test Bukvi", ResourceLocation.fromNamespaceAndPath(MODID, "block/casings/thermal_vibration_save_casing") );
+        // roll_mod:me_hatch -- its model is the hand-written models/machine_casing/me_hatch.json.
+        Casings.ME_HATCH = hook.registerCubeAll(MeHatches.CASING_NAME, "ME Hatch", MeHatches.CASING_TEXTURE);
 
         // Normally already done from RMMIHookListener's static initializer; harmless if so, since
         // blockImitationCasings is idempotent. Kept as a fallback for the case where this hook is
@@ -101,9 +105,14 @@ public class MachineRegistry {
         RecipeTypes.resolveExternal();
     }
 
-    /** This mod's hatches, registered under {@code roll_mod:} -- see {@link FluidHatches}. */
+    /**
+     * This mod's hatches, registered under {@code roll_mod:} -- see {@link FluidHatches},
+     * {@link MultiFluidHatches} and {@link MeHatches}.
+     */
     public static void hatches(HatchMIHookContext hook) {
         FluidHatches.register(hook);
+        MultiFluidHatches.register(hook);
+        MeHatches.register(hook);
     }
 
     /**
@@ -123,6 +132,8 @@ public class MachineRegistry {
     //helpers
     public static final class Casings {
         public static MachineCasing THERMAL_VIBRATION_SAVE_CASING;
+        /** {@code roll_mod:me_hatch}, the look of the ME hatches while not part of a multiblock. */
+        public static MachineCasing ME_HATCH;
 
         public static MachineCasing SPACE_RESEARCH_STATION_CONTROLLER;
         public static MachineCasing SPACE_CASING_T2;

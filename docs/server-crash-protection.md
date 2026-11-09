@@ -128,6 +128,9 @@ What differs:
   by that dimension's thread and by commands between ticks.
 - The GTMOGS stall watchdog keeps a heartbeat per dimension. When the server thread stalls, the dump first lists the
   dimensions whose tick never finished and the thread running each, then the `dimthread_server_*` stacks.
+  A paused singleplayer game is not reported: no `ServerTickEvent` fires then, so the watchdog checks that the
+  server's tick loop is still going round (`MinecraftServer.getNextTickTime()` moving). A hang while paused, such
+  as in the save that pausing starts, is still reported.
 
 ### Inventory tick guard
 
