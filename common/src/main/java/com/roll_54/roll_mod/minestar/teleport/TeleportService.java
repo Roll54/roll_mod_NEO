@@ -106,7 +106,34 @@ public final class TeleportService {
      *
      * @return whether a trip was started.
      */
+    /** When each player last used {@code /back}, for its cooldown. */
+    private static final Map<UUID, Long> LAST_BACK = new ConcurrentHashMap<>();
+
+    /** Whether the player may use {@code /back}: the configured group (Prime) or one inheriting it, or an operator. */
+    public static boolean mayBack(ServerPlayer player) {
+        var config = com.roll_54.roll_mod.config.MyConfig.INSTANCE;
+        String group = config == null ? "prime" : config.back.group;
+        return com.roll_54.roll_mod.economy.vendingblock.auction.LuckPermsCompat.inGroup(player, group);
+    }
+
+    /**
+     * {@code /back}, as FTB Essentials does it: back to the newest place in the history (where the player last
+     * teleported from, or died), which is then dropped, so using it again goes one further back. The trip does not
+     * add to the history itself. Lands on a safe spot near the place, as FTB's does; waits out a cooldown.
+     */
     public static boolean back(ServerPlayer player) {
+        if (!mayBack(player)) {
+            refuse(player, "msg.roll_mod.back.denied");
+            return false;
+        }
+        var config = com.roll_54.roll_mod.config.MyConfig.INSTANCE;
+        long cooldown = Math.max(0, config == null ? 30 : config.back.cooldownSeconds) * 1000L;
+        long since = System.currentTimeMillis() - LAST_BACK.getOrDefault(player.getUUID(), 0L);
+        if (since < cooldown && !player.hasPermissions(2)) {
+            refuse(player, "msg.roll_mod.back.cooldown", (cooldown - since + 999) / 1000);
+            return false;
+        }
+
         PlayerPositions.Spot spot = PlayerPositions.back(player.getUUID());
         if (spot == null) {
             refuse(player, "msg.roll_mod.back.nowhere");
@@ -117,17 +144,46 @@ public final class TeleportService {
         if (level == null) {
             // The dimension the spot names is gone — a removed mod, a renamed id. Drop the spot
             // rather than offering it again every time.
-            PlayerPositions.clearBack(player.getUUID());
+            PlayerPositions.popBack(player.getUUID());
             refuse(player, "msg.roll_mod.back.noDimension");
             return false;
         }
 
         player.closeContainer();
         schedule(player, arriving -> {
-            teleport(arriving, level, spot.x(), spot.y(), spot.z(), spot.yaw(), spot.pitch());
+            double[] safe = safeNear(level, spot.x(), spot.y(), spot.z());
+            PlayerPositions.popBack(arriving.getUUID());
+            LAST_BACK.put(arriving.getUUID(), System.currentTimeMillis());
+            // Straight there: going back is not a new place to come back from.
+            arriving.teleportTo(level, safe[0], safe[1], safe[2], spot.yaw(), spot.pitch());
             arriving.sendSystemMessage(Component.translatable("msg.roll_mod.back.arrived"));
         });
         return true;
+    }
+
+    /**
+     * A spot near {@code x, y, z} where a player fits — feet and head free, something solid underneath — searched
+     * outwards up to 16 blocks and 3 up, like FTB Essentials' {@code TeleportPos.safeForPlayer}. The place itself
+     * when nothing better is found.
+     */
+    private static double[] safeNear(ServerLevel level, double x, double y, double z) {
+        BlockPos origin = BlockPos.containing(x, y, z);
+        if (standable(level, origin)) return new double[] {x, y, z};
+        for (BlockPos column : BlockPos.spiralAround(origin, 16, net.minecraft.core.Direction.NORTH,
+                net.minecraft.core.Direction.WEST)) {
+            for (int up = 0; up <= 3; up++) {
+                BlockPos at = column.above(up);
+                if (standable(level, at)) return new double[] {at.getX() + 0.5, at.getY(), at.getZ() + 0.5};
+            }
+        }
+        return new double[] {x, y, z};
+    }
+
+    private static boolean standable(ServerLevel level, BlockPos feet) {
+        return level.getBlockState(feet).getCollisionShape(level, feet).isEmpty()
+                && level.getBlockState(feet.above()).getCollisionShape(level, feet.above()).isEmpty()
+                && level.getFluidState(feet).isEmpty()
+                && level.getBlockState(feet.below()).isFaceSturdy(level, feet.below(), net.minecraft.core.Direction.UP);
     }
 
     /**
@@ -148,8 +204,8 @@ public final class TeleportService {
         return true;
     }
 
-    private static void refuse(ServerPlayer player, String key) {
-        player.sendSystemMessage(Component.translatable(key).withStyle(ChatFormatting.RED));
+    private static void refuse(ServerPlayer player, String key, Object... args) {
+        player.sendSystemMessage(Component.translatable(key, args).withStyle(ChatFormatting.RED));
     }
 
     /** The green hotbar line, exposed so a caller can show the same wording for an instant trip. */

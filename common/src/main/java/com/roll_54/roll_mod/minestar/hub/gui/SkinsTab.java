@@ -257,7 +257,7 @@ final class SkinsTab {
                     .verticalScrollDisplay(ScrollDisplay.AUTO)
                     .horizontalScrollDisplay(ScrollDisplay.NEVER));
             list.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)));
-            list.viewPort(v -> v.layout(l -> l.paddingAll(0)));
+            list.viewPort(v -> v.layout(l -> l.paddingAll(4)));
 
             for (Label label : List.of(lockedTitle, lockedHow)) {
                 // Inset 2px from the left; the title also 2px from the top, which moves the block down.

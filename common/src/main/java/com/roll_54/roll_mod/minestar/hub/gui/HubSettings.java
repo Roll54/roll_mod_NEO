@@ -27,6 +27,8 @@ import org.appliedenergistics.yoga.YogaPositionType;
  * {@code setDisplay}, which is safe here — nothing in it syncs or ticks. The preference is only read
  * on the client copy; the server's copy shows the default and is never drawn.
  */
+/** @deprecated The settings are a hub tab now ({@link SettingsTab}); the gear opens it. Kept, not built. */
+@Deprecated
 final class HubSettings {
 
     private static final int PANEL_W = 340;
@@ -57,6 +59,10 @@ final class HubSettings {
         root.style(s -> s.background(new ColorRectTexture(BACKDROP))
                 .zIndex(Z));
         root.setDisplay(false);
+        // A popup left open when its screen closed must not hold the next screen's doll back.
+        root.addEventListener(UIEvents.REMOVED, e -> {
+            if (shown == root) shown = null;
+        });
         // A click on the backdrop itself closes; one on the panel stops at the panel below.
         root.addEventListener(UIEvents.CLICK, e -> {
             if (e.target == root) hide();
@@ -72,7 +78,7 @@ final class HubSettings {
         Label title = new Label();
         title.setText(Component.translatable("gui." + RollMod.MODID + ".hub.settings.title"));
         title.layout(l -> l.widthPercent(100).height(12).paddingLeft(2).flexShrink(0));
-        title.textStyle(t -> t.textShadow(true).textWrap(TextWrap.HIDE).textAlignVertical(Vertical.CENTER));
+        title.textStyle(t -> t.textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()).textWrap(TextWrap.HIDE).textAlignVertical(Vertical.CENTER));
 
         Button close = new Button();
         close.setText(Component.translatable("gui." + RollMod.MODID + ".hub.settings.close"));
@@ -90,21 +96,24 @@ final class HubSettings {
     }
 
     void toggle() {
-        root.setDisplay(!root.isDisplayed());
-        if (root.isDisplayed()) shown = root;
+        boolean open = !root.isDisplayed();
+        root.setDisplay(open);
+        shown = open ? root : null;
     }
 
     /**
-     * Whether the settings popup is up over {@code element}'s screen. Compared by screen, so a popup
-     * left open when an earlier hub screen closed does not count for the next one.
+     * Whether the settings popup is up. Kept by the popup itself (set on open, cleared on close and
+     * when its screen goes), not compared by screen: the popup starts hidden, and a hidden element
+     * may never get its screen set, so a screen check said "closed" while it was open and the paper
+     * doll drew over it.
      */
     static boolean isOpenIn(UIElement element) {
         UIElement popup = shown;
-        return popup != null && popup.isDisplayed() && popup.getModularUI() != null
-                && popup.getModularUI() == element.getModularUI();
+        return popup != null && popup.isDisplayed();
     }
 
     void hide() {
         root.setDisplay(false);
+        if (shown == root) shown = null;
     }
 }

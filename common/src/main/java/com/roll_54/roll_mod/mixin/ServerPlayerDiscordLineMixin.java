@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.mixin;
 
 import com.roll_54.roll_mod.minestar.chat.ChatChannel;
 import com.roll_54.roll_mod.minestar.chat.ChatChannels;
+import com.roll_54.roll_mod.minestar.chat.ChatHistory;
 import com.roll_54.roll_mod.minestar.chat.emoji.EmojiRegistry;
 import com.roll_54.roll_mod.registry.ModConfigs;
 import net.minecraft.network.chat.Component;
@@ -30,6 +31,9 @@ public abstract class ServerPlayerDiscordLineMixin {
         String plain = message.getString().stripLeading().toLowerCase(Locale.ROOT);
         if (!plain.startsWith(marker.toLowerCase(Locale.ROOT))) return;
         ci.cancel();
-        ChatChannels.deliver((ServerPlayer) (Object) this, ChatChannel.GLOBAL, EmojiRegistry.render(message));
+        Component line = EmojiRegistry.render(message);
+        ChatChannels.deliver((ServerPlayer) (Object) this, ChatChannel.GLOBAL, line);
+        // For players joining later; kept once however many players the bridge sends it to.
+        ChatHistory.add(ChatChannel.GLOBAL, line, null);
     }
 }

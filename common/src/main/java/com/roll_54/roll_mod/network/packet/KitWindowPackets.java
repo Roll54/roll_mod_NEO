@@ -54,4 +54,55 @@ public final class KitWindowPackets {
             });
         }
     }
+
+    /**
+     * Server → client: what a kit holds, for the Kits tab's preview window inside the hub (no screen of its own,
+     * so the hub is not closed and reopened). Main inventory, armour and offhand only, by main-handler slot
+     * ({@link com.roll_54.roll_mod.minestar.kits.KitSlots}); curios are not shown.
+     */
+    public record Contents(String kit, String title, String description, long cooldownTicks, java.util.List<Integer> slots,
+                           java.util.List<net.minecraft.world.item.ItemStack> items) implements CustomPacketPayload {
+
+        public static final Type<Contents> TYPE = new Type<>(RollMod.id("kit_contents"));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, Contents> STREAM_CODEC = StreamCodec.of(
+                (buf, p) -> {
+                    buf.writeUtf(p.kit(), 32);
+                    buf.writeUtf(p.title(), 128);
+                    buf.writeUtf(p.description(), 512);
+                    buf.writeLong(p.cooldownTicks());
+                    int count = Math.min(64, p.slots().size());
+                    buf.writeVarInt(count);
+                    for (int i = 0; i < count; i++) {
+                        buf.writeVarInt(p.slots().get(i));
+                        net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.encode(buf, p.items().get(i));
+                    }
+                },
+                buf -> {
+                    String kit = buf.readUtf(32);
+                    String title = buf.readUtf(128);
+                    String description = buf.readUtf(512);
+                    long cooldown = buf.readLong();
+                    int count = Math.min(64, buf.readVarInt());
+                    java.util.List<Integer> slots = new java.util.ArrayList<>(count);
+                    java.util.List<net.minecraft.world.item.ItemStack> items = new java.util.ArrayList<>(count);
+                    for (int i = 0; i < count; i++) {
+                        slots.add(buf.readVarInt());
+                        items.add(net.minecraft.world.item.ItemStack.OPTIONAL_STREAM_CODEC.decode(buf));
+                    }
+                    return new Contents(kit, title, description, cooldown, slots, items);
+                });
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+
+        public static void handle(Contents payload, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                com.roll_54.roll_mod.minestar.kits.ClientKitCache.PREVIEW = payload;
+                com.roll_54.roll_mod.minestar.kits.ClientKitCache.PREVIEW_VERSION++;
+            });
+        }
+    }
 }

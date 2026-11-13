@@ -89,6 +89,10 @@ public final class TpaTab {
                 filter[0] = text == null ? "" : text.strip().toLowerCase(Locale.ROOT));
 
         ScrollerView online = new ScrollerView();
+
+        // Kept off the list's themed frame, so the first line does not run into it.
+
+        online.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         online.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
         online.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
@@ -101,6 +105,10 @@ public final class TpaTab {
         left.addChildren(search, online);
 
         ScrollerView requests = new ScrollerView();
+
+        // Kept off the list's themed frame, so the first line does not run into it.
+
+        requests.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         requests.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
         requests.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)

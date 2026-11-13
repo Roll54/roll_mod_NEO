@@ -193,6 +193,8 @@ public final class PlotPurchaseUI {
     // confirmation in particular is taller than the dialog at the smallest hub size.
     // flexBasis(0) and COLUMN for the reasons HubSection gives for its own scroller.
     ScrollerView content = new ScrollerView();
+    // Kept off the list's themed frame, so the first line does not run into it.
+    content.viewPort(v -> v.layout(l -> l.paddingAll(4)));
     content.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
     content.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
         .verticalScrollDisplay(ScrollDisplay.AUTO)

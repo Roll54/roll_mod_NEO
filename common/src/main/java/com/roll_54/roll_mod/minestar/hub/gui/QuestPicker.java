@@ -73,7 +73,7 @@ final class QuestPicker {
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
         list.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)));
-        list.viewPort(v -> v.layout(l -> l.paddingAll(0)));
+        list.viewPort(v -> v.layout(l -> l.paddingAll(4)));
 
         body.addChildren(search, list);
 

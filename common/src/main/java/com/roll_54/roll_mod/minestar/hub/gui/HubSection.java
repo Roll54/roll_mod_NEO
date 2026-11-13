@@ -95,8 +95,8 @@ public final class HubSection {
      * underneath was unusable while the explanation of it was open, which is backwards — the two are
      * read together. A narrow column is also easier to read prose in than a 460px line.
      */
-    private static final int PANEL_W = 280;
-    private static final int PANEL_H = 190;
+    private static final int PANEL_W = 490;
+    private static final int PANEL_H = 332;
 
     /** The mark before a popup's caption, when it has one: {@code exclamation_mark.png} is 7x7. */
     private static final int TITLE_ICON = 7;
@@ -228,7 +228,7 @@ public final class HubSection {
         Label title = new Label();
         title.setText(caption);
         title.layout(l -> l.flexGrow(1).height(HEADER_H));
-        title.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(true));
+        title.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
 
         header.addChild(title);
         // Unclipped: a control taller than the 12px row — a themed button wants 16 — overhangs it
@@ -376,12 +376,12 @@ public final class HubSection {
         /** Opens wherever it last was — centred, the first time. */
         public void open() {
             if (windowed && FMLEnvironment.dist == Dist.CLIENT && ClientPopup.open(this)) return;
-            if (!placed) {
-                centre(root, pos, width, height);
-                placed = true;
-            } else {
-                keepInside(root, pos, width, height);
-            }
+            // In the middle of the screen every time, like the info panel; no bigger than the tab.
+            int w = (int) Math.min(width, boundW(root) - 2 * FIT_MARGIN);
+            int h = (int) Math.min(height, boundH(root) - 2 * FIT_MARGIN);
+            root.layout(l -> l.width(w).height(h));
+            centreOnScreen(root, pos, w, h);
+            placed = true;
             closePanel();
             root.setDisplay(true);
             openPanel = root;
@@ -462,7 +462,7 @@ public final class HubSection {
         Label captionText = new Label();
         captionText.setText(title);
         captionText.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
-        captionText.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(true));
+        captionText.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         caption.addChild(captionText);
         drag(panel, pos, width, height);
         keepInsideWhileOpen(panel, pos, width, height);
@@ -491,13 +491,13 @@ public final class HubSection {
      * centre it against the live tab size the first time it opens.
      */
     private record Panel(UIElement root, float[] pos, boolean[] placed) {
+        /** Opened in the middle of the screen every time, as big as the tab lets it be up to its full size. */
         void show() {
-            if (placed[0]) {
-                keepInside(root, pos, PANEL_W, PANEL_H);
-            } else {
-                centre(root, pos, PANEL_W, PANEL_H);
-                placed[0] = true;
-            }
+            int w = (int) Math.min(PANEL_W, boundW(root) - 2 * FIT_MARGIN);
+            int h = (int) Math.min(PANEL_H, boundH(root) - 2 * FIT_MARGIN);
+            root.layout(l -> l.width(w).height(h));
+            centreOnScreen(root, pos, w, h);
+            placed[0] = true;
         }
     }
 
@@ -523,7 +523,7 @@ public final class HubSection {
         title.setText(title(id));
         title.layout(l -> l.widthPercent(100).height(HEADER_H).marginBottom(HEADER_GAP));
         title.textStyle(t -> t.font(HubInfo.FONT)
-                .textAlignVertical(Vertical.CENTER).textShadow(true));
+                .textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         title.style(s -> s.background(underline()));
         drag(panel, pos, PANEL_W, PANEL_H);
         keepInsideWhileOpen(panel, pos, PANEL_W, PANEL_H);
@@ -663,6 +663,14 @@ public final class HubSection {
      * {@code v} kept so {@code [v, v + size]} stays inside {@code [0, bound]}. A panel bigger than
      * its box pins to the top-left rather than going negative, so its title bar stays reachable.
      */
+    /** The size laid out, or {@code fallback} before the first layout. */
+    private static float live(float size, int fallback) {
+        return size > 0 ? size : fallback;
+    }
+
+    /** Room left around an info panel that would not fit its tab. */
+    private static final int FIT_MARGIN = 4;
+
     private static float clampTo(float v, float size, float bound) {
         return Math.max(0, Math.min(v, bound - size));
     }
@@ -670,6 +678,24 @@ public final class HubSection {
     private static void centre(UIElement panel, float[] pos, int width, int height) {
         pos[0] = clampTo((boundW(panel) - width) / 2f, width, boundW(panel));
         pos[1] = clampTo((boundH(panel) - height) / 2f, height, boundH(panel));
+        panel.layout(l -> l.left(pos[0]).top(pos[1]));
+    }
+
+    /**
+     * Centred on the screen rather than on the tab: the panel sits in tab coordinates, so the tab's own place on
+     * screen is taken off. Kept inside the tab all the same, so the title bar stays where it can be grabbed.
+     */
+    private static void centreOnScreen(UIElement panel, float[] pos, int width, int height) {
+        UIElement parent = panel.getParent();
+        if (parent == null || net.neoforged.fml.loading.FMLEnvironment.dist != net.neoforged.api.distmarker.Dist.CLIENT) {
+            centre(panel, pos, width, height);
+            return;
+        }
+        var window = net.minecraft.client.Minecraft.getInstance().getWindow();
+        float x = (window.getGuiScaledWidth() - width) / 2f - parent.getPositionX();
+        float y = (window.getGuiScaledHeight() - height) / 2f - parent.getPositionY();
+        pos[0] = clampTo(x, width, boundW(panel));
+        pos[1] = clampTo(y, height, boundH(panel));
         panel.layout(l -> l.left(pos[0]).top(pos[1]));
     }
 

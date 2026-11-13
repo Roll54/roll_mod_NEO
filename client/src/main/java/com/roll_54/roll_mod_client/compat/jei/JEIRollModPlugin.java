@@ -52,11 +52,14 @@ public class JEIRollModPlugin implements IModPlugin {
     public void registerCategories(IRecipeCategoryRegistration registration) {
         registration.addRecipeCategories(
                 new ResearchTableRecipeCategory(registration.getJeiHelpers().getGuiHelper()),
-                new CauldronWashingCategory(registration.getJeiHelpers().getGuiHelper()),
                 new HydroponicReagentCategory(registration.getJeiHelpers().getGuiHelper()),
                 new GreenhouseYieldCategory(registration.getJeiHelpers().getGuiHelper()),
                 new CropManagerInputCategory(registration.getJeiHelpers().getGuiHelper())
         );
+        // With EMI or TEI the washing comes from EMIRollModPlugin, whose chanced outputs they show themselves.
+        if (!emiShowsWashing()) {
+            registration.addRecipeCategories(new CauldronWashingCategory(registration.getJeiHelpers().getGuiHelper()));
+        }
     }
 
     @Override
@@ -74,7 +77,7 @@ public class JEIRollModPlugin implements IModPlugin {
         );
 
         // generated from OreDefinitions, same as the cauldron interactions themselves
-        registration.addRecipes(CauldronWashingCategory.TYPE, CauldronWashingRecipe.collect());
+        if (!emiShowsWashing()) registration.addRecipes(CauldronWashingCategory.TYPE, CauldronWashingRecipe.collect());
 
         // Built from the synced data maps, so datapack reagents appear after a /reload too.
         registration.addRecipes(HydroponicReagentCategory.TYPE, HydroponicReagentRecipe.collect());
@@ -90,7 +93,9 @@ public class JEIRollModPlugin implements IModPlugin {
         );
 
         // cauldron catalyst
-        registration.addRecipeCatalyst(new ItemStack(net.minecraft.world.level.block.Blocks.CAULDRON), CauldronWashingCategory.TYPE);
+        if (!emiShowsWashing()) {
+            registration.addRecipeCatalyst(new ItemStack(net.minecraft.world.level.block.Blocks.CAULDRON), CauldronWashingCategory.TYPE);
+        }
 
         registration.addRecipeCatalyst(new ItemStack(BlockRegistry.HYDROPONIC_GARDEN_BED), HydroponicReagentCategory.TYPE);
         registration.addRecipeCatalyst(GreenhouseYieldCategory.controllerStack(), GreenhouseYieldCategory.TYPE);
@@ -151,4 +156,10 @@ public class JEIRollModPlugin implements IModPlugin {
                 1, 25,
                 26, 36);
         }
+
+    /** EMI or TEI loaded: they run EMIRollModPlugin, which has the cauldron washing with its chances. */
+    private static boolean emiShowsWashing() {
+        net.neoforged.fml.ModList mods = net.neoforged.fml.ModList.get();
+        return mods.isLoaded("emi") || mods.isLoaded("tei");
+    }
 }

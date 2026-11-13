@@ -35,7 +35,11 @@ public final class FlyCommand {
 
     /** Built fresh for each registration rather than redirected — the tree is one node deep. */
     private static LiteralArgumentBuilder<CommandSourceStack> tree() {
-        return Commands.literal("fly").executes(ctx -> run(ctx.getSource()));
+        // Media (and the groups inheriting it) and operators only; see LuckPermsCompat.canFly.
+        return Commands.literal("fly")
+                .requires(source -> source.getPlayer() == null
+                        || com.roll_54.roll_mod.economy.vendingblock.auction.LuckPermsCompat.canFly(source.getPlayer()))
+                .executes(ctx -> run(ctx.getSource()));
     }
 
     private static int run(CommandSourceStack source) throws CommandSyntaxException {

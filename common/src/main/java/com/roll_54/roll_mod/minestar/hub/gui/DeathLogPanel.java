@@ -418,6 +418,8 @@ final class DeathLogPanel {
 
     private static ScrollerView scroller() {
         ScrollerView view = new ScrollerView();
+        // Kept off the list's themed frame, so the first line does not run into it.
+        view.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         view.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
         view.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)

@@ -1,10 +1,14 @@
 package com.roll_54.roll_mod.economy.minprice;
 
 import com.roll_54.roll_mod.RollMod;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -40,6 +44,30 @@ public final class MinPriceEvents {
   @SubscribeEvent
   public static void onPlayerLoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
     if (event.getEntity() instanceof ServerPlayer player) MinPriceService.sendTo(player);
+  }
+
+  /**
+   * {@code /rollmod admin minprice auto all}: the shortest recipe for every item and fluid, replacing the
+   * chosen ones; {@code ... auto missing}: only for those with no chosen recipe and no fixed price yet. See
+   * {@link MinPriceAuto}. Prices are rebuilt right after.
+   */
+  @SubscribeEvent
+  public static void onRegisterCommands(RegisterCommandsEvent event) {
+    event.getDispatcher().register(Commands.literal("rollmod")
+        .then(Commands.literal("admin")
+            .requires(source -> source.hasPermission(SaveMinPriceRecipesPacket.PERMISSION_LEVEL))
+            .then(Commands.literal("minprice")
+                .then(Commands.literal("auto")
+                    .then(Commands.literal("all").executes(ctx -> auto(ctx.getSource(), true)))
+                    .then(Commands.literal("missing").executes(ctx -> auto(ctx.getSource(), false)))))));
+  }
+
+  private static int auto(CommandSourceStack source, boolean all) {
+    MinPriceAuto.Result result = MinPriceAuto.run(source.getServer(), all);
+    source.sendSuccess(() -> Component.translatable(
+        all ? "msg.roll_mod.minprice.auto_all" : "msg.roll_mod.minprice.auto_missing",
+        result.picked(), result.blacklisted()), true);
+    return result.picked();
   }
 
   @SubscribeEvent

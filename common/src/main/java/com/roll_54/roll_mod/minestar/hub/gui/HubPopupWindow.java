@@ -81,7 +81,7 @@ public final class HubPopupWindow {
         Label caption = new Label();
         caption.setText(floating.title);
         caption.layout(l -> l.flexGrow(1).height(TITLE_H));
-        caption.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(true));
+        caption.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         titleBar.addChild(caption);
         if (floating.closable) {
             // A Button, so ModularUIWindow.isDragBlocker keeps a press on it from moving the window.
@@ -104,7 +104,8 @@ public final class HubPopupWindow {
         window.setOnCloseRequested(HubPopupWindow::close);
         int w = Math.max(ModularUIWindow.MIN_WIDTH, Math.round(floating.width() * SCALE));
         int h = Math.max(ModularUIWindow.MIN_HEIGHT, Math.round(floating.height() * SCALE) + TITLE_H);
-        if (!window.open(Integer.MIN_VALUE, Integer.MIN_VALUE, w, h, false)) {
+        int[] at = centre(w, h);
+        if (!window.open(at[0], at[1], w, h, false)) {
             // No window after all: the body goes home and the caller shows the panel instead.
             floating.reclaim();
             return false;
@@ -115,6 +116,15 @@ public final class HubPopupWindow {
         current = window;
         currentFloating = floating;
         return true;
+    }
+
+    /**
+     * Where a {@code w}x{@code h} window opens: in the middle of the game window, in the desktop coordinates GLFW
+     * places windows in. Every extra window opens there rather than wherever the platform would put it.
+     */
+    static int[] centre(int w, int h) {
+        com.mojang.blaze3d.platform.Window game = net.minecraft.client.Minecraft.getInstance().getWindow();
+        return new int[]{game.getX() + (game.getScreenWidth() - w) / 2, game.getY() + (game.getScreenHeight() - h) / 2};
     }
 
     static boolean isOpenFor(HubSection.Floating floating) {

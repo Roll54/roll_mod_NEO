@@ -7,7 +7,6 @@ import com.roll_54.roll_mod_server.commands.GitCopyCommand;
 import com.roll_54.roll_mod_server.commands.NetherstormCommand;
 import com.roll_54.roll_mod_server.commands.RegenBlockCommands;
 import com.roll_54.roll_mod_server.minestar.PVPCommand;
-import com.roll_54.roll_mod_server.minestar.ShopReceiveCommand;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLEnvironment;
@@ -28,8 +27,14 @@ public class CommandRegistry {
         PVPCommand.register(dispatcher);
 
         // minestar-backed command: only register on a dedicated server, where the minestar mod is present.
-        if (FMLEnvironment.dist.isDedicatedServer()) {
-            ShopReceiveCommand.register(dispatcher);
+        // Optional: only in a build with the Minestar jar, and only when the mod is installed.
+        if (FMLEnvironment.dist.isDedicatedServer() && com.roll_54.roll_mod_server.RollModServer.present("ua.com.minestar.Minestar")) {
+            try {
+                Class.forName("com.roll_54.roll_mod_server.minestar.ShopReceiveCommand")
+                        .getMethod("register", com.mojang.brigadier.CommandDispatcher.class).invoke(null, dispatcher);
+            } catch (ReflectiveOperationException | LinkageError e) {
+                com.roll_54.roll_mod.RollMod.LOGGER.info("[roll_mod_server] /shop receive not available: {}", e.toString());
+            }
         }
     }
 }

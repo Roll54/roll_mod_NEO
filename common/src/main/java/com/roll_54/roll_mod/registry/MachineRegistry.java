@@ -10,9 +10,11 @@ import com.roll_54.roll_mod.compat.mi.EIRecipeTypes;
 import com.roll_54.roll_mod.compat.mi.MICasings;
 import com.roll_54.roll_mod.compat.mi.machines.CoilPyrolyseOven;
 import com.roll_54.roll_mod.compat.mi.machines.HighlyAdvancedDistillery;
+import com.roll_54.roll_mod.compat.mi.machines.LargeChemicalReactor;
 import com.roll_54.roll_mod.compat.mi.machines.FluidHatches;
 import com.roll_54.roll_mod.compat.mi.machines.MultiFluidHatches;
 import com.roll_54.roll_mod.compat.mi.machines.OreWashers;
+import com.roll_54.roll_mod.compat.mi.machines.PackMultiblocks;
 import com.roll_54.roll_mod.compat.mi.machines.ParallelMultiblocks;
 import com.roll_54.roll_mod.compat.mi.machines.me.MeHatches;
 import net.minecraft.resources.ResourceLocation;
@@ -84,6 +86,10 @@ public class MachineRegistry {
                 ParallelMultiblocks.TITANIUM_64_CASING, "modern_industrialization:titanium_64_machine_casing");
         Casings.CHROME_VANADIUM_STEEL = MICasings.blockImitation(
                 ParallelMultiblocks.CHROME_VANADIUM_STEEL_CASING, "modern_industrialization:chrome_vanadium_steel_block");
+        // The steam ore washer's controller and hatches. EI's own casing for these bricks is registered after
+        // roll_mod's multiblocks, and the bricks' connected model joins hatches wearing this name.
+        Casings.STEEL_PLATED_BRICKS = MICasings.blockImitation(
+                OreWashers.STEAM_ORE_WASHER_CASING, "extended_industrialization:steel_plated_bricks");
     }
 
 
@@ -127,6 +133,8 @@ public class MachineRegistry {
         CoilPyrolyseOven.register(hook);
         HighlyAdvancedDistillery.register(hook);
         OreWashers.register(hook);
+        PackMultiblocks.register(hook);
+        LargeChemicalReactor.register(hook);
     }
 
     //helpers
@@ -143,6 +151,7 @@ public class MachineRegistry {
         public static MachineCasing TUNGSTENSTEEL;
         public static MachineCasing TITANIUM_64;
         public static MachineCasing CHROME_VANADIUM_STEEL;
+        public static MachineCasing STEEL_PLATED_BRICKS;
     }
 
     public static final class RecipeTypes {
@@ -155,6 +164,10 @@ public class MachineRegistry {
         /** {@code lv_ore_washer}: the single-block washer's recipes, which the multiblock runs too. */
         public static MachineRecipeType ORE_WASHER;
         public static MachineRecipeType STEAM_ORE_WASHER;
+        /** The pack's KubeJS multiblocks' own types; see {@link PackMultiblocks}. */
+        public static MachineRecipeType PHOTOLITHOGRAPHER;
+        /** {@code large_chemical_reactor}: the large chemical reactor's own recipes, see {@link LargeChemicalReactor}. */
+        public static MachineRecipeType LARGE_CHEMICAL_REACTOR;
         private static final Map<MachineRecipeType, String> RECIPE_TYPE_NAMES = Maps.newHashMap();
 
         public static Map<MachineRecipeType, String> getNames() {
@@ -185,6 +198,16 @@ public class MachineRegistry {
             if (STEAM_ORE_WASHER == null) {
                 STEAM_ORE_WASHER = MIMachineRecipeTypes.create("steam_ore_washer")
                         .withItemInputs().withFluidInputs().withItemOutputs();
+            }
+            LARGE_CHEMICAL_REACTOR = existing("large_chemical_reactor");
+            if (LARGE_CHEMICAL_REACTOR == null) {
+                LARGE_CHEMICAL_REACTOR = MIMachineRecipeTypes.create("large_chemical_reactor")
+                        .withItemInputs().withItemOutputs().withFluidInputs().withFluidOutputs();
+            }
+            PHOTOLITHOGRAPHER = existing("photolithographer");
+            if (PHOTOLITHOGRAPHER == null) {
+                PHOTOLITHOGRAPHER = MIMachineRecipeTypes.create("photolithographer")
+                        .withItemInputs().withItemOutputs().withFluidInputs();
             }
         }
 

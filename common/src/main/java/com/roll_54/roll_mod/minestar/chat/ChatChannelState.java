@@ -34,7 +34,7 @@ public final class ChatChannelState {
      * any built-in it does not list after the player's buttons, visible until the player hides it.
      */
     private static final List<ChatButton> BUILT_INS = List.of(
-            ChatButton.ALL_BUTTON, ChatButton.LOCAL_BUTTON, ChatButton.GLOBAL_BUTTON, ChatButton.PM_BUTTON,
+            ChatButton.ALL_BUTTON, ChatButton.LOCAL_BUTTON, ChatButton.GLOBAL_BUTTON, ChatButton.TEAM_BUTTON, ChatButton.PM_BUTTON,
             ChatButton.SPAM_BUTTON, ChatButton.TRADE_BUTTON, ChatButton.DEV_BUTTON);
 
     private static ChatChannelState instance;
@@ -42,10 +42,15 @@ public final class ChatChannelState {
     /** Every button, hidden ones included, in display order. */
     private final List<ChatButton> order = new ArrayList<>(BUILT_INS);
     /**
-     * Unticked buttons: not over the chat box, and their channel left out of All too. Spam and DEV start
-     * unticked — noise next to people talking — until the player ticks them in Settings.
+     * Unticked buttons: not over the chat box. Spam and DEV start unticked — noise next to people
+     * talking — until the player ticks them in Settings.
      */
     private final Set<String> hidden = new HashSet<>(Set.of(ChatChannel.SPAM.id(), ChatChannel.DEV.id()));
+    /**
+     * Channels the All tab leaves out, set apart from {@link #hidden}: a channel can have no button over the
+     * chat box and still show in All, or the other way round. Spam and DEV start out of All.
+     */
+    private final Set<String> notInAll = new HashSet<>(Set.of(ChatChannel.SPAM.id(), ChatChannel.DEV.id()));
     /** The built-in button whose channel the chat shows; always All while a custom one sends. */
     private String view = ChatButton.ALL;
     /** The button messages go through: a built-in or a custom one. */
@@ -53,6 +58,38 @@ public final class ChatChannelState {
     private int nextCustom = 1;
     /** Whether a message typed with a leading {@code !} goes to Global, whatever button is picked. */
     private boolean bangGlobal;
+    /** Whether "@Name" mentions of the player ping ({@code MentionSound}). Superseded by {@link #mentionVolume}. */
+    private boolean mentionSound = true;
+    /** How loud the mention ping is, 0-100; 0 is off. */
+    private int mentionVolume = 100;
+    /** Whose deaths and whose advancements show in chat. */
+    private MessagesFrom deaths = MessagesFrom.EVERYONE;
+    private MessagesFrom advancements = MessagesFrom.EVERYONE;
+    /** Lines from the Discord bridge, and Wixie's tips (the server's timed broadcasts), left out of the chat. */
+    private boolean hideDiscord;
+    private boolean hideWixie;
+    /** Per channel id: what a new line there does. Missing means {@link Notify#MENTIONS}. */
+    private final Map<String, Notify> notify = new LinkedHashMap<>();
+
+    /** Whose deaths or advancements are shown: everyone's, the player's own team's (FTB Teams), or nobody's. */
+    public enum MessagesFrom {
+        EVERYONE, TEAM, NOBODY;
+
+        public net.minecraft.network.chat.Component title() {
+            return net.minecraft.network.chat.Component.translatable(
+                    "gui.roll_mod.hub.settings.messages_from." + name().toLowerCase(java.util.Locale.ROOT));
+        }
+    }
+
+    /** What a channel's new lines do: a soft sound for each one plus the ping, the ping only, or nothing. */
+    public enum Notify {
+        ALL, MENTIONS, NOTHING;
+
+        public net.minecraft.network.chat.Component title() {
+            return net.minecraft.network.chat.Component.translatable(
+                    "gui.roll_mod.hub.settings.notify." + name().toLowerCase(java.util.Locale.ROOT));
+        }
+    }
 
     private ChatChannelState() {}
 
@@ -87,9 +124,13 @@ public final class ChatChannelState {
         return find(send, view());
     }
 
-    /** Whether the All tab shows lines of {@code channel}: those of every ticked button. */
+    /** Whether the All tab shows lines of {@code channel}, as set in Settings ("In All"). */
     public synchronized boolean inAll(ChatChannel channel) {
-        return !hidden.contains(channel.id());
+        return !notInAll.contains(channel.id());
+    }
+
+    public synchronized boolean isInAll(String id) {
+        return !notInAll.contains(id);
     }
 
     public synchronized boolean bangGlobal() {
@@ -100,6 +141,70 @@ public final class ChatChannelState {
 
     public synchronized void setBangGlobal(boolean on) {
         bangGlobal = on;
+        save();
+    }
+
+    public synchronized boolean mentionSound() {
+        return mentionSound && mentionVolume > 0;
+    }
+
+    public synchronized void setMentionSound(boolean on) {
+        mentionSound = on;
+        save();
+    }
+
+    public synchronized int mentionVolume() {
+        return mentionSound ? mentionVolume : 0;
+    }
+
+    public synchronized void setMentionVolume(int volume) {
+        mentionVolume = Math.max(0, Math.min(100, volume));
+        mentionSound = true;
+        save();
+    }
+
+    public synchronized MessagesFrom deaths() {
+        return deaths;
+    }
+
+    public synchronized void setDeaths(MessagesFrom from) {
+        deaths = from;
+        save();
+    }
+
+    public synchronized MessagesFrom advancements() {
+        return advancements;
+    }
+
+    public synchronized void setAdvancements(MessagesFrom from) {
+        advancements = from;
+        save();
+    }
+
+    public synchronized boolean hideDiscord() {
+        return hideDiscord;
+    }
+
+    public synchronized void setHideDiscord(boolean hide) {
+        hideDiscord = hide;
+        save();
+    }
+
+    public synchronized boolean hideWixie() {
+        return hideWixie;
+    }
+
+    public synchronized void setHideWixie(boolean hide) {
+        hideWixie = hide;
+        save();
+    }
+
+    public synchronized Notify notify(ChatChannel channel) {
+        return notify.getOrDefault(channel.id(), Notify.MENTIONS);
+    }
+
+    public synchronized void setNotify(ChatChannel channel, Notify level) {
+        notify.put(channel.id(), level);
         save();
     }
 
@@ -122,6 +227,12 @@ public final class ChatChannelState {
         } else {
             hidden.remove(id);
         }
+        save();
+    }
+
+    public synchronized void setInAll(String id, boolean in) {
+        if (in) notInAll.remove(id);
+        else notInAll.add(id);
         save();
     }
 
@@ -171,11 +282,23 @@ public final class ChatChannelState {
         hidden.forEach(hiddenJson::add);
         json.add("order", orderJson);
         json.add("hidden", hiddenJson);
+        JsonArray notInAllJson = new JsonArray();
+        notInAll.forEach(notInAllJson::add);
+        json.add("notInAll", notInAllJson);
         json.add("custom", custom);
         json.addProperty("view", view);
         json.addProperty("send", send);
         json.addProperty("nextCustom", nextCustom);
         json.addProperty("bangGlobal", bangGlobal);
+        json.addProperty("mentionSound", mentionSound);
+        json.addProperty("mentionVolume", mentionVolume);
+        json.addProperty("deaths", deaths.name());
+        json.addProperty("advancements", advancements.name());
+        json.addProperty("hideDiscord", hideDiscord);
+        json.addProperty("hideWixie", hideWixie);
+        JsonObject notifyJson = new JsonObject();
+        notify.forEach((id, level) -> notifyJson.addProperty(id, level.name()));
+        json.add("notify", notifyJson);
 
         Path path = file();
         Path tmp = path.resolveSibling(path.getFileName() + ".tmp");
@@ -221,15 +344,37 @@ public final class ChatChannelState {
             if (json.has("send")) state.send = json.get("send").getAsString();
             if (json.has("nextCustom")) state.nextCustom = Math.max(1, json.get("nextCustom").getAsInt());
             if (json.has("bangGlobal")) state.bangGlobal = json.get("bangGlobal").getAsBoolean();
-            // An earlier build kept "left out of All" apart from the buttons; those channels are unticked now.
+            if (json.has("mentionSound")) state.mentionSound = json.get("mentionSound").getAsBoolean();
+            if (json.has("mentionVolume")) state.mentionVolume = Math.max(0, Math.min(100, json.get("mentionVolume").getAsInt()));
+            if (json.has("deaths")) state.deaths = enumOr(MessagesFrom.class, json.get("deaths").getAsString(), MessagesFrom.EVERYONE);
+            if (json.has("advancements")) state.advancements = enumOr(MessagesFrom.class, json.get("advancements").getAsString(), MessagesFrom.EVERYONE);
+            if (json.has("hideDiscord")) state.hideDiscord = json.get("hideDiscord").getAsBoolean();
+            if (json.has("hideWixie")) state.hideWixie = json.get("hideWixie").getAsBoolean();
+            if (json.has("notify")) {
+                for (Map.Entry<String, JsonElement> entry : json.getAsJsonObject("notify").entrySet()) {
+                    state.notify.put(entry.getKey(), enumOr(Notify.class, entry.getValue().getAsString(), Notify.MENTIONS));
+                }
+            }
+            state.notInAll.clear();
             if (json.has("notInAll")) {
-                for (JsonElement element : json.getAsJsonArray("notInAll")) state.hidden.add(element.getAsString());
+                for (JsonElement element : json.getAsJsonArray("notInAll")) state.notInAll.add(element.getAsString());
+            } else {
+                // Files from before the separate setting: All left out the unticked buttons, so it still does.
+                state.notInAll.addAll(state.hidden);
             }
         } catch (RuntimeException e) {
             RollMod.LOGGER.warn("[Chat] {} is malformed; using the default chat buttons", file(), e);
             return new ChatChannelState();
         }
         return state;
+    }
+
+    private static <E extends Enum<E>> E enumOr(Class<E> type, String name, E fallback) {
+        try {
+            return Enum.valueOf(type, name);
+        } catch (IllegalArgumentException e) {
+            return fallback;
+        }
     }
 
     private ChatButton find(String id, ChatButton fallback) {

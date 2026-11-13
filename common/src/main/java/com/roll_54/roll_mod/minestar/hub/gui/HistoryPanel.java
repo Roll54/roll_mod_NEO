@@ -39,8 +39,8 @@ import java.util.Locale;
  */
 final class HistoryPanel {
 
-    private static final int WIDTH = 340;
-    private static final int HEIGHT = 240;
+    private static final int WIDTH = 490;
+    private static final int HEIGHT = 332;
     private static final int ROW_H = 20;
     private static final int AMOUNT_W = 64;
     private static final int COLOR_ROW = 0x30FFFFFF;
@@ -53,8 +53,8 @@ final class HistoryPanel {
                 Component.translatable("gui.roll_mod.hub.history.title"),
                 IGuiTexture.dynamic(() -> Icons.HISTORY),
                 Component.translatable("gui.roll_mod.hub.history.tip"),
-                // A desktop window, like the interactions popups: a long history reads better large.
-                WIDTH, HEIGHT, true,
+                // Inside the hub, centred on the screen like the info panel (a desktop window before).
+                WIDTH, HEIGHT, false,
                 content -> fill(content, filter));
         // Opening it fetches afresh: the panel only toggles, and a history from the last opening is
         // stale by the next sale.
@@ -84,7 +84,7 @@ final class HistoryPanel {
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
         list.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)));
-        list.viewPort(v -> v.layout(l -> l.paddingAll(0)));
+        list.viewPort(v -> v.layout(l -> l.paddingAll(4)));
 
         content.addChildren(selector, list);
 

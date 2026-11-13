@@ -44,7 +44,79 @@ public final class RollUi {
         for (ResourceLocation id : UiThemeState.get().sheets()) {
             out.add(StylesheetManager.INSTANCE.getStylesheetSafe(id));
         }
+        // The font from Settings, over the theme's own (UiFont); none for "as the theme".
+        com.lowdragmc.lowdraglib2.gui.ui.style.Stylesheet font = UiFont.sheet();
+        if (font != null) out.add(font);
+        // Last: the same button size on every theme, and the switch (see geometry).
+        out.add(geometry(UiThemeState.get()));
         return out;
+    }
+
+    /**
+     * What no theme may change: a button's size (the themes give buttons their own height and padding, so a
+     * button sized by its content grew or shrank with the theme, unlike everything else), and the switch, which is
+     * GDP's on every theme but Ore UI. Only values an element did not set itself: a size set in code is inline and
+     * still wins.
+     *
+     * <p>Ore UI keeps its own buttons and switch, drawn as Bedrock's Ore UI draws them: a raised face over a dark
+     * bottom edge, the caption on the face (lifted off the edge, since the hub sets most buttons' padding in code),
+     * dark text; the I/O switch. Its buttons are as tall as everywhere else.
+     */
+    private static Stylesheet geometry;
+    private static Stylesheet oreGeometry;
+
+    private static Stylesheet geometry(UiTheme theme) {
+        if (theme == UiTheme.ORE) {
+            if (oreGeometry == null) {
+                oreGeometry = Stylesheet.parse("""
+                        button:host {
+                          height: 14;
+                          padding-all: 2;
+                        }
+                        button:host .__button_text__ {
+                          top: -1;
+                          text-color: #1e1e1f;
+                          text-shadow: false;
+                        }
+                        button:disabled:host .__button_text__ {
+                          text-color: #6b6b6b;
+                        }
+                        switch:host {
+                          padding-all: 0;
+                        }
+                        """);
+            }
+            return oreGeometry;
+        }
+        if (geometry == null) {
+            geometry = Stylesheet.parse("""
+                    button:host {
+                      height: 14;
+                      padding-all: 2;
+                    }
+                    switch:host {
+                      base-background: built-in(ui-gdp:RECT_RD_DARK);
+                      pressed-background: built-in(ui-gdp:RECT_RD_T);
+                      unmark-background: built-in(ui-gdp:RECT_RD);
+                      mark-background: built-in(ui-gdp:RECT_RD);
+                      width: 26;
+                      height: 14;
+                      padding-all: 2;
+                    }
+                    """);
+        }
+        return geometry;
+    }
+
+    /**
+     * Whether text drawn in the theme's own text colour should get a drop shadow: yes on the dark themes, no on
+     * the light ones (Paper, Latte), where a shadow under dark text only smudges it. Read when a label is built,
+     * so a theme picked while a screen is open applies to it the next time it opens. Always on the server's copy.
+     */
+    public static boolean textShadow() {
+        if (net.neoforged.fml.loading.FMLEnvironment.dist != net.neoforged.api.distmarker.Dist.CLIENT) return true;
+        UiTheme theme = UiThemeState.get();
+        return theme != UiTheme.PAPER && theme != UiTheme.LATTE;
     }
 
     /** Remembers {@code theme} and restyles {@code live}, the screen it was picked on, right away. */

@@ -17,30 +17,11 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
 import java.util.UUID;
 
-import static ua.com.minestar.Minestar.minestar;
 
-@EventBusSubscriber(modid = RollModServer.MODID, value = Dist.DEDICATED_SERVER)
+/** The LuckPerms {@code prime} group: who has it, and putting players in or out of it ({@link PrimeSync} asks Minestar). */
 public class PrimeManager {
 
     private static final String PRIME_GROUP = "prime";
-
-    @SubscribeEvent
-    public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
-        Player player = event.getEntity();
-        Component nicknamePlayer = player.getName();
-        UUID playerUuid = player.getUUID();
-
-        minestar.getUserByProfileUuid(playerUuid)
-                .onSuccess(minestarUser -> minestarUser.getPrimeStatus()
-                        .ifPresentOrElse(primeStatus -> {
-                            RollMod.LOGGER.info("Player {} have prime", nicknamePlayer.getString());
-                            setPrimeGroup(playerUuid, true);
-                        }, () -> {
-                            RollMod.LOGGER.info("Player {} don't have prime", nicknamePlayer.getString());
-                            setPrimeGroup(playerUuid, false);
-                        }))
-                .onFailure(cause -> RollMod.LOGGER.error("Failed to get prime status", cause));
-    }
 
     /**
      * Checks whether the given online player currently inherits the {@code prime} group in LuckPerms.
@@ -53,7 +34,7 @@ public class PrimeManager {
                 .anyMatch(group -> group.getName().equalsIgnoreCase(PRIME_GROUP));
     }
 
-    private static void setPrimeGroup(UUID playerUuid, boolean hasPrime) {
+    public static void setPrimeGroup(UUID playerUuid, boolean hasPrime) {
         LuckPerms luckPerms = LuckPermsProvider.get();
         UserManager userManager = luckPerms.getUserManager();
         InheritanceNode primeNode = InheritanceNode.builder(PRIME_GROUP).build();

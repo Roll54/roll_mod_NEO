@@ -33,6 +33,7 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.RecipeHolder;
+import net.neoforged.fml.ModList;
 
 import java.util.List;
 
@@ -43,6 +44,9 @@ import java.util.List;
  * EMI treat the whole {@code roll_mod} namespace as handled natively, so every roll_mod JEI category
  * is skipped. The categories here reuse the JEI ids, which also keeps EMI from listing a JEI copy
  * next to them when both mods are installed.
+ *
+ * <p>Truly Enough Items (TEI) runs EMI plugins itself, so under TEI these categories, the research workbench
+ * recipe handler and the hub's screen bounds come from here as well; only the handset tree is TEI's own.
  */
 @EmiEntrypoint
 public class EMIRollModPlugin implements EmiPlugin {
@@ -132,6 +136,12 @@ public class EMIRollModPlugin implements EmiPlugin {
             return new Bounds(Math.round(rect[0]), Math.round(rect[1]), Math.round(rect[2]), Math.round(rect[3]));
         });
 
+        // TEI runs this plugin too (it implements the EMI API), but there the handset tree is TEI's own
+        // (compat/tei/tree, hooked up by TeiTreeEmiBridge); the EMI tree needs EMI internals TEI does not have.
+        if (!ModList.get().isLoaded("tei")) registerHandsetTree(registry);
+    }
+
+    private static void registerHandsetTree(EmiRegistry registry) {
         // Handset tree (/rollmod admin minprice handset): stacks dragged out of EMI land in its root slot, and EMI's keys
         // (recipes, uses, favourite) work on the tree's nodes.
         // EMI places its sidebars around a container screen's slots, and the tree has none, so without

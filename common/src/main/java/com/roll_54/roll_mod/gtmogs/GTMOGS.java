@@ -177,7 +177,7 @@ public class GTMOGS {
 
         public static boolean isAnyRecipeViewerLoaded() {
             return isModLoaded(GTValues.MODID_EMI) || isModLoaded(GTValues.MODID_JEI) ||
-                    isModLoaded(GTValues.MODID_REI);
+                    isModLoaded(GTValues.MODID_REI) || isModLoaded(GTValues.MODID_TEI);
         }
 
         public static boolean isJEILoaded() {
@@ -189,7 +189,14 @@ public class GTMOGS {
             return isModLoaded(GTValues.MODID_REI) && (!isClientSide() || REIRuntime.getInstance().isOverlayVisible());
         }
 
+        /**
+         * roll_mod: also true under Truly Enough Items. TEI runs GTEMIPlugin (the ore vein pages) itself and takes
+         * EMI ingredients from the pages' slots, so the slots must report EMI stacks there too. GTJEIPlugin stays
+         * off under TEI ({@link #isJEILoaded} is false without the "jei" mod), so the pages are not listed twice.
+         * {@code EmiConfig} is EMI's own and not part of TEI, so it is only read with EMI loaded.
+         */
         public static boolean isEMILoaded() {
+            if (isModLoaded(GTValues.MODID_TEI)) return true;
             return isModLoaded(GTValues.MODID_EMI) && (!isClientSide() || EmiConfig.enabled);
         }
 

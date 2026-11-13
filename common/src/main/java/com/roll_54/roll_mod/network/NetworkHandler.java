@@ -16,6 +16,9 @@ import com.roll_54.roll_mod.network.packet.MeHatchConfigPacket;
 import com.roll_54.roll_mod.network.packet.FriendActionPacket;
 import com.roll_54.roll_mod.network.packet.ChatAccessPacket;
 import com.roll_54.roll_mod.network.packet.ChatChannelPacket;
+import com.roll_54.roll_mod.network.packet.MentionPingPacket;
+import com.roll_54.roll_mod.network.packet.LevelRewardsPacket;
+import com.roll_54.roll_mod.network.packet.ServerSettingPacket;
 import com.roll_54.roll_mod.network.packet.EmojiPackets;
 import com.roll_54.roll_mod.network.packet.HueriStatuePackets;
 import com.roll_54.roll_mod.network.packet.HueriStatueSeenPacket;
@@ -127,6 +130,21 @@ public class NetworkHandler {
                 ChatChannelPacket.TYPE,
                 ChatChannelPacket.STREAM_CODEC,
                 ChatChannelPacket::handle
+        );
+        registrar.playToServer(
+                ServerSettingPacket.TYPE,
+                ServerSettingPacket.STREAM_CODEC,
+                ServerSettingPacket::handle
+        );
+        registrar.playToClient(
+                LevelRewardsPacket.TYPE,
+                LevelRewardsPacket.STREAM_CODEC,
+                LevelRewardsPacket::handle
+        );
+        registrar.playToClient(
+                MentionPingPacket.TYPE,
+                MentionPingPacket.STREAM_CODEC,
+                MentionPingPacket::handle
         );
         registrar.playToClient(
                 ChatAccessPacket.TYPE,
@@ -311,6 +329,11 @@ public class NetworkHandler {
                 KitNamePackets.Rename::handle
         );
         registrar.playToServer(
+                KitNamePackets.Describe.TYPE,
+                KitNamePackets.Describe.STREAM_CODEC,
+                KitNamePackets.Describe::handle
+        );
+        registrar.playToServer(
                 KitNamePackets.Edit.TYPE,
                 KitNamePackets.Edit.STREAM_CODEC,
                 KitNamePackets.Edit::handle
@@ -409,6 +432,11 @@ public class NetworkHandler {
                 KitWindowPackets.Preview.TYPE,
                 KitWindowPackets.Preview.STREAM_CODEC,
                 KitWindowPackets.Preview::handle
+        );
+        registrar.playToClient(
+                KitWindowPackets.Contents.TYPE,
+                KitWindowPackets.Contents.STREAM_CODEC,
+                KitWindowPackets.Contents::handle
         );
         registrar.playToServer(
                 DeathLogPackets.Request.TYPE,

@@ -54,7 +54,7 @@ final class HubWindow extends UIElement {
                 .width(HubWindowState.DEFAULT_W).height(HubWindowState.DEFAULT_H));
 
         addEventListener(UIEvents.MOUSE_DOWN, e -> {
-            if (e.button != 0 || maximized()) return;
+            if (e.button != 0 || maximized() || locked()) return;
             ResizeHandle handle = WindowDragHelper.detectResizeHandle(this, e.x, e.y, RESIZE_BORDER);
             if (handle == null) return;
             startDrag(new DragResize(getLayoutX(), getLayoutY(), getSizeWidth(), getSizeHeight(), handle),
@@ -94,9 +94,9 @@ final class HubWindow extends UIElement {
             if (e.button != 0 || e.target != handle) return;
             moved = false;
             if (maximized()) return;
-            // "Allow moving the hub" off in the settings: the window stays where it is. Resizing and
-            // maximizing are separate gestures and still work.
-            if (clientCopy && !HubWindowState.get().movable()) return;
+            // "Allow moving the hub" off in the settings: the window stays where it is and keeps its
+            // size. Maximizing is a separate gesture and still works.
+            if (locked()) return;
             handle.startDrag(new DragMove(getLayoutX(), getLayoutY()), Icons.MOVE)
                     .setDragTexture(-DRAG_ICON / 2f, -DRAG_ICON / 2f, DRAG_ICON, DRAG_ICON);
             e.stopPropagation();
@@ -128,6 +128,11 @@ final class HubWindow extends UIElement {
                 : new HubWindowState.Rect((screenW - HubWindowState.DEFAULT_W) / 2,
                         (screenH - HubWindowState.DEFAULT_H) / 2, HubWindowState.DEFAULT_W, HubWindowState.DEFAULT_H);
         layout(l -> l.left(r.x()).top(r.y()).width(r.w()).height(r.h()));
+    }
+
+    /** "Allow moving the hub" is off: no moving, no resizing. */
+    boolean locked() {
+        return clientCopy && !HubWindowState.get().movable();
     }
 
     boolean maximized() {
@@ -163,7 +168,7 @@ final class HubWindow extends UIElement {
     @Override
     public void drawBackgroundAdditional(GUIContext guiContext) {
         super.drawBackgroundAdditional(guiContext);
-        if (!clientCopy || maximized()) return;
+        if (!clientCopy || maximized() || locked()) return;
         ModularUI ui = getModularUI();
         if (ui != null && !ui.getDragHandler().isDragging()) {
             WindowDragHelper.drawResizeIcon(guiContext, this, RESIZE_BORDER);

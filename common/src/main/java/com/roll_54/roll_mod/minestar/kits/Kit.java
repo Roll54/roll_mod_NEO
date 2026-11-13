@@ -30,7 +30,12 @@ import java.util.Locale;
  * every player waits. Only the stamps in {@code kits/cooldowns.json} are epoch millis.
  */
 public record Kit(String name, long cooldownTicks, String permission, List<ItemStack> items, String displayName,
-                  List<String> slots) {
+                  List<String> slots, String description) {
+
+    /** A cooldown of this many ticks: the kit can be claimed once, ever (as on Eden). */
+    public static final long ONCE = -1L;
+    /** How long a description may be, {@code &} colour codes included. */
+    public static final int MAX_DESCRIPTION = 256;
 
     /** How long a display name may be, {@code &} colour codes included. */
     public static final int MAX_DISPLAY = 48;
@@ -38,6 +43,30 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
     public Kit {
         // Exactly one slot per item, whatever was passed: missing ones become free inventory slots.
         slots = KitSlots.fill(items, slots);
+        description = description == null ? "" : description;
+    }
+
+    /** Without a description. */
+    public Kit(String name, long cooldownTicks, String permission, List<ItemStack> items, String displayName,
+               List<String> slots) {
+        this(name, cooldownTicks, permission, items, displayName, slots, "");
+    }
+
+    /** Claimed once and never again. */
+    public boolean oneTime() {
+        return cooldownTicks < 0;
+    }
+
+    /** The same kit with another description; blank clears it. */
+    public Kit withDescription(String text) {
+        String clean = text == null ? "" : text.strip();
+        if (clean.length() > MAX_DESCRIPTION) clean = clean.substring(0, MAX_DESCRIPTION);
+        return new Kit(name, cooldownTicks, permission, items, displayName, slots, clean);
+    }
+
+    /** The same kit with another cooldown ({@link #ONCE} for a one-time kit). */
+    public Kit withCooldown(long ticks) {
+        return new Kit(name, Math.max(ONCE, ticks), permission, items, displayName, slots, description);
     }
 
     /** A kit whose items sit in the first inventory slots, in order. */
@@ -54,7 +83,7 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
     public Kit withDisplayName(String display) {
         String clean = display == null ? "" : display.strip();
         if (clean.length() > MAX_DISPLAY) clean = clean.substring(0, MAX_DISPLAY);
-        return new Kit(name, cooldownTicks, permission, items, clean, slots);
+        return new Kit(name, cooldownTicks, permission, items, clean, slots, description);
     }
 
     /** What a kit may be called: a safe file name and a safe permission-node segment. */
@@ -91,6 +120,7 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
         json.addProperty("cooldownTicks", cooldownTicks);
         json.addProperty("permission", permissionOrDefault());
         if (displayName != null && !displayName.isBlank()) json.addProperty("displayName", displayName);
+        if (!description.isBlank()) json.addProperty("description", description);
         json.add("items", array);
         json.add("slots", slotArray);
         return json;
@@ -126,6 +156,7 @@ public record Kit(String name, long cooldownTicks, String permission, List<ItemS
         String permission = json.has("permission") ? json.get("permission").getAsString() : "";
         // Older files have no display name; the kit then shows as its id, as it always did.
         String display = json.has("displayName") ? json.get("displayName").getAsString() : "";
-        return new Kit(name, Math.max(0L, cooldown), permission, List.copyOf(items), display, slots);
+        String description = json.has("description") ? json.get("description").getAsString() : "";
+        return new Kit(name, Math.max(ONCE, cooldown), permission, List.copyOf(items), display, slots, description);
     }
 }

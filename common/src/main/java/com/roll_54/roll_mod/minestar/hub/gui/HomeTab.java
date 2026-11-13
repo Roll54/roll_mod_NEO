@@ -54,12 +54,14 @@ public final class HomeTab {
 
     private static final int PADDING = 8;
     private static final int PREVIEW_W = 110;
-    private static final int ROW_H = 14;
-    private static final int ROW_GAP = 6;
+    /** The teleports column on the left, where the model was. */
+    private static final int TELEPORTS_W = 150;
+    private static final int ROW_H = 12;
+    private static final int ROW_GAP = 2;
     private static final int ICON = 12;
 
     /** Roughly head-to-toe for the preview box below; vanilla's inventory doll uses 30. */
-    private static final int MODEL_SCALE = 45;
+    private static final int MODEL_SCALE = 22;
 
     private static final int COLOR_PANEL = 0x40000000;
 
@@ -87,8 +89,8 @@ public final class HomeTab {
         // see PlayerPreviewElement's class javadoc.
         // Appended, never inserted: info() registers six positional bindings and anything placed
         // before it would shift every one of them. The kits panel registers none of its own.
-        body.addChildren(preview(() -> section.overlay().isDisplayed()), info(player, server),
-                HomeSidePanel.build(player));
+        // The quick teleports sit where the player model used to; neither has bindings, so info()'s stay put.
+        body.addChildren(leftColumn(() -> section.overlay().isDisplayed()), info(player, server));
 
         // The panel last, so it covers the body when opened.
         root.addChildren(HubSection.header("home", section, history.button()), body, section.overlay(),
@@ -97,6 +99,21 @@ public final class HomeTab {
     }
 
     /* ------------------------------------------- the model ------------------------------------------ */
+
+    /** The model's box: about half the old full-height one. */
+    private static final int MODEL_H = 90;
+
+    /** The left column: the player model, half its old size, and the quick teleports under it. No bindings. */
+    private static UIElement leftColumn(BooleanSupplier suppressed) {
+        UIElement column = new UIElement();
+        column.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(TELEPORTS_W).heightPercent(100).flexShrink(0)
+                .gapRow(PADDING));
+        // The player model is gone from here (as asked); the teleports have the column. preview() is kept.
+        UIElement teleports = HomeSidePanel.column(TELEPORTS_W);
+        teleports.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
+        column.addChild(teleports);
+        return column;
+    }
 
     private static UIElement preview(BooleanSupplier suppressed) {
         UIElement frame = new UIElement();
@@ -116,6 +133,110 @@ public final class HomeTab {
     private static final int COLOR_LEVEL = 0xFF6EC7;
     private static final int COLOR_STARCOINS = 0xFFD54F;
 
+    /* ------------------------------------------- the header ------------------------------------------ */
+
+    private static final int HEAD = 32;
+    private static final int COLOR_FRAME = 0xFFB45CFF;
+    private static final int COLOR_TRACK = 0x40FFFFFF;
+
+    private record ProfileHeader(UIElement root, Label badge, Label group, UIElement fill, Label xp, float[] shown) {}
+
+    private static ProfileHeader profileHeader(Player player) {
+        UIElement root = new UIElement();
+        root.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).gapColumn(8)
+                .alignItems(dev.vfyjxf.taffy.style.AlignItems.CENTER).marginBottom(4).flexShrink(0));
+
+        // The head in a frame, the level on a badge across its bottom edge (like the site's "LVL 12").
+        UIElement avatar = new UIElement();
+        avatar.layout(l -> l.width(HEAD + 4).height(HEAD + 10).flexShrink(0));
+        UIElement frame = new UIElement();
+        frame.layout(l -> l.positionType(org.appliedenergistics.yoga.YogaPositionType.ABSOLUTE).left(0).top(0)
+                .width(HEAD + 4).height(HEAD + 4).paddingAll(2));
+        frame.style(s -> s.background(new com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup(
+                new ColorRectTexture(0x90000000),
+                new com.lowdragmc.lowdraglib2.gui.texture.ColorBorderTexture(1, COLOR_FRAME))));
+        PlayerHeadElement head = new PlayerHeadElement(player.getUUID(), player.getGameProfile().getName());
+        head.layout(l -> l.width(HEAD).height(HEAD));
+        frame.addChild(head);
+        Label badge = new Label();
+        badge.layout(l -> l.positionType(org.appliedenergistics.yoga.YogaPositionType.ABSOLUTE).left(2).top(HEAD - 2)
+                .width(HEAD).height(10));
+        badge.textStyle(t -> t.textAlignHorizontal(com.lowdragmc.lowdraglib2.gui.ui.data.Horizontal.CENTER)
+                .textAlignVertical(Vertical.CENTER).fontSize(7).textColor(0xFFFFFFFF));
+        badge.style(s -> s.background(new com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup(
+                new ColorRectTexture(0xFF1B1530),
+                new com.lowdragmc.lowdraglib2.gui.texture.ColorBorderTexture(1, COLOR_FRAME))));
+        badge.setDisplay(false);
+        avatar.addChildren(frame, badge);
+
+        UIElement names = new UIElement();
+        names.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexBasis(0).flexGrow(1).gapRow(3));
+        UIElement nameLine = new UIElement();
+        nameLine.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(14).gapColumn(5)
+                .alignItems(dev.vfyjxf.taffy.style.AlignItems.CENTER));
+        Label name = new Label();
+        name.setText(Component.literal(player.getGameProfile().getName()));
+        name.layout(l -> l.height(14));
+        name.textStyle(t -> t.fontSize(13).textAlignVertical(Vertical.CENTER));
+        Label group = new Label();
+        group.layout(l -> l.height(12).paddingHorizontal(3));
+        group.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        group.setDisplay(false);
+        nameLine.addChildren(name, group);
+
+        // The level's progress, filled in the level pink.
+        UIElement track = new UIElement();
+        track.layout(l -> l.widthPercent(100).height(4));
+        track.style(s -> s.background(new ColorRectTexture(COLOR_TRACK)));
+        UIElement fill = new UIElement();
+        fill.layout(l -> l.widthPercent(0).heightPercent(100));
+        fill.style(s -> s.background(new ColorRectTexture(0xFF000000 | COLOR_LEVEL)));
+        track.addChild(fill);
+        Label xp = new Label();
+        xp.layout(l -> l.widthPercent(100).height(10));
+        xp.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        names.addChildren(nameLine, track, xp);
+
+        root.addChildren(avatar, names);
+        return new ProfileHeader(root, badge, group, fill, xp, new float[] {-1f});
+    }
+
+    /** Fills the header from the viewer's Minestar profile; nothing level-related without one (a dev world). */
+    private static void fillHeader(ProfileHeader header, @Nullable FriendDetail own) {
+        boolean has = own != null;
+        if (header.badge().isDisplayed() != has) header.badge().setDisplay(has);
+        if (!has) {
+            setIfChanged(header.xp(), Component.empty());
+            return;
+        }
+        setIfChanged(header.badge(), Component.translatable("gui.roll_mod.hub.home.lvl_badge", own.level()));
+        boolean grouped = !own.groupName().isEmpty();
+        if (header.group().isDisplayed() != grouped) header.group().setDisplay(grouped);
+        if (grouped) {
+            MutableComponent text = Component.literal(own.groupName());
+            if (own.groupColor() >= 0) text = text.withColor(own.groupColor());
+            setIfChanged(header.group(), text);
+        }
+        float progress = own.levelXpNeeded() > 0 ? Math.min(1f, (float) own.levelXp() / own.levelXpNeeded()) : 0f;
+        if (progress != header.shown()[0]) {
+            header.shown()[0] = progress;
+            header.fill().layout(l -> l.widthPercent(progress * 100f));
+        }
+        setIfChanged(header.xp(), Component.translatable("gui.roll_mod.hub.home.xp", own.levelXp(), own.levelXpNeeded(),
+                own.level() + 1, own.xpToNext()).withStyle(ChatFormatting.GRAY));
+    }
+
+    /**
+     * A label's text, only when it changed: setting it every tick re-measured every row of the tab, twenty times a
+     * second, for nothing.
+     */
+    private static void setIfChanged(Label label, Component text) {
+        if (!text.equals(label.getText())) label.setText(text);
+        // An empty line takes no room (no Minestar profile, no unread letters), so the rest fits the column.
+        boolean shown = !text.getString().isEmpty();
+        if (label.isDisplayed() != shown) label.setDisplay(shown);
+    }
+
     private static UIElement info(Player player, @Nullable ServerPlayer server) {
         // One binding per value. Ints and Components only — the client resolves the wording itself.
         SimpleBinding<Component> rank = DataBindingBuilder
@@ -132,7 +253,7 @@ public final class HomeTab {
         SimpleBinding<Integer> optionalTotal = intBinding(() -> quests.get().optionalTotal(), 0);
 
         UIElement column = new UIElement();
-        column.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexGrow(1).heightPercent(100)
+        column.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexBasis(0).flexGrow(1).heightPercent(100)
                 .gapRow(ROW_GAP));
         column.addSyncValue(rank.getSyncValue());
         column.addSyncValue(tier.getSyncValue());
@@ -141,9 +262,10 @@ public final class HomeTab {
         column.addSyncValue(optionalDone.getSyncValue());
         column.addSyncValue(optionalTotal.getSyncValue());
 
-        Label nickname = row(column, null);
-        nickname.setText(Component.literal(player.getGameProfile().getName())
-                .withStyle(ChatFormatting.WHITE));
+        // The header, as on Eden's profile: the head in a frame with "LVL N" on a badge under it, the name large,
+        // the group beside it, and the level's progress as a bar with the XP to the next. No sync values.
+        ProfileHeader header = profileHeader(player);
+        column.addChild(header.root());
 
         Label levelRow = row(column, null);
         levelRow.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> {
@@ -177,34 +299,35 @@ public final class HomeTab {
             // Level and rank are the viewer's Minestar profile, fetched when the hub opened. Without
             // one (no Minestar API — a dev world) the rank falls back to the server's own.
             FriendDetail own = ClientFriendsCache.DETAILS.get(player.getUUID());
-            levelRow.setText(own == null ? Component.empty()
+            fillHeader(header, own);
+            setIfChanged(levelRow, own == null ? Component.empty()
                     : Component.translatable("gui.roll_mod.hub.home.level",
                             Component.literal(String.valueOf(own.level())).withColor(COLOR_LEVEL)));
-            playtimeRow.setText(own == null ? Component.empty()
+            setIfChanged(playtimeRow, own == null ? Component.empty()
                     : Component.translatable("gui.roll_mod.hub.home.playtime",
                             Component.literal(String.valueOf(own.playtimeHours())).withStyle(ChatFormatting.AQUA)));
             if (own != null && !own.groupName().isEmpty()) {
                 MutableComponent group = Component.literal(own.groupName());
                 if (own.groupColor() >= 0) group = group.withColor(own.groupColor());
-                rankRow.setText(Component.translatable("gui.roll_mod.hub.home.minestar_rank", group));
+                setIfChanged(rankRow, Component.translatable("gui.roll_mod.hub.home.minestar_rank", group));
             } else {
-                rankRow.setText(Component.translatable("gui.roll_mod.hub.home.rank",
+                setIfChanged(rankRow, Component.translatable("gui.roll_mod.hub.home.rank",
                         value(rank, Component.empty())));
             }
-            coinsRow.setText(Component.translatable("gui.roll_mod.hub.home.starcoins",
+            setIfChanged(coinsRow, Component.translatable("gui.roll_mod.hub.home.starcoins",
                     Component.literal(EnergyFormatUtils.formatEnergy(ClientCurrencyHolder.get(CurrencyType.MAIN)))
                             .withColor(COLOR_STARCOINS)));
-            questsRow.setText(Component.translatable("gui.roll_mod.hub.home.quests",
+            setIfChanged(questsRow, Component.translatable("gui.roll_mod.hub.home.quests",
                     value(questsDone, 0), value(questsTotal, 0)));
-            tierRow.setText(Component.translatable("gui.roll_mod.hub.home.tier",
+            setIfChanged(tierRow, Component.translatable("gui.roll_mod.hub.home.tier",
                     PlayerTier.name(value(tier, 0))));
-            standingRow.setText(standing());
+            setIfChanged(standingRow, standing());
             int unread = ClientPlayerStatusCache.UNREAD_LETTERS;
-            lettersRow.setText(unread > 0
+            setIfChanged(lettersRow, unread > 0
                     ? Component.translatable("gui.roll_mod.hub.status.letters", unread)
                             .withStyle(ChatFormatting.GOLD)
                     : Component.empty());
-            staffRow.setText(staff());
+            setIfChanged(staffRow, staff());
         });
 
         // The optional count is a footnote to the quest row rather than a row of its own.
@@ -214,6 +337,9 @@ public final class HomeTab {
                                 value(optionalDone, 0), value(optionalTotal, 0))
                                 .withStyle(ChatFormatting.GRAY)),
                 null, null, ItemStack.EMPTY));
+
+        // As on Eden's profile: what the level gives, and the rewards earned on the site. No sync values.
+        column.addChild(LevelRewardsCard.build(player));
 
         return column;
     }
@@ -311,7 +437,7 @@ public final class HomeTab {
     private static Label row(UIElement parent, @Nullable String tooltipKey) {
         Label label = new Label();
         label.layout(l -> l.widthPercent(100).height(ROW_H));
-        label.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(true));
+        label.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         if (tooltipKey != null) {
             label.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
                     List.of(Component.translatable(tooltipKey)), null, null, ItemStack.EMPTY));

@@ -177,8 +177,11 @@ public final class MinPriceService {
       if (entry != null) own = entry.price();
     }
     if (fluid != null) {
+      // The absolute minimum holds for each part: the container like any item, the fluid per bucket.
+      double minimum = t.snapshot().minimum();
+      own = Math.max(own, minimum);
       Entry entry = t.entries().get(FluidContents.fluidKey(fluid));
-      if (entry != null) own += entry.price() * FluidContents.buckets(fluid);
+      own += Math.max(entry == null ? 0 : entry.price(), minimum) * FluidContents.buckets(fluid);
     }
     // The absolute minimum holds for every item: blacklisted, never crafted, or priced below it.
     own = Math.max(own, t.snapshot().minimum());

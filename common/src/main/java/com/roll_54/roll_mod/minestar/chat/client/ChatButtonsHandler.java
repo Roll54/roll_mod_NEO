@@ -201,6 +201,14 @@ public final class ChatButtonsHandler {
         updateHint(screen);
     }
 
+    /** After a pick made from elsewhere (a reply, {@link ChatReply}): the buttons and the hint follow it. */
+    static void afterPick(Screen screen) {
+        for (GuiEventListener child : screen.children()) {
+            if (child instanceof ChannelButton button) button.restyle();
+        }
+        updateHint(screen);
+    }
+
     private static boolean isControl(int key) {
         return key == GLFW.GLFW_KEY_LEFT_CONTROL || key == GLFW.GLFW_KEY_RIGHT_CONTROL;
     }

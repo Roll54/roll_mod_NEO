@@ -31,6 +31,7 @@ public record ChatButton(String id, String name, String template) {
     public static final ChatButton PM_BUTTON = new ChatButton(ChatChannel.PM.id(), "", "");
     public static final ChatButton DEV_BUTTON = new ChatButton(ChatChannel.DEV.id(), "", "");
     public static final ChatButton SPAM_BUTTON = new ChatButton(ChatChannel.SPAM.id(), "", "");
+    public static final ChatButton TEAM_BUTTON = new ChatButton(ChatChannel.TEAM.id(), "", "");
 
     /**
      * {@code text} without the {@link #GLOBAL_PREFIX}es it starts with, and the space after them:
@@ -72,7 +73,7 @@ public record ChatButton(String id, String name, String template) {
     /**
      * What to send for {@code text} through this button — always a command (leading {@code /}),
      * since the server locks plain chat: Global {@code /gc}, All and Local {@code /lc}, Friends
-     * {@code /fc}, Trade {@code /tc}. A custom template that is not itself a command goes to local
+     * {@code /fc}, Trade {@code /tc}, Team {@code /tm}. A custom template that is not itself a command goes to local
      * chat through {@code /lc}. PM and the read-only channels are handled by the chat box itself
      * (they need a recipient, or take no chat at all), so they never get here.
      */
@@ -85,6 +86,7 @@ public record ChatButton(String id, String name, String template) {
             case "global" -> "/gc " + text;
             case "friends" -> "/fc " + text;
             case "trade" -> "/tc " + text;
+            case "team" -> "/tm " + text;
             default -> "/lc " + text;
         };
     }

@@ -6,6 +6,8 @@ import com.roll_54.roll_mod.compat.mi.machines.CoilPyrolyseOven;
 import com.roll_54.roll_mod.compat.mi.machines.FluidHatches;
 import com.roll_54.roll_mod.compat.mi.machines.MultiFluidHatches;
 import com.roll_54.roll_mod.compat.mi.machines.OreWashers;
+import com.roll_54.roll_mod.compat.mi.machines.PackMultiblocks;
+import com.roll_54.roll_mod.compat.mi.machines.LargeChemicalReactor;
 import com.roll_54.roll_mod.compat.mi.machines.HighlyAdvancedDistillery;
 import com.roll_54.roll_mod.compat.mi.machines.ParallelMultiblocks;
 import com.roll_54.roll_mod.compat.mi.machines.me.MeHatches;
@@ -57,11 +59,25 @@ public class RollMachineModelProvider implements DataProvider {
             overlays.addProperty("output", "modern_industrialization:block/overlays/output");
             machine(cache, writes, CoilPyrolyseOven.ID, CoilPyrolyseOven.CASING, overlays);
         }
-        frontMachine(cache, writes, OreWashers.ORE_WASHER, OreWashers.ORE_WASHER_CASING, OreWashers.ORE_WASHER_OVERLAYS);
+        {
+            // The KubeJS washer's front only; its sides stay plain casing.
+            JsonObject overlays = new JsonObject();
+            overlays.addProperty("fluid_auto", "modern_industrialization:block/overlays/fluid_auto");
+            overlays.addProperty("front", OreWashers.ORE_WASHER_OVERLAYS + "/overlay_front");
+            overlays.addProperty("front_active", OreWashers.ORE_WASHER_OVERLAYS + "/overlay_front_active");
+            overlays.addProperty("item_auto", "modern_industrialization:block/overlays/item_auto");
+            overlays.addProperty("output", "modern_industrialization:block/overlays/output");
+            machine(cache, writes, OreWashers.ORE_WASHER, OreWashers.ORE_WASHER_CASING, overlays);
+        }
         frontMachine(cache, writes, HighlyAdvancedDistillery.ID, HighlyAdvancedDistillery.CASING,
                 HighlyAdvancedDistillery.OVERLAYS);
         frontMachine(cache, writes, OreWashers.STEAM_ORE_WASHER, OreWashers.STEAM_ORE_WASHER_CASING,
                 OreWashers.STEAM_ORE_WASHER_OVERLAYS);
+        for (PackMultiblocks.Crafting machine : PackMultiblocks.CRAFTING) {
+            frontMachine(cache, writes, machine.id(), machine.casing(), machine.overlays());
+        }
+        frontMachine(cache, writes, LargeChemicalReactor.ID, LargeChemicalReactor.CASING, LargeChemicalReactor.OVERLAYS);
+        frontMachine(cache, writes, PackMultiblocks.TURBINE, PackMultiblocks.TURBINE_CASING, PackMultiblocks.TURBINE_OVERLAYS);
         for (FluidHatches.Spec spec : FluidHatches.ALL) {
             // Same overlays MI gives its own fluid hatches, input and output alike.
             JsonObject overlays = new JsonObject();

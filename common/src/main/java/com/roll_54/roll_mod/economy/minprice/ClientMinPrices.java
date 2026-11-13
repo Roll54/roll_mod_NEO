@@ -52,8 +52,10 @@ public final class ClientMinPrices {
     if (fluid == null) return null;
     Double container = ITEMS.get(FluidContents.containerKey(stack));
     Double perBucket = FLUIDS.get(BuiltInRegistries.FLUID.getKey(fluid.getFluid()).toString());
+    // The absolute minimum holds for each part: the container like any item, the fluid per bucket.
     return new double[] {
-      container == null ? 0 : container, (perBucket == null ? 0 : perBucket) * FluidContents.buckets(fluid)
+      Math.max(container == null ? 0 : container, MINIMUM),
+      Math.max(perBucket == null ? 0 : perBucket, MINIMUM) * FluidContents.buckets(fluid)
     };
   }
 

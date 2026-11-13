@@ -195,11 +195,11 @@ final class LetterComposer {
                     content.addChildren(kinds, form);
                 });
 
-        // At the cursor, the FTB Quests way. Opened fresh on the money form each time: the last
-        // kind used is not a good guess for the next.
+        // In the middle of the screen, like every other extra window. Opened fresh on the money form each
+        // time: the last kind used is not a good guess for the next.
         plus.addEventListener(UIEvents.CLICK, e -> {
             choose(Kind.MONEY);
-            popup.openAt(e.x, e.y);
+            popup.open();
         });
     }
 

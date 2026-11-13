@@ -82,6 +82,31 @@ public class MyConfig extends Config {
         public int TIME_TO_BROADCAST = 12000;
     }
 
+    @Comment("What a player's Minestar level gives (as on Eden): one rule per line, perk:from:every:amount:until 2014 amount of perk at level from, then every N levels (0 = once), up to until (0 = no end). Perks: emoji_slots, sticker_slots, claims (Open Parties and Claims bonus chunks), daily_rerolls.")
+    public LevelRewardSettings levelRewards = new LevelRewardSettings();
+
+    public static class LevelRewardSettings extends ConfigSection {
+        public java.util.List<String> rules = new ArrayList<>(List.of(
+                "emoji_slots:1:2:1:0",
+                "sticker_slots:2:2:1:0",
+                "claims:5:10:5:0",
+                "daily_rerolls:10:10:1:0"));
+    }
+
+    @Comment("/back, as FTB Essentials does it: a history of the places you teleported from (and died at), newest first.")
+    public BackSettings back = new BackSettings();
+
+    public static class BackSettings extends ConfigSection {
+        @Comment("How many places /back remembers per player.")
+        public int historySize = 10;
+        @Comment("Seconds between two uses of /back.")
+        public int cooldownSeconds = 30;
+        @Comment("LuckPerms group (or any group inheriting it) that may use /back and sees its hub button. Operators always may.")
+        public String group = "prime";
+        @Comment("LuckPerms group (or any group inheriting it) that may use /fly. Operators always may.")
+        public String flyGroup = "media";
+    }
+
     @Comment("Settings for the /rtp (random teleport) command")
     public RtpSettings rtp = new RtpSettings();
 
@@ -392,6 +417,15 @@ public class MyConfig extends Config {
 
         @Comment("How lines from the Discord bridge start (case ignored). They go to the chat's Global tab with their emojis and links drawn.")
         public String discordLineMarker = "[Discord]";
+
+        @Comment("A player joining gets the Global and Trade chat (Discord lines included) from this many minutes before. 0 = off.")
+        public ValidatedInt joinHistoryMinutes = new ValidatedInt(30, 24 * 60, 0);
+
+        @Comment("At most this many lines of that history are kept and sent, newest last. 0 = off.")
+        public ValidatedInt joinHistoryLines = new ValidatedInt(100, 500, 0);
+
+        @Comment("\"@Name\" in a chat message pings that player with a sound (each player can turn it off in hub Settings) and shows the name highlighted.")
+        public boolean mentions = true;
     }
 
     @Comment("The moderation tab's death log: what a player carried when they died.")

@@ -3,7 +3,9 @@ package com.roll_54.roll_mod.minestar.hub.gui;
 import com.roll_54.roll_mod.minestar.theme.RollUi;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.DataBindingBuilder;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.SimpleBinding;
+import com.lowdragmc.lowdraglib2.gui.texture.ColorBorderTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorRectTexture;
+import com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup;
 import com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture;
 import com.lowdragmc.lowdraglib2.gui.texture.Icons;
 import com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture;
@@ -232,7 +234,7 @@ public final class HubUI {
             // The envelope carries its own mark while something is unread (letter_new.png), so this
             // bookmark takes no HubBadge on top — it would be the same mark twice.
             new HubTab("letters",
-                    IGuiTexture.dynamic(() -> LetterIcons.envelope(ClientPlayerStatusCache.UNREAD_LETTERS > 0)),
+                    IGuiTexture.dynamic(() -> LetterIcons.envelope(HubBadge.mailPending())),
                     (player, inventory) -> LettersTab.build(player)),
             // Deprecated: merged into "interactions", as "tpa" above.
             new HubTab("friends", icon("friends"),
@@ -255,7 +257,13 @@ public final class HubUI {
             // Off by config (hub.skinsTab) until the tab is finished.
             new HubTab("skins", icon("skins_tab"),
                     (player, inventory) -> SkinsTab.build(player),
-                    () -> MyConfig.INSTANCE.hub.skinsTab.get(), () -> false));
+                    () -> MyConfig.INSTANCE.hub.skinsTab.get(), () -> false),
+            // Settings, laid out like Eden's. No bookmark: the gear among the window controls opens it.
+            new HubTab("settings", Icons.SETTINGS,
+                    (player, inventory) -> SettingsTab.build(player), () -> false, () -> false),
+            // The kits, a tab of their own as on Eden (they were in the home tab's side column).
+            new HubTab("kits", new com.lowdragmc.lowdraglib2.gui.texture.ItemStackTexture(net.minecraft.world.item.Items.BUNDLE),
+                    (player, inventory) -> KitsTab.build(player)));
 
     /**
      * Header order, as indices into {@link #TABS}. Purely visual: the content slots are still built
@@ -263,7 +271,7 @@ public final class HubUI {
      * having to be inserted second. {@link #indexOf} keeps returning tree indices, which is what
      * every caller passes to {@code HubCommand.open}.
      */
-    private static final List<Integer> DISPLAY_ORDER = List.of(0, 12, 11, 10, 1, 2, 4, 8, 7, 6, 9, 14, 13, 3, 5);
+    private static final List<Integer> DISPLAY_ORDER = List.of(0, 12, 11, 10, 1, 2, 4, 8, 16, 7, 6, 9, 14, 13, 3, 5, 15);
 
     static {
         // Appending a tab and forgetting this list would silently hide it; fail at class-load
@@ -272,6 +280,64 @@ public final class HubUI {
             throw new IllegalStateException("HubUI.DISPLAY_ORDER must be a permutation of TABS");
         }
     }
+
+    /** Tabs that never get a bookmark (merged away, or opened by the gear): left out of the order setting. */
+    private static final Set<String> UNORDERED = Set.of("warps", "homes", "tpa", "friends", "settings");
+
+    /** The client's open tab strip and its tabs by tree index, for reordering in place. */
+    private static com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView liveStrip;
+    private static List<Tab> liveTabs;
+
+    /**
+     * The header order: the player's own (Settings → Hub) on the client, tabs it does not name after those in their
+     * default order; the default on the server's copy. Visual only, like {@link #DISPLAY_ORDER}.
+     */
+    private static List<Integer> displayOrder(boolean client) {
+        if (!client) return DISPLAY_ORDER;
+        List<Integer> order = new ArrayList<>();
+        for (String id : HubWindowState.get().tabOrder()) {
+            int index = indexOf(id);
+            if (index >= 0 && !order.contains(index)) order.add(index);
+        }
+        for (int index : DISPLAY_ORDER) if (!order.contains(index)) order.add(index);
+        return order;
+    }
+
+    /** The tabs the player can order, by id, in their current order. */
+    public static List<String> orderedTabIds() {
+        List<String> ids = new ArrayList<>();
+        for (int index : displayOrder(true)) {
+            String id = TABS.get(index).id();
+            if (!UNORDERED.contains(id)) ids.add(id);
+        }
+        return ids;
+    }
+
+    public static Component tabTitle(String id) {
+        int index = indexOf(id);
+        return index < 0 ? Component.literal(id) : TABS.get(index).title();
+    }
+
+    public static IGuiTexture tabIcon(String id) {
+        int index = indexOf(id);
+        return index < 0 ? IGuiTexture.EMPTY : TABS.get(index).texture();
+    }
+
+    /** Saves a new order and puts an open hub's bookmarks in it. Client only. */
+    public static void setTabOrder(List<String> ids) {
+        HubWindowState state = HubWindowState.get();
+        state.setTabOrder(ids);
+        state.save();
+        if (liveStrip == null || liveTabs == null) return;
+        liveStrip.clearAllScrollViewChildren();
+        for (int index : displayOrder(true)) {
+            Tab tab = liveTabs.get(index);
+            if (tab != null) liveStrip.addScrollViewChild(tab);
+        }
+    }
+
+    /** Tabs with no bookmark that are still opened by code (the gear opens Settings): not sent back home. */
+    private static final Set<String> BOOKMARKLESS = Set.of("settings");
 
     private static final int HOME = indexOf("home");
 
@@ -526,7 +592,8 @@ public final class HubUI {
         // `slots.get(n)` while the header renders in whatever order DISPLAY_ORDER asks for.
         List<Tab> tabs = new ArrayList<>(Collections.nCopies(TABS.size(), (Tab) null));
         List<UIElement> badges = new ArrayList<>(Collections.nCopies(TABS.size(), (UIElement) null));
-        for (int displayed : DISPLAY_ORDER) {
+        List<UIElement> glows = new ArrayList<>(Collections.nCopies(TABS.size(), (UIElement) null));
+        for (int displayed : displayOrder(clientCopy)) {
             final int index = displayed;
             HubTab spec = TABS.get(index);
             Tab tab = new Tab();
@@ -555,10 +622,21 @@ public final class HubUI {
             UIElement badge = new UIElement();
             badge.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).right(1).top(1)
                     .width(HubBadge.SIZE).height(HubBadge.SIZE));
-            badge.style(s -> s.background(HubBadge.texture()).zIndex(1));
+            badge.style(s -> s.background(IGuiTexture.dynamic(HubBadge::coloured)).zIndex(1));
             badge.setDisplay(false);
             tab.addChild(badge);
             badges.set(index, badge);
+            // The glow (Settings → Notifications): the bookmark outlined and tinted in the notification colour.
+            UIElement glow = new UIElement();
+            glow.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).left(0).top(0).right(0).bottom(0));
+            glow.style(s -> s.background(IGuiTexture.dynamic(() -> {
+                int c = HubNotifications.color().argb();
+                return new GuiTextureGroup(new ColorRectTexture((c & 0x00FFFFFF) | 0x30000000),
+                        new ColorBorderTexture(1, c));
+            })));
+            glow.setDisplay(false);
+            tab.addChild(glow);
+            glows.set(index, glow);
 
             // Tooltips are collected by walking up from the hovered element, so this fires with the
             // cursor over the icon too.
@@ -574,6 +652,10 @@ public final class HubUI {
 
             tabs.set(index, tab);
             tabStrip.addScrollViewChild(tab);
+        }
+        if (clientCopy) {
+            liveStrip = tabStrip;
+            liveTabs = tabs;
         }
 
         // Header first, panel under it. Nothing overlaps any more, so the order is just the order
@@ -610,16 +692,13 @@ public final class HubUI {
         // unconditionally and on both sides, like everything else in this tree: only their click
         // behaviour is client-side, and an element that existed on one side only would shift every
         // positional binding after it — see the class javadoc.
-        HubSettings settings = new HubSettings(player);
-        // The gear opens the settings popup: theme, the force switch and the chat buttons.
-        window.addChild(windowButton(3, () -> Icons.SETTINGS, "settings", settings::toggle));
+        // The gear opens the Settings tab (it was a popup, HubSettings, before; that class is deprecated).
+        window.addChild(windowButton(3, () -> Icons.SETTINGS, "settings", () -> switchTo("settings")));
         window.addChild(windowButton(2, () -> Icons.REPLAY, "reset", window::reset));
         window.addChild(windowButton(1,
                 () -> window.maximized() ? Icons.WINDOW_RESTORE : Icons.WINDOW_MAXIMIZE,
                 null, window::toggleMaximize));
         window.addChild(back());
-        // Last of all: a modal over the whole window, controls included.
-        window.addChild(settings.root());
 
         // With the window no longer covering the screen, a click beside it lands on the bare host.
         // Vanilla drops a carried stack on a click outside the GUI, but it measures "outside" against
@@ -677,11 +756,21 @@ public final class HubUI {
                 Tab tab = tabs.get(i);
                 boolean visible = TABS.get(i).visible().getAsBoolean();
                 if (tab.isDisplayed() != visible) tab.setDisplay(visible);
-                boolean flagged = visible && TABS.get(i).attention().getAsBoolean();
+                // Settings → Notifications: what is pointed out (the kinds gate the attention suppliers in
+                // HubBadge, and "new" tabs here), and as a badge, a glow or both.
+                if (currentTab[0] == i) HubNotifications.seen(TABS.get(i).id());
+                boolean flagged = visible && (TABS.get(i).attention().getAsBoolean()
+                        || HubNotifications.unseen(TABS.get(i).id()));
+                HubNotifications.Style style = HubNotifications.style();
                 UIElement badge = badges.get(i);
-                if (badge != null && badge.isDisplayed() != flagged) badge.setDisplay(flagged);
+                boolean showBadge = flagged && style.badge();
+                if (badge != null && badge.isDisplayed() != showBadge) badge.setDisplay(showBadge);
+                UIElement glow = glows.get(i);
+                boolean showGlow = flagged && style.glow();
+                if (glow != null && glow.isDisplayed() != showGlow) glow.setDisplay(showGlow);
                 // Standing on a tab that just went away: back to the first one.
-                if (!visible && currentTab[0] == i) select(tabs, slots, onSelected, clampTab(i) != i ? clampTab(i) : 0);
+                if (!visible && currentTab[0] == i && !BOOKMARKLESS.contains(TABS.get(i).id()))
+                    select(tabs, slots, onSelected, clampTab(i) != i ? clampTab(i) : 0);
             }
         });
 

@@ -24,7 +24,9 @@ public enum ChatChannel {
     /** Staff only: commands run on the server, what they answered, and KubeJS / roll_mod errors. */
     DEV,
     /** Advancements, deaths, joins, announcements and every other server notice. Read-only: commands only. */
-    SPAM;
+    SPAM,
+    /** The player's FTB Teams team: {@code /tm}, seen by its members only. */
+    TEAM;
 
     public String id() {
         return name().toLowerCase(Locale.ROOT);

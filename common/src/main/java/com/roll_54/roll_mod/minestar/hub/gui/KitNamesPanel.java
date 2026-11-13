@@ -59,6 +59,8 @@ final class KitNamesPanel {
     private final Label empty = new Label();
     private final Label info = new Label();
     private final TextField cooldown = new TextField();
+    /** The kit's description, shown on its card (as on Eden, plus descriptions). */
+    private final TextField description = new TextField();
     private final Button delete = new Button();
     private final TextField newName = new TextField();
     private final TextField newCooldown = new TextField();
@@ -69,9 +71,11 @@ final class KitNamesPanel {
 
     private String shownKit;
     private int shownVersion = -1;
+    /** The name the preview button was last captioned with. */
+    private String shownPreview;
 
     /** Fills {@code pane}, one of the moderation tab's stacked panes. */
-    KitNamesPanel(UIElement pane) {
+    KitNamesPanel(UIElement pane, HubConfirm confirmer, java.util.function.Consumer<String> editItems) {
         Label hint = new Label();
         hint.setText(Component.translatable("gui.roll_mod.hub.moderation.kitNames.hint").withStyle(ChatFormatting.GRAY));
         hint.layout(l -> l.widthPercent(100).flexShrink(0));
@@ -120,8 +124,8 @@ final class KitNamesPanel {
         UIElement itemsRow = row();
         itemsRow.addChild(button("gui.roll_mod.hub.moderation.kits.editItems", -1, () -> {
             if (selected[0] == null) return;
-            returnTo = selected[0];
             PacketDistributor.sendToServer(new KitNamePackets.Edit(KitNamePackets.Edit.Action.ITEMS, selected[0], 0L));
+            editItems.accept(selected[0]);
         }));
 
         UIElement cooldownRow = row();
@@ -139,26 +143,42 @@ final class KitNamesPanel {
             }));
         }
 
-        // Two clicks: the first only asks.
+        // Asks first, in the hub's confirm window.
         delete.setText(Component.translatable("gui.roll_mod.hub.moderation.kits.delete"));
         delete.layout(l -> l.flexGrow(1).height(ROW_H - 2).paddingAll(0));
         HubSection.centreCaption(delete);
         UIElement deleteRow = row();
         deleteRow.addChild(delete);
         delete.setOnClick(e -> {
-            if (selected[0] == null) return;
-            if (!selected[0].equals(deleteArmed)) {
-                deleteArmed = selected[0];
-                delete.setText(Component.translatable("gui.roll_mod.hub.moderation.kits.deleteConfirm", selected[0])
-                        .withStyle(ChatFormatting.RED));
-                return;
-            }
-            PacketDistributor.sendToServer(new KitNamePackets.Edit(KitNamePackets.Edit.Action.DELETE, selected[0], 0L));
-            deleteArmed = null;
-            selected[0] = null;
+            String kit = selected[0];
+            if (kit == null) return;
+            confirmer.ask(Component.translatable("gui.roll_mod.hub.moderation.kits.deleteAsk", kit),
+                    Component.translatable("gui.roll_mod.hub.moderation.kits.delete"), () -> {
+                        PacketDistributor.sendToServer(new KitNamePackets.Edit(KitNamePackets.Edit.Action.DELETE, kit, 0L));
+                        if (kit.equals(selected[0])) selected[0] = null;
+                    });
         });
 
-        editor.addChildren(id, row, preview, info, itemsRow, cooldownRow, presetRow, deleteRow);
+        // The description players read on the kit's card; & colour codes work.
+        UIElement descriptionRow = row();
+        description.setText("");
+        description.layout(l -> l.flexBasis(0).flexGrow(1).height(ROW_H - 2));
+        descriptionRow.addChildren(label(Component.translatable("gui.roll_mod.hub.moderation.kits.description"), LABEL_W),
+                description, button("gui.roll_mod.hub.moderation.save", SAVE_W, () -> {
+                    if (selected[0] == null) return;
+                    String text = description.getText();
+                    if (text.length() > Kit.MAX_DESCRIPTION) text = text.substring(0, Kit.MAX_DESCRIPTION);
+                    PacketDistributor.sendToServer(new KitNamePackets.Describe(selected[0], text));
+                }));
+
+        // A one-time kit, as on Eden: claimed once and never again.
+        presetRow.addChild(button("gui.roll_mod.hub.moderation.kits.once", -1, () -> {
+            if (selected[0] == null) return;
+            cooldown.setText("");
+            PacketDistributor.sendToServer(new KitNamePackets.Edit(KitNamePackets.Edit.Action.COOLDOWN, selected[0], Kit.ONCE));
+        }));
+
+        editor.addChildren(id, row, preview, info, descriptionRow, itemsRow, cooldownRow, presetRow, deleteRow);
 
         // A new kit: an id, a cooldown, then its (empty) chest to fill.
         UIElement create = new UIElement();
@@ -183,8 +203,8 @@ final class KitNamesPanel {
                 return;
             }
             status.setText(Component.empty());
-            returnTo = kitName;
             PacketDistributor.sendToServer(new KitNamePackets.Edit(KitNamePackets.Edit.Action.CREATE, kitName, ticks));
+            editItems.accept(kitName);
             newName.setText("");
             selected[0] = kitName;
         });
@@ -290,8 +310,8 @@ final class KitNamesPanel {
     void tick() {
         ClientKitNamesCache.Entry kit = find(selected[0]);
         boolean has = kit != null;
-        editor.setDisplay(has);
-        empty.setDisplay(!has);
+        if (editor.isDisplayed() != has) editor.setDisplay(has);
+        if (empty.isDisplayed() == has) empty.setDisplay(!has);
         if (!has) {
             shownKit = null;
             return;
@@ -303,18 +323,27 @@ final class KitNamesPanel {
             delete.setText(Component.translatable("gui.roll_mod.hub.moderation.kits.delete"));
             status.setText(Component.empty());
         }
-        if (switched || (shownVersion != ClientKitNamesCache.VERSION && !name.isFocused() && !cooldown.isFocused())) {
+        if (switched || (shownVersion != ClientKitNamesCache.VERSION && !name.isFocused() && !cooldown.isFocused()
+                && !description.isFocused())) {
             shownKit = kit.name();
             shownVersion = ClientKitNamesCache.VERSION;
             id.setText(Component.translatable("gui.roll_mod.hub.moderation.kitNames.id",
                     Component.literal(kit.name()).withStyle(ChatFormatting.GRAY)));
             name.setText(kit.displayName());
-            cooldown.setText(Durations.formatInput(kit.cooldownTicks() * 50L));
+            cooldown.setText(kit.cooldownTicks() < 0 ? "" : Durations.formatInput(kit.cooldownTicks() * 50L));
+            description.setText(kit.description());
             info.setText(Component.translatable("gui.roll_mod.hub.moderation.kits.info", kit.itemCount(),
-                    kit.cooldownTicks() > 0 ? Durations.formatInput(kit.cooldownTicks() * 50L) : "—"));
+                    kit.cooldownTicks() < 0 ? Component.translatable("gui.roll_mod.hub.moderation.kits.onceShort")
+                            : Component.literal(kit.cooldownTicks() > 0 ? Durations.formatInput(kit.cooldownTicks() * 50L) : "—")));
         }
-        preview.setText(Component.translatable("gui.roll_mod.hub.moderation.kitNames.preview")
-                .append(" ").append(LegacyText.display(name.getText().isBlank() ? kit.name() : name.getText())));
+        // Only when the name changed: a setText every tick re-parsed the colour codes and re-measured the label,
+        // which is what made this mode lag.
+        String previewName = name.getText().isBlank() ? kit.name() : name.getText();
+        if (!previewName.equals(shownPreview)) {
+            shownPreview = previewName;
+            preview.setText(Component.translatable("gui.roll_mod.hub.moderation.kitNames.preview")
+                    .append(" ").append(LegacyText.display(previewName)));
+        }
     }
 
     /** The left list in Kits mode: ids whose id or name matches {@code filter}. */

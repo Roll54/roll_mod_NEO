@@ -55,12 +55,20 @@ public final class ClientChatStore {
         final ChatChannel channel;
         final Component message;
         final String text;
+        /** Who wrote it, which a reply mentions; empty for lines no player wrote. */
+        final String sender;
         int count = 1;
+        /** When it was sent (the last time, for a repeat), shown on hover. */
+        long time;
+        /** The component last put in the vanilla chat for this line, to find it again under the mouse. */
+        @Nullable Component onScreen;
 
-        Line(ChatChannel channel, Component message) {
+        Line(ChatChannel channel, Component message, String sender) {
             this.channel = channel;
             this.message = message;
             this.text = message.getString();
+            this.sender = sender;
+            this.time = System.currentTimeMillis();
         }
 
         /** The line as shown: with its repeat count once it has one. */
@@ -88,10 +96,80 @@ public final class ClientChatStore {
     /* ------------------------------------------------ incoming ------------------------------------------------ */
 
     /** A channel line from the server; {@code partner} names the other side of a PM line. */
-    public static void receive(ChatChannel channel, Component message, String partner) {
+    public static void receive(ChatChannel channel, Component message, String partner, String sender, long time) {
         if (channel == ChatChannel.PM && !partner.isEmpty()) pmPartner = partner;
         if (handToXaero(channel, message)) return;
-        add(channel, message);
+        ChatChannelState state = ChatChannelState.get();
+        if (sender.isEmpty() && state.hideDiscord() && isDiscord(message)) return;
+        Line line = add(channel, message, sender);
+        if (line != null && time > 0) line.time = time;
+        // A live line from someone else in a channel set to "All messages" (the join history never sounds).
+        if (time <= 0 && !sender.isEmpty() && !isSelf(sender)
+                && state.notify(channel) == ChatChannelState.Notify.ALL) {
+            MentionSound.playSoft();
+        }
+    }
+
+    /* ------------------------------------------------ filters ------------------------------------------------- */
+
+    /** The server's timed tips, which sign as Wixie ({@code RandomMessageHandler}, {@code message.roll_mod.broadcast.*}). */
+    private static final String WIXIE_KEY = "message.roll_mod.broadcast.";
+
+    /** Whether the chat settings leave {@code message} (an untagged line) out: Wixie, Discord, deaths, advancements. */
+    private static boolean filteredOut(Component message) {
+        ChatChannelState state = ChatChannelState.get();
+        if (state.hideDiscord() && isDiscord(message)) return true;
+        if (!(message.getContents() instanceof TranslatableContents translatable)) return false;
+        String key = translatable.getKey();
+        if (key.startsWith(WIXIE_KEY)) return state.hideWixie();
+        if (key.startsWith("death.")) return !shown(state.deaths(), translatable);
+        if (key.startsWith("chat.type.advancement.")) return !shown(state.advancements(), translatable);
+        return false;
+    }
+
+    /** Whether a death or advancement line of whoever its first argument names is shown under {@code from}. */
+    private static boolean shown(ChatChannelState.MessagesFrom from, TranslatableContents line) {
+        return switch (from) {
+            case EVERYONE -> true;
+            case NOBODY -> false;
+            case TEAM -> {
+                Object[] args = line.getArgs();
+                if (args.length == 0) yield true;
+                String name = args[0] instanceof Component c
+                        ? (c.getStyle().getInsertion() != null ? c.getStyle().getInsertion() : c.getString())
+                        : String.valueOf(args[0]);
+                yield isSelf(name) || teammate(name);
+            }
+        };
+    }
+
+    private static boolean isDiscord(Component message) {
+        String plain = message.getString().stripLeading().toLowerCase(Locale.ROOT);
+        return plain.startsWith("[discord") || plain.startsWith("[дискорд") || plain.startsWith("[ds]");
+    }
+
+    private static boolean isSelf(String name) {
+        var player = Minecraft.getInstance().player;
+        return player != null && player.getGameProfile().getName().equalsIgnoreCase(name);
+    }
+
+    /** Whether {@code name} is in the player's FTB Teams party. */
+    private static boolean teammate(String name) {
+        if (!ModList.get().isLoaded("ftbteams")) return false;
+        var connection = Minecraft.getInstance().getConnection();
+        if (connection == null) return false;
+        var info = connection.getPlayerInfo(name);
+        return info != null && Teams.member(info.getProfile().getId());
+    }
+
+    /** Kept apart so FTB Teams' classes are only resolved with it loaded. */
+    private static final class Teams {
+        static boolean member(java.util.UUID id) {
+            var api = dev.ftb.mods.ftbteams.api.FTBTeamsAPI.api();
+            if (!api.isClientManagerLoaded()) return false;
+            var team = api.getClientManager().selfTeam();
+            return team != null && team.isPartyTeam() && team.getMembers().contains(id);
+        }
     }
 
     /** The channel a line Xaero's minimap is turning into its own goes to, while it does. */
@@ -132,7 +210,9 @@ public final class ClientChatStore {
         Component message = event.getMessage();
         ChatChannel channel = classify(message, event instanceof ClientChatReceivedEvent.Player);
         event.setCanceled(true);
-        add(channel, message);
+        // Left out by the chat settings (hub Settings → Chat): not stored, not shown.
+        if (filteredOut(message)) return;
+        add(channel, message, "");
     }
 
     /**
@@ -187,7 +267,8 @@ public final class ClientChatStore {
         return false;
     }
 
-    private static void add(ChatChannel channel, Component raw) {
+    @Nullable
+    private static Line add(ChatChannel channel, Component raw, String sender) {
         Component message = decorate(raw);
         Line repeated = latest(channel);
         Line line;
@@ -195,10 +276,11 @@ public final class ClientChatStore {
             // Spam: one line, counted, brought back down to the newest place.
             LINES.remove(repeated);
             repeated.count++;
+            repeated.time = System.currentTimeMillis();
             LINES.add(repeated);
             line = repeated;
         } else {
-            line = new Line(channel, message);
+            line = new Line(channel, message, sender);
             LINES.add(line);
             while (LINES.size() > CAPACITY) LINES.removeFirst();
         }
@@ -209,8 +291,9 @@ public final class ClientChatStore {
             // The vanilla chat cannot change a line in place; rebuild it from here.
             rebuild();
         } else {
-            show(chat(), line.shown());
+            show(chat(), line);
         }
+        return line;
     }
 
     @Nullable
@@ -253,6 +336,19 @@ public final class ClientChatStore {
         pmPartner = name == null || name.isBlank() ? null : name;
     }
 
+    /** A line on screen: the channel it came on, who wrote it (empty for none), its text and when it came. */
+    public record Written(ChatChannel channel, String sender, String text, long time) {}
+
+    /** The line that {@code onScreen} (a vanilla chat entry's component) shows, or null. */
+    @Nullable
+    public static Written writtenBy(Component onScreen) {
+        for (int i = LINES.size() - 1; i >= 0; i--) {
+            Line line = LINES.get(i);
+            if (line.onScreen == onScreen) return new Written(line.channel, line.sender, line.text, line.time);
+        }
+        return null;
+    }
+
     /** Whether any private message has been seen this session — the PM tab shows its player list until then. */
     public static boolean hasPmLines() {
         return latest(ChatChannel.PM) != null;
@@ -276,14 +372,16 @@ public final class ClientChatStore {
         ChatComponent chat = chat();
         chat.clearMessages(false);
         for (Line line : LINES) {
-            if (shows(line.channel)) show(chat, line.shown());
+            if (shows(line.channel)) show(chat, line);
         }
     }
 
     /** True while this class itself is putting a line in the vanilla chat. */
     private static boolean showing;
 
-    private static void show(ChatComponent chat, Component message) {
+    private static void show(ChatComponent chat, Line line) {
+        Component message = line.shown();
+        line.onScreen = message;
         showing = true;
         try {
             chat.addMessage(message);
@@ -300,7 +398,7 @@ public final class ClientChatStore {
      */
     public static boolean intercept(Component message) {
         if (showing) return false;
-        add(handingOver != null ? handingOver : classify(message, false), message);
+        add(handingOver != null ? handingOver : classify(message, false), message, "");
         return true;
     }
 

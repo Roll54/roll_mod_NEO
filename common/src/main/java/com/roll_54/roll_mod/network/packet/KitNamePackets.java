@@ -33,6 +33,7 @@ public final class KitNamePackets {
                         buf.writeUtf(kit.displayName(), Kit.MAX_DISPLAY * 2);
                         buf.writeVarLong(kit.cooldownTicks());
                         buf.writeVarInt(kit.itemCount());
+                        buf.writeUtf(kit.description(), Kit.MAX_DESCRIPTION * 2);
                     }
                 },
                 buf -> {
@@ -40,7 +41,7 @@ public final class KitNamePackets {
                     List<ClientKitNamesCache.Entry> kits = new ArrayList<>(count);
                     for (int i = 0; i < count; i++) {
                         kits.add(new ClientKitNamesCache.Entry(buf.readUtf(32), buf.readUtf(Kit.MAX_DISPLAY * 2),
-                                buf.readVarLong(), buf.readVarInt()));
+                                buf.readVarLong(), buf.readVarInt(), buf.readUtf(Kit.MAX_DESCRIPTION * 2)));
                     }
                     return new Sync(List.copyOf(kits));
                 });
@@ -71,7 +72,9 @@ public final class KitNamePackets {
             /** A new, empty kit, then its items editor. */
             CREATE,
             COOLDOWN,
-            DELETE
+            DELETE,
+            /** The hub's kit editor window closed: what it holds becomes the kit. */
+            ITEMS_SAVE
         }
 
         public static final Type<Edit> TYPE = new Type<>(RollMod.id("edit_kit"));
@@ -96,6 +99,31 @@ public final class KitNamePackets {
                     case CREATE -> KitService.createEmpty(player, payload.kit(), payload.ticks());
                     case COOLDOWN -> KitService.setCooldown(player, payload.kit(), payload.ticks());
                     case DELETE -> KitService.deleteFromTab(player, payload.kit());
+                    case ITEMS_SAVE -> com.roll_54.roll_mod.minestar.kits.HubKitEditor.save(player);
+                }
+            });
+        }
+    }
+
+    /** Client → server: set one kit's description; blank clears it. Checked on the server. */
+    public record Describe(String kit, String description) implements CustomPacketPayload {
+        public static final Type<Describe> TYPE = new Type<>(RollMod.id("describe_kit"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, Describe> STREAM_CODEC = StreamCodec.of(
+                (buf, payload) -> {
+                    buf.writeUtf(payload.kit(), 32);
+                    buf.writeUtf(payload.description(), Kit.MAX_DESCRIPTION * 2);
+                },
+                buf -> new Describe(buf.readUtf(32), buf.readUtf(Kit.MAX_DESCRIPTION * 2)));
+
+        @Override
+        public Type<? extends CustomPacketPayload> type() {
+            return TYPE;
+        }
+
+        public static void handle(Describe payload, IPayloadContext context) {
+            context.enqueueWork(() -> {
+                if (context.player() instanceof ServerPlayer player) {
+                    KitService.setDescription(player, payload.kit(), payload.description());
                 }
             });
         }

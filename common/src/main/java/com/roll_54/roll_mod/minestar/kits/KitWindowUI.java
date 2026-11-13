@@ -69,7 +69,15 @@ public final class KitWindowUI {
         slots(root, layout, session);
 
         if (layout.editable()) root.addChild(VendorUIHelper.playerInventory((WIDTH - PLAYER_INV_W) / 2, inventoryY));
-        return ModularUI.of(RollUi.of(player, root), player);
+        // The panel in the middle of a full-screen box: always centred, whatever the GUI scale, and the box's one
+        // child is what recipe viewers lay their sidebars out around (LdlibScreenBounds).
+        UIElement screen = new UIElement();
+        screen.layout(l -> l.widthPercent(100).heightPercent(100)
+                .justifyContent(dev.vfyjxf.taffy.style.AlignContent.CENTER)
+                .alignItems(dev.vfyjxf.taffy.style.AlignItems.CENTER));
+        screen.addChild(root);
+        // The root as big as the screen (as the hub does), so the box above really is full-screen.
+        return ModularUI.of(RollUi.of(player, screen, size -> size), player);
     }
 
     private static void header(UIElement root, KitWindowLayout layout) {
@@ -107,7 +115,9 @@ public final class KitWindowUI {
         // Curio rows wrap like words: each is its name over its slots, as wide as it needs.
         int x = PAD;
         int y = CONTENT_Y + 4 * SLOT + 8;
-        for (int r = 0; r < layout.curios().size(); r++) {
+        // Curio rows are no longer shown (asked for): the window ends under the main inventory. Built the same on
+        // both sides, so the menu's slots still line up; an editor keeps a kit's curio items as they were.
+        for (int r = 0; r < 0; r++) {
             CurioRow row = layout.curios().get(r);
             int w = groupWidth(row);
             if (x > PAD && x + w > WIDTH - PAD) {
@@ -131,7 +141,7 @@ public final class KitWindowUI {
     /** Where the slots end; the same walk as {@link #slots}, without the slots. */
     private static int contentHeight(KitWindowLayout layout) {
         int y = CONTENT_Y + 4 * SLOT + 8;
-        if (layout.curios().isEmpty()) return y;
+        if (true) return y; // no curio rows any more, see slots()
         int x = PAD;
         for (CurioRow row : layout.curios()) {
             int w = groupWidth(row);

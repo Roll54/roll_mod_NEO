@@ -34,7 +34,10 @@ public final class BackCommand {
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> tree() {
-        return Commands.literal("back").executes(ctx -> run(ctx.getSource()));
+        // Prime (and the groups inheriting it) and operators only; see TeleportService.mayBack.
+        return Commands.literal("back")
+                .requires(source -> source.getPlayer() == null || TeleportService.mayBack(source.getPlayer()))
+                .executes(ctx -> run(ctx.getSource()));
     }
 
     private static int run(CommandSourceStack source) throws CommandSyntaxException {

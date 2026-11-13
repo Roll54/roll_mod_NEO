@@ -10,6 +10,8 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,7 +65,15 @@ public final class PlayerPositions {
         }
     }
 
-    private record Entry(@Nullable Spot back, long rtpLastUsed) {}
+    /**
+     * {@code history}: where the player was before each teleport (and where they died), oldest first, as FTB
+     * Essentials keeps it — {@code /back} takes the newest and drops it, so repeated uses walk further back.
+     */
+    private record Entry(List<Spot> history, long rtpLastUsed) {
+        @Nullable Spot back() {
+            return history.isEmpty() ? null : history.get(history.size() - 1);
+        }
+    }
 
     /**
      * How often pending changes reach the disk, in ticks.
@@ -94,18 +104,31 @@ public final class PlayerPositions {
 
     /* -------------------------------------------- writing ------------------------------------------- */
 
-    /** Records where the player is standing now, to be called <em>before</em> moving them. */
+    /** Records where the player is standing now, to be called <em>before</em> moving them; keeps the newest {@code max}. */
     public static void rememberBack(ServerPlayer player) {
-        put(player.getUUID(), new Entry(Spot.of(player), rtpLastUsed(player.getUUID())));
+        Entry entry = entry(player.getUUID());
+        List<Spot> history = new ArrayList<>(entry.history());
+        history.add(Spot.of(player));
+        int max = Math.max(1, com.roll_54.roll_mod.config.MyConfig.INSTANCE == null ? 10
+                : com.roll_54.roll_mod.config.MyConfig.INSTANCE.back.historySize);
+        while (history.size() > max) history.remove(0);
+        put(player.getUUID(), new Entry(List.copyOf(history), entry.rtpLastUsed()));
     }
 
-    /** Forgets the stored position, so a failed {@code /back} does not keep offering it. */
+    /** Drops the newest position: used by {@code /back}, or because it can no longer be reached. */
+    public static void popBack(UUID player) {
+        Entry entry = entry(player);
+        if (entry.history().isEmpty()) return;
+        put(player, new Entry(List.copyOf(entry.history().subList(0, entry.history().size() - 1)), entry.rtpLastUsed()));
+    }
+
+    /** The newest position only, as before. Kept for callers that forgot a spot that failed. */
     public static void clearBack(UUID player) {
-        put(player, new Entry(null, rtpLastUsed(player)));
+        popBack(player);
     }
 
     public static void rtpUsed(UUID player, long epochMillis) {
-        put(player, new Entry(back(player), epochMillis));
+        put(player, new Entry(entry(player).history(), epochMillis));
     }
 
     /* ------------------------------------------ persistence ----------------------------------------- */
@@ -136,7 +159,7 @@ public final class PlayerPositions {
 
     private static Entry entry(UUID player) {
         load();
-        return ENTRIES.getOrDefault(player, new Entry(null, 0L));
+        return ENTRIES.getOrDefault(player, new Entry(List.of(), 0L));
     }
 
     private static synchronized void put(UUID player, Entry entry) {
@@ -158,9 +181,19 @@ public final class PlayerPositions {
                     continue; // hand-edited nonsense: skip the row, keep the rest
                 }
                 JsonObject row = root.getAsJsonObject(key);
-                Spot back = row.has("back") ? Spot.load(row.getAsJsonObject("back")) : null;
+                List<Spot> history = new ArrayList<>();
+                if (row.has("history") && row.get("history").isJsonArray()) {
+                    for (var element : row.getAsJsonArray("history")) {
+                        Spot spot = element.isJsonObject() ? Spot.load(element.getAsJsonObject()) : null;
+                        if (spot != null) history.add(spot);
+                    }
+                } else if (row.has("back")) {
+                    // An older file: its one back position starts the history.
+                    Spot back = Spot.load(row.getAsJsonObject("back"));
+                    if (back != null) history.add(back);
+                }
                 long rtp = row.has("rtpLastUsed") ? row.get("rtpLastUsed").getAsLong() : 0L;
-                ENTRIES.put(id, new Entry(back, rtp));
+                ENTRIES.put(id, new Entry(List.copyOf(history), rtp));
             }
             loaded = true;
         }
@@ -169,9 +202,13 @@ public final class PlayerPositions {
     private static void save() {
         JsonObject root = new JsonObject();
         ENTRIES.forEach((id, entry) -> {
-            if (entry.back() == null && entry.rtpLastUsed() == 0L) return;
+            if (entry.history().isEmpty() && entry.rtpLastUsed() == 0L) return;
             JsonObject row = new JsonObject();
-            if (entry.back() != null) row.add("back", entry.back().save());
+            if (!entry.history().isEmpty()) {
+                com.google.gson.JsonArray history = new com.google.gson.JsonArray();
+                entry.history().forEach(spot -> history.add(spot.save()));
+                row.add("history", history);
+            }
             if (entry.rtpLastUsed() != 0L) row.addProperty("rtpLastUsed", entry.rtpLastUsed());
             root.add(id.toString(), row);
         });

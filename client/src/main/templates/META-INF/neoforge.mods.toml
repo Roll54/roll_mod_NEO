@@ -31,6 +31,13 @@ config = "${mod_id_client}.fusion.mixins.json"
 [[mixins]]
 config = "${mod_id_client}.emi.mixins.json"
 
+# Handset recipe tree under Truly Enough Items (TEI, which replaces EMI): while it is picking a recipe through TEI's
+# recipe screen in resolve mode, the choice TEI would store in its own tree or as a default recipe goes to the
+# roll_mod tree instead; plus the minimal price line on fluid slots of JEI recipes shown by TEI. Soft because TEI
+# is optional.
+[[mixins]]
+config = "${mod_id_client}.tei.mixins.json"
+
 # Create Cybernetics HUD: the crop analyzer lens counts as a HUD lens. Soft because the target
 # (CyberwareHudLayer.CyberwareInstallQueries) is internal and differs between Create Cybernetics
 # builds — 0.5.2 has hasFunctionalHudLens, 0.4.8b does not. A mismatch skips the mixin instead of

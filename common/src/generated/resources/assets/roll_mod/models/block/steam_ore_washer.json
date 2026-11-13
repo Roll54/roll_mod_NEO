@@ -1,9 +1,9 @@
 {
-    "casing": "extended_industrialization:steel_plated_bricks",
+    "casing": "steel_plated_bricks_casing",
     "default_overlays": {
         "fluid_auto": "modern_industrialization:block/overlays/fluid_auto",
-        "front": "mi_tweaks:block/machines/steam_ore_washer/overlay_front",
-        "front_active": "mi_tweaks:block/machines/steam_ore_washer/overlay_front_active",
+        "front": "roll_mod:block/machines/steam_ore_washer/overlay_front",
+        "front_active": "roll_mod:block/machines/steam_ore_washer/overlay_front_active",
         "item_auto": "modern_industrialization:block/overlays/item_auto",
         "output": "modern_industrialization:block/overlays/output"
     },

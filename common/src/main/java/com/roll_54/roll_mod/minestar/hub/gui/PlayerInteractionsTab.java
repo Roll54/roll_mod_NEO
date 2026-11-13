@@ -71,6 +71,8 @@ public final class PlayerInteractionsTab {
 
     private static final int PADDING = 6;
     private static final int LIST_W = 150;
+    /** Whether the player list is folded away (HubFoldBar), in the hub layout state. */
+    private static final String FOLD_KEY = "interactions.folded";
     private static final int ROW_H = 16;
     private static final int ACTIONS_W = 120;
     private static final int HEAD = 32;
@@ -221,7 +223,8 @@ public final class PlayerInteractionsTab {
         lower.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexBasis(0).flexGrow(1).gapColumn(6));
         lower.addChildren(actions, info);
 
-        Label pickNote = FriendsTab.note("gui.roll_mod.hub.interactions.pick");
+        // Nobody picked: the friends, grouped like Eden's friends page (in game here, online elsewhere, offline).
+        UIElement pickNote = friendsOverview(pick);
 
         UIElement right = new UIElement();
         right.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexBasis(0).flexGrow(1)
@@ -344,7 +347,57 @@ public final class PlayerInteractionsTab {
         });
 
         // The divider between the list and the panel: drag to resize, double-click to reset.
-        body.addChildren(left, HubSplit.handle("interactions", left, LIST_W, player.level().isClientSide()), right);
+        // And a tall bar beside it that folds the list away, as on Eden (remembered with the hub's layout).
+        boolean clientCopy = player.level().isClientSide();
+        UIElement split = HubSplit.handle("interactions", left, LIST_W, clientCopy);
+        boolean[] listFolded = {clientCopy && HubWindowState.get().split(FOLD_KEY, 0) == 1};
+        Runnable applyFold = () -> {
+            // Hidden outright: a width of 0 is not enough, a flex item never shrinks below its content.
+            left.setDisplay(!listFolded[0]);
+            if (!listFolded[0]) {
+                int width = clientCopy ? HubWindowState.get().split("interactions", LIST_W) : LIST_W;
+                left.layout(l -> l.width(width));
+            }
+            left.setOverflowVisible(false);
+            split.setDisplay(!listFolded[0]);
+        };
+        UIElement foldBar = HubFoldBar.create(() -> listFolded[0], true, () -> {
+            listFolded[0] = !listFolded[0];
+            applyFold.run();
+            if (!clientCopy) return;
+            HubWindowState state = HubWindowState.get();
+            state.setSplit(FOLD_KEY, listFolded[0] ? 1 : 0);
+            state.save();
+        }, "gui.roll_mod.hub.interactions.fold.hide", "gui.roll_mod.hub.interactions.fold.show");
+        applyFold.run();
+
+        // On the right, as on Eden: the friend requests, folded behind a slim bar. Open by itself while
+        // incoming requests wait, until the player opens or closes it; folded, the bar shows how many wait.
+        UIElement requests = requestsPanel();
+        UIElement requestsSlot = new UIElement();
+        requestsSlot.layout(l -> l.width(REQUESTS_W).heightPercent(100).flexShrink(0));
+        requestsSlot.setOverflowVisible(false);
+        requestsSlot.addChild(requests);
+        Boolean[] requestsOpen = {null};
+        java.util.function.BooleanSupplier requestsShut = () -> requestsOpen[0] != null
+                ? !requestsOpen[0] : ClientFriendsCache.INCOMING.isEmpty();
+        boolean[] requestsShown = {true};
+        Runnable applyRequests = () -> {
+            boolean open = !requestsShut.getAsBoolean();
+            if (open == requestsShown[0]) return;
+            requestsShown[0] = open;
+            requestsSlot.setDisplay(open);
+        };
+        UIElement requestsBar = HubFoldBar.create(requestsShut, false, () -> {
+            requestsOpen[0] = requestsShut.getAsBoolean();
+            applyRequests.run();
+        }, "gui.roll_mod.hub.interactions.requests.hide", "gui.roll_mod.hub.interactions.requests.show", () -> {
+            int incoming = ClientFriendsCache.INCOMING.size();
+            return requestsShut.getAsBoolean() && incoming > 0 ? String.valueOf(incoming) : null;
+        });
+        requestsBar.addEventListener(UIEvents.TICK, e -> applyRequests.run());
+        applyRequests.run();
+        body.addChildren(left, split, foldBar, right, requestsBar, requestsSlot);
         root.addChildren(HubSection.header("interactions", section), body, section.overlay(), moneyWindow[0].root(),
                 configureWindow.root());
 
@@ -482,6 +535,191 @@ public final class PlayerInteractionsTab {
         });
 
         return root;
+    }
+
+    /* ----------------------------------------- requests panel ---------------------------------------- */
+
+    private static final int REQUESTS_W = 120;
+
+    /** Incoming friend requests (✔ / ✖) and the ones sent (✖ to take back), each under a counting heading. */
+    private static UIElement requestsPanel() {
+        UIElement panel = new UIElement();
+        panel.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(REQUESTS_W).heightPercent(100).paddingAll(4));
+        panel.style(s -> s.background(new ColorRectTexture(COLOR_PANEL)));
+        ScrollerView list = FriendsTab.scroller();
+        panel.addChild(list);
+        int[] shown = {-1};
+        panel.addEventListener(UIEvents.TICK, e -> {
+            if (ClientFriendsCache.VERSION == shown[0] && shown[0] != -1) return;
+            shown[0] = ClientFriendsCache.VERSION;
+            list.clearAllScrollViewChildren();
+            list.clearLayoutCache();
+            list.addScrollViewChild(FriendsTab.note("gui.roll_mod.hub.interactions.requests.incoming",
+                    ClientFriendsCache.INCOMING.size()));
+            for (FriendRequest request : ClientFriendsCache.INCOMING) {
+                list.addScrollViewChild(requestRow(request.name(),
+                        () -> PacketDistributor.sendToServer(FriendActionPacket.answer(request.id(), true)),
+                        () -> PacketDistributor.sendToServer(FriendActionPacket.answer(request.id(), false))));
+            }
+            list.addScrollViewChild(FriendsTab.note("gui.roll_mod.hub.interactions.requests.outgoing",
+                    ClientFriendsCache.OUTGOING.size()));
+            for (FriendRequest request : ClientFriendsCache.OUTGOING) {
+                list.addScrollViewChild(requestRow(request.name(), null,
+                        () -> PacketDistributor.sendToServer(FriendActionPacket.cancel(request.id()))));
+            }
+        });
+        return panel;
+    }
+
+    private static UIElement requestRow(String name, @Nullable Runnable yes, Runnable no) {
+        UIElement row = listRow(false);
+        row.addChild(label(Component.literal(name)));
+        if (yes != null) row.addChild(tick("✔", yes));
+        row.addChild(tick("✖", no));
+        return row;
+    }
+
+    private static Button tick(String glyph, Runnable action) {
+        Button button = new Button();
+        button.setText(Component.literal(glyph));
+        button.layout(l -> l.width(ROW_H - 2).height(ROW_H - 2).paddingAll(0).flexShrink(0));
+        button.setOnClick(e -> {
+            action.run();
+            e.stopPropagation();
+        });
+        return button;
+    }
+
+    /* ---------------------------------------- friends overview --------------------------------------- */
+
+    /** Group headings that are folded shut, by key; client state for the session. */
+    private static final java.util.Set<String> FOLDED = new java.util.HashSet<>();
+
+    /**
+     * What the right side shows while nobody is picked: "Friends (N)", a search (a name, or "@pack" for the
+     * modpack they are playing), and the friends in folding groups — in game on this server, online elsewhere,
+     * offline — as two-column cards with face, name and status. A click on a card picks that friend.
+     */
+    private static UIElement friendsOverview(java.util.function.Consumer<UUID> pick) {
+        UIElement box = new UIElement();
+        box.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).flexBasis(0).flexGrow(1));
+
+        Label title = new Label();
+        title.layout(l -> l.widthPercent(100).height(ROW_H - 4).flexShrink(0).marginBottom(3));
+        title.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
+
+        String[] query = {""};
+        TextField search = new TextField();
+        search.setText("");
+        search.layout(l -> l.widthPercent(100).height(ROW_H).flexShrink(0).marginBottom(3));
+        search.setTextResponder(text -> query[0] = text == null ? "" : text.strip().toLowerCase(Locale.ROOT));
+        FriendsTab.hint(search, "gui.roll_mod.hub.interactions.overview.search");
+
+        ScrollerView groups = FriendsTab.scroller();
+        box.addChildren(title, search, groups);
+
+        String[] sig = {null};
+        box.addEventListener(UIEvents.TICK, e -> {
+            if (!box.isDisplayed()) return;
+            // The minute in it keeps "5 min ago" fresh.
+            String now = ClientFriendsCache.VERSION + "|" + ClientTpaCache.ONLINE.hashCode() + "|" + query[0] + "|"
+                    + FOLDED + "|" + System.currentTimeMillis() / 60_000L;
+            if (now.equals(sig[0])) return;
+            sig[0] = now;
+            fillOverview(title, groups, query[0], pick);
+        });
+        return box;
+    }
+
+    private static void fillOverview(Label title, ScrollerView groups, String query,
+                                     java.util.function.Consumer<UUID> pick) {
+        long now = System.currentTimeMillis();
+        List<FriendEntry> inGame = new ArrayList<>();
+        List<FriendEntry> online = new ArrayList<>();
+        List<FriendEntry> offline = new ArrayList<>();
+        int total = 0;
+        for (FriendEntry friend : ClientFriendsCache.ENTRIES) {
+            total++;
+            if (!overviewMatches(friend, query)) continue;
+            if (friend.here() || ClientTpaCache.ONLINE.containsKey(friend.id())) inGame.add(friend);
+            else if (friend.online()) online.add(friend);
+            else offline.add(friend);
+        }
+        java.util.Comparator<FriendEntry> byName = (a, b) -> String.CASE_INSENSITIVE_ORDER.compare(a.name(), b.name());
+        inGame.sort(byName);
+        online.sort(byName);
+        offline.sort(java.util.Comparator.comparingLong(FriendEntry::lastSeenMillis).reversed());
+        title.setText(Component.translatable("gui.roll_mod.hub.interactions.overview.title", total));
+        groups.clearAllScrollViewChildren();
+        groups.clearLayoutCache();
+        if (total == 0) {
+            groups.addScrollViewChild(FriendsTab.note("gui.roll_mod.hub.interactions.pick"));
+            return;
+        }
+        group(groups, "in_game", inGame, now, pick);
+        group(groups, "online", online, now, pick);
+        group(groups, "offline", offline, now, pick);
+    }
+
+    private static boolean overviewMatches(FriendEntry friend, String query) {
+        if (query.isEmpty()) return true;
+        if (query.startsWith("@")) {
+            String pack = query.substring(1);
+            return friend.playing().stream().anyMatch(p -> p.toLowerCase(Locale.ROOT).contains(pack));
+        }
+        return friend.name().toLowerCase(Locale.ROOT).contains(query);
+    }
+
+    /** A folding heading "▾ IN GAME (n)" and its friends as two-column cards. */
+    private static void group(ScrollerView groups, String key, List<FriendEntry> friends, long now,
+                              java.util.function.Consumer<UUID> pick) {
+        if (friends.isEmpty()) return;
+        boolean folded = FOLDED.contains(key);
+        Label heading = new Label();
+        heading.setText(Component.literal(folded ? "▸ " : "▾ ").append(Component.translatable(
+                "gui.roll_mod.hub.interactions.overview." + key, friends.size())).withStyle(ChatFormatting.GRAY));
+        heading.layout(l -> l.widthPercent(100).height(ROW_H - 2).marginTop(3));
+        heading.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
+        heading.addEventListener(UIEvents.CLICK, e -> {
+            if (!FOLDED.remove(key)) FOLDED.add(key);
+        });
+        groups.addScrollViewChild(heading);
+        if (folded) return;
+
+        UIElement grid = new UIElement();
+        grid.layout(l -> l.flexDirection(FlexDirection.ROW).flexWrap(dev.vfyjxf.taffy.style.FlexWrap.WRAP)
+                .widthPercent(100).gapColumn(3).gapRow(3));
+        for (FriendEntry friend : friends) grid.addChild(friendCard(friend, now, pick));
+        groups.addScrollViewChild(grid);
+    }
+
+    private static UIElement friendCard(FriendEntry friend, long now, java.util.function.Consumer<UUID> pick) {
+        UIElement card = new UIElement();
+        card.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(48).height(2 * ROW_H + 2)
+                .alignItems(AlignItems.CENTER).gapColumn(4).paddingAll(2));
+        card.style(s -> s.background(com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.dynamic(() ->
+                new com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup(
+                        new ColorRectTexture(card.isHover() ? COLOR_ROW_SELECTED : COLOR_ROW),
+                        new com.lowdragmc.lowdraglib2.gui.texture.ColorBorderTexture(1, COLOR_LINE)))));
+        PlayerHeadElement head = new PlayerHeadElement(friend.id(), friend.name(), friend.skin(), friend.skinSignature());
+        head.layout(l -> l.width(2 * ROW_H - 2).height(2 * ROW_H - 2).flexShrink(0));
+        boolean here = friend.here() || ClientTpaCache.ONLINE.containsKey(friend.id());
+        ChatFormatting color = here ? ChatFormatting.GREEN : friend.online() ? ChatFormatting.AQUA : ChatFormatting.GRAY;
+        UIElement text = new UIElement();
+        text.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexBasis(0).flexGrow(1).heightPercent(100).gapRow(2)
+                .paddingTop(4));
+        Label name = label(Component.literal(friend.name()).withStyle(color));
+        name.layout(l -> l.widthPercent(100).height(10).flexGrow(0).flexBasis(10));
+        Label status = label(here && !friend.here()
+                ? Component.translatable("gui.roll_mod.hub.friends.online.here").withStyle(ChatFormatting.GREEN)
+                : FriendsTab.status(friend, now));
+        status.layout(l -> l.widthPercent(100).height(10).flexGrow(0).flexBasis(10));
+        text.addChildren(name, status);
+        card.addChildren(head, text);
+        card.addEventListener(UIEvents.CLICK, e -> pick.accept(friend.id()));
+        card.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
+                List.of(Component.literal(friend.name()), FriendsTab.status(friend, now)), null, null, ItemStack.EMPTY));
+        return card;
     }
 
     /* --------------------------------------------- list --------------------------------------------- */

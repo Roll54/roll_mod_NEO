@@ -100,12 +100,15 @@ public final class ModerationTab {
     private static final int MODE_LETTERS = 2;
     private static final int MODE_KITS = 3;
     private static final int MODE_DEATHS = 4;
+    /** The server's settings for what was ported from Eden (join history, mentions) and the chat's other knobs. */
+    private static final int MODE_SETTINGS = 5;
     private static final String[] MODE_KEYS = {
             "gui.roll_mod.hub.moderation.mode.players",
             "gui.roll_mod.hub.moderation.mode.warps",
             "gui.roll_mod.hub.moderation.mode.letters",
             "gui.roll_mod.hub.moderation.mode.kits",
-            "gui.roll_mod.hub.moderation.mode.deaths"};
+            "gui.roll_mod.hub.moderation.mode.deaths",
+            "gui.roll_mod.hub.moderation.mode.settings"};
     private static final int MODE_W = 110;
 
     /** The player list's presence filter, cycled by its button. */
@@ -121,7 +124,8 @@ public final class ModerationTab {
             "gui.roll_mod.hub.moderation.search.warps",
             "gui.roll_mod.hub.moderation.search.letters",
             "gui.roll_mod.hub.moderation.search.kits",
-            "gui.roll_mod.hub.moderation.search.deaths"};
+            "gui.roll_mod.hub.moderation.search.deaths",
+            "gui.roll_mod.hub.moderation.search.settings"};
 
     private ModerationTab() {}
 
@@ -230,7 +234,7 @@ public final class ModerationTab {
         Label tpsLabel = new Label();
         tpsLabel.layout(l -> l.flexGrow(1).height(ROW_H));
         tpsLabel.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
-                .textAlignVertical(Vertical.CENTER).textShadow(true));
+                .textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         hint(tpsLabel, "gui.roll_mod.hub.moderation.tps.tip");
 
         modeRow.addChildren(modeSelector, tpsLabel);
@@ -245,7 +249,8 @@ public final class ModerationTab {
         UIElement warpPane = pane();
         LetterComposer composer = new LetterComposer(inventory);
         UIElement kitPane = pane();
-        KitNamesPanel kits = new KitNamesPanel(kitPane);
+        KitItemsEditor kitItems = new KitItemsEditor(player, inventory);
+        KitNamesPanel kits = new KitNamesPanel(kitPane, confirmer, kitItems::open);
         // Back from a kit's items chest: straight to Kits mode, on that kit. Read on the client only —
         // in singleplayer the server builds this tab in the same JVM and must not use it up — and once.
         String returningKit = player.level().isClientSide() ? KitNamesPanel.takeReturnTo() : null;
@@ -256,7 +261,9 @@ public final class ModerationTab {
         }
         UIElement deathPane = pane();
         DeathLogPanel deaths = new DeathLogPanel(deathPane, confirmer, player.level().isClientSide());
-        stack.addChildren(playerPane, warpPane, composer.pane, kitPane, deathPane);
+        UIElement settingsPane = pane();
+        settingsPane.addChild(ModerationSettings.build(player.level().isClientSide()));
+        stack.addChildren(playerPane, warpPane, composer.pane, kitPane, deathPane, settingsPane);
 
         right.addChildren(modeRow, stack);
 
@@ -340,7 +347,8 @@ public final class ModerationTab {
         // Overlays last, so they cover everything.
         root.addChildren(HubSection.header("moderation", section), body,
                 section.overlay(), mute.floating.root(), warn.floating.root(), ban.floating.root(),
-                composer.popup.root(), warpEditor.picker.popup.root(), confirmer.root());
+                composer.popup.root(), warpEditor.picker.popup.root(), confirmer.root(), kitItems.popup.root());
+        root.addEventListener(UIEvents.TICK, e -> kitItems.sync());
 
         /* --------------------------------------------- tick -------------------------------------------- */
 
@@ -352,6 +360,7 @@ public final class ModerationTab {
         boolean[] lettersOffered = {ClientModerationCache.MAY_WRITE_LETTERS};
         boolean[] kitsOffered = {ClientKitNamesCache.ALLOWED};
         boolean[] deathsOffered = {ClientModerationCache.MAY_DEATHLOG};
+        boolean[] settingsOffered = {ClientModerationCache.MAY_BAN};
         int[] whitelistVersion = {-1};
 
         root.addEventListener(UIEvents.TICK, e -> {
@@ -368,9 +377,12 @@ public final class ModerationTab {
             if (!ClientModerationCache.MAY_WRITE_LETTERS && mode[0] == MODE_LETTERS) mode[0] = MODE_PLAYERS;
             if (!ClientKitNamesCache.ALLOWED && mode[0] == MODE_KITS) mode[0] = MODE_PLAYERS;
             if (!ClientModerationCache.MAY_DEATHLOG && mode[0] == MODE_DEATHS) mode[0] = MODE_PLAYERS;
+            if (!ClientModerationCache.MAY_BAN && mode[0] == MODE_SETTINGS) mode[0] = MODE_PLAYERS;
             if (lettersOffered[0] != ClientModerationCache.MAY_WRITE_LETTERS
                     || kitsOffered[0] != ClientKitNamesCache.ALLOWED
-                    || deathsOffered[0] != ClientModerationCache.MAY_DEATHLOG) {
+                    || deathsOffered[0] != ClientModerationCache.MAY_DEATHLOG
+                    || settingsOffered[0] != ClientModerationCache.MAY_BAN) {
+                settingsOffered[0] = ClientModerationCache.MAY_BAN;
                 lettersOffered[0] = ClientModerationCache.MAY_WRITE_LETTERS;
                 kitsOffered[0] = ClientKitNamesCache.ALLOWED;
                 deathsOffered[0] = ClientModerationCache.MAY_DEATHLOG;
@@ -396,6 +408,7 @@ public final class ModerationTab {
                 show(composer.pane, mode[0] == MODE_LETTERS);
                 show(kitPane, mode[0] == MODE_KITS);
                 show(deathPane, mode[0] == MODE_DEATHS);
+                show(settingsPane, mode[0] == MODE_SETTINGS);
                 if (mode[0] == MODE_DEATHS) deaths.enter();
                 if (!Integer.valueOf(mode[0]).equals(modeSelector.getValue())) {
                     modeSelector.setSelected(mode[0], false);
@@ -529,6 +542,8 @@ public final class ModerationTab {
         if (letters) out.add(MODE_LETTERS);
         if (kits) out.add(MODE_KITS);
         if (deaths) out.add(MODE_DEATHS);
+        // Server settings: for those who may ban, as the server checks too (ServerSettingPacket).
+        if (ClientModerationCache.MAY_BAN) out.add(MODE_SETTINGS);
         return out;
     }
 
@@ -638,7 +653,7 @@ public final class ModerationTab {
                                 : "gui.roll_mod.hub.moderation.offline")
                         .withStyle(row.online() ? ChatFormatting.GREEN : ChatFormatting.DARK_GRAY)));
         title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
-        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         detail.addChild(title);
 
         detail.addChild(line(Component.translatable("gui.roll_mod.hub.moderation.warns",
@@ -832,7 +847,7 @@ public final class ModerationTab {
         Label title = new Label();
         title.setText(LegacyText.display(warp.name()));
         title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
-        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         detail.addChild(title);
 
         Label verdict = new Label();
@@ -1131,6 +1146,8 @@ public final class ModerationTab {
      */
     private static ScrollerView scroller() {
         ScrollerView view = new ScrollerView();
+        // Kept off the list's themed frame, so the first line does not run into it.
+        view.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         view.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
         view.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)

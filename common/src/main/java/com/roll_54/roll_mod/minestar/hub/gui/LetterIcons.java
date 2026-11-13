@@ -78,7 +78,7 @@ final class LetterIcons {
             UIElement badge = new UIElement();
             badge.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).right(-1).top(-1)
                     .width(HubBadge.SIZE).height(HubBadge.SIZE));
-            badge.style(s -> s.background(HubBadge.texture()).zIndex(1));
+            badge.style(s -> s.background(com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.dynamic(HubBadge::coloured)).zIndex(1));
             badge.setAllowHitTest(false);
             box.addChild(badge);
         }

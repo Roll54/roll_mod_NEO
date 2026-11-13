@@ -403,3 +403,14 @@ Two features read LuckPerms without naming a node or a meta key.
    Operator rights are not a LuckPerms matter here: they live in
    minestar/operators.json (see docs/minestar-files.md). Commands gated with
    "requires(hasPermission(2))" use vanilla operator level, not a node.
+
+----------------------------------------------------------------------------------------------------
+Groups (not nodes, not meta): /back and /fly
+----------------------------------------------------------------------------------------------------
+ /back   - players in the LuckPerms group "prime", or in any group that inherits it, and operators.
+           The hub's Back button (last of the teleport buttons) is shown only to them.
+           Config: back.group (default "prime"), back.historySize (10), back.cooldownSeconds (30).
+           Works like FTB Essentials: a history of the places you teleported from and died at; each
+           /back goes to the newest one and drops it.
+ /fly    - players in the LuckPerms group "media", or in any group that inherits it, and operators.
+           Config: back.flyGroup (default "media"). Replaces the old fly permission node.

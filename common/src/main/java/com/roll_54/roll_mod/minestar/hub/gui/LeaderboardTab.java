@@ -101,7 +101,7 @@ public final class LeaderboardTab {
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
         list.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)));
-        list.viewPort(v -> v.layout(l -> l.paddingAll(0)));
+        list.viewPort(v -> v.layout(l -> l.paddingAll(4)));
 
         // The viewer's own line, pinned under the list so it is visible however far down they are.
         UIElement own = new UIElement();

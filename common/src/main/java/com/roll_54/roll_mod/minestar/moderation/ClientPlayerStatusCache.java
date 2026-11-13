@@ -22,6 +22,8 @@ public final class ClientPlayerStatusCache {
     public static volatile boolean MODERATOR;
     /** Daily tasks finished but not collected, plus one for an uncollected bonus. */
     public static volatile int DAILY_CLAIMABLE;
+    /** Whether this player may use /back (Prime and the groups inheriting it, or an operator): its hub button shows. */
+    public static volatile boolean MAY_BACK;
 
     /** Local epoch millis the mute ends; {@code -1} not muted, {@code 0} never ends. */
     private static volatile long muteUntil = -1L;
@@ -43,6 +45,7 @@ public final class ClientPlayerStatusCache {
         UNREAD_LETTERS = payload.unreadLetters();
         MODERATOR = payload.moderator();
         DAILY_CLAIMABLE = payload.dailyClaimable();
+        MAY_BACK = payload.mayBack();
         long remaining = payload.muteRemaining();
         long until = remaining < 0L ? -1L
                 : remaining == 0L ? 0L
@@ -59,6 +62,7 @@ public final class ClientPlayerStatusCache {
         UNREAD_LETTERS = 0;
         MODERATOR = false;
         DAILY_CLAIMABLE = 0;
+        MAY_BACK = false;
         muteUntil = -1L;
         seenMuteUntil = Long.MIN_VALUE;
     }

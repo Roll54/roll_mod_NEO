@@ -18,6 +18,7 @@
     "storm.PortalParticleColorMixin",
     "theme.GuiGraphicsRecolorMixin",
     "theme.AbstractContainerScreenLabelMixin",
+    "theme.GuiGraphicsTextRecolorMixin",
     "mi.MITextureManagerOverrideMixin",
     "mi.MITextureManagerAccessor",
     "mi.MICasingConnectedTexturesMixin",

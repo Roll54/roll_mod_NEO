@@ -196,6 +196,9 @@ public record RecipeSnapshot(
 
     // ---- chosen recipes: checked against what was actually read, so a typo is reported, not ignored.
     Map<String, String> forced = new LinkedHashMap<>();
+    // By id, once: the auto commands can write an entry for every item.
+    Map<String, Recipe> byId = new HashMap<>();
+    for (Recipe r : recipes) byId.putIfAbsent(r.id(), r);
     config.itemRecipes.get().forEach((ref, recipeId) -> {
       List<String> keys;
       if (ref.trim().startsWith(PriceSolver.FLUID_PREFIX)) {
@@ -208,7 +211,7 @@ public record RecipeSnapshot(
       } else {
         keys = items(ref, "itemRecipes", problems);
       }
-      Recipe recipe = recipes.stream().filter(r -> r.id().equals(recipeId)).findFirst().orElse(null);
+      Recipe recipe = byId.get(recipeId);
       if (recipe == null) {
         problems.add("itemRecipes: '" + ref + "' -> recipe '" + recipeId
             + "' does not exist, is blacklisted or could not be read; its usual recipes are used");

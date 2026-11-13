@@ -455,6 +455,8 @@ public final class FriendsTab {
 
     static ScrollerView scroller() {
         ScrollerView view = new ScrollerView();
+        // Kept off the list's themed frame, so the first line does not run into it.
+        view.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         view.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
         view.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
@@ -484,6 +486,12 @@ public final class FriendsTab {
     /** A gray line: a heading, or the text that stands in for an empty list. */
     static Label note(String key) {
         Label label = line(Component.translatable(key).withStyle(ChatFormatting.GRAY));
+        label.layout(l -> l.marginTop(2));
+        return label;
+    }
+
+    static Label note(String key, Object... args) {
+        Label label = line(Component.translatable(key, args).withStyle(ChatFormatting.GRAY));
         label.layout(l -> l.marginTop(2));
         return label;
     }

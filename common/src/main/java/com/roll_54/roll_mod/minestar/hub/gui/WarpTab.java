@@ -156,6 +156,10 @@ public final class WarpTab {
         hint(search, "gui.roll_mod.hub.warp.search.tip");
 
         ScrollerView list = new ScrollerView();
+
+        // Kept off the list's themed frame, so the first line does not run into it.
+
+        list.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         list.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
         list.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
@@ -242,7 +246,7 @@ public final class WarpTab {
                     .map(w -> w.id() + "/" + w.approval().id() + "/" + w.visitorsToday() + "/" + w.name()
                             + "/" + w.questLocked() + "/" + locked(player, w))
                     .reduce("", String::concat)
-                    + ":" + selected[0] + ":" + HubPins.version(player);
+                    + ":" + selected[0] + ":" + HubPins.version(player) + ":" + HubOrder.version();
             if (!signature.equals(listSignature[0])) {
                 listSignature[0] = signature;
                 rebuildList(player, list, shown, selected, creating);
@@ -339,10 +343,20 @@ public final class WarpTab {
         List<Warp> pinned = HubPins.takePinned(player, HubWindowState.PinKind.WARPS, rest, Warp::id);
         if (!pinned.isEmpty()) {
             list.addScrollViewChild(heading("gui.roll_mod.hub.pinned"));
-            for (Warp warp : pinned) list.addScrollViewChild(warpRow(warp, selected, creating));
+            addDraggable(list, "warps_pinned", HubOrder.sorted("warps_pinned", pinned, w -> w.id().toString()), selected, creating);
             if (!rest.isEmpty()) list.addScrollViewChild(heading("gui.roll_mod.hub.warp.section.all"));
         }
-        for (Warp warp : rest) list.addScrollViewChild(warpRow(warp, selected, creating));
+        // The server's order (official, then busiest) until the player drags rows into their own.
+        addDraggable(list, "warps", HubOrder.sorted("warps", rest, w -> w.id().toString()), selected, creating);
+    }
+
+    private static void addDraggable(ScrollerView list, String name, List<Warp> warps, UUID[] selected, boolean[] creating) {
+        List<String> ids = warps.stream().map(w -> w.id().toString()).toList();
+        for (Warp warp : warps) {
+            UIElement row = warpRow(warp, selected, creating);
+            HubOrder.draggable(row, name, warp.id().toString(), () -> ids);
+            list.addScrollViewChild(row);
+        }
     }
 
     private static Label heading(String key) {
@@ -415,7 +429,7 @@ public final class WarpTab {
         Label title = new Label();
         title.setText(LegacyText.display(warp.name()));
         title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
-        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
 
         detail.addChild(title);
 
@@ -521,7 +535,7 @@ public final class WarpTab {
         Label title = new Label();
         title.setText(LegacyText.display(warp.name()));
         title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
-        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         body.addChild(title);
 
         Button pin = HubPins.toggle(player, HubWindowState.PinKind.WARPS, warp.id());
@@ -680,7 +694,7 @@ public final class WarpTab {
         Label title = new Label();
         title.setText(Component.translatable("gui.roll_mod.hub.warp.create"));
         title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
-        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
 
         // Empty fields say nothing about what belongs in them, so each one explains itself on hover.
         TextField name = new TextField();

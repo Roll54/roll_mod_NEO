@@ -59,7 +59,7 @@ final class LetterRewardChips {
     static UIElement strip(List<LetterReward> rewards, @Nullable Consumer<Integer> onClick,
                            @Nullable Component tip) {
         UIElement strip = new UIElement();
-        strip.layout(l -> l.flexDirection(FlexDirection.ROW_REVERSE).flexWrap(FlexWrap.WRAP)
+        strip.layout(l -> l.flexDirection(FlexDirection.ROW).flexWrap(FlexWrap.WRAP)
                 .widthPercent(100).gapColumn(3).gapRow(3));
         for (int i = 0; i < rewards.size(); i++) {
             final int index = i;

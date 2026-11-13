@@ -1,20 +1,27 @@
 {
   "lines": [
-    { "text": "&fYour preferences, opened with the gear among the hub's window buttons. They are kept on your computer and apply on every server." },
+    { "text": "&fYour own settings for the hub, the chat and the mod's screens. They are kept on this computer and change only what you see." },
+    { "type": "space" },
+    { "text": "&e&lSections" },
+    { "text": "&7Pick a section on the left. Each option has its name, its control on the right and a line saying what it does.", "indent": 6 },
     { "type": "space" },
     { "text": "&e&lAppearance" },
-    { "text": "&7&fTheme&7 is what every hub and block screen of the mod is drawn in.", "indent": 6 },
-    { "text": "&fUse the hub theme everywhere&7 also recolours vanilla screens and other mods' screens. &cExperimental&7 &8- some screens may look off; reopen a screen after changing it.", "indent": 6 },
+    { "text": "&7The hub theme, picked from cards that show it in its own colours. The &ffont&7 is a separate choice: vanilla by default, on every theme.", "indent": 6 },
+    { "text": "&7How tabs point out news: a badge, a glow or both, and in which colour.", "indent": 6 },
     { "type": "space" },
     { "text": "&e&lHub" },
-    { "text": "&fTabs position&7 puts the tabs on the top, bottom, left or right of the window. The hub reopens to apply it.", "indent": 6 },
-    { "text": "&fAllow moving the hub&7 lets you drag the window by its top band. Off keeps it in place; resizing and maximizing still work.", "indent": 6 },
+    { "text": "&7Where the tabs sit, whether the window can be dragged (off by default), and whether extra windows close with the hub.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lChat" },
+    { "text": "&7Whose deaths and advancements you see (everyone, your team, nobody), Discord messages and Wixie's tips, the &f@mention&7 sound volume, and what each channel's new messages do.", "indent": 6 },
     { "type": "space" },
     { "text": "&e&lChat buttons" },
-    { "text": "&7The row over the chat box picks what you see &band&7 where you write: &eAll&7, &eGlobal&7, &eLocal&7, &eFriends&7, &eTrade&7.", "indent": 6 },
-    { "text": "&7&eAll&7 shows everything - every channel, Discord, advancements, warnings - and writes to global.", "indent": 6 },
-    { "text": "&7Tick a button to show it, use the arrows to reorder. The last visible button cannot be hidden.", "indent": 6 },
-    { "text": "&7Add your own with a name and a template, then &fAdd&7. Your own buttons only change where you write and show everything, like &eAll&7. The template is what gets sent: &f{msg}&7 is your text, e.g. &f/msg Steve {msg}&7. Remove one with &f✖&7.", "indent": 6 },
-    { "text": "&7Commands you type yourself with &f/&7 are never changed.", "indent": 6 }
+    { "text": "&7The buttons over the chat box: which show, which channels are in &fAll&7, their order, and your own buttons that send through a template.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lNotifications" },
+    { "text": "&7What the tabs point out: new tabs, friend and teleport requests, money, daily quests, auction items, home invites, mail.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lPrivacy" },
+    { "text": "&7Who may send you teleport requests. This one is kept by the server.", "indent": 6 }
   ]
 }

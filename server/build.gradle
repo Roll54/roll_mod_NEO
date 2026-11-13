@@ -1,5 +1,33 @@
 apply plugin: 'com.gradleup.shadow'
 
+// Optional jars: the Minestar mod and DimThreads. Without one in jars/, the classes that need it are left out of the
+// build (below), and the jar builds and runs without that feature (RollModServer loads them only when present).
+ext.minestarJar = file("jars/minestar-neoforge-1.5.0-all.jar")
+ext.dimthreadJar = file("jars/dimthread-NEOFORGE-mc1.21.1-v1.3.1.jar")
+ext.hasMinestar = minestarJar.exists()
+ext.hasDimthread = dimthreadJar.exists()
+if (!hasMinestar) logger.lifecycle("[roll_mod_server] {} not found: building without the Minestar integration", minestarJar.name)
+if (!hasDimthread) logger.lifecycle("[roll_mod_server] {} not found: building without the DimThreads crash guard", dimthreadJar.name)
+
+sourceSets.main.java {
+    if (!hasMinestar) {
+        exclude 'com/roll_54/roll_mod_server/minestar/MinestarFriendsProvider.java'
+        exclude 'com/roll_54/roll_mod_server/minestar/PrimeSync.java'
+        exclude 'com/roll_54/roll_mod_server/minestar/Shop*.java'
+        exclude 'com/roll_54/roll_mod_server/mixin/minestar/**'
+    }
+    if (!hasDimthread) exclude 'com/roll_54/roll_mod_server/crash/DimThreadsGuard.java'
+}
+
+// The Minestar mixin is listed in the mixin config; without its class, the line goes too.
+processResources {
+    if (!hasMinestar) {
+        filesMatching('*.mixins.json') {
+            filter { String line -> line.contains('minestar.MinestarConfigValidateMixin') ? null : line }
+        }
+    }
+}
+
 base {
     archivesName = mod_id_server
 }
@@ -56,7 +84,7 @@ dependencies {
     // checkout without the local LuckPerms jar still builds. The jar is what the dev server runs.
     compileOnly "net.luckperms:api:5.4"
     implementation files("jars/luckperms-neoforge.jar")
-    implementation files("jars/minestar-neoforge-1.5.0-all.jar")
+    if (hasMinestar) implementation files(minestarJar)
     runtimeOnly files("jars/tab.jar")
 
     // compileOnly: needed so GasTankItemMixin can reference StorageIO in its @WrapOperation
@@ -67,7 +95,7 @@ dependencies {
     // fixes for MI, EI, Tesseract, AE2, Advanced AE, Ad Astra and Multiblocked2. A required dependency of this jar
     // (neoforge.mods.toml); compiled against for its API (crash/DimThreadsGuard) and loaded by the dev server runs.
     // Replace the jar here when the fork is rebuilt.
-    implementation files("jars/dimthread-NEOFORGE-mc1.21.1-v1.3.1.jar")
+    if (hasDimthread) implementation files(dimthreadJar)
 
     // Soft dependency of :common's daily-tasks system; present at dev runtime so party
     // scaling can actually be tested. Not on any compile classpath here.
@@ -129,7 +157,9 @@ var generateModMetadata = tasks.register("generateModMetadata", ProcessResources
                              mod_license            : mod_license,
                              mod_version            : mod_version,
                              mod_authors            : mod_authors,
-                             mod_description        : mod_description]
+                             mod_description        : mod_description,
+                             // DimThreads: required when this jar was built with it, optional otherwise.
+                             dimthread_dependency   : hasDimthread ? "required" : "optional"]
     inputs.properties replaceProperties
     expand replaceProperties
     from "src/main/templates"

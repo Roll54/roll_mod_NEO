@@ -205,6 +205,10 @@ public final class PlayerHomesTab {
         hint(search, "gui.roll_mod.hub.homes.search.tip");
 
         ScrollerView list = new ScrollerView();
+
+        // Kept off the list's themed frame, so the first line does not run into it.
+
+        list.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         // Same zero basis, for the same reason: measured by its content the scroller is as tall as
         // its rows, so it sees no overflow and never scrolls. See HubInfoWindow, where this bit.
         list.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
@@ -254,7 +258,8 @@ public final class PlayerHomesTab {
             for (HomeView home : shown) {
                 rows.append(home.id()).append(home.relation().ordinal());
             }
-            String signature = shown.size() + ":" + rows + ":" + selected[0] + ":" + HubPins.version(player);
+            String signature = shown.size() + ":" + rows + ":" + selected[0] + ":" + HubPins.version(player)
+                    + ":" + HubOrder.version();
             if (!signature.equals(listSignature[0])) {
                 listSignature[0] = signature;
                 rebuildList(player, list, shown, selected, creating, inviteDraft);
@@ -344,10 +349,22 @@ public final class PlayerHomesTab {
         // Invites first: they are the only rows asking the player for something.
         addSection(list, homes, HomeView.Relation.INVITED, "gui.roll_mod.hub.homes.section.invites",
                 selected, creating, inviteDraft);
-        addSection(list, homes, HomeView.Relation.OWNER, "gui.roll_mod.hub.homes.section.mine",
-                selected, creating, inviteDraft);
-        addSection(list, homes, HomeView.Relation.GUEST, "gui.roll_mod.hub.homes.section.shared",
-                selected, creating, inviteDraft);
+        // The player's own homes and the ones shared with them, together: a shared one is told apart by its owner's
+        // head, not a section of its own. In the order the player dragged them into.
+        List<HomeView> mine = new ArrayList<>();
+        for (HomeView home : homes) {
+            if (home.relation() == HomeView.Relation.OWNER || home.relation() == HomeView.Relation.GUEST) mine.add(home);
+        }
+        mine = HubOrder.sorted("homes", mine, home -> home.id().toString());
+        if (!mine.isEmpty()) {
+            addHeader(list, "gui.roll_mod.hub.homes.section.mine");
+            List<String> ids = mine.stream().map(home -> home.id().toString()).toList();
+            for (HomeView home : mine) {
+                UIElement row = homeRow(home, selected, creating, inviteDraft);
+                HubOrder.draggable(row, "homes", home.id().toString(), () -> ids);
+                list.addScrollViewChild(row);
+            }
+        }
         // Last: these are a chore to clear, not part of the list the player came here to use.
         addSection(list, homes, HomeView.Relation.FTB, "gui.roll_mod.hub.homes.section.legacy",
                 selected, creating, inviteDraft);
@@ -622,7 +639,7 @@ public final class PlayerHomesTab {
         Label title = new Label();
         title.setText(LegacyText.display(home.name()));
         title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
-        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         detail.addChild(title);
 
         boolean mine = home.relation() == HomeView.Relation.OWNER;
@@ -684,7 +701,7 @@ public final class PlayerHomesTab {
         Label title = new Label();
         title.setText(LegacyText.display(home.name()));
         title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
-        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         body.addChild(title);
 
         Button pin = HubPins.toggle(player, HubWindowState.PinKind.HOMES, home.id());
@@ -822,6 +839,10 @@ public final class PlayerHomesTab {
         searchRow.addChildren(mode, field);
 
         ScrollerView names = new ScrollerView();
+
+        // Kept off the list's themed frame, so the first line does not run into it.
+
+        names.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         names.layout(l -> l.widthPercent(100).height(PICKER_VISIBLE * ROW_H));
         names.scrollerStyle(sc -> sc.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
@@ -962,7 +983,7 @@ public final class PlayerHomesTab {
         Label title = new Label();
         title.setText(Component.translatable("gui.roll_mod.hub.homes.create"));
         title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
-        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
 
         TextField name = new TextField();
         name.setText("");

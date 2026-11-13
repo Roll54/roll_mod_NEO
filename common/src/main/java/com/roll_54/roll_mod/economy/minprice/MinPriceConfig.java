@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import kotlin.jvm.functions.Function0;
 import me.fzzyhmstrs.fzzy_config.annotations.Comment;
+import me.fzzyhmstrs.fzzy_config.annotations.NonSync;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
 import me.fzzyhmstrs.fzzy_config.api.FileType;
 import me.fzzyhmstrs.fzzy_config.api.SaveType;
@@ -77,8 +78,14 @@ public class MinPriceConfig extends Config {
       new ValidatedLong(1L, Long.MAX_VALUE / 64, 1L, ValidatedNumber.WidgetType.TEXTBOX);
 
   @Comment("Item id (or #tag, or fluid:<fluid id>) -> recipe id its price is computed from. Without an entry the most expensive recipe that makes it wins. Set from the game with /rollmod admin minprice handset (Save).")
+  // Not sent to clients: the auto commands write an entry for nearly every item, far past the size of one
+  // sync packet (clients then could not join), and clients get the prices from SyncMinPricesPacket anyway.
+  @NonSync
   public ValidatedStringMap<String> itemRecipes =
       new ValidatedStringMap<>(new LinkedHashMap<>(), new ValidatedString(), new ValidatedString());
+
+  @Comment("What the auto commands (/rollmod admin minprice auto all|missing) never pick a recipe for: item ids, #item tags, fluid ids (minecraft:water, or fluid:<id>) and #fluid:<tag>. Their price stays as it is otherwise computed (whitelist, ore tier, or their most expensive recipe).")
+  public ValidatedList<String> autoBlacklist = ValidatedList.ofString(List.of("minecraft:water"));
 
   @Comment("Main item id -> #tag it stands for. A recipe ingredient made only of that tag's items (and holding the main item) is priced as the main item, instead of the cheapest item of the tag. For tags where one stray member has no recipe and would drag every recipe down to the absolute minimum.")
   public ValidatedStringMap<String> tagMainItems =

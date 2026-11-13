@@ -3,6 +3,8 @@ package com.roll_54.roll_mod_server.minestar;
 import com.roll_54.roll_mod.minestar.chat.ChatButton;
 import com.roll_54.roll_mod.minestar.chat.ChatChannel;
 import com.roll_54.roll_mod.minestar.chat.ChatChannels;
+import com.roll_54.roll_mod.minestar.chat.ChatHistory;
+import com.roll_54.roll_mod.minestar.chat.ChatMentions;
 import com.roll_54.roll_mod.minestar.chat.emoji.EmojiRegistry;
 import com.roll_54.roll_mod.minestar.data.MuteStore;
 import com.roll_54.roll_mod_server.RollModServer;
@@ -132,12 +134,15 @@ public class ChatHandler {
                 .append(lpPrefix(sender))
                 .append(sender.getDisplayName())
                 .append(Component.literal(": ").withStyle(ChatFormatting.WHITE))
-                .append(EmojiRegistry.text(content).withStyle(ChatFormatting.WHITE));
+                .append(ChatMentions.text(server, content, ChatFormatting.WHITE));
 
         List<ServerPlayer> recipients = server.getPlayerList().getPlayers();
         // Tagged with its channel, so the client can sort it under the Global button.
         // Skipping whoever ignores the sender (InteractionSettings).
         recipients.forEach(player -> ChatChannels.deliver(player, ChatChannel.GLOBAL, messageComponent, sender.getUUID()));
+        ChatMentions.ping(sender, ChatChannel.GLOBAL, content, recipients);
+        // For players joining later (ChatHistory).
+        ChatHistory.add(ChatChannel.GLOBAL, messageComponent, sender);
 
         logGlobal(sender, content, recipients);
     }
@@ -180,9 +185,10 @@ public class ChatHandler {
                 .append(lpPrefix(sender))
                 .append(sender.getDisplayName())
                 .append(Component.literal(": ").withStyle(ChatFormatting.GRAY))
-                .append(EmojiRegistry.text(content).withStyle(ChatFormatting.GRAY));
+                .append(ChatMentions.text(server, content, ChatFormatting.GRAY));
 
         nearbyPlayers.forEach(player -> ChatChannels.deliver(player, ChatChannel.LOCAL, messageComponent, sender.getUUID()));
+        ChatMentions.ping(sender, ChatChannel.LOCAL, content, nearbyPlayers);
 
         logLocal(sender, content, nearbyPlayers);
     }
@@ -202,9 +208,10 @@ public class ChatHandler {
                 .append(lpPrefix(sender))
                 .append(sender.getDisplayName())
                 .append(Component.literal(": ").withStyle(ChatFormatting.YELLOW))
-                .append(EmojiRegistry.text(content).withStyle(ChatFormatting.YELLOW));
+                .append(ChatMentions.text(sender.server, content, ChatFormatting.YELLOW));
 
         spectators.forEach(player -> ChatChannels.deliver(player, ChatChannel.LOCAL, messageComponent, sender.getUUID()));
+        ChatMentions.ping(sender, ChatChannel.LOCAL, content, spectators);
         ChatChannels.deliver(sender, ChatChannel.LOCAL,
                 Component.translatable("msg.roll_mod.chat.local.spectator_nobody").withStyle(ChatFormatting.GRAY));
 

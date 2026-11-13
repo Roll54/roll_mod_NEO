@@ -162,7 +162,7 @@ public final class ParallelMultiblocks {
                     { "CPPPC", "     ", "N W N", "N W N", " WWW ", "  W  " },
                     { "CC#CC", "N   N", "     ", "     ", "NNNNN", "     " },
             },
-            ResourceLocation.parse("modern_industrialization:block/machines/alloy_smelter"));
+            ResourceLocation.parse("roll_mod:block/machines/large_alloy_smelter"));
 
     /** 5 wide, 5 tall, 7 deep. {@code E} enderium casing, {@code T} titanium pipe casing, {@code B} netherite block. */
     public static final Spec HIGHLY_ADVANCED_BENDING_MACHINE = new Spec(
@@ -333,11 +333,75 @@ public final class ParallelMultiblocks {
             },
             ResourceLocation.parse("modern_industrialization:block/machines/cutting_machine"));
 
+    // ---- The pack's MI Tweaks batch multiblocks (KubeJS MITweaksMachineEvents.registerBatchMultiblocks),
+    // ---- rebuilt here with the same shapes, recipe types, parallels and EU costs.
+
+    /** 5 wide, 3 tall, 5 deep. {@code H}/{@code h} enderium casing (hatches on {@code h}), {@code P} PTFE pipe casing. */
+    public static final Spec MAELSTROM = new Spec(
+            "maelstrom", "Maelstrom",
+            () -> MIMachineRecipeTypes.CENTRIFUGE, 128, 0.75f, 0, ENDERIUM_CASING, 'h', ITEM_FLUID_ENERGY,
+            Map.of(
+                    'H', "modern_industrialization:enderium_casing",
+                    'h', "modern_industrialization:enderium_casing",
+                    'P', "modern_industrialization:polytetrafluoroethylene_machine_casing_pipe"),
+            new String[][] {
+                    { " H H ", " HHH ", " H H " },
+                    { "HhhhH", "HPPPH", "HhhhH" },
+                    { " hhh ", "HPPPH", " hhh " },
+                    { "HhhhH", "HPPPH", "HhhhH" },
+                    { " H H ", " H#H ", " H H " },
+            },
+            ResourceLocation.parse("roll_mod:block/machines/maelstrom"));
+
+    /**
+     * 5 wide, 5 tall, 5 deep. {@code H} enderium casing, {@code T}/{@code t} solid titanium casing (hatches on
+     * {@code t}), {@code P} titanium pipe casing, {@code G} grinding wheels.
+     */
+    public static final Spec MACERATION_TOWER = new Spec(
+            "maceration_tower", "Maceration Tower",
+            () -> MIMachineRecipeTypes.MACERATOR, 128, 0.75f, 0, SOLID_TITANIUM_CASING, 't', ITEM_ENERGY,
+            Map.of(
+                    'H', "modern_industrialization:enderium_casing",
+                    'T', "modern_industrialization:solid_titanium_machine_casing",
+                    't', "modern_industrialization:solid_titanium_machine_casing",
+                    'P', "modern_industrialization:titanium_machine_casing_pipe",
+                    'G', "roll_mod:grinding_wheels"),
+            new String[][] {
+                    { "H   H", "H T H", "HTTTH", "HTTTH", "HHHHH" },
+                    { "     ", "  P  ", " TPT ", "tGGGt", "H   H" },
+                    { "     ", "  P  ", " TPT ", "tGGGt", "H   H" },
+                    { "     ", "  P  ", " TPT ", "tGGGt", "H   H" },
+                    { "H   H", "H T H", "HT#TH", "HTTTH", "HHHHH" },
+            },
+            ResourceLocation.parse("roll_mod:block/machines/maceration_tower"));
+
+    /**
+     * 7 wide, 8 tall, 5 deep, an arch of platinum and tungsten coil in the middle layer. {@code H} enderium
+     * casing, {@code T} titanium pipe casing, {@code P} platinum block, {@code W} tungsten coil.
+     */
+    public static final Spec LARGE_ELECTROLYZER = new Spec(
+            "large_electrolyzer", "Large Electrolyzer",
+            () -> MIMachineRecipeTypes.ELECTROLYZER, 128, 0.75f, 0, ENDERIUM_CASING, 'H', ITEM_FLUID_ENERGY,
+            Map.of(
+                    'H', "modern_industrialization:enderium_casing",
+                    'T', "modern_industrialization:titanium_machine_casing_pipe",
+                    'P', "modern_industrialization:platinum_block",
+                    'W', "modern_industrialization:tungsten_coil"),
+            new String[][] {
+                    { " HHHHH ", "  HHH  ", "  HHH  ", "       ", "       ", "       ", "       ", "       " },
+                    { " HHHHH ", " WTTTW ", " WT TW ", "       ", "       ", "       ", "       ", "       " },
+                    { " HHHHH ", " HPTPH ", " PTTTP ", " P   P ", " P   P ", "P     P", " W   W ", "  WWW  " },
+                    { " HHHHH ", " WTTTW ", " WT TW ", "       ", "       ", "       ", "       ", "       " },
+                    { " HHHHH ", "  H#H  ", "  HHH  ", "       ", "       ", "       ", "       ", "       " },
+            },
+            ResourceLocation.parse("roll_mod:block/machines/large_electrolyzer"));
+
     /** Everything this class registers, in registration order. Datagen reads models from it. */
     public static final List<Spec> ALL = List.of(
             HEAT_EXCHANGER, PYROLYSE_OVEN, ROTARY_HEARTH_FURNACE, LARGE_FURNACE, LARGE_ALLOY_SMELTER,
             HIGHLY_ADVANCED_BENDING_MACHINE, CIRCUIT_ASSEMBLY_LINE, ASSEMBLY_LINE, NETHERSTORM_THERMAL_CENTRIFUGE,
-            HEPHAESTUS_COMPRESSOR, LARGE_MIXER, PERMAFROST_VACUUM_FREEZER, LARGE_COMPRESSOR, LARGE_CUTTING_MACHINE);
+            HEPHAESTUS_COMPRESSOR, LARGE_MIXER, PERMAFROST_VACUUM_FREEZER, LARGE_COMPRESSOR, LARGE_CUTTING_MACHINE,
+            MAELSTROM, MACERATION_TOWER, LARGE_ELECTROLYZER);
 
     private ParallelMultiblocks() {}
 
@@ -369,7 +433,7 @@ public final class ParallelMultiblocks {
 
     /**
      * Shows each registered controller as a workstation in every recipe-viewer category of its recipe
-     * type, and gives a heat-limited machine a category of its own. Call from common setup: by then
+     * type; none of them has a category of its own. Call from common setup: by then
      * every category exists, the KubeJS- and EI-registered ones included, and the recipe viewers only
      * read them once recipes load.
      */
@@ -390,9 +454,9 @@ public final class ParallelMultiblocks {
                 ReiMachineRecipes.registerWorkstation(category, machine);
             }
             RollMod.LOGGER.debug("[MI] '{}' is a workstation for {}", spec.id(), categories);
-            // Own category when nothing lists this type's recipes (the pyrolyse oven's used to come from
-            // its KubeJS machine), or when a heat limit cuts across the existing ones.
-            if (categories.isEmpty() || spec.maxBaseEu() > 0) {
+            // No category of its own: it shows in its recipe type's categories. Only when nothing lists that
+            // type's recipes at all does it get one, or its recipes would show nowhere.
+            if (categories.isEmpty()) {
                 registerOwnCategory(spec, type, machine);
             }
         }

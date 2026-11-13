@@ -43,8 +43,10 @@ public final class KitViewers {
 
     public static void syncTo(ServerPlayer player) {
         List<KitView> views = new ArrayList<>();
-        for (Kit kit : KitService.visibleTo(player)) {
-            views.add(KitView.of(kit, KitService.remainingMillis(player, kit)));
+        // Every kit, as on Eden: the ones this player may not claim are shown locked.
+        for (Kit kit : KitStore.all(player.server)) {
+            boolean locked = !KitService.canUse(player, kit);
+            views.add(KitView.of(kit, locked ? 0L : KitService.remainingMillis(player, kit), locked));
         }
         PacketDistributor.sendToPlayer(player, new SyncKitsPacket(views));
     }

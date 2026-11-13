@@ -4,6 +4,8 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.chat.ChatChannel;
 import com.roll_54.roll_mod.minestar.chat.ChatChannels;
+import com.roll_54.roll_mod.minestar.chat.ChatHistory;
+import com.roll_54.roll_mod.minestar.chat.ChatMentions;
 import com.roll_54.roll_mod.minestar.chat.emoji.EmojiRegistry;
 import com.roll_54.roll_mod.minestar.data.MuteStore;
 import com.roll_54.roll_mod_server.RollModServer;
@@ -55,10 +57,12 @@ public final class TradeChatCommand {
                 .append(ChatHandler.lpPrefix(sender))
                 .append(sender.getDisplayName())
                 .append(Component.literal(": ").withStyle(ChatFormatting.WHITE))
-                .append(EmojiRegistry.text(text).withStyle(ChatFormatting.YELLOW));
+                .append(ChatMentions.text(sender.server, text, ChatFormatting.YELLOW));
 
         List<ServerPlayer> recipients = sender.server.getPlayerList().getPlayers();
         recipients.forEach(player -> ChatChannels.deliver(player, ChatChannel.TRADE, line, sender.getUUID()));
+        ChatMentions.ping(sender, ChatChannel.TRADE, text, recipients);
+        ChatHistory.add(ChatChannel.TRADE, line, sender);
 
         RollMod.LOGGER.info(String.format(Locale.US, "[TRADE] %s (%s) -> \"%s\" recipients=[%s]",
                 sender.getGameProfile().getName(), sender.getUUID(), text,

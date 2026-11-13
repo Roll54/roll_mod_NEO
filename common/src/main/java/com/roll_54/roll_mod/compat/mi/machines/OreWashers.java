@@ -43,17 +43,21 @@ public final class OreWashers {
     public static final String ORE_WASHER = "ore_washer";
     public static final String ORE_WASHER_NAME = "Ore Washer";
     public static final String ORE_WASHER_CASING = "clean_stainless_steel_machine_casing";
-    /** The KubeJS washer's overlay folder, which the pack ships under MI's namespace. */
+    /** The washer's overlays, moved from the pack: its KubeJS front and the LV washer's side screen. */
     public static final ResourceLocation ORE_WASHER_OVERLAYS =
-            ResourceLocation.parse("modern_industrialization:block/machines/ore_washer");
+            ResourceLocation.parse("roll_mod:block/machines/ore_washer");
 
     public static final String STEAM_ORE_WASHER = "steam_ore_washer";
     public static final String STEAM_ORE_WASHER_NAME = "Steam Ore Washer";
-    /** The controller and its hatches wear the steel plated bricks it is built from: EI's machine casing of that block. */
-    public static final String STEAM_ORE_WASHER_CASING = "extended_industrialization:steel_plated_bricks";
-    /** The KubeJS washer's overlay folder, which the pack ships under MI Tweaks' namespace. */
+    /**
+     * The controller and its hatches wear the steel plated bricks it is built from, and connect with them:
+     * {@code modern_industrialization:steel_plated_bricks_casing}, an imitation of EI's bricks registered in
+     * {@code MachineRegistry.blockImitationCasings}; EI's connected bricks model joins hatches wearing it.
+     */
+    public static final String STEAM_ORE_WASHER_CASING = "steel_plated_bricks_casing";
+    /** The KubeJS washer's overlays, moved from the pack's MI Tweaks assets into roll_mod. */
     public static final ResourceLocation STEAM_ORE_WASHER_OVERLAYS =
-            ResourceLocation.parse("mi_tweaks:block/machines/steam_ore_washer");
+            ResourceLocation.parse("roll_mod:block/machines/steam_ore_washer");
 
     private static final String[][] ORE_WASHER_LAYERS = {
             { "BBBBBBBBB", "CCC   CCC", "CFC   CfC", "CFC   CfC", "CCC   CCC", " C     C ", " C     C " },
@@ -169,14 +173,9 @@ public final class OreWashers {
         ReiMachineRecipes.registerWorkstation(machine, machine);
     }
 
-    /**
-     * What the steam washer's hatches wear: the steel plated bricks they sit in, the same casing as the
-     * controller. EI registers it in its own MI hook, which runs before this one; read straight from
-     * the registry, since {@code MachineCasings.get} throws on a missing name and a pack without it
-     * should still get a working (steel-cased) washer.
-     */
+    /** What the steam washer's hatches wear: the bricks casing, or steel if it could not be registered. */
     private static MachineCasing steamOreWasherHatchCasing() {
-        MachineCasing casing = MachineCasings.registeredCasings.get(ResourceLocation.parse(STEAM_ORE_WASHER_CASING));
+        MachineCasing casing = MachineRegistry.Casings.STEEL_PLATED_BRICKS;
         if (casing != null) return casing;
         RollMod.LOGGER.warn("[MI] Casing '{}' is missing; '{}' hatches fall back to steel.",
                 STEAM_ORE_WASHER_CASING, STEAM_ORE_WASHER);

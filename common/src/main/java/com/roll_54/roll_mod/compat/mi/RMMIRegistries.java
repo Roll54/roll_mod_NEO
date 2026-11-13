@@ -64,6 +64,7 @@ public final class RMMIRegistries {
             com.roll_54.roll_mod.compat.mi.machines.CoilPyrolyseOven.registerWorkstations();
             com.roll_54.roll_mod.compat.mi.machines.OreWashers.registerWorkstations();
             com.roll_54.roll_mod.compat.mi.machines.HighlyAdvancedDistillery.registerWorkstations();
+            com.roll_54.roll_mod.compat.mi.machines.LargeChemicalReactor.registerWorkstations();
         });
     }
 

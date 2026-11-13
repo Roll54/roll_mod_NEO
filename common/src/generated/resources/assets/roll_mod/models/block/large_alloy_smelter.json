@@ -2,8 +2,8 @@
     "casing": "roll_tungstensteel_casing",
     "default_overlays": {
         "fluid_auto": "modern_industrialization:block/overlays/fluid_auto",
-        "front": "modern_industrialization:block/machines/alloy_smelter/overlay_front",
-        "front_active": "modern_industrialization:block/machines/alloy_smelter/overlay_front_active",
+        "front": "roll_mod:block/machines/large_alloy_smelter/overlay_front",
+        "front_active": "roll_mod:block/machines/large_alloy_smelter/overlay_front_active",
         "item_auto": "modern_industrialization:block/overlays/item_auto",
         "output": "modern_industrialization:block/overlays/output"
     },

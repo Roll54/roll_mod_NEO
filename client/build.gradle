@@ -55,6 +55,15 @@ neoForge {
     }
 }
 
+// TEI's own classes (dev.lorp.tei.*) out of its jar, to compile compat/tei against. See the TEI dependency below.
+def teiCompileJar = tasks.register('teiCompileJar', Jar) {
+    archiveFileName = 'tei-compile-only.jar'
+    destinationDirectory = layout.buildDirectory.dir('tei')
+    from(zipTree(rootProject.file("common/jars/${tei_jar}"))) {
+        include 'dev/lorp/**'
+    }
+}
+
 dependencies {
     implementation project(':common')
 
@@ -81,7 +90,6 @@ dependencies {
 
     // JEI is client-only.
     compileOnly("mezz.jei:jei-${minecraft_version}-neoforge-api:${jei_version}")
-    runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
 
     // EMI is client-only too. compat/emi registers native categories for everything JEIRollModPlugin
     // shows: common's EMI plugin marks "roll_mod" as handled, so EMI would not import our JEI ones.
@@ -89,7 +97,23 @@ dependencies {
     // Full jar, not just :api: the recipe tree (compat/emi/tree) reads RecipeScreen.resolve and its mixin
     // patches BoM, neither of which is API.
     compileOnly("dev.emi:emi-neoforge:${emi_version}")
-    runtimeOnly("dev.emi:emi-neoforge:${emi_version}")
+
+    // Truly Enough Items (TEI) replaces EMI and JEI in the pack: it runs their plugins itself (it ships both APIs),
+    // so compat/emi and compat/jei work under it unchanged. compat/tei holds what needs TEI itself: the handset tree
+    // (compat/tei/tree, on TEI's recipe index and resolve mode) and its mixins. Not on a public maven: the jar is
+    // built from Truly-Enough-Items/ (gradlew jar) and copied to common/jars. Compiled against TEI's own classes
+    // only (teiCompileJar): its copies of the EMI/JEI APIs would otherwise shadow EMI's jar, whose internals the
+    // EMI tree uses.
+    compileOnly files(teiCompileJar)
+
+    // Dev runs: TEI declares EMI and JEI incompatible, so only one side is put on the run classpath.
+    // gradle.properties recipe_viewer=tei (default) runs TEI, =emi runs EMI + JEI as before.
+    if ((project.findProperty("recipe_viewer") ?: "tei") == "emi") {
+        runtimeOnly("mezz.jei:jei-${minecraft_version}-neoforge:${jei_version}")
+        runtimeOnly("dev.emi:emi-neoforge:${emi_version}")
+    } else {
+        runtimeOnly files("../common/jars/${tei_jar}")
+    }
 
     // AgriCraft (a common-module api dependency) requires resourcefulconfig at runtime.
     // The data run doesn't read run/mods, so put it on the dev-run classpath for datagen.

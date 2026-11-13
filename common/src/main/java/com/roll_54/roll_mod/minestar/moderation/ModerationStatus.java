@@ -29,7 +29,9 @@ public final class ModerationStatus {
                 muteRemaining,
                 LetterService.unread(player),
                 ModerationPermissions.canModerate(player),
-                DailyTaskManager.claimableCount(player)));
+                DailyTaskManager.claimableCount(player),
+                // The hub shows the /back button only to those who may use it (Prime and up).
+                com.roll_54.roll_mod.minestar.teleport.TeleportService.mayBack(player)));
     }
 
     /** {@link #sendTo} if they are online; a no-op otherwise, since login sends it anyway. */

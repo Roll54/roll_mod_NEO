@@ -46,9 +46,13 @@ public final class HubWindowState {
     /** Which edge the tab bookmarks sit along. */
     private HubTabSide tabSide = HubTabSide.TOP;
     /** Whether the window can be dragged around by its title band. */
-    private boolean movable = true;
+    /** Off by default: the hub stays where it opens unless the player turns dragging on. */
+    private boolean movable = false;
     /** Whether the desktop windows the hub opened (info, popups) go when the hub screen does. */
     private boolean closeWindowsWithHub = true;
+
+    /** The bookmarks' order, by tab id; tabs not in it keep their default place after these. Empty: the default. */
+    private final java.util.List<String> tabOrder = new java.util.ArrayList<>();
     /** Each tab's list width where the player dragged its divider — see {@link HubSplit}. */
     private final java.util.Map<String, Integer> splits = new java.util.HashMap<>();
     /**
@@ -130,6 +134,16 @@ public final class HubWindowState {
         dirty = true;
     }
 
+    public java.util.List<String> tabOrder() {
+        return java.util.List.copyOf(tabOrder);
+    }
+
+    public void setTabOrder(java.util.List<String> order) {
+        tabOrder.clear();
+        tabOrder.addAll(order);
+        dirty = true;
+    }
+
     public boolean movable() {
         return movable;
     }
@@ -192,6 +206,9 @@ public final class HubWindowState {
         json.addProperty("tabSide", tabSide.name());
         json.addProperty("movable", movable);
         json.addProperty("closeWindowsWithHub", closeWindowsWithHub);
+        com.google.gson.JsonArray orderJson = new com.google.gson.JsonArray();
+        tabOrder.forEach(orderJson::add);
+        json.add("tabOrder", orderJson);
         JsonObject splitJson = new JsonObject();
         splits.forEach(splitJson::addProperty);
         json.add("splits", splitJson);
@@ -240,6 +257,11 @@ public final class HubWindowState {
         }
         if (json.has("closeWindowsWithHub") && json.get("closeWindowsWithHub").isJsonPrimitive()) {
             state.closeWindowsWithHub = json.get("closeWindowsWithHub").getAsBoolean();
+        }
+        if (json.has("tabOrder") && json.get("tabOrder").isJsonArray()) {
+            for (var id : json.getAsJsonArray("tabOrder")) {
+                if (id.isJsonPrimitive()) state.tabOrder.add(id.getAsString());
+            }
         }
         if (json.has("movable") && json.get("movable").isJsonPrimitive()) {
             state.movable = json.get("movable").getAsBoolean();

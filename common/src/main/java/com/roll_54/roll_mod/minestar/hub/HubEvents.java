@@ -74,11 +74,13 @@ public final class HubEvents {
         if (event.getEntity() instanceof ServerPlayer player) {
             InvSeeSessions.onClosed(player, event.getContainer());
             com.roll_54.roll_mod.minestar.kits.KitWindows.onClosed(player, event.getContainer());
+            com.roll_54.roll_mod.minestar.kits.HubKitEditor.onClosed(player, event.getContainer());
         }
     }
 
     @SubscribeEvent
     public static void onLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
+        if (event.getEntity() instanceof ServerPlayer leaving) com.roll_54.roll_mod.minestar.kits.HubKitEditor.forget(leaving);
         WarpService.cancel(event.getEntity().getUUID());
         RtpService.cancel(event.getEntity().getUUID());
         WarpViewers.remove(event.getEntity().getUUID());

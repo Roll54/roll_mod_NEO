@@ -1,12 +1,16 @@
 package com.roll_54.roll_mod.economy.minprice;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
@@ -108,6 +112,10 @@ public final class PriceSolver {
       for (Output rem : recipe.remainders()) keys.add(rem.key());
     }
 
+    // Every recipe of each key, before the chosen ones narrow it down; the same lists, so a key without a
+    // chosen recipe has the identical list in both maps.
+    Map<String, List<Recipe>> allMakers = new HashMap<>(makers);
+
     // A key with a chosen recipe (config itemRecipes) is priced from that recipe alone.
     forcedRecipes.forEach((key, recipeId) -> {
       List<Recipe> all = makers.get(key);
@@ -152,13 +160,25 @@ public final class PriceSolver {
         Best best = best(key, makers.get(key), frozen, false);
         if (best != null) cut.put(key, best);
       }
+      // A chosen recipe stuck in a loop of chosen recipes: let the key's other recipes in.
       if (cut.isEmpty()) {
         for (String key : open) {
+          List<Recipe> every = allMakers.get(key);
+          if (every == makers.get(key)) continue;
+          Best best = best(key, every, frozen, false);
+          if (best != null) cut.put(key, best);
+        }
+      }
+      if (cut.isEmpty()) {
+        // Still stuck: some loop has no way in at all. Only the loops that wait on nothing but
+        // themselves get the minimum; everything made from them is then priced from that, instead
+        // of everything left over falling to the minimum together.
+        for (String key : stuckLoops(open, allMakers)) {
           frozen.put(key, new Entry(minimum, Source.UNRESOLVED, null));
           unresolved.add(key);
+          open.remove(key);
         }
-        open.clear();
-        break;
+        continue;
       }
       cut.forEach(
           (key, best) -> {
@@ -171,6 +191,82 @@ public final class PriceSolver {
   }
 
   private record Best(double price, String recipeId) {}
+
+  /**
+   * The open keys in loops that depend on no other open key: the strongly connected components of the
+   * open keys' "needs" graph (key → the open keys its recipes take) with no edge leaving them. There is
+   * always at least one while anything is open, so the solver keeps moving.
+   */
+  private static List<String> stuckLoops(Set<String> open, Map<String, List<Recipe>> makers) {
+    Map<String, Set<String>> needs = new HashMap<>();
+    for (String key : open) {
+      Set<String> deps = new HashSet<>();
+      for (Recipe recipe : makers.getOrDefault(key, List.of())) {
+        for (Input in : recipe.inputs()) {
+          for (String option : in.options()) if (open.contains(option)) deps.add(option);
+        }
+      }
+      needs.put(key, deps);
+    }
+    // Tarjan, iterative, so a long chain cannot overflow the stack.
+    Map<String, Integer> index = new HashMap<>();
+    Map<String, Integer> low = new HashMap<>();
+    Map<String, Integer> component = new HashMap<>();
+    List<List<String>> components = new ArrayList<>();
+    ArrayDeque<String> stack = new ArrayDeque<>();
+    Set<String> onStack = new HashSet<>();
+    int counter = 0;
+    for (String start : new TreeSet<>(open)) {
+      if (index.containsKey(start)) continue;
+      ArrayDeque<Iterator<String>> work = new ArrayDeque<>();
+      ArrayDeque<String> path = new ArrayDeque<>();
+      index.put(start, counter);
+      low.put(start, counter++);
+      stack.push(start);
+      onStack.add(start);
+      path.push(start);
+      work.push(needs.get(start).iterator());
+      while (!path.isEmpty()) {
+        String node = path.peek();
+        Iterator<String> it = work.peek();
+        if (it.hasNext()) {
+          String next = it.next();
+          if (!index.containsKey(next)) {
+            index.put(next, counter);
+            low.put(next, counter++);
+            stack.push(next);
+            onStack.add(next);
+            path.push(next);
+            work.push(needs.get(next).iterator());
+          } else if (onStack.contains(next)) {
+            low.put(node, Math.min(low.get(node), index.get(next)));
+          }
+          continue;
+        }
+        path.pop();
+        work.pop();
+        if (!path.isEmpty()) low.put(path.peek(), Math.min(low.get(path.peek()), low.get(node)));
+        if (low.get(node).equals(index.get(node))) {
+          List<String> members = new ArrayList<>();
+          String member;
+          do {
+            member = stack.pop();
+            onStack.remove(member);
+            component.put(member, components.size());
+            members.add(member);
+          } while (!member.equals(node));
+          components.add(members);
+        }
+      }
+    }
+    List<String> stuck = new ArrayList<>();
+    for (List<String> members : components) {
+      int id = component.get(members.get(0));
+      boolean closed = members.stream().allMatch(key -> needs.get(key).stream().allMatch(dep -> component.get(dep) == id));
+      if (closed) stuck.addAll(members);
+    }
+    return stuck;
+  }
 
   /**
    * The most expensive of {@code makers} for {@code key}, or {@code null} when it cannot be

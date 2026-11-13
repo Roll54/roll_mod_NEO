@@ -349,7 +349,7 @@ public final class DailyTaskManager {
     /** How many rerolls this player may still make free of charge today. */
     public static int freeRerollsLeft(DailyTasksState state, ServerPlayer player) {
         int used = state.freeRerollsUsed.getOrDefault(player.getUUID(), 0);
-        return Math.max(0, LuckPermsCompat.dailyTaskFreeRerolls(player) - used);
+        return Math.max(0, (LuckPermsCompat.dailyTaskFreeRerolls(player) + com.roll_54.roll_mod.minestar.level.ProfileLevels.perk(player.getUUID(), com.roll_54.roll_mod.minestar.level.LevelPerks.Kind.DAILY_REROLLS)) - used);
     }
 
     /** How many rerolls slot {@code index} has left today, for the button's tooltip. */
@@ -391,7 +391,7 @@ public final class DailyTaskManager {
                 state.setDirty();
                 RollMod.LOGGER.info("[DailyTasks] {} used free reroll {} of {} today.",
                         player.getGameProfile().getName(), used,
-                        LuckPermsCompat.dailyTaskFreeRerolls(player));
+                        (LuckPermsCompat.dailyTaskFreeRerolls(player) + com.roll_54.roll_mod.minestar.level.ProfileLevels.perk(player.getUUID(), com.roll_54.roll_mod.minestar.level.LevelPerks.Kind.DAILY_REROLLS)));
             }
             return;
         }

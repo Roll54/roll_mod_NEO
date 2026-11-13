@@ -90,7 +90,8 @@
     "client.MinecraftFontManagerMixin",
     "client.FontRenderOutputEmojiMixin",
     "client.ChatComponentStoreMixin",
-    "client.ChatScreenEmojiBoxMixin"
+    "client.ChatScreenEmojiBoxMixin",
+    "client.ChatComponentAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -144,13 +144,15 @@ public final class DailyTasksUI {
 
         // ScrollerView clips its viewport and handles the wheel itself, so neither is set here.
         ScrollerView tasks = new ScrollerView();
+        // Kept off the list's themed frame, so the first line does not run into it.
+        tasks.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         tasks.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
         tasks.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
         // The constructor pads the viewport, which would inset the rows from the window edge the
         // plain column never was.
-        tasks.viewPort(view -> view.layout(l -> l.paddingAll(0)));
+        tasks.viewPort(view -> view.layout(l -> l.paddingAll(4)));
         tasks.viewContainer(container -> container.layout(l -> l.widthPercent(100)));
         for (int i = 0; i < DailyTasksState.MAX_TASK_COUNT; i++) {
             tasks.addScrollViewChild(row(server, i));
@@ -232,7 +234,7 @@ public final class DailyTasksUI {
         counter.layout(l -> l.widthPercent(100).height(12));
         counter.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
                 .textAlignVertical(Vertical.CENTER)
-                .textShadow(true));
+                .textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
 
         // Auto margins on both sides centre the icon in whatever vertical space is left over,
         // which keeps the panel tidy without pinning its height to the task column's.
@@ -249,7 +251,7 @@ public final class DailyTasksUI {
         collect.layout(l -> l.width(COLLECT_W).height(14));
         collect.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
                 .textAlignVertical(Vertical.CENTER)
-                .textShadow(true));
+                .textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         collect.style(s -> s.background(new ColorRectTexture(COLOR_BUTTON)));
         // Sent unconditionally, like the per-task Claim: claimBonus re-validates on the server and
         // silently rejects a click on an unfinished or already-collected board.
@@ -333,7 +335,7 @@ public final class DailyTasksUI {
         UIElement badge = new UIElement();
         badge.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).right(2).top(2)
                 .width(HubBadge.SIZE).height(HubBadge.SIZE));
-        badge.style(s -> s.background(HubBadge.texture()).zIndex(1));
+        badge.style(s -> s.background(com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.dynamic(HubBadge::coloured)).zIndex(1));
         badge.setDisplay(false);
         return badge;
     }
@@ -404,7 +406,7 @@ public final class DailyTasksUI {
         claim.layout(l -> l.width(CLAIM_W).height(14).marginRight(ROW_INNER_GAP));
         claim.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
                 .textAlignVertical(Vertical.CENTER)
-                .textShadow(true));
+                .textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         claim.style(s -> s.background(new ColorRectTexture(COLOR_BUTTON)));
         // Sent unconditionally: DailyTaskManager.claim re-validates on the server and silently
         // rejects a click on a task that is not finished or already taken.
@@ -523,7 +525,7 @@ public final class DailyTasksUI {
         price.layout(l -> l.width(REROLL_TEXT_W).height(14));
         price.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
                 .textAlignVertical(Vertical.CENTER)
-                .textShadow(true));
+                .textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         reroll.addChildren(icon, price);
         // Sent unconditionally: DailyTaskManager.rerollSlot prices and re-validates on the server.
         reroll.addEventListener(UIEvents.CLICK, e -> {

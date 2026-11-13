@@ -38,7 +38,7 @@ side = "BOTH"
 # roll_mod_server also hands its per-level crash guard to it (crash/DimThreadsGuard). See docs/dimthreads.md.
 [[dependencies."${mod_id_server}"]]
 modId = "dimthread"
-type = "required"
+type = "${dimthread_dependency}"
 versionRange = "[1.3.0,)"
 ordering = "NONE"
 side = "SERVER"

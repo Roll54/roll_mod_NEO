@@ -56,9 +56,13 @@ public final class KitService {
         return kit.cooldownTicks();
     }
 
-    /** Milliseconds before this player may claim this kit again; {@code 0} when it is ready. */
+    /**
+     * Milliseconds before this player may claim this kit again; {@code 0} when it is ready, {@code -1} for a
+     * one-time kit they already claimed (as on Eden).
+     */
     public static long remainingMillis(ServerPlayer player, Kit kit) {
         long ticks = cooldownTicks(kit);
+        if (kit.oneTime()) return KitCooldowns.lastClaimed(player.getUUID(), kit.name()) > 0 ? -1L : 0L;
         if (ticks <= 0) return 0L;
 
         long last = KitCooldowns.lastClaimed(player.getUUID(), kit.name());
@@ -90,6 +94,10 @@ public final class KitService {
         }
 
         long remaining = remainingMillis(player, kit);
+        if (remaining < 0) {
+            refuse(player, "msg.roll_mod.kit.claimedOnce", kit.title());
+            return false;
+        }
         if (remaining > 0) {
             player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.cooldown",
                     kit.name(), Durations.format(remaining))
@@ -201,18 +209,37 @@ public final class KitService {
             refuse(player, "msg.roll_mod.kit.unknown", rawName);
             return false;
         }
-        KitWindows.openEditor(player, kit);
+        edit(player, kit);
         return true;
+    }
+
+    /** In the hub's own editor window when the hub is open (it always is, from the moderation tab), else the kit window. */
+    private static void edit(ServerPlayer player, Kit kit) {
+        if (HubKitEditor.available(player)) HubKitEditor.load(player, kit);
+        else KitWindows.openEditor(player, kit);
     }
 
     /** Opens a kit's contents, read-only, for a player who may see that kit ({@link #visibleTo}). */
     public static boolean openPreview(ServerPlayer player, String rawName) {
         Kit kit = KitStore.byName(player.server, rawName);
-        if (kit == null || !canUse(player, kit)) {
+        // A locked kit can be previewed too, as on Eden: its card is shown, so is what it holds.
+        if (kit == null) {
             refuse(player, "msg.roll_mod.kit.unknown", rawName);
             return false;
         }
-        KitWindows.openPreview(player, kit);
+        // The Kits tab shows it in a window inside the hub: what the kit holds goes to the client, and no screen
+        // is opened (opening one closed and reopened the hub). Main inventory, armour and offhand only.
+        java.util.List<Integer> slots = new java.util.ArrayList<>();
+        java.util.List<ItemStack> items = new java.util.ArrayList<>();
+        for (int i = 0; i < kit.items().size(); i++) {
+            int slot = KitSlots.main(kit.slots().get(i));
+            if (slot < 0 || kit.items().get(i).isEmpty()) continue;
+            slots.add(slot);
+            items.add(kit.items().get(i).copy());
+        }
+        net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
+                new com.roll_54.roll_mod.network.packet.KitWindowPackets.Contents(kit.name(), kit.title(),
+                        kit.description(), kit.cooldownTicks(), slots, items));
         return true;
     }
 
@@ -229,7 +256,7 @@ public final class KitService {
             kit = new Kit(name, 0L, "", List.of(), "");
         }
         KitStore.put(player.server, new Kit(kit.name(), kit.cooldownTicks(), kit.permission(), List.copyOf(items),
-                kit.displayName(), slots));
+                kit.displayName(), slots, kit.description()));
         player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.itemsSaved", kit.name(), items.size()));
         KitViewers.resync(player.server);
         syncNames(player.server);
@@ -251,7 +278,7 @@ public final class KitService {
         KitCooldowns.forget(name);
         KitViewers.resync(player.server);
         syncNames(player.server);
-        KitWindows.openEditor(player, KitStore.byName(player.server, name));
+        edit(player, KitStore.byName(player.server, name));
         return true;
     }
 
@@ -263,10 +290,27 @@ public final class KitService {
             refuse(player, "msg.roll_mod.kit.unknown", rawName);
             return false;
         }
-        long ticks = Math.max(0L, cooldownTicks);
-        KitStore.put(player.server, new Kit(kit.name(), ticks, kit.permission(), kit.items(), kit.displayName(), kit.slots()));
-        player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.cooldownSet", kit.name(),
-                Durations.format(ticks * 50L)));
+        // Below zero is a one-time kit (Kit.ONCE), as on Eden.
+        long ticks = cooldownTicks < 0 ? Kit.ONCE : cooldownTicks;
+        KitStore.put(player.server, kit.withCooldown(ticks));
+        player.sendSystemMessage(ticks < 0
+                ? Component.translatable("msg.roll_mod.kit.cooldownOnce", kit.name())
+                : Component.translatable("msg.roll_mod.kit.cooldownSet", kit.name(), Durations.format(ticks * 50L)));
+        KitViewers.resync(player.server);
+        syncNames(player.server);
+        return true;
+    }
+
+    /** A description players see on the kit's card ({@code &} colour codes allowed); blank clears it. */
+    public static boolean setDescription(ServerPlayer player, String rawName, String description) {
+        if (!mayRename(player)) return false;
+        Kit kit = KitStore.byName(player.server, rawName);
+        if (kit == null) {
+            refuse(player, "msg.roll_mod.kit.unknown", rawName);
+            return false;
+        }
+        KitStore.put(player.server, kit.withDescription(description));
+        player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.descriptionSet", kit.name()));
         KitViewers.resync(player.server);
         syncNames(player.server);
         return true;
@@ -287,7 +331,8 @@ public final class KitService {
         List<ClientKitNamesCache.Entry> entries = new ArrayList<>();
         for (Kit kit : KitStore.all(player.server)) {
             entries.add(new ClientKitNamesCache.Entry(kit.name(),
-                    kit.displayName() == null ? "" : kit.displayName(), kit.cooldownTicks(), kit.items().size()));
+                    kit.displayName() == null ? "" : kit.displayName(), kit.cooldownTicks(), kit.items().size(),
+                    kit.description()));
         }
         net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
                 new com.roll_54.roll_mod.network.packet.KitNamePackets.Sync(entries));

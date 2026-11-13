@@ -55,8 +55,8 @@ import javax.annotation.Nullable;
 public final class HubInfoWindow {
 
     /** The size it opens at; the player can resize it from there. */
-    private static final int WIDTH = 400;
-    private static final int HEIGHT = 400;
+    private static final int WIDTH = 700;
+    private static final int HEIGHT = 560;
 
     private static final int TITLE_H = 14;
     private static final int TITLE_FILL = 0x30FFFFFF;
@@ -106,7 +106,7 @@ public final class HubInfoWindow {
         caption.setText(title);
         caption.layout(l -> l.flexGrow(1).height(TITLE_H));
         caption.textStyle(t -> t.font(HubInfo.FONT)
-                .textAlignVertical(Vertical.CENTER).textShadow(true));
+                .textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
 
         // A Button, so ModularUIWindow.isDragBlocker keeps a press on it from moving the window.
         Button closeButton = new Button();
@@ -151,10 +151,10 @@ public final class HubInfoWindow {
         window.setOnCloseRequested(HubInfoWindow::close);
 
         // Undecorated: LdLib draws the bar and handles the move itself, which avoids the platform's
-        // modal drag loop freezing the game while the window is being moved. MIN_VALUE for the
-        // position lets the platform place it — with only ever one window there is nothing to
-        // cascade away from.
-        if (!window.open(Integer.MIN_VALUE, Integer.MIN_VALUE, WIDTH, HEIGHT, false)) return false;
+        // modal drag loop freezing the game while the window is being moved. It opens in the
+        // middle of the game window, like every extra window.
+        int[] at = HubPopupWindow.centre(WIDTH, HEIGHT);
+        if (!window.open(at[0], at[1], WIDTH, HEIGHT, false)) return false;
 
         // Both only bite on a window that is already up, which is why they follow the open rather
         // than preceding it. Always-on-top is a no-op on a platform that has no such attribute

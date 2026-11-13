@@ -28,10 +28,17 @@
         "roll_mod:permafrost_vacuum_freezer",
         "roll_mod:large_compressor",
         "roll_mod:large_cutting_machine",
+        "roll_mod:maelstrom",
+        "roll_mod:maceration_tower",
+        "roll_mod:large_electrolyzer",
         "roll_mod:advanced_pyrolyse_oven",
         "roll_mod:highly_advanced_distillery",
         "roll_mod:ore_washer",
         "roll_mod:steam_ore_washer",
+        "roll_mod:pyrolyse_oven",
+        "roll_mod:photolithographer",
+        "roll_mod:high_efficiency_steam_turbine",
+        "roll_mod:large_chemical_reactor",
         {
             "id": "roll_mod:circuit_assembly_line",
             "required": false

@@ -15,7 +15,7 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
  * a local deadline on receipt.
  */
 public record SyncPlayerStatusPacket(int warns, long muteRemaining, int unreadLetters,
-                                     boolean moderator, int dailyClaimable) implements CustomPacketPayload {
+                                     boolean moderator, int dailyClaimable, boolean mayBack) implements CustomPacketPayload {
 
     public static final Type<SyncPlayerStatusPacket> TYPE = new Type<>(RollMod.id("sync_player_status"));
 
@@ -28,11 +28,12 @@ public record SyncPlayerStatusPacket(int warns, long muteRemaining, int unreadLe
         buf.writeVarInt(payload.unreadLetters());
         buf.writeBoolean(payload.moderator());
         buf.writeVarInt(payload.dailyClaimable());
+        buf.writeBoolean(payload.mayBack());
     }
 
     private static SyncPlayerStatusPacket decode(RegistryFriendlyByteBuf buf) {
         return new SyncPlayerStatusPacket(buf.readVarInt(), buf.readVarLong() - 1L,
-                buf.readVarInt(), buf.readBoolean(), buf.readVarInt());
+                buf.readVarInt(), buf.readBoolean(), buf.readVarInt(), buf.readBoolean());
     }
 
     @Override

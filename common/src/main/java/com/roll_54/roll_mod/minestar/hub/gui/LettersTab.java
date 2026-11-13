@@ -77,7 +77,7 @@ public final class LettersTab {
         ScrollerView list = scroller();
         // Fixed width: scroller() grows, which in this row would mean sideways.
         list.layout(l -> l.width(LIST_W).flexGrow(0).flexBasis(LIST_W).heightPercent(100));
-        list.viewPort(v -> v.layout(l -> l.paddingAll(2)));
+        list.viewPort(v -> v.layout(l -> l.paddingAll(4)));
 
         UIElement detail = new UIElement();
         detail.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexGrow(1).heightPercent(100)
@@ -170,7 +170,7 @@ public final class LettersTab {
         Label title = new Label();
         title.setText(LegacyText.display(letter.title()));
         title.layout(l -> l.widthPercent(100).height(LINE_H + 2).paddingHorizontal(TEXT_INSET));
-        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(true));
+        title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
 
         Label meta = new Label();
         meta.setText(meta(letter).withStyle(ChatFormatting.DARK_GRAY));

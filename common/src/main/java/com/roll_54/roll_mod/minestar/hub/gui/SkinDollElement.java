@@ -52,7 +52,8 @@ public class SkinDollElement extends UIElement {
     @Override
     public void drawBackgroundAdditional(GUIContext context) {
         super.drawBackgroundAdditional(context);
-        if (FMLEnvironment.dist != Dist.CLIENT || suppressed.getAsBoolean() || collapsed(this)) return;
+        if (FMLEnvironment.dist != Dist.CLIENT || suppressed.getAsBoolean() || collapsed(this)
+                || HubSettings.isOpenIn(this)) return;
         ClientRender.drawDoll(context, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(),
                 heldTool.get());
     }
@@ -100,7 +101,8 @@ public class SkinDollElement extends UIElement {
         @Override
         public void drawBackgroundAdditional(GUIContext context) {
             super.drawBackgroundAdditional(context);
-            if (FMLEnvironment.dist != Dist.CLIENT || suppressed.getAsBoolean() || collapsed(this)) return;
+            if (FMLEnvironment.dist != Dist.CLIENT || suppressed.getAsBoolean() || collapsed(this)
+                || HubSettings.isOpenIn(this)) return;
             ClientRender.drawIcon(context, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(),
                     slot, skin, locked);
         }

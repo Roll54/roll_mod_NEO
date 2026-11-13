@@ -59,6 +59,7 @@ public final class HubBadge {
 
     /** The moderation tab wants attention while a warp waits for a verdict or has been reported. */
     public static boolean moderationPending() {
+        if (!HubNotifications.enabled(HubNotifications.Kind.MODERATION)) return false;
         if (!ClientModerationCache.ALLOWED) return false;
         for (Warp warp : ClientWarpCache.WARPS) {
             if (warp.approval() == WarpApproval.NOT_YET || !warp.reports().isEmpty()) return true;
@@ -73,11 +74,12 @@ public final class HubBadge {
 
     /** A daily task finished but not collected, or the all-complete bonus waiting. */
     public static boolean dailyPending() {
-        return ClientPlayerStatusCache.DAILY_CLAIMABLE > 0;
+        return ClientPlayerStatusCache.DAILY_CLAIMABLE > 0 && HubNotifications.enabled(HubNotifications.Kind.DAILIES);
     }
 
     /** Someone is waiting on an answer to a teleport request. */
     public static boolean tpaPending() {
+        if (!HubNotifications.enabled(HubNotifications.Kind.TELEPORTS)) return false;
         long now = System.currentTimeMillis();
         for (TpaRequest request : ClientTpaCache.INCOMING) {
             if (request.remainingMillis(now) > 0L) return true;
@@ -91,17 +93,44 @@ public final class HubBadge {
      */
     public static boolean interactionsPending() {
         return tpaPending()
-                || !com.roll_54.roll_mod.minestar.friends.ClientFriendsCache.INCOMING.isEmpty()
-                || com.roll_54.roll_mod.economy.network.client.ClientMoneyCache.anyIncoming();
+                || (HubNotifications.enabled(HubNotifications.Kind.FRIEND_REQUESTS)
+                        && !com.roll_54.roll_mod.minestar.friends.ClientFriendsCache.INCOMING.isEmpty())
+                || (HubNotifications.enabled(HubNotifications.Kind.MONEY)
+                        && com.roll_54.roll_mod.economy.network.client.ClientMoneyCache.anyIncoming());
     }
+
+    /** Unread letters, unless Settings → Notifications turned mail off. */
+    public static boolean mailPending() {
+        return ClientPlayerStatusCache.UNREAD_LETTERS > 0 && HubNotifications.enabled(HubNotifications.Kind.MAIL);
+    }
+
+    /**
+     * The tab mark in the colour from Settings → Notifications: the usual mark on "Theme", a dot in that colour
+     * otherwise.
+     */
+    public static IGuiTexture coloured() {
+        int argb = HubNotifications.color().argb();
+        if (argb == tintedFor && tinted != null) return tinted;
+        // The white body in the notification colour, the "!" over it untinted. Built once per colour, not per frame.
+        tintedFor = argb;
+        tinted = new GuiTextureGroup(SpriteTexture.of(BADGE_BODY).setColor(argb), SpriteTexture.of(BADGE_MARK));
+        return tinted;
+    }
+
+    /** The badge's white body and its "!" (copies of {@code exclamation_mark.png}, which stays red for warnings). */
+    private static final ResourceLocation BADGE_BODY = RollMod.id("textures/gui/hub/notification_badge.png");
+    private static final ResourceLocation BADGE_MARK = RollMod.id("textures/gui/hub/notification_badge_mark.png");
+    private static IGuiTexture tinted;
+    private static int tintedFor;
 
     /** Auction items — expired, cancelled or won — waiting in the claim list. */
     public static boolean auctionPending() {
-        return !ClientAuctionCache.CLAIMS.isEmpty();
+        return !ClientAuctionCache.CLAIMS.isEmpty() && HubNotifications.enabled(HubNotifications.Kind.AUCTION);
     }
 
     /** Someone invited this player to a home and is waiting on the answer. */
     public static boolean homeInvitePending() {
+        if (!HubNotifications.enabled(HubNotifications.Kind.HOME_INVITES)) return false;
         for (HomeView home : ClientHomeCache.HOMES) {
             if (home.relation() == HomeView.Relation.INVITED) return true;
         }
@@ -116,7 +145,7 @@ public final class HubBadge {
      * sources (daily rewards, letters, mute) work from login.
      */
     public static boolean hubButton() {
-        return ClientPlayerStatusCache.attention() || moderationPending() || interactionsPending()
+        return mailPending() || dailyPending() || homePending() || moderationPending() || interactionsPending()
                 || auctionPending() || homeInvitePending();
     }
 

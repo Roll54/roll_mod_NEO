@@ -71,6 +71,10 @@ final class RadioTab {
         nowPlaying.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
 
         ScrollerView stations = new ScrollerView();
+
+        // Kept off the list's themed frame, so the first line does not run into it.
+
+        stations.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         stations.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
         stations.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)

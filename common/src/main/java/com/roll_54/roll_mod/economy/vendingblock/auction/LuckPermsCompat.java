@@ -316,9 +316,13 @@ public final class LuckPermsCompat {
     return meta(player, RTP_COOLDOWN_META);
   }
 
-  /** Whether the player may use {@code /fly}. */
+  /**
+   * Whether the player may use {@code /fly}: the configured group ({@code media} by default, or one inheriting it),
+   * or an operator. Was the {@code FLY_PERMISSION} node.
+   */
   public static boolean canFly(ServerPlayer player) {
-    return gated(player, FLY_PERMISSION);
+    var config = com.roll_54.roll_mod.config.MyConfig.INSTANCE;
+    return inGroup(player, config == null ? "media" : config.back.flyGroup);
   }
 
   /** Whether the player may use {@code /heal}. */
@@ -365,6 +369,20 @@ public final class LuckPermsCompat {
    * world, or a server without the mod, is not a place to enforce ranks. Where LuckPerms is
    * installed the node is the whole of the answer, and being an operator grants nothing.
    */
+  /**
+   * Whether the player is in LuckPerms group {@code group}, directly or through a group that inherits it (a
+   * rank above Prime counts as Prime). Operators pass. Without LuckPerms only operators do.
+   */
+  public static boolean inGroup(ServerPlayer player, String group) {
+    if (player.hasPermissions(2)) return true;
+    if (!LOADED) return false;
+    try {
+      return Lp.inGroup(player, group);
+    } catch (Throwable ignored) {
+      return false;
+    }
+  }
+
   private static boolean gated(ServerPlayer player, String node) {
     if (!LOADED) return player.hasPermissions(2);
     try {
@@ -386,6 +404,17 @@ public final class LuckPermsCompat {
 
   /** Isolated holder for the LuckPerms API; only referenced when {@link #LOADED}. */
   private static final class Lp {
+
+    static boolean inGroup(ServerPlayer player, String group) {
+      net.luckperms.api.LuckPerms lp = net.luckperms.api.LuckPermsProvider.get();
+      net.luckperms.api.model.user.User user = lp.getUserManager().getUser(player.getUUID());
+      if (user == null) return false;
+      net.luckperms.api.query.QueryOptions options =
+          lp.getContextManager()
+              .getQueryOptions(user)
+              .orElse(net.luckperms.api.query.QueryOptions.defaultContextualOptions());
+      return user.getInheritedGroups(options).stream().anyMatch(g -> g.getName().equalsIgnoreCase(group));
+    }
 
     static boolean hasPermission(ServerPlayer player, String node) {
       net.luckperms.api.LuckPerms lp = net.luckperms.api.LuckPermsProvider.get();
