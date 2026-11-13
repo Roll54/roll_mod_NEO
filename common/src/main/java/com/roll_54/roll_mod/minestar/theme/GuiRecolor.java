@@ -30,8 +30,9 @@ import java.util.function.Supplier;
  * as it is. Container titles, which vanilla writes in a fixed dark grey, take the theme's text
  * colour ({@code AbstractContainerScreenLabelMixin}).
  *
- * <p>Only while a screen is open in a world — so not the title screen, its logo or the HUD — and
- * never on LdLib's own screens, which are themed properly already ({@link ForceThemeHandler}).
+ * <p>On every vanilla screen — in a world and out of it, so the title screen and its menus too — but
+ * never on the HUD (no screen open) and never on LdLib's own screens, which are themed properly
+ * already ({@link ForceThemeHandler}).
  *
  * <p>TODO(theme): option 2 from the design discussion — instead of recolouring at draw time,
  * generate a recoloured copy of vanilla's GUI textures into a built-in resource pack per theme and
@@ -96,9 +97,8 @@ public final class GuiRecolor {
     @Nullable
     private static UiTheme.Recolor active() {
         if (!UiThemeState.forceEverywhere()) return null;
-        Minecraft mc = Minecraft.getInstance();
-        Screen screen = mc.screen;
-        if (mc.level == null || screen == null) return null;
+        Screen screen = Minecraft.getInstance().screen;
+        if (screen == null) return null;
         if (screen instanceof ModularUIContainerScreen || screen instanceof ModularUIScreen) return null;
         return UiThemeState.get().recolor();
     }

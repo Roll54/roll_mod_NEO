@@ -3,6 +3,8 @@ package com.roll_54.roll_mod.minestar.hub.gui;
 import com.google.gson.JsonObject;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.data.MinestarFiles;
+import com.roll_54.roll_mod.minestar.ui.ExpandableWindow;
+import com.roll_54.roll_mod.minestar.ui.WindowGeometry;
 import net.neoforged.fml.loading.FMLPaths;
 
 import java.io.IOException;
@@ -19,10 +21,10 @@ import java.util.UUID;
  * {@link #applied} clamps a copy, so dropping to a smaller resolution or a bigger GUI scale and
  * going back restores the window exactly as it was.
  *
- * <p>Only the client copy of the hub reads or writes this — see {@link HubWindow}. The dedicated
- * server builds the same tree for every player and must never touch one player's file.
+ * <p>Only the client copy of the hub reads or writes this — see {@link ExpandableWindow}. The
+ * dedicated server builds the same tree for every player and must never touch one player's file.
  */
-public final class HubWindowState {
+public final class HubWindowState implements WindowGeometry {
 
     /** The window as it has always been: the 460x250 tab box plus the frame around it. */
     public static final int DEFAULT_W = 472;
@@ -78,33 +80,24 @@ public final class HubWindowState {
         return instance;
     }
 
-    /** A rectangle in GUI-scaled screen pixels. */
-    public record Rect(int x, int y, int w, int h) {}
-
-    /**
-     * The window to show on a {@code screenW}x{@code screenH} screen: the preference, shrunk to fit
-     * and pushed back on screen. Pure — the preference itself is left alone.
-     */
+    @Override
     public Rect applied(int screenW, int screenH) {
-        if (maximized) return new Rect(0, 0, screenW, screenH);
-        int cw = clamp(w, Math.min(MIN_W, screenW), screenW);
-        int ch = clamp(h, Math.min(MIN_H, screenH), screenH);
-        int cx = x < 0 ? (screenW - cw) / 2 : clamp(x, 0, screenW - cw);
-        int cy = x < 0 ? (screenH - ch) / 2 : clamp(y, 0, screenH - ch);
-        return new Rect(cx, cy, cw, ch);
+        return WindowGeometry.fit(x, y, w, h, maximized, MIN_W, MIN_H, screenW, screenH);
     }
 
+    @Override
     public boolean maximized() {
         return maximized;
     }
 
+    @Override
     public void setMaximized(boolean maximized) {
         if (this.maximized == maximized) return;
         this.maximized = maximized;
         dirty = true;
     }
 
-    /** Records where the window now is. Only meaningful while not maximized. */
+    @Override
     public void setRect(int x, int y, int w, int h) {
         if (this.x == x && this.y == y && this.w == w && this.h == h) return;
         this.x = x;
@@ -144,6 +137,7 @@ public final class HubWindowState {
         dirty = true;
     }
 
+    @Override
     public boolean movable() {
         return movable;
     }
@@ -187,13 +181,13 @@ public final class HubWindowState {
         return pinVersion;
     }
 
-    /** Default size, centred, not maximized. */
+    @Override
     public void reset() {
         setRect(-1, -1, DEFAULT_W, DEFAULT_H);
         setMaximized(false);
     }
 
-    /** Writes the file if anything changed since it was read or last written. */
+    @Override
     public synchronized void save() {
         if (!dirty) return;
         JsonObject json = new JsonObject();
@@ -305,9 +299,5 @@ public final class HubWindowState {
 
     private static Path file() {
         return FMLPaths.CONFIGDIR.get().resolve("roll_mod").resolve("hub_window.json");
-    }
-
-    private static int clamp(int v, int min, int max) {
-        return v < min ? min : Math.min(v, max);
     }
 }

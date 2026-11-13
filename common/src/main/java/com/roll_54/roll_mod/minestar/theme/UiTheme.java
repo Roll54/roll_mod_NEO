@@ -74,7 +74,8 @@ public enum UiTheme {
             case LATTE -> new Palette(0xFFFFFCF7, 0xFFEFE7DB, 0xFF2B2622, 0xFF6B6055, 0xFFC2703F, 0x1F000000);
             case MODERN -> new Palette(0xFF2C2C34, 0xFF3A3A44, 0xFFFFFFFF, 0xFF9A9AA4, 0xFF71A4F4, 0xFF7F8084);
             case GDP -> new Palette(0xFF3A3A3A, 0xFF4A4A4A, 0xFFE0E0E0, 0xFF9A9A9A, 0xFF5AA0E6, 0xFF1E1E1E);
-            case ORE -> new Palette(0xFF5A8A3C, 0xFF6B9E4A, 0xFF222222, 0xFF3A4A30, 0xFFF0E68C, 0xFF2E4A1E);
+            // Text in vanilla's label grey rather than Ore's #222 — see assets/roll_mod/lss/ore.lss.
+            case ORE -> new Palette(0xFF5A8A3C, 0xFF6B9E4A, 0xFF404040, 0xFF3A4A30, 0xFFF0E68C, 0xFF2E4A1E);
             case MC -> null;
         };
     }
@@ -105,7 +106,7 @@ public enum UiTheme {
             case LATTE -> new Recolor(0xFFA1958A, 0xFFC4B8AA, 0xFFE8E0D5, 0xFFF5EFE6, 0xFFFFFCF7, 0xFF2B2622);
             case MODERN -> new Recolor(0xFF111114, 0xFF1E1F22, 0xFF1E1F22, 0xFF2C2C34, 0xFF3A3A44, 0xFFFFFFFF);
             case GDP -> new Recolor(0xFF111111, 0xFF1E1E1E, 0xFF262626, 0xFF3A3A3A, 0xFF4A4A4A, 0xFFE0E0E0);
-            case ORE -> new Recolor(0xFF1B2E12, 0xFF2E4A1E, 0xFF3F6A2A, 0xFF5A8A3C, 0xFF7AA85A, 0xFF1A1A1A);
+            case ORE -> new Recolor(0xFF1B2E12, 0xFF2E4A1E, 0xFF3F6A2A, 0xFF5A8A3C, 0xFF7AA85A, 0xFF404040);
             case MC -> null;
         };
     }

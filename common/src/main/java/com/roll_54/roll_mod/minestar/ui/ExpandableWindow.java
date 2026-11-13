@@ -1,4 +1,4 @@
-package com.roll_54.roll_mod.minestar.hub.gui;
+package com.roll_54.roll_mod.minestar.ui;
 
 import com.lowdragmc.lowdraglib2.gui.texture.Icons;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
@@ -13,9 +13,12 @@ import org.appliedenergistics.yoga.YogaPositionType;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
 
+import javax.annotation.Nullable;
+
 /**
- * The hub's window: a panel floating on a full-screen host, moved by its header and resized from
- * any edge or corner, the way LdLib2's own editor windows are.
+ * A panel floating on a full-screen host, moved by its header and resized from any edge or corner,
+ * the way LdLib2's own editor windows are; double-clicking the header maximizes it. Where it was left
+ * is remembered in a {@link WindowGeometry} — the hub and the config screens each keep their own.
  *
  * <p>Built on the same pieces as LdLib2's {@code Dialog.windowMode} — {@link DragMove} and
  * {@link DragResize} drags, {@link WindowDragHelper#detectResizeHandle},
@@ -23,35 +26,43 @@ import org.joml.Vector4f;
  * on {@code setDragMove}/{@code setBorderResize} themselves: those never clamp the position, so a
  * window could be dragged off screen, or grown past its edge from the left or top.
  *
- * <p>The geometry is layout only. Nothing here carries a sync value, and the server's copy of the
- * tree keeps the default rectangle forever — it is never initialised against a screen and never
- * receives a mouse event. {@code clientCopy} gates every read and write of
- * {@link HubWindowState}; it comes from the player's level, not the dist, because in single player
- * the integrated server builds its copy on a {@code Dist.CLIENT} JVM too.
+ * <p>The geometry is layout only. Nothing here carries a sync value. A window built for a menu exists
+ * on the server too, where it has no {@code geometry}: that copy keeps the default rectangle forever —
+ * it is never initialised against a screen and never receives a mouse event.
  */
-final class HubWindow extends UIElement {
+public class ExpandableWindow extends UIElement {
 
-    /** How far in from the frame's edge a press starts a resize. Inside the 6px padding. */
-    static final float RESIZE_BORDER = 4;
+    /** How far in from the frame's edge a press starts a resize. Inside a 6px padding. */
+    public static final float RESIZE_BORDER = 4;
 
     /** A press that moved less than this is still a click, so a double-click can follow it. */
     private static final float CLICK_SLOP = 3;
 
     private static final int DRAG_ICON = 12;
 
-    private final boolean clientCopy;
-    private final Vector2f minSize = new Vector2f(HubWindowState.MIN_W, HubWindowState.MIN_H);
+    /** The remembered rectangle; null on a server copy, which never reads or writes one. */
+    @Nullable private final WindowGeometry geometry;
+    private final int defaultW;
+    private final int defaultH;
+    private final Vector2f minSize;
 
-    private int screenW = HubWindowState.DEFAULT_W;
-    private int screenH = HubWindowState.DEFAULT_H;
+    private int screenW;
+    private int screenH;
 
     /** Whether the current header press has become a drag, which rules out a double-click. */
     private boolean moved;
 
-    HubWindow(boolean clientCopy) {
-        this.clientCopy = clientCopy;
-        layout(l -> l.positionType(YogaPositionType.ABSOLUTE).left(0).top(0)
-                .width(HubWindowState.DEFAULT_W).height(HubWindowState.DEFAULT_H));
+    /**
+     * @param geometry where the player left this kind of window; null for a server copy
+     */
+    public ExpandableWindow(@Nullable WindowGeometry geometry, int defaultW, int defaultH, int minW, int minH) {
+        this.geometry = geometry;
+        this.defaultW = defaultW;
+        this.defaultH = defaultH;
+        this.minSize = new Vector2f(minW, minH);
+        this.screenW = defaultW;
+        this.screenH = defaultH;
+        layout(l -> l.positionType(YogaPositionType.ABSOLUTE).left(0).top(0).width(defaultW).height(defaultH));
 
         addEventListener(UIEvents.MOUSE_DOWN, e -> {
             if (e.button != 0 || maximized() || locked()) return;
@@ -87,15 +98,15 @@ final class HubWindow extends UIElement {
 
     /**
      * Makes {@code handle} move the window. Only presses on the handle itself count — a press on a
-     * bookmark inside it is a tab click, not a drag. Double-clicking it toggles maximize.
+     * button inside it is that button's click, not a drag. Double-clicking it toggles maximize.
      */
-    void dragBy(UIElement handle) {
+    public void dragBy(UIElement handle) {
         handle.addEventListener(UIEvents.MOUSE_DOWN, e -> {
             if (e.button != 0 || e.target != handle) return;
             moved = false;
             if (maximized()) return;
-            // "Allow moving the hub" off in the settings: the window stays where it is and keeps its
-            // size. Maximizing is a separate gesture and still works.
+            // A window the player pinned in place stays where it is and keeps its size. Maximizing
+            // is a separate gesture and still works.
             if (locked()) return;
             handle.startDrag(new DragMove(getLayoutX(), getLayoutY()), Icons.MOVE)
                     .setDragTexture(-DRAG_ICON / 2f, -DRAG_ICON / 2f, DRAG_ICON, DRAG_ICON);
@@ -116,59 +127,55 @@ final class HubWindow extends UIElement {
     }
 
     /**
-     * Places the window on a {@code screenW}x{@code screenH} screen. Called from the UI's size
+     * Places the window on a {@code screenW}x{@code screenH} screen. Call it from the UI's size
      * provider, which LdLib runs on every screen init — opening, resizing the game window, changing
      * the GUI scale — so a window left off a now-smaller screen is always pulled back onto it.
      */
-    void fit(int screenW, int screenH) {
+    public void fit(int screenW, int screenH) {
         this.screenW = screenW;
         this.screenH = screenH;
-        HubWindowState.Rect r = clientCopy
-                ? HubWindowState.get().applied(screenW, screenH)
-                : new HubWindowState.Rect((screenW - HubWindowState.DEFAULT_W) / 2,
-                        (screenH - HubWindowState.DEFAULT_H) / 2, HubWindowState.DEFAULT_W, HubWindowState.DEFAULT_H);
+        WindowGeometry.Rect r = geometry != null
+                ? geometry.applied(screenW, screenH)
+                : new WindowGeometry.Rect((screenW - defaultW) / 2, (screenH - defaultH) / 2, defaultW, defaultH);
         layout(l -> l.left(r.x()).top(r.y()).width(r.w()).height(r.h()));
     }
 
-    /** "Allow moving the hub" is off: no moving, no resizing. */
-    boolean locked() {
-        return clientCopy && !HubWindowState.get().movable();
+    public boolean maximized() {
+        return geometry != null && geometry.maximized();
     }
 
-    boolean maximized() {
-        return clientCopy && HubWindowState.get().maximized();
+    /** The player turned moving off (e.g. the hub's "Allow moving the hub"): no moving, no resizing. */
+    public boolean locked() {
+        return geometry != null && !geometry.movable();
     }
 
-    void toggleMaximize() {
-        if (!clientCopy) return;
-        HubWindowState state = HubWindowState.get();
-        state.setMaximized(!state.maximized());
+    public void toggleMaximize() {
+        if (geometry == null) return;
+        geometry.setMaximized(!geometry.maximized());
         fit(screenW, screenH);
-        state.save();
+        geometry.save();
     }
 
     /** Back to the default size, centred, not maximized. */
-    void reset() {
-        if (!clientCopy) return;
-        HubWindowState state = HubWindowState.get();
-        state.reset();
+    public void reset() {
+        if (geometry == null) return;
+        geometry.reset();
         fit(screenW, screenH);
-        state.save();
+        geometry.save();
     }
 
     /** Remembers where a move or resize left the window. */
     private void commit() {
-        if (!clientCopy || maximized()) return;
-        HubWindowState state = HubWindowState.get();
-        state.setRect(Math.round(getLayoutX()), Math.round(getLayoutY()),
+        if (geometry == null || maximized()) return;
+        geometry.setRect(Math.round(getLayoutX()), Math.round(getLayoutY()),
                 Math.round(getSizeWidth()), Math.round(getSizeHeight()));
-        state.save();
+        geometry.save();
     }
 
     @Override
     public void drawBackgroundAdditional(GUIContext guiContext) {
         super.drawBackgroundAdditional(guiContext);
-        if (!clientCopy || maximized() || locked()) return;
+        if (geometry == null || maximized() || locked()) return;
         ModularUI ui = getModularUI();
         if (ui != null && !ui.getDragHandler().isDragging()) {
             WindowDragHelper.drawResizeIcon(guiContext, this, RESIZE_BORDER);

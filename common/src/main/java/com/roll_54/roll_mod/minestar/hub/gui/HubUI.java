@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.minestar.hub.gui;
 
 import com.roll_54.roll_mod.minestar.theme.RollUi;
+import com.roll_54.roll_mod.minestar.ui.ExpandableWindow;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.DataBindingBuilder;
 import com.lowdragmc.lowdraglib2.gui.sync.bindings.impl.SimpleBinding;
 import com.lowdragmc.lowdraglib2.gui.texture.ColorBorderTexture;
@@ -410,7 +411,7 @@ public final class HubUI {
     private HubUI() {}
 
     public static ModularUI createUI(Player player) {
-        HubWindow[] window = new HubWindow[1];
+        ExpandableWindow[] window = new ExpandableWindow[1];
         UIElement root = buildRoot(player, window);
         // The provider sizes the root, and LdLib centres whatever size it returns. Returning the
         // screen itself makes the root a full-screen host at 0,0 for the window to float on. It runs
@@ -441,7 +442,7 @@ public final class HubUI {
                 window.getSizeWidth(), window.getSizeHeight()};
     }
 
-    private static UIElement buildRoot(Player player, HubWindow[] windowOut) {
+    private static UIElement buildRoot(Player player, ExpandableWindow[] windowOut) {
         ServerPlayer server = player instanceof ServerPlayer sp ? sp : null;
 
         // Which tab the command asked for. Selection is client state, but the request is made on the
@@ -458,11 +459,12 @@ public final class HubUI {
         root.addSyncValue(requestedTab.getSyncValue());
 
         // The window: moved by its header, resized from its frame, remembered between openings —
-        // see HubWindow. Its size is always an explicit pixel size, so nothing inside can change it:
+        // see ExpandableWindow. Its size is always an explicit pixel size, so nothing inside can change it:
         // switching tabs or showing the inventory only redistributes the space within.
         // Built on both sides like everything else; which copy may touch the saved state is decided
         // by the player's level, not the dist, since single player's server is also a client JVM.
-        HubWindow window = new HubWindow(player.level().isClientSide());
+        ExpandableWindow window = new ExpandableWindow(player.level().isClientSide() ? HubWindowState.get() : null,
+                HubWindowState.DEFAULT_W, HubWindowState.DEFAULT_H, HubWindowState.MIN_W, HubWindowState.MIN_H);
         windowOut[0] = window;
         window.setId(WINDOW_ID);
         window.layout(l -> l.flexDirection(FlexDirection.COLUMN).paddingAll(PADDING));

@@ -91,7 +91,9 @@
     "client.FontRenderOutputEmojiMixin",
     "client.ChatComponentStoreMixin",
     "client.ChatScreenEmojiBoxMixin",
-    "client.ChatComponentAccessor"
+    "client.ChatComponentAccessor",
+    "client.JoinMultiplayerScreenAccessor",
+    "client.FzzyConfigRegistryMixin"
   ],
   "injectors": {
     "defaultRequire": 1

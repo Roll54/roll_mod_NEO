@@ -1,0 +1,42 @@
+// roll_mod's additions to LdLib2's Ore theme.
+//
+// LdLib merges every lss/ore.lss from every mod into the Ore theme (ldlib2:lss/ore), built-in first,
+// then the others in resource order, so these rules come after LdLib's own and win on the same
+// selectors. They swap Ore's near-black text (#222) for vanilla's label grey (#404040), the colour of
+// "Inventory" and chest names.
+
+button:host > .__white_icon__ {
+  color: #404040;
+}
+
+button.__white_icon__ > .__icon__ {
+  color: #404040;
+}
+
+button:host .__button_text__ {
+  color: #404040;
+}
+
+.__selector_preview__ label {
+  text-color: #404040;
+}
+
+tab:host:not(tab:selected) label {
+  text-color: #404040;
+}
+
+.__dialog_title__ > label {
+  text-color: #404040;
+}
+
+.__configurator-group__ > .__configurator_line__ > .__configurator_label__ {
+  color: #404040;
+}
+
+.__array-configurator_button-group__ button > text {
+  color: #404040;
+}
+
+.__node-graph-view_log-count__ {
+  text-color: #404040;
+}

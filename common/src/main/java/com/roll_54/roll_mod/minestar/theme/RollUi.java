@@ -60,7 +60,8 @@ public final class RollUi {
      *
      * <p>Ore UI keeps its own buttons and switch, drawn as Bedrock's Ore UI draws them: a raised face over a dark
      * bottom edge, the caption on the face (lifted off the edge, since the hub sets most buttons' padding in code),
-     * dark text; the I/O switch. Its buttons are as tall as everywhere else.
+     * dark grey text — vanilla's label grey #404040, the same as assets/roll_mod/lss/ore.lss gives the rest of Ore's
+     * text, rather than near-black; the I/O switch. Its buttons are as tall as everywhere else.
      */
     private static Stylesheet geometry;
     private static Stylesheet oreGeometry;
@@ -75,7 +76,7 @@ public final class RollUi {
                         }
                         button:host .__button_text__ {
                           top: -1;
-                          text-color: #1e1e1f;
+                          text-color: #404040;
                           text-shadow: false;
                         }
                         button:disabled:host .__button_text__ {

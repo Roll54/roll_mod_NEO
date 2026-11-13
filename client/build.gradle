@@ -82,7 +82,7 @@ dependencies {
 
     // compileOnly: AnvilTooExpensiveLabelMixin reads ModConfigs.MAIN.anvil.removeLevelCap, whose
     // getter returns through fzzy_config's ValidatedBoolean. Common exposes it non-transitively.
-    compileOnly "me.fzzyhmstrs:fzzy_config:0.7.3+1.21+neoforge"
+    compileOnly "me.fzzyhmstrs:fzzy_config:0.7.7+1.21+neoforge"
 
     // compileOnly: compat/fusion mixins patch Fusion's BlockModelModifierBakedModel so its block model
     // modifiers work on MI machines. Fusion is loaded from run/mods at dev runtime.

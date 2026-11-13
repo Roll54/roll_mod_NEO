@@ -42,7 +42,7 @@ tasks.named('processResources') { from mergeLangFiles }
 neoForge.ideSyncTask mergeLangFiles
 
 dependencies {
-    implementation "me.fzzyhmstrs:fzzy_config:0.7.3+1.21+neoforge"
+    implementation "me.fzzyhmstrs:fzzy_config:0.7.7+1.21+neoforge"
 
     // Exposed as api so the client and server subprojects inherit them transitively.
     api "aztech:Modern-Industrialization:${modern_industrialization_version}"

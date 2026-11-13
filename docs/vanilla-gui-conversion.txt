@@ -1,0 +1,261 @@
+VANILLA GUI -> LDLIB CONVERSION LIST
+====================================
+
+Every Screen in Minecraft 1.21.1 + NeoForge 21.1.248 (taken from the decompiled sources: 117 screens;
+Realms left out), grouped by where the player meets them, with what else in the game or the pack is
+attached to each.
+
+HOW TO MARK
+  Put a letter inside the brackets in front of each entry:
+    [N]  do it now
+    [L]  later
+    [X]  don't convert (stays vanilla)
+    [R]  Removal. (hide)
+  [DONE] = already converted.
+  You can also mark the BUILDING BLOCKS in section 0 -- they decide how cheap the screens after them are.
+
+SIZE  (rough, relative)
+  S  a static screen: text + a few buttons / fields
+  M  a list, a few interactive parts, or a custom drawing (book, sign, entity preview...)
+  L  a complex widget (tree, editor, tabbed form), heavy logic, or many mods hooked into it
+
+FLAGS
+  (hidden)  not reachable in the pack as it is now (e.g. the Singleplayer button is removed from the
+            title screen) -- converting these changes nothing a player sees.
+  (hooks)   roll_mod or other mods already attach things to this vanilla screen; a conversion has to
+            carry them over, or they disappear (same as other mods' buttons on the old title screen).
+
+HOW A CONVERSION WORKS (same as the title and server list)
+  The vanilla screen is swapped for an LdLib one as it opens (ScreenEvent.Opening). The game logic
+  under it is reused, not rewritten: server list file, pinger, menus/slots synced by vanilla, etc.
+  Anything that only exists inside the vanilla class (connection thread, sign text sync...) is either
+  kept by drawing over the vanilla class instead of replacing it, or reached through a small mixin
+  accessor (as JoinMultiplayerScreenAccessor does).
+
+
+------------------------------------------------------------------------------------------------------
+0. BUILDING BLOCKS  (one-off pieces; each one makes a whole group below cheap)
+------------------------------------------------------------------------------------------------------
+[ ] B1  Message / confirm dialog template                                                      S
+        Title, text, 1-3 buttons, optional progress bar / cancel. Covers ~20 screens in sections 2,
+        3, 9, 10 (Confirm, Alert, Error, Disconnected, Generic message/waiting, Progress...).
+[ ] B2  Option list renderer                                                                   M
+        Renders vanilla OptionInstance values (toggle / cycle / slider) as themed LdLib rows.
+        Almost every Options sub-screen is just a list of these -> ~10 screens become S.
+[ ] B3  Container screen shell                                                                 M-L
+        LdLib screen on top of the vanilla menu (slots, sync and server logic stay vanilla).
+        Must keep EMI/JEI working (exclusion areas, recipe transfer, item under mouse), keep the
+        recipe book, and keep roll_mod's container hooks (title colour, money shoving...).
+        Needed before anything in section 5.
+[ ] B4  Text-entry editor                                                                      M
+        Multi-line text editing with cursor/selection for book / sign / command block screens.
+
+
+------------------------------------------------------------------------------------------------------
+1. MAIN MENU, LOADING, CREDITS
+------------------------------------------------------------------------------------------------------
+[DONE] TitleScreen                     Main menu -> RollTitleScreen.
+[ ] CreditsAndAttributionScreen   S    "(c) Mojang" link bottom-right, Options -> Credits & Attribution.
+                                       Three buttons (credits, attribution, licenses).
+[ ] WinScreen                     L    End poem + scrolling credits (after the dragon, and from the
+                                       Credits button). Long animated scroller.
+[ ] AccessibilityOnboardingScreen S    First-launch accessibility / narrator prompt. Once per install.
+[ ] ReceivingLevelScreen          S    "Loading terrain..." on every server join and dimension change.
+                                       Seen very often.
+[ ] LevelLoadingScreen            M    Chunk-progress square when a world starts (hidden: singleplayer
+                                       and LAN hosting only).
+[ ] ProgressScreen                S    Generic progress screen (B1).
+[ ] GenericMessageScreen          S    One message, e.g. "Saving world" / "Disconnecting" (B1).
+[ ] GenericWaitingScreen          S    Message + Cancel while waiting on something (B1).
+[ ] DemoIntroScreen               S    (hidden) Demo-mode only. Probably X.
+
+
+------------------------------------------------------------------------------------------------------
+2. MULTIPLAYER / CONNECTING
+------------------------------------------------------------------------------------------------------
+[DONE] JoinMultiplayerScreen           Server list -> RollMultiplayerScreen.
+[ ] SafetyScreen                  S    "Online play is not moderated" warning before the server list
+                                       (first time, has "don't show again").
+[ ] DirectJoinServerScreen        S    Direct Connection: one address field + Join. Still vanilla,
+                                       opened from the new server list.
+[ ] EditServerScreen              S    Add / Edit Server: name, address, resource-pack mode.
+                                       Still vanilla, opened from the new server list.
+[ ] ConnectScreen                 S    "Connecting to the server..." + Cancel. (hooks) roll_mod's
+                                       maintenance lock (ConnectScreenMixin). The connection thread lives
+                                       in this class -> reskin it, don't replace it.
+[ ] DisconnectedScreen            S    Kick / lost connection / server restart reason + Back.
+                                       Seen often (restarts, kicks). (B1)
+[ ] ServerReconfigScreen          S    "Reconfiguring..." during the configuration phase.
+[ ] PackConfirmScreen             S    "This server recommends a resource pack" prompt on join.
+[ ] ServerLinksScreen             S    Pause -> Server Links (links the server sends).
+
+
+------------------------------------------------------------------------------------------------------
+3. OPTIONS  (reachable from the title screen and the pause menu)
+------------------------------------------------------------------------------------------------------
+[N] OptionsScreen                 M    Options hub: FOV, Online, Skin, Music & Sounds, Video, Controls,
+                                       Language, Chat, Resource Packs, Accessibility, Telemetry, Credits.
+[X] VideoSettingsScreen           M    Graphics settings. (B2) Shaders/Sodium-style mods may replace or
+                                       patch this one -- check the pack before converting. // sodium is installed on production client.
+[N] SoundOptionsScreen            S    Volume sliders + device. (B2)
+[N] ControlsScreen                S    Mouse settings / Key binds / toggles. (B2)
+[N] MouseSettingsScreen           S    Sensitivity, invert, scroll. (B2)
+[N] KeyBindsScreen                L    All key binds with categories, conflicts, Reset All, NeoForge key
+                                       modifiers and contexts. The pack has hundreds of binds -- a search
+                                       box would be a real improvement.
+[L] ChatOptionsScreen             S    Chat visibility, colours, scale... (B2)
+[L] AccessibilityOptionsScreen    S    (B2) Opened by the accessibility button on the new title screen.
+[L] FontOptionsScreen             S    Unicode font / uniform spacing. (B2)
+[L] OnlineOptionsScreen           S    Online options, e.g. allow server listing. (B2)
+[N] SkinCustomizationScreen       S    Skin part toggles + main hand.
+[l] LanguageSelectScreen          M    Language list + font options button. Removed from pack, it should
+[n] PackSelectionScreen           L    Resource packs (and datapacks on world creation): two lists,
+                                       move up/down/in/out, drag files in, folder watcher, incompatible
+                                       pack warnings.
+[R?] TelemetryInfoScreen           S    Telemetry details + toggle.
+[L] UnsupportedGraphicsWarningScreen S "Fabulous! graphics unsupported" warning.
+
+
+------------------------------------------------------------------------------------------------------
+4. IN-GAME (not containers)
+------------------------------------------------------------------------------------------------------
+[N] PauseScreen                   M    Esc menu: Back to Game, Advancements, Statistics, Options, Open to
+                                       LAN, Feedback, Report Bugs, Server Links, Player Reporting,
+                                       Disconnect. (hooks) Mods add their own buttons here.
+[R] FeedbackSubScreen             S    Pause -> Give Feedback / Report Bugs sub-menu.
+[L] TitleConfirmScreen            S    Quit-to-title confirmation (B1).
+[N] ChatScreen                    L    Chat input with command suggestions (Brigadier).
+                                       (hooks) HEAVY: ChatScreenEmojiBoxMixin, ChatButtonsHandler,
+                                       PmPicker, GifViewer, ChatComponentStoreMixin. Highest risk entry.
+                                       // ISN'T it already use Ldlib?
+[L] InBedChatScreen               S    Chat while sleeping + Leave Bed. Cheap once ChatScreen is done.
+[L] DeathScreen                   S    "You died!", score, Respawn / Title Screen (+ hardcore variant).
+[L] AdvancementsScreen            L    Tabbed, draggable advancement tree.
+[L] StatsScreen                   M    Statistics: General / Items / Mobs tabs, sortable columns.
+[R] SocialInteractionsScreen      M    Player list (All / Hidden / Blocked), hide chat, report.
+[N] GameModeSwitcherScreen        S    F3+F4 game-mode wheel (operators / creative).
+[R] ShareToLanScreen              S    (hidden) Open to LAN -- singleplayer only.
+[L] BookViewScreen                M    Reading a written book. (B4 not needed, read-only)
+[L] BookEditScreen                M    Book & quill editing, Sign / Finalize. (B4)
+[L] SignEditScreen                M    Sign text with 3D sign preview. (B4)
+[L] HangingSignEditScreen         S    Same as above, hanging sign. Cheap after SignEditScreen.
+
+
+------------------------------------------------------------------------------------------------------
+5. CONTAINERS AND INVENTORIES  (all need B3)
+------------------------------------------------------------------------------------------------------
+[N] InventoryScreen               M    Player inventory: 2x2 crafting, armor, offhand, player doll,
+                                       effects, recipe book. (hooks) HEAVY: roll_mod MoneyShovingMixin and
+                                       HubButtonHandler; Curios/Accessories, EMI, inventory sort buttons.
+[N] CreativeModeInventoryScreen   L    Creative tabs (incl. modded tabs + NeoForge paging), search,
+                                       saved hotbars, destroy slot.
+[N] ContainerScreen               S    Chests, barrels, ender chest, double chests, chest minecarts.
+                                       The most-opened container.
+[N] ShulkerBoxScreen              S    Shulker box.
+[L] DispenserScreen               S    Dispenser / dropper.
+[L] HopperScreen                  S    Hopper / hopper minecart.
+[N] CraftingScreen                M    Crafting table 3x3 + recipe book.
+[L] CrafterScreen                 M    Crafter: slot toggles, redstone indicator.
+[N] FurnaceScreen                 S    Furnace: flame + progress arrow + recipe book. //add timer t0 all 3 of them when arrow hovered
+[n] BlastFurnaceScreen            S    Same base as furnace. Cheap after FurnaceScreen.
+[n] SmokerScreen                  S    Same base as furnace. Cheap after FurnaceScreen.
+[L] AnvilScreen                   M    Rename field + level cost. (hooks) roll_mod
+                                       AnvilTooExpensiveLabelMixin + anvil level cap / over-enchant.
+[L] SmithingScreen                M    Template / base / addition slots + armor-stand preview.
+[L] GrindstoneScreen              S    Grindstone.
+[N] EnchantmentScreen             M    Animated book model, three offers in enchanting-table glyphs.
+[N] BrewingStandScreen            S    Bubbles + blaze powder fuel bar.
+[N] BeaconScreen                  M    Pyramid tier power buttons + confirm.
+[ L CartographyTableScreen        S    Map copy / zoom / lock preview.
+[L] LoomScreen                    M    Banner pattern list + banner preview.
+[L] StonecutterScreen             M    Scrollable recipe grid.
+[N] MerchantScreen                M    Villager / wandering trader trades list + level bar.
+[L] HorseInventoryScreen          M    Horse / donkey / llama: saddle, armor, chest + entity preview.
+[L] LecternScreen                 M    Book on a lectern: page turning synced with the block + Take Book.
+
+
+------------------------------------------------------------------------------------------------------
+6. BLOCK EDITORS  (operators / creative only)
+------------------------------------------------------------------------------------------------------
+[X] CommandBlockEditScreen        M    Command field with suggestions, mode, conditional, redstone. (B4)
+[X] MinecartCommandBlockEditScreen S   Same base. Cheap after CommandBlockEditScreen.
+[X] StructureBlockEditScreen      L    Save / load / corner / data modes, many fields.
+[X] JigsawBlockEditScreen         M    Jigsaw block fields + generate.
+
+
+------------------------------------------------------------------------------------------------------
+7. SINGLEPLAYER / WORLD CREATION  (all (hidden): Singleplayer is removed from the title screen)
+------------------------------------------------------------------------------------------------------
+
+REMOVE!
+[ ] SelectWorldScreen             M    World list.
+[ ] CreateWorldScreen             L    Game / World / More tabs, presets, datapacks, experiments, rules.
+[ ] EditWorldScreen               S    Rename, backup, optimize, open folder.
+[ ] EditGameRulesScreen           M    Game rule list.
+[ ] ExperimentsScreen             S    Experimental feature toggles.
+    (NeoForge ScrollableExperimentsScreen -- NeoForge's replacement for it, same entry.)
+[ ] ConfirmExperimentalFeaturesScreen S Experimental features warning.
+[ ] DetailsScreen                 S    Experimental features details.
+[ ] OptimizeWorldScreen           S    World upgrade progress.
+[ ] BackupConfirmScreen           S    "Back up before loading?" prompt.
+[ ] RecoverWorldDataScreen        S    Corrupted world recovery.
+[ ] DatapackLoadFailureScreen     S    Datapack error on world load.
+[ ] CreateFlatWorldScreen         M    Superflat customisation.
+[ ] PresetFlatWorldScreen         M    Superflat presets.
+[ ] CreateBuffetWorldScreen       M    Single-biome world.
+
+
+------------------------------------------------------------------------------------------------------
+8. PLAYER REPORTING  (Mojang chat reporting -- only works on online-mode servers)
+------------------------------------------------------------------------------------------------------
+
+REMOVE!
+[ ] ReportPlayerScreen            M    Report a player.
+[ ] ReportReasonSelectionScreen   M    Reason list.
+[ ] ChatSelectionScreen           M    Pick reported chat messages.
+[ ] DiscardReportWarningScreen    S    "Discard report?" warning.
+
+
+------------------------------------------------------------------------------------------------------
+9. GENERIC DIALOGS, ERRORS, WARNINGS  (mostly B1)
+------------------------------------------------------------------------------------------------------
+[R] ConfirmScreen                 S    Generic Yes/No used everywhere (delete server, etc.). Base class of
+                                       several below; replacing it needs its private callback (accessor).
+[l] ConfirmLinkScreen             S    "Open this link?" for chat links. Frequent in a pack with links.
+[l] AlertScreen                   S    Message + OK.
+[l] ErrorScreen                   S    Error message.
+[l] PopupScreen                   S    Small popup with buttons.
+[l] NoticeWithLinkScreen          S    Notice with a link (e.g. symlink warning).
+[l] OutOfMemoryScreen             S    "Out of memory!" -- shown while the game is struggling; keep it
+                                       as light as possible, maybe X.
+
+
+------------------------------------------------------------------------------------------------------
+10. NEOFORGE SCREENS
+------------------------------------------------------------------------------------------------------
+[ ] ModListScreen                 M    Mods button: list, search, sort, mod info, logo, Config button.
+                                       Opened from the new title screen.
+[ ] ConfigurationScreen           L    NeoForge in-game config editor used by many mods (Config button
+[ ] ConfigurationSectionScreen          in the mod list). These three go together.
+[ ] ConfigurationListScreen
+[ ] ModMismatchDisconnectedScreen S    Missing / mismatched mods when joining a server.
+[ ] LoadingErrorScreen            S    Mod loading errors at startup. Shown before the title screen,
+                                       when something is broken -- converting it is risky; maybe X.
+[ ] TooltipConfirmScreen          S    Confirm with tooltip (B1).
+
+
+------------------------------------------------------------------------------------------------------
+11. NOT SCREENS  (listed so nothing is forgotten -- these need a different approach, not this one)
+------------------------------------------------------------------------------------------------------
+[ ] LoadingOverlay                     Mojang logo + bar during resource reload (an Overlay, not a Screen).
+                                       The NeoForge early loading window before it is not mod code at all.
+[ ] HUD                                Hotbar, health, hunger, armor, XP, air, mount health
+                                       (NeoForge GUI layers).
+[ ] Chat HUD                           Messages above the hotbar (not the chat input screen).
+[ ] Player tab list                    Tab key. (Pack has a tab plugin on the server side.)
+[ ] Boss bars, scoreboard sidebar, titles / action bar, subtitles
+[ ] Toasts                             Advancement / recipe / tutorial / system popups.
+[ ] Item tooltips
+[ ] F3 debug screen
+[ ] Spectator menu                     Hotbar-style menu in spectator mode.
+[ ] Recipe book panel                  Part of the container screens; goes with B3.

@@ -51,8 +51,9 @@ public final class UiThemeState {
         current = json.has("theme") && json.get("theme").isJsonPrimitive()
                 ? UiTheme.byId(json.get("theme").getAsString())
                 : UiTheme.DEFAULT;
-        forceEverywhere = json.has("forceEverywhere") && json.get("forceEverywhere").isJsonPrimitive()
-                && json.get("forceEverywhere").getAsBoolean();
+        // On unless the player switched it off: a missing or malformed entry means on.
+        forceEverywhere = !json.has("forceEverywhere") || !json.get("forceEverywhere").isJsonPrimitive()
+                || json.get("forceEverywhere").getAsBoolean();
     }
 
     public static synchronized void set(UiTheme theme) {

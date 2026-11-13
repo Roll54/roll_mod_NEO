@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.cosmetics.config;
 import static com.roll_54.roll_mod.RollMod.MODID;
 
 import kotlin.jvm.functions.Function0;
+import me.fzzyhmstrs.fzzy_config.annotations.NonSync;
 import me.fzzyhmstrs.fzzy_config.api.ConfigApi;
 import me.fzzyhmstrs.fzzy_config.api.FileType;
 import me.fzzyhmstrs.fzzy_config.config.Config;
@@ -36,6 +37,12 @@ public class CosmeticsConfig extends Config {
     return FileType.JSON;
   }
 
+  /**
+   * Database location and login. {@code @NonSync}: this config is synced to every client that joins,
+   * and without it the server's URL, user and password went along with the rest. Only the server
+   * opens the database, so clients never need any of it.
+   */
+  @NonSync
   public StorageSettings storage = new StorageSettings();
 
   public static class StorageSettings extends ConfigSection {
