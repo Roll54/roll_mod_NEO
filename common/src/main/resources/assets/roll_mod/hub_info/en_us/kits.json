@@ -1,0 +1,13 @@
+{
+  "lines": [
+    { "text": "&fKits are sets of items the server gives out. Each card is one kit." },
+    { "type": "space" },
+    { "text": "&e&lA card" },
+    { "text": "&7The kit's icon and name, and under them its state: &aReady&7, &6Ready in&7 a countdown, &8claimed&7 for a one-time kit, or &clocked&7 when you do not have this kit (yet).", "indent": 6 },
+    { "text": "&7Some kits have a description under the state, written by the staff.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lPreview and Claim" },
+    { "text": "&fPreview&7 shows what the kit holds, laid out like your inventory. It works for locked kits too.", "indent": 6 },
+    { "text": "&fClaim&7 puts the items in your inventory; what does not fit drops at your feet. A kit then waits its cooldown, or is gone for good if it is a one-time kit.", "indent": 6 }
+  ]
+}
