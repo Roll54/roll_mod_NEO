@@ -49,6 +49,8 @@ public final class RollMod {
     }
 
     public RollMod(ModContainer container) {
+        // Testing only: keeps the loading screen up longer when config/roll_mod/loading_screen_test.json asks.
+        com.roll_54.roll_mod.minestar.debug.LoadingScreenTestDelay.runIfConfigured();
 
         IEventBus eventBus = container.getEventBus();
         //need to work with energy
@@ -60,11 +62,8 @@ public final class RollMod {
         // Machines registered through Tesseract's MI hooks (see RMMIHookRegistry) live in these.
         com.roll_54.roll_mod.compat.mi.RMMIRegistries.register(eventBus);
         GeneratedOreRegistry.register(eventBus);
-        // Ore veins: GTMOGS, built into roll_mod (package gtmogs). Its client side only on the physical client.
+        // Ore veins: GTMOGS, built into roll_mod (package gtmogs).
         new com.roll_54.roll_mod.gtmogs.GTMOGS(eventBus);
-        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
-            com.roll_54.roll_mod.gtmogs.client.GTMOGSClient.init(eventBus);
-        }
         ItemGroups.register(eventBus);
         BlockEntites.register(eventBus);
         ModEffects.register(eventBus);

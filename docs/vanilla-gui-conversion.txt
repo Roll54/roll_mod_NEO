@@ -11,7 +11,7 @@ HOW TO MARK
     [L]  later
     [X]  don't convert (stays vanilla)
     [R]  Removal. (hide)
-  [DONE] = already converted.
+    [D]  done (built; check in game before calling it final)
   You can also mark the BUILDING BLOCKS in section 0 -- they decide how cheap the screens after them are.
 
 SIZE  (rough, relative)
@@ -42,7 +42,7 @@ HOW A CONVERSION WORKS (same as the title and server list)
 [ ] B2  Option list renderer                                                                   M
         Renders vanilla OptionInstance values (toggle / cycle / slider) as themed LdLib rows.
         Almost every Options sub-screen is just a list of these -> ~10 screens become S.
-[ ] B3  Container screen shell                                                                 M-L
+[D] B3  Container screen shell                                                                 M-L
         LdLib screen on top of the vanilla menu (slots, sync and server logic stay vanilla).
         Must keep EMI/JEI working (exclusion areas, recipe transfer, item under mouse), keep the
         recipe book, and keep roll_mod's container hooks (title colour, money shoving...).
@@ -54,12 +54,12 @@ HOW A CONVERSION WORKS (same as the title and server list)
 ------------------------------------------------------------------------------------------------------
 1. MAIN MENU, LOADING, CREDITS
 ------------------------------------------------------------------------------------------------------
-[DONE] TitleScreen                     Main menu -> RollTitleScreen.
-[ ] CreditsAndAttributionScreen   S    "(c) Mojang" link bottom-right, Options -> Credits & Attribution.
+[D] TitleScreen                        Main menu -> RollTitleScreen.
+[X] CreditsAndAttributionScreen   S    "(c) Mojang" link bottom-right, Options -> Credits & Attribution.
                                        Three buttons (credits, attribution, licenses).
-[ ] WinScreen                     L    End poem + scrolling credits (after the dragon, and from the
+[X] WinScreen                     L    End poem + scrolling credits (after the dragon, and from the
                                        Credits button). Long animated scroller.
-[ ] AccessibilityOnboardingScreen S    First-launch accessibility / narrator prompt. Once per install.
+[R] AccessibilityOnboardingScreen S    First-launch accessibility / narrator prompt. Once per install.
 [ ] ReceivingLevelScreen          S    "Loading terrain..." on every server join and dimension change.
                                        Seen very often.
 [ ] LevelLoadingScreen            M    Chunk-progress square when a world starts (hidden: singleplayer
@@ -73,16 +73,17 @@ HOW A CONVERSION WORKS (same as the title and server list)
 ------------------------------------------------------------------------------------------------------
 2. MULTIPLAYER / CONNECTING
 ------------------------------------------------------------------------------------------------------
-[DONE] JoinMultiplayerScreen           Server list -> RollMultiplayerScreen.
-[ ] SafetyScreen                  S    "Online play is not moderated" warning before the server list
+[D] JoinMultiplayerScreen              Server list -> RollMultiplayerScreen.
+[R] SafetyScreen                  S    "Online play is not moderated" warning before the server list
                                        (first time, has "don't show again").
-[ ] DirectJoinServerScreen        S    Direct Connection: one address field + Join. Still vanilla,
+[X] DirectJoinServerScreen        S    Direct Connection: one address field + Join. Still vanilla,
                                        opened from the new server list.
-[ ] EditServerScreen              S    Add / Edit Server: name, address, resource-pack mode.
+[R] EditServerScreen              S    Add / Edit Server: name, address, resource-pack mode.
                                        Still vanilla, opened from the new server list.
-[ ] ConnectScreen                 S    "Connecting to the server..." + Cancel. (hooks) roll_mod's
+[N] ConnectScreen                 S    "Connecting to the server..." + Cancel. (hooks) roll_mod's
                                        maintenance lock (ConnectScreenMixin). The connection thread lives
-                                       in this class -> reskin it, don't replace it.
+                                       in this class -> reskin it, don't replace it.// huge change
+
 [ ] DisconnectedScreen            S    Kick / lost connection / server restart reason + Back.
                                        Seen often (restarts, kicks). (B1)
 [ ] ServerReconfigScreen          S    "Reconfiguring..." during the configuration phase.
@@ -108,7 +109,7 @@ HOW A CONVERSION WORKS (same as the title and server list)
 [L] FontOptionsScreen             S    Unicode font / uniform spacing. (B2)
 [L] OnlineOptionsScreen           S    Online options, e.g. allow server listing. (B2)
 [N] SkinCustomizationScreen       S    Skin part toggles + main hand.
-[l] LanguageSelectScreen          M    Language list + font options button. Removed from pack, it should
+[X] LanguageSelectScreen          M    Language list + font options button. Decided: leave vanilla.
 [n] PackSelectionScreen           L    Resource packs (and datapacks on world creation): two lists,
                                        move up/down/in/out, drag files in, folder watcher, incompatible
                                        pack warnings.
@@ -143,35 +144,41 @@ HOW A CONVERSION WORKS (same as the title and server list)
 
 ------------------------------------------------------------------------------------------------------
 5. CONTAINERS AND INVENTORIES  (all need B3)
+   Full skin: inventory, Curios, chests, shulker, crafting, furnaces. Overlay skin (only the background
+   texture replaced; vanilla's bars, lists, book, horse etc. drawn on top): every other [D] below.
 ------------------------------------------------------------------------------------------------------
-[N] InventoryScreen               M    Player inventory: 2x2 crafting, armor, offhand, player doll,
+[D] InventoryScreen               M    Player inventory: 2x2 crafting, armor, offhand, player doll,
                                        effects, recipe book. (hooks) HEAVY: roll_mod MoneyShovingMixin and
                                        HubButtonHandler; Curios/Accessories, EMI, inventory sort buttons.
-[N] CreativeModeInventoryScreen   L    Creative tabs (incl. modded tabs + NeoForge paging), search,
-                                       saved hotbars, destroy slot.
-[N] ContainerScreen               S    Chests, barrels, ender chest, double chests, chest minecarts.
+                                       Curios inventory (CuriosScreen) skinned the same way.
+[D] CreativeModeInventoryScreen   L    Creative tabs (incl. modded tabs + NeoForge paging), search,
+                                       saved hotbars, destroy slot. Rebuilt as a new LDLib screen (hub-style window, left tab
+                                       icons, global search). TEI/EMI do not show on it.
+[D] ContainerScreen               S    Chests, barrels, ender chest, double chests, chest minecarts.
                                        The most-opened container.
-[N] ShulkerBoxScreen              S    Shulker box.
-[L] DispenserScreen               S    Dispenser / dropper.
-[L] HopperScreen                  S    Hopper / hopper minecart.
-[N] CraftingScreen                M    Crafting table 3x3 + recipe book.
-[L] CrafterScreen                 M    Crafter: slot toggles, redstone indicator.
-[N] FurnaceScreen                 S    Furnace: flame + progress arrow + recipe book. //add timer t0 all 3 of them when arrow hovered
-[n] BlastFurnaceScreen            S    Same base as furnace. Cheap after FurnaceScreen.
-[n] SmokerScreen                  S    Same base as furnace. Cheap after FurnaceScreen.
-[L] AnvilScreen                   M    Rename field + level cost. (hooks) roll_mod
+[D] ShulkerBoxScreen              S    Shulker box.
+[D] DispenserScreen               S    Dispenser / dropper.
+[D] HopperScreen                  S    Hopper / hopper minecart.
+[D] CraftingScreen                M    Crafting table 3x3 + recipe book.
+[D] CrafterScreen                 M    Crafter: slot toggles, redstone indicator.
+[D] FurnaceScreen                 S    Furnace: flame + progress arrow + recipe book. Timer on arrow/flame hover: done for all 3.
+[D] BlastFurnaceScreen            S    Same base as furnace. Cheap after FurnaceScreen.
+[D] SmokerScreen                  S    Same base as furnace. Cheap after FurnaceScreen.
+[D] AnvilScreen                   M    Rename field + level cost. (hooks) roll_mod
                                        AnvilTooExpensiveLabelMixin + anvil level cap / over-enchant.
-[L] SmithingScreen                M    Template / base / addition slots + armor-stand preview.
-[L] GrindstoneScreen              S    Grindstone.
-[N] EnchantmentScreen             M    Animated book model, three offers in enchanting-table glyphs.
-[N] BrewingStandScreen            S    Bubbles + blaze powder fuel bar.
-[N] BeaconScreen                  M    Pyramid tier power buttons + confirm.
-[ L CartographyTableScreen        S    Map copy / zoom / lock preview.
-[L] LoomScreen                    M    Banner pattern list + banner preview.
-[L] StonecutterScreen             M    Scrollable recipe grid.
-[N] MerchantScreen                M    Villager / wandering trader trades list + level bar.
-[L] HorseInventoryScreen          M    Horse / donkey / llama: saddle, armor, chest + entity preview.
+[D] SmithingScreen                M    Template / base / addition slots + armor-stand preview.
+[D] GrindstoneScreen              S    Grindstone.
+[D] EnchantmentScreen             M    Animated book model, three offers in enchanting-table glyphs.
+[D] BrewingStandScreen            S    Bubbles + blaze powder fuel bar.
+[D] BeaconScreen                  M    Pyramid tier power buttons + confirm.
+[D] CartographyTableScreen        S    Map copy / zoom / lock preview.
+[D] LoomScreen                    M    Banner pattern list + banner preview.
+[D] StonecutterScreen             M    Scrollable recipe grid.
+[D] MerchantScreen                M    Villager / wandering trader trades list + level bar.
+[D] HorseInventoryScreen          M    Horse / donkey / llama: saddle, armor, chest + entity preview.
 [L] LecternScreen                 M    Book on a lectern: page turning synced with the block + Take Book.
+                                       Not a container screen (it is the book reader) -- needs its own
+                                       LDLib book screen, not B3.
 
 
 ------------------------------------------------------------------------------------------------------
@@ -219,8 +226,10 @@ REMOVE!
 ------------------------------------------------------------------------------------------------------
 9. GENERIC DIALOGS, ERRORS, WARNINGS  (mostly B1)
 ------------------------------------------------------------------------------------------------------
-[R] ConfirmScreen                 S    Generic Yes/No used everywhere (delete server, etc.). Base class of
+[ ] ConfirmScreen                 S    Generic Yes/No used everywhere (delete server, etc.). Base class of
                                        several below; replacing it needs its private callback (accessor).
+                                       Decided: the [R] meant "no adding/removing servers" -- DONE: Add Server
+                                       and Delete removed from the server list (servers.dat is shipped).
 [l] ConfirmLinkScreen             S    "Open this link?" for chat links. Frequent in a pack with links.
 [l] AlertScreen                   S    Message + OK.
 [l] ErrorScreen                   S    Error message.
@@ -247,11 +256,18 @@ REMOVE!
 ------------------------------------------------------------------------------------------------------
 11. NOT SCREENS  (listed so nothing is forgotten -- these need a different approach, not this one)
 ------------------------------------------------------------------------------------------------------
-[ ] LoadingOverlay                     Mojang logo + bar during resource reload (an Overlay, not a Screen).
+[D] LoadingOverlay                     Mojang logo + bar during resource reload (an Overlay, not a Screen).
                                        The NeoForge early loading window before it is not mod code at all.
-[ ] HUD                                Hotbar, health, hunger, armor, XP, air, mount health
-                                       (NeoForge GUI layers).
-[ ] Chat HUD                           Messages above the hotbar (not the chat input screen).
+                                       Done: the early window is roll_mod's own (earlywindow jar:
+                                       player-base slides, logo, RAM, themed bars) and ends with the
+                                       halftone wipe (LoadingWipe: #b7043b band, black hold with logo 2 s,
+                                       reveal). The Mojang reload screen is replaced whole by the same
+                                       wipe: black hold with logo while reloading (min 2 s), meteorite
+                                       pickaxe/axe/shovel bobbing and lighting up with progress when longer.
+[D] HUD                                Hotbar, health, hunger, armor, XP, air, mount health
+                                       (NeoForge GUI layers). Done: HP/hunger/armor/air/mount as bars with
+                                       tooltips, hotbar slot numbers, Alt free cursor, effect tooltips.
+[ ] Chat HUD                          Messages above the hotbar (not the chat input screen).
 [ ] Player tab list                    Tab key. (Pack has a tab plugin on the server side.)
 [ ] Boss bars, scoreboard sidebar, titles / action bar, subtitles
 [ ] Toasts                             Advancement / recipe / tutorial / system popups.

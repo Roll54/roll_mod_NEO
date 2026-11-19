@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/circuit_assembly_line"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/circuit_assembly_line"
     }
+  }
 }

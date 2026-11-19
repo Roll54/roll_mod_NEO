@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/venus_sulfur"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/venus_sulfur"
     }
+  }
 }

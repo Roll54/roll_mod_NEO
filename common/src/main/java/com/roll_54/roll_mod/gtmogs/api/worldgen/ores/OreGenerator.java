@@ -19,7 +19,6 @@ import com.roll_54.roll_mod.gtmogs.api.worldgen.OreVeinDefinition;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.WorldGeneratorUtils;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.generator.indicators.IndicatorGenerator;
 import com.roll_54.roll_mod.gtmogs.config.ConfigHolder;
-import com.roll_54.roll_mod.gtmogs.integration.map.cache.server.ServerCache;
 import com.roll_54.roll_mod.gtmogs.utils.GTUtil;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
@@ -59,11 +58,6 @@ public class OreGenerator {
         return createConfigs(level, chunkGenerator, chunkPos).stream()
                 .map(OreGenerator::logVeinGeneration)
                 .map(entry -> entry.data)
-                .peek(data -> {
-                    int gridX = Math.floorDiv(chunkPos.x, ConfigHolder.INSTANCE.worldgen.oreVeins.oreVeinGridSize);
-                    int gridZ = Math.floorDiv(chunkPos.z, ConfigHolder.INSTANCE.worldgen.oreVeins.oreVeinGridSize);
-                    ServerCache.instance.addVein(level.getLevel().dimension(), gridX, gridZ, data);
-                })
                 .toList();
     }
 

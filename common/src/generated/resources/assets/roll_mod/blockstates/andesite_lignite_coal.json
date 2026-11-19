@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/andesite_lignite_coal"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/andesite_lignite_coal"
     }
+  }
 }

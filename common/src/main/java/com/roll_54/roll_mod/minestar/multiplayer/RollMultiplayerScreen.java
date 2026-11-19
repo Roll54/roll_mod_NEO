@@ -19,7 +19,6 @@ import dev.vfyjxf.taffy.style.FlexDirection;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.navigation.CommonInputs;
-import net.minecraft.client.gui.screens.ConfirmScreen;
 import net.minecraft.client.gui.screens.ConnectScreen;
 import net.minecraft.client.gui.screens.FaviconTexture;
 import net.minecraft.client.gui.screens.Screen;
@@ -49,11 +48,12 @@ import java.util.Map;
 /**
  * The server list, rebuilt in LdLib and wearing the hub theme ({@link RollUi}): the saved servers,
  * then the LAN scan and any worlds found on the LAN, in a scroller, with vanilla's buttons beneath —
- * Join, Direct Connection, Add Server / Edit, Delete, Refresh, Back.
+ * Join, Direct Connection, Edit, Refresh, Back. No Add Server or Delete: the pack ships its server
+ * list in {@code servers.dat}.
  *
  * <p>Behaves as vanilla's {@link JoinMultiplayerScreen}, whose data side it reuses as is: the
  * {@code servers.dat} list ({@link ServerList}), the status pinger, LAN discovery, and vanilla's own
- * Add / Edit / Direct Connection / delete-confirmation screens, which come back here. Double-click
+ * Edit and Direct Connection screens, which come back here. Double-click
  * or Enter joins; Shift+Up/Down or the arrows on a server's icon reorder; F5 refreshes. Opened in
  * place of vanilla's by {@link MultiplayerScreenReplacer}.
  */
@@ -82,9 +82,8 @@ public final class RollMultiplayerScreen extends ModularUIScreen {
 
     private final Button joinButton = button("selectServer.select", this::joinSelected);
     private final Button editButton = button("selectServer.edit", this::editSelected);
-    private final Button deleteButton = button("selectServer.delete", this::deleteSelected);
 
-    /** The server Add / Edit / Direct Connection is filling in, as vanilla keeps it between screens. */
+    /** The server Edit / Direct Connection is filling in, as vanilla keeps it between screens. */
     private ServerData editing;
 
     public RollMultiplayerScreen(Screen lastScreen) {
@@ -115,7 +114,10 @@ public final class RollMultiplayerScreen extends ModularUIScreen {
         list.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
-        list.viewPort(v -> v.layout(l -> l.paddingAll(0)));
+        // No panel behind the rows: they sit straight on the blurred menu background, as vanilla's do.
+        list.style(s -> s.background(com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.EMPTY));
+        list.viewPort(v -> v.layout(l -> l.paddingAll(0))
+                .style(s -> s.background(com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.EMPTY)));
         list.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)
                 .alignItems(AlignItems.CENTER).paddingVertical(4)));
         root.addChild(list);
@@ -123,15 +125,14 @@ public final class RollMultiplayerScreen extends ModularUIScreen {
         UIElement footer = new UIElement();
         footer.layout(l -> l.widthPercent(100).height(FOOTER).flexShrink(0).flexDirection(FlexDirection.COLUMN)
                 .alignItems(AlignItems.CENTER).justifyContent(AlignContent.CENTER).gapRow(4));
+        // No Add Server / Delete: the pack ships its server list in servers.dat, and players keep it.
         footer.addChild(buttonRow(
-                sized(joinButton, 100),
-                sized(button("selectServer.direct", this::directConnect), 100),
-                sized(button("selectServer.add", this::addServer), 100)));
+                sized(joinButton, 152),
+                sized(button("selectServer.direct", this::directConnect), 152)));
         footer.addChild(buttonRow(
-                sized(editButton, 74),
-                sized(deleteButton, 74),
-                sized(button("selectServer.refresh", this::refresh), 74),
-                sized(textButton(CommonComponents.GUI_BACK, this::onClose), 74)));
+                sized(editButton, 100),
+                sized(button("selectServer.refresh", this::refresh), 100),
+                sized(textButton(CommonComponents.GUI_BACK, this::onClose), 100)));
         root.addChild(footer);
     }
 
@@ -222,7 +223,6 @@ public final class RollMultiplayerScreen extends ModularUIScreen {
         boolean saved = selected instanceof ServerRow.Saved;
         joinButton.setActive(joinable);
         editButton.setActive(saved);
-        deleteButton.setActive(saved);
     }
 
     ServerList servers() {
@@ -265,11 +265,6 @@ public final class RollMultiplayerScreen extends ModularUIScreen {
         minecraft.setScreen(new DirectJoinServerScreen(this, this::directJoinCallback, editing));
     }
 
-    private void addServer() {
-        editing = new ServerData(I18n.get("selectServer.defaultName"), "", ServerData.Type.OTHER);
-        minecraft.setScreen(new EditServerScreen(this, this::addServerCallback, editing));
-    }
-
     private void editSelected() {
         if (!(selected instanceof ServerRow.Saved saved)) return;
         editing = new ServerData(saved.data.name, saved.data.ip, ServerData.Type.OTHER);
@@ -277,28 +272,9 @@ public final class RollMultiplayerScreen extends ModularUIScreen {
         minecraft.setScreen(new EditServerScreen(this, this::editServerCallback, editing));
     }
 
-    private void deleteSelected() {
-        if (!(selected instanceof ServerRow.Saved saved) || saved.data.name == null) return;
-        minecraft.setScreen(new ConfirmScreen(this::deleteCallback,
-                Component.translatable("selectServer.deleteQuestion"),
-                Component.translatable("selectServer.deleteWarning", saved.data.name),
-                Component.translatable("selectServer.deleteButton"),
-                CommonComponents.GUI_CANCEL));
-    }
-
     /** A fresh list, pings and all — vanilla reopens the screen. */
     private void refresh() {
         minecraft.setScreen(new RollMultiplayerScreen(lastScreen));
-    }
-
-    private void deleteCallback(boolean confirmed) {
-        if (confirmed && selected instanceof ServerRow.Saved saved) {
-            servers.remove(saved.data);
-            servers.save();
-            selected = null;
-            rebuildSavedRows();
-        }
-        minecraft.setScreen(this);
     }
 
     private void editServerCallback(boolean confirmed) {
@@ -308,21 +284,6 @@ public final class RollMultiplayerScreen extends ModularUIScreen {
             data.ip = editing.ip;
             data.copyFrom(editing);
             servers.save();
-            rebuildSavedRows();
-        }
-        minecraft.setScreen(this);
-    }
-
-    private void addServerCallback(boolean confirmed) {
-        if (confirmed) {
-            ServerData existing = servers.unhide(editing.ip);
-            if (existing != null) {
-                existing.copyNameIconFrom(editing);
-            } else {
-                servers.add(editing, false);
-            }
-            servers.save();
-            selected = null;
             rebuildSavedRows();
         }
         minecraft.setScreen(this);

@@ -4,6 +4,9 @@
   "package": "com.roll_54.roll_mod.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "recipebook.ServerRecipeBookMixin",
+    "recipebook.RecipeBookContainsMixin",
+    "recipebook.RecipeBookPacketsMixin",
     "AbstractFurnaceBlockEntityMixin",
     "MiningWorldWeatherMixin",
     "OreFeatureRockOverOreMixin",
@@ -82,10 +85,13 @@
     "hostility.ConduitBlockEntityMixin",
     "hostility.FoxAlertableEntitiesSelectorMixin",
     "hostility.IronGolemMixin",
-    "hostility.SnowGolemMixin"
+    "hostility.SnowGolemMixin",
+    "neoforge.GenerateCommandMixin",
+    "neoforge.GenerationTaskMixin"
   ],
   "client": [
     "client.FontSetEmojiMixin",
+    "client.CommandHistoryMixin",
     "client.FontManagerEmojiMixin",
     "client.MinecraftFontManagerMixin",
     "client.FontRenderOutputEmojiMixin",
@@ -93,7 +99,22 @@
     "client.ChatScreenEmojiBoxMixin",
     "client.ChatComponentAccessor",
     "client.JoinMultiplayerScreenAccessor",
-    "client.FzzyConfigRegistryMixin"
+    "client.FzzyConfigRegistryMixin",
+    "client.AbstractContainerScreenAccessor",
+    "client.AbstractFurnaceScreenAccessor",
+    "client.AbstractFurnaceMenuAccessor",
+    "client.ContainerSkinMixin",
+    "client.ScreenPanoramaMixin",
+    "client.MinecraftUseInvoker",
+    "client.MouseHandlerFreeCursorMixin",
+    "client.GameRendererCursorPickMixin",
+    "client.MouseHandlerAccessor",
+    "client.ImageButtonAccessor",
+    "client.ContainerBackgroundMixin",
+    "client.NeoForgeLoadingOverlayMixin",
+    "client.LoadingOverlayMixin",
+    "client.ScreenRenderablesAccessor",
+    "client.LoomScreenAccessor"
   ],
   "injectors": {
     "defaultRequire": 1

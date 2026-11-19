@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/basalt_gold"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/basalt_gold"
     }
+  }
 }

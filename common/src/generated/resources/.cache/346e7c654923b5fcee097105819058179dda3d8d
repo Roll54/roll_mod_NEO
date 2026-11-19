@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-04T00:47:23.320151027	PY Ore Texture Generator
+// 1.21.1	2026-11-18T18:25:23.014895355	PY Ore Texture Generator
 04d493ac32dae38142895bb89c0d0f698031731d assets/roll_mod/textures/block/andesite_bauxite.png
 077f1074ddff861448677eb4ef04710010bd8abd assets/roll_mod/textures/block/andesite_cassiterite.png
 20333eb720b57d9eda9ce014c4aa79cdca99579c assets/roll_mod/textures/block/andesite_cassiterite_sand.png
@@ -158,13 +158,16 @@ c83f226f63868983e848e5eb2f71caed84f72f0d assets/roll_mod/textures/block/granite_
 2495ef0e777ff9dc07ad85ba18508d01492cc967 assets/roll_mod/textures/block/granite_saltpeter.png
 addba89bd00543fca7018ae9651882d6533a5640 assets/roll_mod/textures/block/granite_silver.png
 0c85c0a35bc44968f90ddf35220c1ae308524c6e assets/roll_mod/textures/block/granite_yellow_limonite.png
+cb28a82042e92c433dc8393e83ce5e47e9ca2b53 assets/roll_mod/textures/block/mars_bauxite.png
 410a08f5d817fc5e27d8f239fd4c0264f24ad077 assets/roll_mod/textures/block/mars_biotite.png
 e816a5ea32cf3c6c957ce23001dd99a5f5b09c36 assets/roll_mod/textures/block/mars_bornite.png
+5f14a5e3a6e580b423449d2a655d8c6ad20420c5 assets/roll_mod/textures/block/mars_emerald.png
 f3a5d9be68f273be229848a3b189342b617f32d9 assets/roll_mod/textures/block/mars_goethite.png
 5fb48b272b6ceca8f5ab3a8586a4b05bf00e261e assets/roll_mod/textures/block/mars_gold_amalgam.png
 123b2acda3b3f8bc3dba72c665adfc90e1fdedd1 assets/roll_mod/textures/block/mars_hematite.png
 b88aeffd69da43de43b4b1a1e1e9c34e7e818643 assets/roll_mod/textures/block/mars_iridium.png
 916c6d2ad5a80e96cebb69352c472bbf153e17bb assets/roll_mod/textures/block/mars_lepidolite.png
+94ee5264c8330fed6da8c36e8e225cbbf5f2c70e assets/roll_mod/textures/block/mars_magnetite.png
 4b623a85a065b2bd814cb37380b7407acccc76af assets/roll_mod/textures/block/mars_malachite.png
 8bbbf85218a220cfc30289d3aa8a367b841f106c assets/roll_mod/textures/block/mars_molybdenum.png
 93f9728b60ed4f729d622a3d6c6f2c689dc47b27 assets/roll_mod/textures/block/mars_monazite.png
@@ -184,6 +187,7 @@ e45db7710e2f7f215074dbea6d53e9bae34db984 assets/roll_mod/textures/block/mars_tan
 860a1d86702d80676a6795d2ef785775317a71f2 assets/roll_mod/textures/block/mercury_antimony.png
 1f83e0b810e3d321420afd5e0f85d129178ea39b assets/roll_mod/textures/block/mercury_borax.png
 14c3a3c6dbb8e77df20d48f4038042dd5d28f2dd assets/roll_mod/textures/block/mercury_certus_quartz.png
+7b9615a480bb900f354e269a8b13cf139162c5bf assets/roll_mod/textures/block/mercury_crimson_iron.png
 48936b58469f927e6279801b9c2e8c3294d8e5c1 assets/roll_mod/textures/block/mercury_fluorite.png
 ea8743b558b75a567a04904cdc7cf51b35683a84 assets/roll_mod/textures/block/mercury_fluosunnarite.png
 fc3b2eb6237ef6a27025e2d0232fffbf7e9c3bc8 assets/roll_mod/textures/block/mercury_molybdenite.png
@@ -206,6 +210,7 @@ dcc00a80f8f204f4ee5fed1f5d47c6d89b6cab93 assets/roll_mod/textures/block/mercury_
 3d92471d7aa5808c3929d379de2caf9c087a278d assets/roll_mod/textures/block/moon_borax.png
 cf28251a99ded4547b905472b29f21b5a7531cc5 assets/roll_mod/textures/block/moon_certus_quartz.png
 f96b7ecb4d1cf6694e5ce62098d6939a9575ff50 assets/roll_mod/textures/block/moon_chromite.png
+b299d64a6ac2c49b48c2f322bfe9ff2cc0fc265e assets/roll_mod/textures/block/moon_emerald.png
 9c09f1f8f18b05b6cbb88abb6b8a8813530bad16 assets/roll_mod/textures/block/moon_garnierite.png
 ba066a7a0464d73f66380d9010c3f7a810ea68be assets/roll_mod/textures/block/moon_hematite.png
 1c13dbc656ad5c2b82cd133ee65fa2c0130016e9 assets/roll_mod/textures/block/moon_ilmenite.png
@@ -377,6 +382,7 @@ be4e35b855ac53381d6474e6d8c7f2defcf03d26 assets/roll_mod/textures/block/venus_ap
 4433c6047e2c88df1401fd4473135a2aa6d3a1e8 assets/roll_mod/textures/block/venus_blue_topaz.png
 392aad6df504e33c3c67beddedd02b57246163eb assets/roll_mod/textures/block/venus_chalcopyrite.png
 92a02d3c842010a1ad286b3647ab720ead96474d assets/roll_mod/textures/block/venus_cinnabar.png
+4df14b76c75eeedba44bcf5410f23d5bab824f4c assets/roll_mod/textures/block/venus_crimson_iron.png
 c51c7d59a090e73e172a14d0c1dbaf1a67f0a2c4 assets/roll_mod/textures/block/venus_fluorite.png
 df91f0acdad433f9a3b9deb42cecf6e391e6fe37 assets/roll_mod/textures/block/venus_fluosunnarite.png
 e2766c72e34bdc49f215b965c63a7b196ef17293 assets/roll_mod/textures/block/venus_lead.png

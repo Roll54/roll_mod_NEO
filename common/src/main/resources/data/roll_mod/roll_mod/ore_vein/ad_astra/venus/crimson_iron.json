@@ -1,0 +1,84 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
+  "biomes": "#ad_astra:is_venus",
+  "cluster_size": {
+    "min_inclusive": 32,
+    "max_inclusive": 50,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.7,
+  "dimension_filter": [
+    "ad_astra:venus",
+    "ad_astra:mercury"
+  ],
+  "discard_chance_on_air_exposure": 0.6,
+  "generator": {
+    "type": "roll_mod:classic",
+    "primary": {
+      "layers": 5,
+      "targets": [
+        {
+          "material": "crimson_iron"
+        }
+      ]
+    },
+    "secondary": {
+      "layers": 3,
+      "targets": [
+        {
+          "material": "crimson_iron"
+        }
+      ]
+    },
+    "between": {
+      "layers": 2,
+      "targets": [
+        {
+          "material": "crimson_iron"
+        }
+      ]
+    },
+    "sporadic": {
+      "layers": 4,
+      "targets": [
+        {
+          "material": "crimson_iron"
+        }
+      ]
+    }
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 64
+      },
+      "min_inclusive": {
+        "absolute": -32
+      }
+    }
+  },
+  "layer": "venus_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "materials": [
+        "crimson_iron"
+      ],
+      "tries": 150,
+      "xz_spread": 18
+    }
+  ],
+  "dimension_overrides": {
+    "ad_astra:mercury": {
+      "layer": "mercury_stone",
+      "biomes": "#ad_astra:is_mercury"
+    }
+  }
+}

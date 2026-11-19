@@ -1,7 +1,7 @@
 {
-    "values": {
-        "minecraft:bone_meal": {
-            "p": 10
-        }
+  "values": {
+    "minecraft:bone_meal": {
+      "p": 10
     }
+  }
 }

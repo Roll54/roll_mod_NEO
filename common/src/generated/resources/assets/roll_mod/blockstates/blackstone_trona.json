@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/blackstone_trona"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/blackstone_trona"
     }
+  }
 }

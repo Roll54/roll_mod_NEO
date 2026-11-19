@@ -8,6 +8,7 @@ import com.roll_54.roll_mod.minestar.chat.emoji.EmojiRegistry;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ChatComponent;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.TranslatableContents;
@@ -20,8 +21,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.client.event.ClientChatReceivedEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 
 import javax.annotation.Nullable;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
@@ -44,12 +47,18 @@ import java.util.Locale;
  * <p>Switching view clears the vanilla chat (keeping the sent-message history) and refills it from
  * here, oldest first. The vanilla chat keeps 100 lines; this keeps {@link #CAPACITY}, so a quiet
  * channel still has its history after a busy one scrolled it out of the vanilla list.
+ *
+ * <p><b>Between sessions</b>: the latest {@link ClientChatSaves#KEEP} lines are saved per server (or
+ * world) on leaving, and every half minute while something changed, and come back on joining it again.
+ * The server's join history ({@code ChatHistory}) then skips the lines that came back.
  */
 @OnlyIn(Dist.CLIENT)
 @EventBusSubscriber(modid = RollMod.MODID, value = Dist.CLIENT)
 public final class ClientChatStore {
 
     private static final int CAPACITY = 500;
+    /** How often, in ticks, lines that changed are saved while playing. */
+    private static final int SAVE_TICKS = 600;
 
     private static final class Line {
         final ChatChannel channel;
@@ -62,6 +71,8 @@ public final class ClientChatStore {
         long time;
         /** The component last put in the vanilla chat for this line, to find it again under the mouse. */
         @Nullable Component onScreen;
+        /** Brought back from the last session ({@link ClientChatSaves}), not received this one. */
+        boolean restored;
 
         Line(ChatChannel channel, Component message, String sender) {
             this.channel = channel;
@@ -98,6 +109,8 @@ public final class ClientChatStore {
     /** A channel line from the server; {@code partner} names the other side of a PM line. */
     public static void receive(ChatChannel channel, Component message, String partner, String sender, long time) {
         if (channel == ChatChannel.PM && !partner.isEmpty()) pmPartner = partner;
+        // Join history the saved lines already brought back.
+        if (time > 0 && restored(channel, message.getString(), time)) return;
         if (handToXaero(channel, message)) return;
         ChatChannelState state = ChatChannelState.get();
         if (sender.isEmpty() && state.hideDiscord() && isDiscord(message)) return;
@@ -269,6 +282,7 @@ public final class ClientChatStore {
 
     @Nullable
     private static Line add(ChatChannel channel, Component raw, String sender) {
+        dirty = true;
         Component message = decorate(raw);
         Line repeated = latest(channel);
         Line line;
@@ -304,8 +318,69 @@ public final class ClientChatStore {
         return null;
     }
 
+    /* ---------------------------------------------- saved lines ---------------------------------------------- */
+
+    /** Where this server's lines are saved, and the registries their components are written with. */
+    @Nullable private static Path saveFile;
+    @Nullable private static HolderLookup.Provider registries;
+    private static boolean dirty;
+    private static int ticks;
+
+    /** How far apart, in ms, a join-history line and a saved one may be stamped and still be the same line. */
+    private static final long SAME_LINE_MS = 60_000;
+
+    private static boolean restored(ChatChannel channel, String text, long time) {
+        for (Line line : LINES) {
+            if (line.restored && line.channel == channel && line.text.equals(text)
+                    && Math.abs(line.time - time) <= SAME_LINE_MS) return true;
+        }
+        return false;
+    }
+
+    @SubscribeEvent
+    public static void onLoggingIn(ClientPlayerNetworkEvent.LoggingIn event) {
+        registries = event.getPlayer().registryAccess();
+        saveFile = ClientChatSaves.file();
+        dirty = false;
+        ticks = 0;
+        if (saveFile == null) return;
+        // Before anything already received while joining.
+        List<Line> back = new ArrayList<>();
+        for (ClientChatSaves.Saved saved : ClientChatSaves.read(saveFile, registries)) {
+            Line line = new Line(saved.channel(), saved.message(), saved.sender());
+            line.count = saved.count();
+            if (saved.time() > 0) line.time = saved.time();
+            line.restored = true;
+            back.add(line);
+        }
+        if (back.isEmpty()) return;
+        LINES.addAll(0, back);
+        while (LINES.size() > CAPACITY) LINES.removeFirst();
+        rebuild();
+    }
+
+    @SubscribeEvent
+    public static void onClientTick(ClientTickEvent.Post event) {
+        if (!dirty || saveFile == null || ++ticks < SAVE_TICKS) return;
+        save();
+    }
+
+    private static void save() {
+        ticks = 0;
+        dirty = false;
+        if (saveFile == null || registries == null) return;
+        List<ClientChatSaves.Saved> saved = new ArrayList<>(LINES.size());
+        for (Line line : LINES) {
+            saved.add(new ClientChatSaves.Saved(line.channel, line.message, line.sender, line.count, line.time));
+        }
+        ClientChatSaves.write(saveFile, saved, registries);
+    }
+
     @SubscribeEvent
     public static void onLoggingOut(ClientPlayerNetworkEvent.LoggingOut event) {
+        if (dirty) save();
+        saveFile = null;
+        registries = null;
         LINES.clear();
         UNREAD.clear();
         devAccess = false;

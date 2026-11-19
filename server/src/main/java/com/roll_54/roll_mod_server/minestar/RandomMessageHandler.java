@@ -27,6 +27,9 @@ public class RandomMessageHandler {
     }
 
     private static void broadcastRandomMessage(MinecraftServer server) {
+        if (server.getPlayerCount() < MyConfig.INSTANCE.messages.minPlayersToBroadcast) {
+            return;
+        }
 
         List<String> messages = MyConfig.INSTANCE.messages.broadcastMessages;
         if (messages != null && !messages.isEmpty()) {

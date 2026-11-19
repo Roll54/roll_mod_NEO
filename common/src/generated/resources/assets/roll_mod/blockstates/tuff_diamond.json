@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/tuff_diamond"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/tuff_diamond"
     }
+  }
 }

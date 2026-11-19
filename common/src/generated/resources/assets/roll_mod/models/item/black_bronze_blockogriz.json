@@ -1,6 +1,6 @@
 {
-    "parent": "minecraft:item/handheld",
-    "textures": {
-        "layer0": "roll_mod:item/tool/normal/black_bronze_blockogriz"
-    }
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "roll_mod:item/tool/normal/black_bronze_blockogriz"
+  }
 }

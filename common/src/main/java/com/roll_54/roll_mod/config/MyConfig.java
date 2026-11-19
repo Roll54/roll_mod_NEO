@@ -80,6 +80,8 @@ public class MyConfig extends Config {
         );
         @Comment("Period of time that need to broadcast a message")
         public int TIME_TO_BROADCAST = 12000;
+        @Comment("Auto messages are only sent while at least this many players are online (0 or 1 = always)")
+        public int minPlayersToBroadcast = 5;
     }
 
     @Comment("What a player's Minestar level gives (as on Eden): one rule per line, perk:from:every:amount:until 2014 amount of perk at level from, then every N levels (0 = once), up to until (0 = no end). Perks: emoji_slots, sticker_slots, claims (Open Parties and Claims bonus chunks), daily_rerolls.")
@@ -260,6 +262,25 @@ public class MyConfig extends Config {
         @Comment("How often (in ticks) entity counts per chunk are rescanned.")
         @ValidatedInt.Restrict(min = 1, max = 1200)
         public int scanIntervalTicks = 20;
+    }
+
+    @Comment("'/neoforge generate' pregeneration tuning. Applies to every running generation, read each time chunks are queued.")
+    public PregenSettings pregen = new PregenSettings();
+
+    public static class PregenSettings extends ConfigSection {
+        @Comment("""
+            Chunks one generation keeps in flight at once (NeoForge default: 32). Higher keeps all worldgen threads busy
+            on many-core machines, at the cost of more chunks held in memory.
+            """)
+        @ValidatedInt.Restrict(min = 1, max = 4096)
+        public int batchSize = 128;
+
+        @Comment("""
+            When in-flight chunks drop to this many, the next batch is queued (NeoForge default: 8).
+            Clamped below batchSize. Higher means fewer idle gaps between batches.
+            """)
+        @ValidatedInt.Restrict(min = 0, max = 4095)
+        public int queueThreshold = 32;
     }
 
     @Comment("Settings for Nether Storm behaviour")

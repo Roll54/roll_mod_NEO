@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/andesite_nickel"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/andesite_nickel"
     }
+  }
 }

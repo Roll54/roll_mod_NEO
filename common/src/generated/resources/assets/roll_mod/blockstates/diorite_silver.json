@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/diorite_silver"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/diorite_silver"
     }
+  }
 }

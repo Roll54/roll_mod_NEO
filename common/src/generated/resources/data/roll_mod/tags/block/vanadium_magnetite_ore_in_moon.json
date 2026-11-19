@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:moon_vanadium_magnetite",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:moon_vanadium_magnetite",
+      "required": false
+    }
+  ]
 }

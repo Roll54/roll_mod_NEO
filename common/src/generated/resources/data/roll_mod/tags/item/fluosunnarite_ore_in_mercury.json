@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:mercury_fluosunnarite",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:mercury_fluosunnarite",
+      "required": false
+    }
+  ]
 }

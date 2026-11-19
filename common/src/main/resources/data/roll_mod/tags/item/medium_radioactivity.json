@@ -1,7 +1,7 @@
 {
   "replace": false,
   "values": [
-    "modern_industrialization:mutagen_bucket",
-    "modern_industrialization:exhaust_mutagen_bucket"
+    { "id": "modern_industrialization:mutagen_bucket", "required": false },
+    { "id": "modern_industrialization:exhaust_mutagen_bucket", "required": false }
   ]
 }

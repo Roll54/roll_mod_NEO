@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/block_blencium"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/block_blencium"
     }
+  }
 }

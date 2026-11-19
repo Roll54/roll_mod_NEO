@@ -1,0 +1,103 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
+  "biomes": "#ad_astra:is_mercury",
+  "cluster_size": {
+    "min_inclusive": 70,
+    "max_inclusive": 102,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.7,
+  "dimension_filter": [
+    "ad_astra:mercury"
+  ],
+  "discard_chance_on_air_exposure": 0.6,
+  "generator": {
+    "type": "roll_mod:classic",
+    "primary": {
+      "layers": 5,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:tag_match",
+            "tag": "c:mercury_stones"
+          },
+          "state": {
+            "Name": "roll_mod:venus_livingstonite"
+          }
+        }
+      ]
+    },
+    "secondary": {
+      "layers": 4,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:tag_match",
+            "tag": "c:mercury_stones"
+          },
+          "state": {
+            "Name": "roll_mod:venus_cinnabar"
+          }
+        }
+      ]
+    },
+    "between": {
+      "layers": 3,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:tag_match",
+            "tag": "c:mercury_stones"
+          },
+          "state": {
+            "Name": "roll_mod:venus_livingstonite"
+          }
+        }
+      ]
+    },
+    "sporadic": {
+      "layers": 1,
+      "targets": [
+        {
+          "target": {
+            "predicate_type": "minecraft:tag_match",
+            "tag": "c:mercury_stones"
+          },
+          "state": {
+            "Name": "roll_mod:mercury_antimony"
+          }
+        }
+      ]
+    }
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 62
+      },
+      "min_inclusive": {
+        "absolute": -32
+      }
+    }
+  },
+  "layer": "mercury_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "blocks": [
+        "roll_mod:venus_livingstonite_ore_sample",
+        "roll_mod:venus_cinnabar_ore_sample",
+        "roll_mod:mercury_antimony_ore_sample"
+      ],
+      "tries": 370,
+      "xz_spread": 39
+    }
+  ]
+}

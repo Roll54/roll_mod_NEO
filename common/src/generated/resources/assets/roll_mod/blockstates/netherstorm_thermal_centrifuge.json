@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/netherstorm_thermal_centrifuge"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/netherstorm_thermal_centrifuge"
     }
+  }
 }

@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/blackstone_sphalerite"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/blackstone_sphalerite"
     }
+  }
 }

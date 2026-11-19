@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/venus_fluosunnarite"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/venus_fluosunnarite"
     }
+  }
 }

@@ -1,0 +1,95 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
+  "biomes": "#ad_astra:is_moon",
+  "cluster_size": {
+    "min_inclusive": 28,
+    "max_inclusive": 44,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.6,
+  "dimension_filter": [
+    "ad_astra:moon",
+    "ad_astra:mars"
+  ],
+  "discard_chance_on_air_exposure": 0.65,
+  "generator": {
+    "type": "roll_mod:classic",
+    "primary": {
+      "layers": 4,
+      "targets": [
+        {
+          "material": "emerald"
+        }
+      ]
+    },
+    "secondary": {
+      "layers": 3,
+      "targets": [
+        {
+          "material": "emerald"
+        }
+      ]
+    },
+    "between": {
+      "layers": 2,
+      "targets": [
+        {
+          "material": "emerald"
+        }
+      ]
+    },
+    "sporadic": {
+      "layers": 4,
+      "targets": [
+        {
+          "material": "emerald"
+        }
+      ]
+    }
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 64
+      },
+      "min_inclusive": {
+        "absolute": -32
+      }
+    }
+  },
+  "layer": "moon_stone",
+  "weight": 100,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "materials": [
+        "emerald"
+      ],
+      "tries": 150,
+      "xz_spread": 18
+    }
+  ],
+  "dimension_overrides": {
+    "ad_astra:mars": {
+      "layer": "mars_stone",
+      "biomes": "#ad_astra:is_mars",
+      "height_range": {
+        "height": {
+          "type": "minecraft:uniform",
+          "min_inclusive": {
+            "absolute": -20
+          },
+          "max_inclusive": {
+            "absolute": 70
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,66 @@
+// The loading screen NeoForge shows before any mod is loaded (its "early window").
+//
+// It cannot live in roll_mod's own jar: the early window starts before mods are even discovered, so
+// FML takes it from a jar in mods/ that declares an ImmediateWindowProvider service, loaded on the
+// SERVICE module layer. This builds that jar: roll_mod-earlywindow-<version>.jar. It goes in the
+// pack's mods/ next to roll_mod, and the pack's config/fml.toml selects it:
+//
+//     earlyWindowProvider = "roll_mod"
+//     earlyWindowFBScale = 2
+//
+// Without the jar but with that setting, FML finds no such provider and shows no early window at all.
+//
+// The slides — a JSON and an image each — are in common/src/main/resources/assets/roll_mod/loading/
+// (with roll_mod's other assets, though left out of roll_mod's jar), shipped as they are under
+// roll_mod-loading/ in the jar, with an index of the JSONs generated at build time (a jar cannot be
+// listed from the module layer).
+
+base {
+    archivesName = 'roll_mod-earlywindow'
+}
+
+neoForge {
+    version = project.neo_version
+}
+
+def loadingDir = rootProject.file('common/src/main/resources/assets/roll_mod/loading')
+
+def generateLoadingIndex = tasks.register('generateLoadingIndex') {
+    def out = layout.buildDirectory.dir('generated/loadingIndex')
+    inputs.dir(loadingDir).optional()
+    outputs.dir(out)
+    doLast {
+        def dir = out.get().dir('roll_mod-loading').asFile
+        dir.mkdirs()
+        def names = loadingDir.exists()
+                ? (loadingDir.listFiles().findAll { it.isFile() && it.name.endsWith('.json') }*.name).sort()
+                : []
+        new File(dir, 'index.txt').text = names.join('\n') + (names ? '\n' : '')
+    }
+}
+
+tasks.processResources {
+    dependsOn generateLoadingIndex
+    from(loadingDir) {
+        into 'roll_mod-loading'
+        include '*.json', '*.png', '*.jpg', '*.jpeg'
+    }
+    from(layout.buildDirectory.dir('generated/loadingIndex'))
+    // The same logo the title screen uses.
+    from(rootProject.file('common/src/main/resources/assets/roll_mod/textures/gui/title/moderntech_logo.png')) {
+        into 'roll_mod-loading'
+        rename { 'logo.png' }
+    }
+}
+
+tasks.jar {
+    manifest {
+        attributes(
+                'Automatic-Module-Name': 'roll_mod.earlywindow',
+                // Not a mod: FML loads it as a library on the service layer.
+                'FMLModType': 'LIBRARY',
+                'Implementation-Title': 'roll_mod early window',
+                'Implementation-Version': project.version
+        )
+    }
+}

@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/large_compressor"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/large_compressor"
     }
+  }
 }

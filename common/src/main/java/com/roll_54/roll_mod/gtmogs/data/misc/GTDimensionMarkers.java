@@ -1,6 +1,5 @@
 package com.roll_54.roll_mod.gtmogs.data.misc;
 
-import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.Level;
@@ -9,32 +8,36 @@ import net.minecraft.world.level.block.Block;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.AdAstraDimensions;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.DimensionMarker;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.RollModDimensions;
-import com.roll_54.roll_mod.gtmogs.utils.FormattingUtil;
-import com.tterrag.registrate.util.entry.BlockEntry;
+import com.roll_54.roll_mod.gtmogs.GTMOGS;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredBlock;
+import net.neoforged.neoforge.registries.DeferredRegister;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Supplier;
 
-import static com.roll_54.roll_mod.gtmogs.common.registry.GTRegistration.REGISTRATE;
-
 @SuppressWarnings("unused")
 public class GTDimensionMarkers {
 
-    static {
-        REGISTRATE.creativeModeTab(null);
-    }
+    // Plain blocks used only as dimension icons in the recipe viewer's ore vein pages. Not in any creative tab;
+    // blockstates, models and names are static files under assets/roll_mod.
+    private static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(GTMOGS.MOD_ID);
+    private static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(GTMOGS.MOD_ID);
 
-    public static final BlockEntry<Block> OVERWORLD_MARKER = createMarker("overworld");
-    public static final BlockEntry<Block> NETHER_MARKER = createMarker("the_nether");
-    public static final BlockEntry<Block> END_MARKER = createMarker("the_end");
+    public static final DeferredBlock<Block> OVERWORLD_MARKER = createMarker("overworld");
+    public static final DeferredBlock<Block> NETHER_MARKER = createMarker("the_nether");
+    public static final DeferredBlock<Block> END_MARKER = createMarker("the_end");
 
-    public static final BlockEntry<Block> MOON_MARKER = createMarker("moon");
-    public static final BlockEntry<Block> MARS_STONE_MARKER = createMarker("mars");
-    public static final BlockEntry<Block> MERCURY_STONE_MARKER = createMarker("mercury");
-    public static final BlockEntry<Block> VENUS_STONE_MARKER = createMarker("venus");
-    public static final BlockEntry<Block> GLACIO_STONE_MARKER = createMarker("glacio");
+    public static final DeferredBlock<Block> MOON_MARKER = createMarker("moon");
+    public static final DeferredBlock<Block> MARS_STONE_MARKER = createMarker("mars");
+    public static final DeferredBlock<Block> MERCURY_STONE_MARKER = createMarker("mercury");
+    public static final DeferredBlock<Block> VENUS_STONE_MARKER = createMarker("venus");
+    public static final DeferredBlock<Block> GLACIO_STONE_MARKER = createMarker("glacio");
 
-    public static final BlockEntry<Block> MINING_OVERWORLD_MARKER = createMarker("mining_overworld");
+    public static final DeferredBlock<Block> MINING_OVERWORLD_MARKER = createMarker("mining_overworld");
 
     public static final DimensionMarker OVERWORLD = createAndRegister(Level.OVERWORLD.location(), 0,
             () -> OVERWORLD_MARKER, null);
@@ -81,21 +84,15 @@ public class GTDimensionMarkers {
         return marker;
     }
 
-    private static BlockEntry<Block> createMarker(String name) {
-        return REGISTRATE.block("%s_marker".formatted(name), Block::new)
-                .lang(FormattingUtil.toEnglishName(name))
-                .blockstate((ctx, prov) -> prov.simpleBlock(ctx.get(), prov.models().cube(ctx.getName(),
-                        prov.modLoc("block/dim_markers/%s/down".formatted(name)),
-                        prov.modLoc("block/dim_markers/%s/up".formatted(name)),
-                        prov.modLoc("block/dim_markers/%s/north".formatted(name)),
-                        prov.modLoc("block/dim_markers/%s/south".formatted(name)),
-                        prov.modLoc("block/dim_markers/%s/east".formatted(name)),
-                        prov.modLoc("block/dim_markers/%s/west".formatted(name)))
-                        .texture("particle", "#north")
-                        .guiLight(BlockModel.GuiLight.FRONT)))
-                .simpleItem()
-                .register();
+    private static DeferredBlock<Block> createMarker(String name) {
+        DeferredBlock<Block> block = BLOCKS.registerSimpleBlock("%s_marker".formatted(name),
+                BlockBehaviour.Properties.of());
+        ITEMS.register(block.getId().getPath(), () -> new BlockItem(block.get(), new Item.Properties()));
+        return block;
     }
 
-    public static void init() {}
+    public static void init(IEventBus modBus) {
+        BLOCKS.register(modBus);
+        ITEMS.register(modBus);
+    }
 }

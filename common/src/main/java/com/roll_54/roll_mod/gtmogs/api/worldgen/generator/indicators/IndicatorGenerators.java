@@ -4,8 +4,6 @@ import net.minecraft.resources.ResourceLocation;
 
 import com.mojang.serialization.MapCodec;
 import com.roll_54.roll_mod.gtmogs.GTMOGS;
-import com.roll_54.roll_mod.gtmogs.api.addon.AddonFinder;
-import com.roll_54.roll_mod.gtmogs.api.addon.IGTAddon;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.WorldGeneratorUtils;
 
 import java.util.function.Supplier;
@@ -24,7 +22,6 @@ public class IndicatorGenerators {
         return codec;
     }
 
-    public static void registerAddonGenerators() {
-        AddonFinder.getAddonList().forEach(IGTAddon::registerIndicatorGenerators);
-    }
+    /** Loads the class, which registers the built-in indicator generator codecs. */
+    public static void init() {}
 }

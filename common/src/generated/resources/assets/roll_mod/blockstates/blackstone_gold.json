@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/blackstone_gold"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/blackstone_gold"
     }
+  }
 }

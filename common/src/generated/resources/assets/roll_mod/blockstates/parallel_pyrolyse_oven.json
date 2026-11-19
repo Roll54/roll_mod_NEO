@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/parallel_pyrolyse_oven"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/parallel_pyrolyse_oven"
     }
+  }
 }

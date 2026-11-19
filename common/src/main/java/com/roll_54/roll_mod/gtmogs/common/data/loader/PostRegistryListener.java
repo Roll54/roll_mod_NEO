@@ -11,7 +11,6 @@ import com.roll_54.roll_mod.gtmogs.api.worldgen.OreVeinDefinition;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.WorldGeneratorUtils;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.ores.OreGenDiagnostics;
 import com.roll_54.roll_mod.gtmogs.data.worldgen.GTOreVeins;
-import com.roll_54.roll_mod.gtmogs.integration.map.cache.server.ServerCache;
 import org.jetbrains.annotations.NotNullByDefault;
 
 import java.util.concurrent.CompletableFuture;
@@ -29,7 +28,6 @@ public class PostRegistryListener extends ContextAwareReloadListener implements 
 
         buildVeinGenerators(registry);
         GTOreVeins.updateLargestVeinSize(registry);
-        ServerCache.instance.oreVeinDefinitionsChanged(registry);
         WorldGeneratorUtils.invalidateOreVeinCache();
         OreGenDiagnostics.logVeinSearchCost(registry);
     }

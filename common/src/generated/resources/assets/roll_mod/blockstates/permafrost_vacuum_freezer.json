@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/permafrost_vacuum_freezer"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/permafrost_vacuum_freezer"
     }
+  }
 }

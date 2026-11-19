@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/granite_pyrite"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/granite_pyrite"
     }
+  }
 }

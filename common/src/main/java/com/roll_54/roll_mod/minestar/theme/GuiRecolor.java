@@ -100,6 +100,8 @@ public final class GuiRecolor {
         Screen screen = Minecraft.getInstance().screen;
         if (screen == null) return null;
         if (screen instanceof ModularUIContainerScreen || screen instanceof ModularUIScreen) return null;
+        // A container drawn by the LdLib skin is themed already; its panel is not vanilla grey art.
+        if (com.roll_54.roll_mod.minestar.containers.ContainerSkin.isSkinned(screen)) return null;
         return UiThemeState.get().recolor();
     }
 

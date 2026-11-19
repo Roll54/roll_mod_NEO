@@ -1,6 +1,7 @@
 package com.roll_54.roll_mod.minestar.hub.gui;
 
 import com.lowdragmc.lowdraglib2.gui.holder.ModularUIContainerScreen;
+import com.lowdragmc.lowdraglib2.gui.holder.ModularUIScreen;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
 
@@ -17,12 +18,12 @@ public final class LdlibScreenBounds {
 
     /**
      * {x, y, w, h} in GUI pixels: the UI root, or — when the root spans the whole screen — the union of its shown
-     * children that do not. Null for anything that is not an LdLib container screen, or has nothing laid out yet.
+     * children that do not. Null for anything that is not an LdLib screen (container or plain, like the creative
+     * inventory), or has nothing laid out yet.
      */
     @Nullable
     public static int[] of(Object screen, int screenW, int screenH) {
-        if (!(screen instanceof ModularUIContainerScreen container)) return null;
-        ModularUI ui = container.getMenu().getModularUI();
+        ModularUI ui = modularUI(screen);
         if (ui == null) return null;
         UIElement root = ui.ui.getRootElement();
         if (root == null) return null;
@@ -40,9 +41,16 @@ public final class LdlibScreenBounds {
         return new int[] {(int) x0, (int) y0, (int) Math.ceil(x1 - x0), (int) Math.ceil(y1 - y0)};
     }
 
-    /** Whether {@code screen} is an LdLib container screen. */
+    /** Whether {@code screen} is an LdLib screen, container or plain. */
     public static boolean isLdlib(Object screen) {
-        return screen instanceof ModularUIContainerScreen;
+        return screen instanceof ModularUIContainerScreen || screen instanceof ModularUIScreen;
+    }
+
+    @Nullable
+    private static ModularUI modularUI(Object screen) {
+        if (screen instanceof ModularUIContainerScreen container) return container.getMenu().getModularUI();
+        if (screen instanceof ModularUIScreen plain) return plain.getModularUI();
+        return null;
     }
 
     private static boolean coversScreen(UIElement element, int screenW, int screenH) {

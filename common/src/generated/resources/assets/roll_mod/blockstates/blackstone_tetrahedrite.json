@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/blackstone_tetrahedrite"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/blackstone_tetrahedrite"
     }
+  }
 }

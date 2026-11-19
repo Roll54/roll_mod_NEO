@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/blackstone_ruby"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/blackstone_ruby"
     }
+  }
 }

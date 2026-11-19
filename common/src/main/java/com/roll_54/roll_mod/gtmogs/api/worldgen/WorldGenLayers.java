@@ -8,10 +8,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.RuleTest;
 import net.minecraft.world.level.levelgen.structure.templatesystem.TagMatchTest;
 
 import com.roll_54.roll_mod.gtmogs.GTMOGS;
-import com.roll_54.roll_mod.gtmogs.api.addon.AddonFinder;
-import com.roll_54.roll_mod.gtmogs.api.addon.IGTAddon;
-import com.roll_54.roll_mod.gtmogs.integration.kjs.GTMOGSStartupEvents;
-import com.roll_54.roll_mod.gtmogs.integration.kjs.events.WorldGenLayerKubeEvent;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -58,12 +54,6 @@ public enum WorldGenLayers implements IWorldGenLayer, StringRepresentable {
         WorldGeneratorUtils.WORLD_GEN_LAYERS.put(name, this);
     }
 
-    public static void registerAll() {
-        AddonFinder.getAddonList().forEach(IGTAddon::registerWorldgenLayers);
-        if (GTMOGS.Mods.isKubeJSLoaded()) {
-            KJSCallWrapper.postEvent();
-        }
-    }
 
     public static IWorldGenLayer getByName(String name) {
         return WorldGeneratorUtils.WORLD_GEN_LAYERS.get(name);
@@ -80,10 +70,6 @@ public enum WorldGenLayers implements IWorldGenLayer, StringRepresentable {
         return levels.contains(level);
     }
 
-    private static final class KJSCallWrapper {
-
-        private static void postEvent() {
-            GTMOGSStartupEvents.WORLD_GEN_LAYERS.post(new WorldGenLayerKubeEvent());
-        }
-    }
+    /** Loads the class, which puts every layer into WorldGeneratorUtils.WORLD_GEN_LAYERS. */
+    public static void init() {}
 }

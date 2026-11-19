@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/granite_cassiterite_sand"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/granite_cassiterite_sand"
     }
+  }
 }

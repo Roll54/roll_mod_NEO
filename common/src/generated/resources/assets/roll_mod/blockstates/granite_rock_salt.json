@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/granite_rock_salt"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/granite_rock_salt"
     }
+  }
 }

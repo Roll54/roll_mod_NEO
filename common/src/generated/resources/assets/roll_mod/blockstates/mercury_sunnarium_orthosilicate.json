@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/mercury_sunnarium_orthosilicate"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/mercury_sunnarium_orthosilicate"
     }
+  }
 }

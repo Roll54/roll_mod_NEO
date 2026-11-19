@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/basalt_biotite"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/basalt_biotite"
     }
+  }
 }

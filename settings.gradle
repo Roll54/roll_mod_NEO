@@ -15,3 +15,5 @@ rootProject.name = 'roll_mod'
 include 'common'
 include 'client'
 include 'server'
+// The loading screen shown before any mod loads — a separate jar, see earlywindow/build.gradle.
+include 'earlywindow'

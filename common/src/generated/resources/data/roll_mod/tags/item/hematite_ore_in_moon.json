@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:moon_hematite",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:moon_hematite",
+      "required": false
+    }
+  ]
 }

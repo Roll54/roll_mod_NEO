@@ -13,11 +13,15 @@ extension and is not loaded, as it wasn't in the datapack.
 
 GTMOGS is part of roll_mod's own code (package `com.roll_54.roll_mod.gtmogs`, LGPL-3.0, licence in
 `META-INF/licenses/gtmogs-LICENSE`), not a separate mod: no `gtmogs` mod id, nothing to install next to roll_mod.
-Its libraries (LDLib 1, Registrate, Configuration) ship inside roll_mod's jar. Everything it names is in the
+Its libraries (LDLib 1, Configuration) ship inside roll_mod's jar. Everything it names is in the
 **`roll_mod:`** namespace (`GTMOGS.MOD_ID`): the `roll_mod:ore_vein` registry, generator and indicator types,
 the dimension marker blocks (`roll_mod:overworld_marker`, …), the EMI/JEI category. Old files written for
 `gtmogs:` (paths `data/<ns>/gtmogs/ore_vein/`, `"type": "gtmogs:classic"`) are no longer read. Its config
-(`config/gtmogs.yaml`), save data and the `/gtmogs` command keep their old names.
+(`config/gtmogs.yaml`) keeps its old name.
+
+Only the world generation itself and the recipe viewer ore vein pages are kept. Upstream's map integrations
+(Xaero's, FTB Chunks, JourneyMap), prospecting, the `/gtmogs` commands, KubeJS scripting and the addon API
+were removed.
 
 This document covers the current state of the system, including the additions over upstream GT:M:
 the **`roll_mod:cuboid`** vein generator, **surface indicators**, and the extra **world gen layers**
@@ -38,11 +42,8 @@ Example: `data/roll_mod/roll_mod/ore_vein/moon_borax.json` registers the vein `r
 Files are reloaded with the world (they are a *datapack* registry, not a reloadable resource — use
 `/reload` for tags, but re-enter the world after changing vein files).
 
-To test a vein in-game:
-
-```
-/gtmogs place_vein <vein_id> [x y z]
-```
+There is no command to place a vein on demand any more; test a vein by generating new chunks (a fresh
+world, or unexplored terrain) in a dimension it targets.
 
 ---
 

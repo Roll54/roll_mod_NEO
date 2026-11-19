@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:end_lapis_lazuli",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:end_lapis_lazuli",
+      "required": false
+    }
+  ]
 }

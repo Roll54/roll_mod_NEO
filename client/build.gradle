@@ -174,3 +174,22 @@ neoForge.ideSyncTask generateModMetadata
     def runCfg = neoForge.runs.getByName(runName).additionalRuntimeClasspathConfiguration
     dependencies.add(runCfg.name, files("../common/jars/sophisticatedcore-1.21.1-1.5.5.2363.jar"))
 }
+
+// The loading screen (:earlywindow) into the dev clients' mods/, under a fixed name so a version bump
+// does not leave an old copy next to it. FML only uses it where that client's config/fml.toml has
+// earlyWindowProvider = "roll_mod"; elsewhere it sits there unused.
+def installEarlyWindow = tasks.register('installEarlyWindow') {
+    def jar = project(':earlywindow').tasks.named('jar')
+    dependsOn jar
+    def source = jar.flatMap { it.archiveFile }
+    def targets = [file('run/mods'), file('run2/mods')]
+    inputs.file(source)
+    doLast {
+        targets.each { dir ->
+            dir.mkdirs()
+            java.nio.file.Files.copy(source.get().asFile.toPath(), new File(dir, 'roll_mod-earlywindow.jar').toPath(),
+                    java.nio.file.StandardCopyOption.REPLACE_EXISTING)
+        }
+    }
+}
+tasks.matching { it.name in ['runClient', 'runClient2'] }.configureEach { dependsOn installEarlyWindow }

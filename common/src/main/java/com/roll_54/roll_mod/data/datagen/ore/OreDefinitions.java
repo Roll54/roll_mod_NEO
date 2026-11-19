@@ -15,7 +15,7 @@ public final class OreDefinitions {
             new OreDefinition("hematite", "#d1553f", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE, BlockSubLayer.NETHERRACK, BlockSubLayer.MOON, BlockSubLayer.MARS), BlockOverlay.REDSTONE, ItemBase.IRON, 12, 25, "Hematite", "Гематит", RawBlockBase.COPPER),
             new OreDefinition("yellow_limonite", "#a38933", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE, BlockSubLayer.MARS), BlockOverlay.GOLD, ItemBase.IRON, 10, 22, "Yellow Limonite", "Жовтий лімоніт", RawBlockBase.GOLD),
             new OreDefinition("biotite", "#582c8a", List.of(BlockSubLayer.NETHERRACK, BlockSubLayer.MARS), BlockOverlay.LAPIS, ItemBase.GOLD, 18, 35, "Biotite", "Біотит", RawBlockBase.DESH),
-            new OreDefinition("magnetite", "#211f21", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE, BlockSubLayer.MOON, BlockSubLayer.END), BlockOverlay.IRON, ItemBase.IRON, 14, 28, "Magnetite", "Магнетит", RawBlockBase.OSTRUM),
+            new OreDefinition("magnetite", "#211f21", List.of(BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE, BlockSubLayer.MOON, BlockSubLayer.END, BlockSubLayer.MARS), BlockOverlay.IRON, ItemBase.IRON, 14, 28, "Magnetite", "Магнетит", RawBlockBase.OSTRUM),
             new OreDefinition("garnierite", "#174722", List.of(BlockSubLayer.STONE, BlockSubLayer.MOON), BlockOverlay.COPPER, ItemBase.COPPER, 11, 24, "Garnierite", "Гарнієрит", RawBlockBase.CALORITE),
             new OreDefinition("pentlandite", "#5e5924", List.of(BlockSubLayer.STONE, BlockSubLayer.MOON), BlockOverlay.QUARTZ, ItemBase.IRON, 16, 32, "Pentlandite", "Пентландит", RawBlockBase.IRON),
             new OreDefinition("chalcopyrite", "#5c5345", List.of(BlockSubLayer.STONE, BlockSubLayer.NETHERRACK, BlockSubLayer.VENUS), BlockOverlay.COPPER, ItemBase.COPPER, 13, 26, "Chalcopyrite", "Халькопірит", RawBlockBase.COPPER),
@@ -47,7 +47,7 @@ public final class OreDefinitions {
             new OreDefinition("ruby", "#c21041", List.of(BlockSubLayer.NETHERRACK, BlockSubLayer.DEEPSLATE), BlockOverlay.REDSTONE, ItemBase.SALT_CRYSTAL, 25, 50, "Ruby", "Рубін", RawBlockBase.DESH),
             new OreDefinition("redstone", "#b90f00", List.of(BlockSubLayer.NETHERRACK, BlockSubLayer.DEEPSLATE, BlockSubLayer.MARS), BlockOverlay.REDSTONE, ItemBase.IRON, 10, 25, "Redstone", "Редстоун", RawBlockBase.OSTRUM),
             new OreDefinition("saltpeter", "#d6d6d6", List.of(BlockSubLayer.STONE, BlockSubLayer.NETHERRACK), BlockOverlay.QUARTZ, ItemBase.QUARTZ, 10, 20, "Saltpeter", "Селітра", RawBlockBase.CALORITE), //
-            new OreDefinition("emerald", "#25c76c", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.REDSTONE, ItemBase.COAL, 25, 50, "Emerald", "Смарагд", RawBlockBase.IRON),
+            new OreDefinition("emerald", "#25c76c", List.of(BlockSubLayer.NETHERRACK, BlockSubLayer.MOON, BlockSubLayer.MARS), BlockOverlay.REDSTONE, ItemBase.COAL, 25, 50, "Emerald", "Смарагд", RawBlockBase.IRON),
             new OreDefinition("beryllium", "#c3f0c1", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.COPPER, ItemBase.COAL, 16, 32, "Beryllium", "Берилій", RawBlockBase.COPPER),
             new OreDefinition("tantalite", "#5d574a", List.of(BlockSubLayer.MARS), BlockOverlay.LEAD, ItemBase.IRON, 19, 39, "Tantalite", "Танталіт", RawBlockBase.GOLD),
             new OreDefinition("molybdenite", "#2d2836", List.of(BlockSubLayer.MOON, BlockSubLayer.NETHERRACK,BlockSubLayer.MERCURY ), BlockOverlay.ZINC, ItemBase.IRON, 17, 35, "Molybdenite", "Молібденіт", RawBlockBase.DESH), //
@@ -59,7 +59,7 @@ public final class OreDefinitions {
             new OreDefinition("vanadium_magnetite", "#ee5308", List.of(BlockSubLayer.MOON), BlockOverlay.OSMIUM, ItemBase.IRON, 18, 37, "Vanadium Magnetite", "Ванадій-магнетит", RawBlockBase.DESH),
             new OreDefinition("rutile", "#aa4b24", List.of(BlockSubLayer.MOON), BlockOverlay.GOLD, ItemBase.GOLD, 17, 34, "Rutile", "Рутил", RawBlockBase.OSTRUM),
             new OreDefinition("silver", "#d5e0f0", List.of(BlockSubLayer.STONE), BlockOverlay.IRON, ItemBase.ZINC, 14, 29, "Silver", "Срібло", RawBlockBase.CALORITE),
-            new OreDefinition("bauxite", "#b3643b", List.of(BlockSubLayer.MOON, BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE), BlockOverlay.COPPER, ItemBase.COPPER, 12, 25, "Bauxite", "Боксит", RawBlockBase.IRON),
+            new OreDefinition("bauxite", "#b3643b", List.of(BlockSubLayer.MOON, BlockSubLayer.STONE, BlockSubLayer.DEEPSLATE, BlockSubLayer.MARS), BlockOverlay.COPPER, ItemBase.COPPER, 12, 25, "Bauxite", "Боксит", RawBlockBase.IRON),
             new OreDefinition("salt", "#e3e0cf", List.of(BlockSubLayer.STONE, BlockSubLayer.MARS), BlockOverlay.QUARTZ, ItemBase.SALT_CRYSTAL, 10, 15, "Salt", "Сіль", RawBlockBase.COPPER),
             new OreDefinition("rock_salt", "#dad6c5", List.of(BlockSubLayer.STONE, BlockSubLayer.MOON, BlockSubLayer.MARS), BlockOverlay.QUARTZ, ItemBase.PSEUDO_DUST, 10, 15, "Rock Salt", "Кам'яна сіль", RawBlockBase.GOLD),
             new OreDefinition("lepidolite", "#af7cd3", List.of(BlockSubLayer.STONE, BlockSubLayer.MOON, BlockSubLayer.MARS), BlockOverlay.LAPIS, ItemBase.AMETHYST, 15, 30, "Lepidolite", "Лепідоліт", RawBlockBase.DESH),
@@ -87,7 +87,7 @@ public final class OreDefinitions {
             new OreDefinition("lignite_coal", "#3b2c1f", List.of(BlockSubLayer.STONE), BlockOverlay.COAL, ItemBase.COAL, 10, 18, "Lignite Coal", "Буре вугілля", RawBlockBase.COPPER), //треба замінити
             new OreDefinition("azure_silver", "#cb6494", List.of(BlockSubLayer.END), BlockOverlay.IRON, ItemBase.IRON, 24, 48, "Azure Silver", "Лазурне срібло", RawBlockBase.GOLD),
             new OreDefinition("stannite", "#B9C8C1", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.TIN, ItemBase.ZINC, 13, 27, "Stannite", "Станніт", RawBlockBase.DESH),
-            new OreDefinition("crimson_iron", "#db4941", List.of(BlockSubLayer.NETHERRACK), BlockOverlay.REDSTONE, ItemBase.OSMIUM, 14, 29, "Crimson Iron", "Багряне залізо", RawBlockBase.OSTRUM),
+            new OreDefinition("crimson_iron", "#db4941", List.of(BlockSubLayer.NETHERRACK, BlockSubLayer.VENUS, BlockSubLayer.MERCURY), BlockOverlay.REDSTONE, ItemBase.OSMIUM, 14, 29, "Crimson Iron", "Багряне залізо", RawBlockBase.OSTRUM),
             new OreDefinition("nickel", "#b1b487", List.of(BlockSubLayer.STONE, BlockSubLayer.MOON), BlockOverlay.ZINC, ItemBase.OSMIUM, 12, 25, "Nickel", "Нікель", RawBlockBase.CALORITE),
             new OreDefinition("borax", "#eae2c5", List.of(BlockSubLayer.MOON, BlockSubLayer.MERCURY), BlockOverlay.LAPIS, ItemBase.PSEUDO_DUST, 1, 3, "Borax", "Бура", RawBlockBase.IRON),
             new OreDefinition("sunnarium_orthosilicate", "#c94926", List.of(BlockSubLayer.MERCURY), BlockOverlay.FINE_CRYSTALS, ItemBase.BISMUTH_ITEM, 15, 30, "Sunnarium Orthosilicate", "Ортосилікат санарію", RawBlockBase.COPPER),

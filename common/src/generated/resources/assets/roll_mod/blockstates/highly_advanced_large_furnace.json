@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/highly_advanced_large_furnace"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/highly_advanced_large_furnace"
     }
+  }
 }

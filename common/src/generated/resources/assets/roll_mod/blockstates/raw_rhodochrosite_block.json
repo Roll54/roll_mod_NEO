@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/raw_rhodochrosite_block"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/raw_rhodochrosite_block"
     }
+  }
 }

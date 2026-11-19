@@ -5,7 +5,6 @@ import com.lowdragmc.lowdraglib2.gui.ui.rendering.GUIContext;
 import com.mojang.blaze3d.platform.Lighting;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -35,8 +34,8 @@ import java.util.function.Supplier;
  * head and body angles come from the same follow-the-mouse maths.
  *
  * <p>Not given an opacity animation on purpose: an element mid-fade is drawn through LdLib's
- * off-screen layer, and a 3D model is the one thing on this screen that might not survive that. It
- * pops in after its delay instead ({@link #hideUntil}), as it did in the FancyMenu layout.
+ * off-screen layer, and a 3D model is the one thing on this screen that might not survive that. It is
+ * drawn from the first frame.
  */
 @OnlyIn(Dist.CLIENT)
 final class TitlePlayerElement extends UIElement {
@@ -58,8 +57,6 @@ final class TitlePlayerElement extends UIElement {
 
     @Nullable private PlayerModel<?> wide;
     @Nullable private PlayerModel<?> slim;
-    /** {@link Util#getMillis()} before which nothing is drawn. */
-    private long hideUntil;
 
     TitlePlayerElement(Supplier<PlayerSkin> skin, String name, Pose pose) {
         this.skin = skin;
@@ -67,15 +64,9 @@ final class TitlePlayerElement extends UIElement {
         this.pose = pose;
     }
 
-    /** Keeps the player hidden for {@code millis} from now; 0 shows it at once. */
-    void hideFor(long millis) {
-        hideUntil = millis <= 0 ? 0 : Util.getMillis() + millis;
-    }
-
     @Override
     public void drawBackgroundAdditional(GUIContext context) {
         super.drawBackgroundAdditional(context);
-        if (Util.getMillis() < hideUntil) return;
 
         float x = getPositionX(), y = getPositionY(), w = getSizeWidth(), h = getSizeHeight();
         float centerX = x + w / 2f, centerY = y + h / 2f;

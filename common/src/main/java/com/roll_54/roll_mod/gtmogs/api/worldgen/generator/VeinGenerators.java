@@ -4,8 +4,6 @@ import net.minecraft.resources.ResourceLocation;
 
 import com.mojang.serialization.MapCodec;
 import com.roll_54.roll_mod.gtmogs.GTMOGS;
-import com.roll_54.roll_mod.gtmogs.api.addon.AddonFinder;
-import com.roll_54.roll_mod.gtmogs.api.addon.IGTAddon;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.WorldGeneratorUtils;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.generator.veins.*;
 
@@ -40,7 +38,6 @@ public class VeinGenerators {
         return codec;
     }
 
-    public static void registerAddonGenerators() {
-        AddonFinder.getAddonList().forEach(IGTAddon::registerVeinGenerators);
-    }
+    /** Loads the class, which registers the built-in vein generator codecs. */
+    public static void init() {}
 }

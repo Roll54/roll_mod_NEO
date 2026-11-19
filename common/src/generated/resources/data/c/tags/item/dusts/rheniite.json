@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:rheniite_dust",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:rheniite_dust",
+      "required": false
+    }
+  ]
 }

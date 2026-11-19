@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:mars_quartz",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:mars_quartz",
+      "required": false
+    }
+  ]
 }

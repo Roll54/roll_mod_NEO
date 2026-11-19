@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:mercury_sulfur",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:mercury_sulfur",
+      "required": false
+    }
+  ]
 }

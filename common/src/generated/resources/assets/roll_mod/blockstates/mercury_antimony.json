@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/mercury_antimony"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/mercury_antimony"
     }
+  }
 }

@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/basalt_certus_quartz"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/basalt_certus_quartz"
     }
+  }
 }

@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/mars_hematite"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/mars_hematite"
     }
+  }
 }

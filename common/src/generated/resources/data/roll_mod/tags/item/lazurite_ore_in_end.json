@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:end_lazurite",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:end_lazurite",
+      "required": false
+    }
+  ]
 }

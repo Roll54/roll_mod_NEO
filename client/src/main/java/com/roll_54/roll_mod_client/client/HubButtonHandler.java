@@ -6,6 +6,8 @@ import com.roll_54.roll_mod.minestar.hub.gui.HubUI;
 import com.roll_54.roll_mod.minestar.letters.ClientLetterCache;
 import com.roll_54.roll_mod.minestar.moderation.ClientModerationCache;
 import com.roll_54.roll_mod.minestar.moderation.ClientPlayerStatusCache;
+import com.roll_54.roll_mod.minestar.theme.UiTheme;
+import com.roll_54.roll_mod.minestar.theme.UiThemeState;
 import com.roll_54.roll_mod.network.packet.OpenHubPacket;
 import com.roll_54.roll_mod_client.RollModClient;
 import net.minecraft.client.gui.GuiGraphics;
@@ -34,10 +36,14 @@ import net.neoforged.neoforge.network.PacketDistributor;
 @EventBusSubscriber(modid = RollModClient.MODID, value = Dist.CLIENT)
 public final class HubButtonHandler {
 
-    /** The whole button, frame included — {@code WIDTH x HEIGHT}, not an icon laid over a plate. */
-    private static final ResourceLocation ICON = RollMod.id("textures/gui/hub/main.png");
-    /** The same button, hovered or focused. */
-    private static final ResourceLocation ICON_HOVERED = RollMod.id("textures/gui/hub/main_overlay.png");
+    /**
+     * The hub's icon alone, 16x16, without a frame — the hub's own Home tab wears it too. It sits on a
+     * button background in the player's hub theme (see {@link HubButton#renderWidget}). The old
+     * all-in-one art with a vanilla frame baked in, {@code hub/main.png} and {@code main_overlay.png},
+     * is no longer drawn.
+     */
+    private static final ResourceLocation ICON = RollMod.id("textures/gui/hub/main_hub_icon.png");
+    private static final int ICON_SIZE = 16;
 
     /** Matches vanilla's recipe button, which is 20x18 at {@code leftPos + 104, topPos + 61}. */
     private static final int WIDTH = 20;
@@ -94,12 +100,9 @@ public final class HubButtonHandler {
     }
 
     /**
-     * The button: {@code hub/main.png}, swapped for {@code hub/main_overlay.png} while hovered.
-     *
-     * <p>Both are plain PNGs rather than atlas sprites — this repo has no
-     * {@code textures/gui/sprites/} convention, and blitting a file is what it does everywhere else,
-     * see {@code MoneyShovingMixin}. Each carries its own frame, so neither vanilla's
-     * {@code widget/button} nor the hub plate is drawn under it.
+     * The button: a background in the hub's theme — the theme's control colour, its hover colour and
+     * its hairline, as the chat channel buttons — with the hub icon on it. The vanilla-looking themes,
+     * which have no palette, get vanilla's own button under the icon.
      */
     private static final class HubButton extends Button {
 
@@ -143,10 +146,21 @@ public final class HubButtonHandler {
 
         @Override
         protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-            // No super: that blits vanilla's widget/button, which the textures replace outright.
-            // Keyboard focus gets the hover art too: both mean the button is what a press would hit.
-            ResourceLocation texture = isHoveredOrFocused() ? ICON_HOVERED : ICON;
-            graphics.blit(texture, getX(), getY(), 0, 0, WIDTH, HEIGHT, WIDTH, HEIGHT);
+            UiTheme.Palette palette = UiThemeState.get().palette();
+            if (palette == null) {
+                // Vanilla's button; its message is empty, so it draws no text over the icon.
+                super.renderWidget(graphics, mouseX, mouseY, partialTick);
+            } else {
+                int x0 = getX(), y0 = getY(), x1 = x0 + width, y1 = y0 + height;
+                // Keyboard focus looks hovered too: both mean the button is what a press would hit.
+                graphics.fill(x0, y0, x1, y1, isHoveredOrFocused() ? palette.hovered() : palette.raised());
+                graphics.fill(x0, y0, x1, y0 + 1, palette.line());
+                graphics.fill(x0, y1 - 1, x1, y1, palette.line());
+                graphics.fill(x0, y0, x0 + 1, y1, palette.line());
+                graphics.fill(x1 - 1, y0, x1, y1, palette.line());
+            }
+            graphics.blit(ICON, getX() + (WIDTH - ICON_SIZE) / 2, getY() + (HEIGHT - ICON_SIZE) / 2,
+                    0, 0, ICON_SIZE, ICON_SIZE, ICON_SIZE, ICON_SIZE);
 
             // The same mark the hub's bookmarks wear — see HubBadge — at the same corner.
             if (HubBadge.hubButton()) {

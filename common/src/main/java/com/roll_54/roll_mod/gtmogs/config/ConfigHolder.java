@@ -29,127 +29,7 @@ public class ConfigHolder {
     public WorldGenConfigs worldgen = new WorldGenConfigs();
 
     @Configurable
-    @Configurable.Comment("Config options for Mod Compatibility")
-    public CompatibilityConfigs compat = new CompatibilityConfigs();
-    @Configurable
     public DeveloperConfigs dev = new DeveloperConfigs();
-
-    public static class CompatibilityConfigs {
-
-        @Configurable
-        @Configurable.Comment("Config options regarding GTMOGS compatibility with minimap mods")
-        public MinimapCompatConfig minimap = new MinimapCompatConfig();
-
-        public static class MinimapCompatConfig {
-
-            @Configurable
-            @Configurable.Comment({
-                    "Toggle specific map mod integration on/off (need to restart for this to take effect)" })
-            public Toggle toggle = new Toggle();
-
-            @Configurable
-            @Configurable.Comment({ "The radius, in blocks, that clicking an ore block will search for veins in.",
-                    "-1 to disable", "Default: 24" })
-            @Configurable.Range(min = 1)
-            public int oreBlockProspectRange = 24;
-
-            @Configurable
-            @Configurable.Comment("The map scale at which displayed ores will stop scaling.")
-            @Configurable.DecimalRange(min = 0.1, max = 16)
-            // todo: implement or purge
-            public float oreScaleStop = 1;
-
-            @Configurable
-            @Configurable.Comment("The size, in pixels, of ore icons on the map")
-            @Configurable.Range(min = 4)
-            public int oreIconSize = 32;
-
-            @Configurable
-            @Configurable.Comment("The string prepending ore names in the ore vein tooltip")
-            public String oreNamePrefix = "> ";
-
-            @Configurable
-            @Configurable.Comment({ "The color to draw a box around the ore icon with.",
-                    "Accepts either an ARGB hex color prefixed with # or the string 'material' to use the ore's material color" })
-            public String borderColor = "#00000000";
-
-            @Configurable
-            @Configurable.Comment({ "Which part of the screen to anchor buttons to", "Default: \"BOTTOM_LEFT\"" })
-            public Anchor buttonAnchor = Anchor.BOTTOM_LEFT;
-
-            @Configurable
-            @Configurable.Comment({ "Which direction the buttons will go", "Default: \"VERTICAL\"" })
-            public Direction direction = Direction.VERTICAL;
-
-            @Configurable
-            @Configurable.Comment({ "How horizontally far away from the anchor to place the buttons", "Default: 20" })
-            public int xOffset = 20;
-
-            @Configurable
-            @Configurable.Comment({ "How vertically far away from the anchor to place the buttons", "Default: 0" })
-            public int yOffset = 0;
-
-            public static class Toggle {
-
-                @Configurable
-                @Configurable.Comment({ "FTB Chunks integration enabled" })
-                public boolean ftbChunksIntegration = true;
-
-                @Configurable
-                @Configurable.Comment({ "Journey Map integration enabled" })
-                public boolean journeyMapIntegration = true;
-
-                @Configurable
-                @Configurable.Comment({ "Xaero's map integration enabled" })
-                public boolean xaerosMapIntegration = true;
-            }
-
-            public enum Anchor {
-
-                TOP_LEFT,
-                TOP_CENTER,
-                TOP_RIGHT,
-                RIGHT_CENTER,
-                BOTTOM_RIGHT,
-                BOTTOM_CENTER,
-                BOTTOM_LEFT,
-                LEFT_CENTER;
-
-                public boolean isCentered() {
-                    return this == TOP_CENTER || this == RIGHT_CENTER || this == BOTTOM_CENTER || this == LEFT_CENTER;
-                }
-
-                public Direction usualDirection() {
-                    return switch (this) {
-                        case TOP_CENTER, BOTTOM_CENTER -> Direction.HORIZONTAL;
-                        case RIGHT_CENTER, LEFT_CENTER -> Direction.VERTICAL;
-                        default -> null;
-                    };
-                }
-            }
-
-            public enum Direction {
-                VERTICAL,
-                HORIZONTAL
-            }
-
-            public int getBorderColor(int materialColor) {
-                if (borderColor.equals("material")) {
-                    return materialColor;
-                }
-                // please java may I have an unsigned int
-                try {
-                    long tmp = Long.decode(borderColor);
-                    if (tmp > 0x7FFFFFFF) {
-                        tmp -= 0x100000000L;
-                    }
-                    return (int) tmp;
-                } catch (NumberFormatException e) {
-                    return 0x00000000;
-                }
-            }
-        }
-    }
 
     public static class WorldGenConfigs {
 
@@ -252,18 +132,11 @@ public class ConfigHolder {
     public static class DeveloperConfigs {
 
         @Configurable
-        @Configurable.Comment({ "Debug general events? (will print recipe conficts etc. to server's debug.log)",
-                "Default: false" })
-        public boolean debug = false;
-        @Configurable
         @Configurable.Comment({ "Debug ore vein placement? (will print placed veins to server's debug.log)",
                 "Default: false (no placement printout in debug.log)" })
         public boolean debugWorldgen = false;
         @Configurable
         @Configurable.Comment({ "Generate ores in superflat worlds?", "Default: false" })
         public boolean doSuperflatOres = false;
-        @Configurable
-        @Configurable.Comment({ "Dump all registered GT models/blockstates/etc?", "Default: false" })
-        public boolean dumpAssets = false;
     }
 }

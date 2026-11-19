@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:end_quartz",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:end_quartz",
+      "required": false
+    }
+  ]
 }

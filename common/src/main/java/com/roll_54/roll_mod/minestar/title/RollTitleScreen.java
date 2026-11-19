@@ -8,8 +8,6 @@ import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.lowdragmc.lowdraglib2.gui.ui.rendering.GUIContext;
-import com.lowdragmc.lowdraglib2.gui.ui.style.PropertyRegistry;
-import com.lowdragmc.lowdraglib2.syncdata.ISubscription;
 import com.mojang.authlib.minecraft.BanDetails;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.roll_54.roll_mod.RollMod;
@@ -51,9 +49,8 @@ import java.util.function.Supplier;
  * screen too small for an offset the element is pushed back inside the edge, as the layout's
  * "stay on screen" did.
  *
- * <p>Elements come in one after another, as in the layout. Logo, splash and players do that only the
- * first time the menu is shown in a session; the buttons fade in every time the menu comes back.
- * Opened by {@link TitleScreenReplacer}.
+ * <p>Everything is there at once, with no fade-in; only the players pop in a few seconds after the
+ * menu first shows in a session. Opened by {@link TitleScreenReplacer}.
  */
 @OnlyIn(Dist.CLIENT)
 public final class RollTitleScreen extends ModularUIScreen {
@@ -64,24 +61,12 @@ public final class RollTitleScreen extends ModularUIScreen {
     private static final ResourceLocation ACCESSIBILITY_ICON = ResourceLocation.withDefaultNamespace("icon/accessibility");
     private static final Component COPYRIGHT = Component.translatable("title.credits");
 
-    /** Seconds an element takes to fade in. */
-    private static final float FADE = 0.5f;
-    /** The players' delay on first open: they pop in, no fade. */
-    private static final long PLAYERS_DELAY_MS = 3000;
     /** roll_54's walking pose, in degrees, from the layout. */
     private static final TitlePlayerElement.Pose WALKING =
             new TitlePlayerElement.Pose(-31.368078f, 0f, 25.504887f, 0.2931596f, 32.833878f, -0.5863192f, -32.24756f, -0.2931596f);
 
-    /** Whether the first-open-only entrances have been played this session. */
-    private static boolean introPlayed;
-
-    /** An element that fades in {@code delay} seconds after the menu shows; {@code everyTime}: on every showing, not just the first. */
-    private record Entrance(UIElement element, float delay, boolean everyTime) {}
-
     private final List<Placement> placements = new ArrayList<>();
-    private final List<Entrance> entrances = new ArrayList<>();
     private final List<TitlePlayerElement> players = new ArrayList<>();
-    private final List<ISubscription> running = new ArrayList<>();
 
     private RollTitleScreen(UIElement root) {
         super(ModularUI.of(UI.of(root, RollUi.sheets(), size -> size)).shouldCloseOnEsc(false),
@@ -101,9 +86,9 @@ public final class RollTitleScreen extends ModularUIScreen {
 
         UIElement logo = new UIElement();
         logo.style(s -> s.backgroundTexture(SpriteTexture.of(LOGO)));
-        entrances.add(new Entrance(place(root, logo, -140, -128, 277, 45), 1.0f, false));
+        place(root, logo, -140, -128, 277, 45);
 
-        entrances.add(new Entrance(place(root, new TitleSplashElement(mc.getSplashManager().getSplash()), 57, -98, 115, 34), 1.0f, false));
+        place(root, new TitleSplashElement(mc.getSplashManager().getSplash()), 57, -98, 115, 34);
 
         PlayerSkin roll54 = new PlayerSkin(ROLL_54_SKIN, null, null, null, PlayerSkin.Model.SLIM, false);
         players.add(place(root, new TitlePlayerElement(() -> roll54, "roll_54", WALKING), -158, -30, 18, 54));
@@ -117,16 +102,16 @@ public final class RollTitleScreen extends ModularUIScreen {
             play.setActive(false);
             play.style(s -> s.tooltips(multiplayerDisabled));
         }
-        entrances.add(new Entrance(place(root, play, -100, -46, 200, 20), 0.5f, true));
+        place(root, play, -100, -46, 200, 20);
 
-        entrances.add(new Entrance(place(root, button(Component.translatable("gui.roll_mod.title.support"),
-                () -> Util.getPlatform().openUri(SUPPORT_URL)), -100, -21, 200, 20), 0.7f, true));
-        entrances.add(new Entrance(place(root, button(Component.translatable("fml.menu.mods"),
-                () -> open(new ModListScreen(this))), -100, 4, 200, 20), 0.9f, true));
-        entrances.add(new Entrance(place(root, button(Component.translatable("menu.options"),
-                () -> open(new OptionsScreen(this, mc.options))), -100, 29, 85, 20), 1.1f, true));
-        entrances.add(new Entrance(place(root, accessibilityButton(), -10, 29, 20, 20), 1.1f, true));
-        entrances.add(new Entrance(place(root, button(Component.translatable("menu.quit"), mc::stop), 15, 29, 85, 19), 1.1f, true));
+        place(root, button(Component.translatable("gui.roll_mod.title.support"),
+                () -> Util.getPlatform().openUri(SUPPORT_URL)), -100, -21, 200, 20);
+        place(root, button(Component.translatable("fml.menu.mods"),
+                () -> open(new ModListScreen(this))), -100, 4, 200, 20);
+        place(root, button(Component.translatable("menu.options"),
+                () -> open(new OptionsScreen(this, mc.options))), -100, 29, 85, 20);
+        place(root, accessibilityButton(), -10, 29, 20, 20);
+        place(root, button(Component.translatable("menu.quit"), mc::stop), 15, 29, 85, 19);
 
         // Credits link, bottom-right as vanilla's.
         UIElement credits = new CreditsLink();
@@ -138,30 +123,6 @@ public final class RollTitleScreen extends ModularUIScreen {
         root.addChild(credits);
     }
 
-    /* ------------------------------------------------------ showing ------------------------------------------------------ */
-
-    /** Each time the menu is shown — opened, or come back to from a screen it opened — the entrances replay. */
-    @Override
-    public void added() {
-        super.added();
-        boolean first = !introPlayed;
-        introPlayed = true;
-
-        running.forEach(ISubscription::unsubscribe);
-        running.clear();
-        for (Entrance entrance : entrances) {
-            boolean animate = entrance.everyTime() || first;
-            if (animate) entrance.element().style(s -> s.opacity(0f));
-            // Already shown before: straight to fully visible — still as an animation, so one cut short
-            // by leaving the menu early cannot leave its half-faded value behind.
-            float delay = animate ? entrance.delay() : 0f;
-            float duration = animate ? FADE : 0.001f;
-            entrance.element().animation(a -> running.add(a.delay(delay).duration(duration)
-                    .style(PropertyRegistry.OPACITY, 1f).start()));
-        }
-        for (TitlePlayerElement player : players) player.hideFor(first ? PLAYERS_DELAY_MS : 0);
-    }
-
     /** Runs on opening and on every resize: positions everything for the current size, then lays out. */
     @Override
     public void init() {
@@ -169,12 +130,6 @@ public final class RollTitleScreen extends ModularUIScreen {
         super.init();
     }
 
-    @Override
-    public void removed() {
-        running.forEach(ISubscription::unsubscribe);
-        running.clear();
-        super.removed();
-    }
 
     @Override
     public boolean shouldCloseOnEsc() {

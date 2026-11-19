@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/venus_livingstonite"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/venus_livingstonite"
     }
+  }
 }

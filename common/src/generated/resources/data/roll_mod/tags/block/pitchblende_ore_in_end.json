@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:end_pitchblende",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:end_pitchblende",
+      "required": false
+    }
+  ]
 }

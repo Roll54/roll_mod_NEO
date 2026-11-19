@@ -27,12 +27,12 @@ import com.roll_54.roll_mod.gtmogs.api.worldgen.generator.VeinGenerator;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.ores.OreBlockPlacer;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.ores.OreVeinUtil;
 import com.roll_54.roll_mod.gtmogs.data.worldgen.GTOreVeins;
-import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.mutable.MutableInt;
 
+import java.util.function.Supplier;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -74,9 +74,9 @@ public class StandardVeinGenerator extends VeinGenerator {
         return Either.right(generator);
     }
 
-    public NonNullSupplier<? extends Block> block;
-    public NonNullSupplier<? extends Block> deepBlock;
-    public NonNullSupplier<? extends Block> netherBlock;
+    public Supplier<? extends Block> block;
+    public Supplier<? extends Block> deepBlock;
+    public Supplier<? extends Block> netherBlock;
 
     @Getter
     public List<OreConfiguration.TargetBlockState> blocks;
@@ -85,9 +85,9 @@ public class StandardVeinGenerator extends VeinGenerator {
         GTOreVeins.addVeinOre(block);
         GTOreVeins.addVeinOre(deepBlock);
         GTOreVeins.addVeinOre(netherBlock);
-        this.block = NonNullSupplier.of(() -> block);
-        this.deepBlock = NonNullSupplier.of(() -> deepBlock);
-        this.netherBlock = NonNullSupplier.of(() -> netherBlock);
+        this.block = () -> block;
+        this.deepBlock = () -> deepBlock;
+        this.netherBlock = () -> netherBlock;
     }
 
     public StandardVeinGenerator(List<OreConfiguration.TargetBlockState> blocks) {
@@ -97,14 +97,14 @@ public class StandardVeinGenerator extends VeinGenerator {
         this.blocks = blocks;
     }
 
-    public StandardVeinGenerator withBlock(NonNullSupplier<? extends Block> block) {
+    public StandardVeinGenerator withBlock(Supplier<? extends Block> block) {
         GTOreVeins.addVeinOre(block.get());
         this.block = block;
         this.deepBlock = block;
         return this;
     }
 
-    public StandardVeinGenerator withNetherBlock(NonNullSupplier<? extends Block> block) {
+    public StandardVeinGenerator withNetherBlock(Supplier<? extends Block> block) {
         GTOreVeins.addVeinOre(block.get());
         this.netherBlock = block;
         return this;

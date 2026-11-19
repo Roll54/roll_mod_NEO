@@ -43,6 +43,26 @@
 		// Period of time that need to broadcast a message
 		"TIME_TO_BROADCAST": 12000
 	},
+	// What a player's Minestar level gives (as on Eden): one rule per line, perk:from:every:amount:until 2014 amount of perk at level from, then every N levels (0 = once), up to until (0 = no end). Perks: emoji_slots, sticker_slots, claims (Open Parties and Claims bonus chunks), daily_rerolls.
+	"levelRewards": {
+		"rules": [
+			"emoji_slots:1:2:1:0",
+			"sticker_slots:2:2:1:0",
+			"claims:5:10:5:0",
+			"daily_rerolls:10:10:1:0"
+		]
+	},
+	// /back, as FTB Essentials does it: a history of the places you teleported from (and died at), newest first.
+	"back": {
+		// How many places /back remembers per player.
+		"historySize": 10,
+		// Seconds between two uses of /back.
+		"cooldownSeconds": 30,
+		// LuckPerms group (or any group inheriting it) that may use /back and sees its hub button. Operators always may.
+		"group": "prime",
+		// LuckPerms group (or any group inheriting it) that may use /fly. Operators always may.
+		"flyGroup": "media"
+	},
 	// Settings for the /rtp (random teleport) command
 	"rtp": {
 		/* Dimensions in which /rtp is refused (namespaced ids, e.g. "minecraft:the_end").
@@ -134,6 +154,17 @@
 		// How often (in ticks) entity counts per chunk are rescanned.
 		"scanIntervalTicks": 20
 	},
+	// '/neoforge generate' pregeneration tuning. Applies to every running generation, read each time chunks are queued.
+	"pregen": {
+		/* Chunks one generation keeps in flight at once (NeoForge default: 32). Higher keeps all worldgen threads busy
+		   on many-core machines, at the cost of more chunks held in memory.
+		*/
+		"batchSize": 128,
+		/* When in-flight chunks drop to this many, the next batch is queued (NeoForge default: 8).
+		   Clamped below batchSize. Higher means fewer idle gaps between batches.
+		*/
+		"queueThreshold": 32
+	},
 	// Settings for Nether Storm behaviour
 	"storm": {
 		/* Minimum delay before storm starts again (in Minecraft hours).
@@ -157,7 +188,7 @@
 		// HP multiplier
 		"MOB_HP_BUFF": 2.5
 	},
-	// How the new modular drills, modular sabers, their modules and the Module Installation Table look.
+	// How the Module Installation Table looks (modular drills, sabers and modules always show as they are).
 	"newItems": {
 		/* Show the new modular items as they really are: their textures, names and tooltips.
 		   False = every one of them shows the 'no texture yet' placeholder, the name
@@ -209,8 +240,16 @@
 		]
 	},
 	"chat_changes": {
-		// Hide the advancement announcements in chat (challenges, see PlayerAdvancementsMixin).
-		"hideAdvancementMessages": false
+		// Hide the advancement announcements in chat (all types; shown in the Spam tab otherwise, see PlayerAdvancementsMixin).
+		"hideAdvancementMessages": false,
+		// How lines from the Discord bridge start (case ignored). They go to the chat's Global tab with their emojis and links drawn.
+		"discordLineMarker": "[Discord]",
+		// A player joining gets the Global and Trade chat (Discord lines included) from this many minutes before. 0 = off.
+		"joinHistoryMinutes": 30,
+		// At most this many lines of that history are kept and sent, newest last. 0 = off.
+		"joinHistoryLines": 100,
+		// "@Name" in a chat message pings that player with a sound (each player can turn it off in hub Settings) and shows the name highlighted.
+		"mentions": true
 	},
 	// The moderation tab's death log: what a player carried when they died.
 	"deathlog": {

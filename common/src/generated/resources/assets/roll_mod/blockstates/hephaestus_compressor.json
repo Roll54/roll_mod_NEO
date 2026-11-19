@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/hephaestus_compressor"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/hephaestus_compressor"
     }
+  }
 }

@@ -1,8 +1,8 @@
 {
-    "values": [
-        {
-            "id": "roll_mod:end_lithium",
-            "required": false
-        }
-    ]
+  "values": [
+    {
+      "id": "roll_mod:end_lithium",
+      "required": false
+    }
+  ]
 }

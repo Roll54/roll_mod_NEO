@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/large_cutting_machine"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/large_cutting_machine"
     }
+  }
 }

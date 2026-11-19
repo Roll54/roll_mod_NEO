@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/solar_panel_12"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/solar_panel_12"
     }
+  }
 }

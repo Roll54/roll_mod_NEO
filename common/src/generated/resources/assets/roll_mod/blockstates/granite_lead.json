@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/granite_lead"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/granite_lead"
     }
+  }
 }

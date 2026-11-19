@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/diorite_pentlandite"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/diorite_pentlandite"
     }
+  }
 }

@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/blackstone_blue_topaz"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/blackstone_blue_topaz"
     }
+  }
 }

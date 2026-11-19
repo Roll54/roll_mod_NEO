@@ -20,7 +20,6 @@ import com.roll_54.roll_mod.gtmogs.api.worldgen.generator.VeinGenerator;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.ores.OreBlockPlacer;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.ores.OreVeinUtil;
 import com.roll_54.roll_mod.gtmogs.data.worldgen.GTOreVeins;
-import com.tterrag.registrate.util.nullness.NonNullSupplier;
 import it.unimi.dsi.fastutil.floats.FloatArrayList;
 import it.unimi.dsi.fastutil.floats.FloatList;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -40,7 +39,7 @@ public class LayeredVeinGenerator extends VeinGenerator {
     public static final MapCodec<LayeredVeinGenerator> CODEC = GTLayerPattern.CODEC.listOf().fieldOf("layer_patterns")
             .xmap(LayeredVeinGenerator::new, LayeredVeinGenerator::getLayerPatterns);
     // spotless:on
-    private final List<NonNullSupplier<GTLayerPattern>> bakingLayerPatterns = new ArrayList<>();
+    private final List<Supplier<GTLayerPattern>> bakingLayerPatterns = new ArrayList<>();
 
     public List<GTLayerPattern> layerPatterns;
 
@@ -187,7 +186,7 @@ public class LayeredVeinGenerator extends VeinGenerator {
         this.layerPatterns = layerPatterns;
     }
 
-    public LayeredVeinGenerator withLayerPattern(NonNullSupplier<GTLayerPattern> pattern) {
+    public LayeredVeinGenerator withLayerPattern(Supplier<GTLayerPattern> pattern) {
         this.bakingLayerPatterns.add(pattern);
         return this;
     }
@@ -195,7 +194,7 @@ public class LayeredVeinGenerator extends VeinGenerator {
     public VeinGenerator build() {
         if (this.layerPatterns != null && !this.layerPatterns.isEmpty()) return this;
         this.layerPatterns = this.bakingLayerPatterns.stream()
-                .map(NonNullSupplier::get)
+                .map(Supplier::get)
                 .toList();
         return this;
     }

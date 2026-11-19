@@ -1,0 +1,79 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "ad_astra"
+    }
+  ],
+  "biomes": "#ad_astra:is_mars",
+  "cluster_size": {
+    "min_inclusive": 30,
+    "max_inclusive": 34,
+    "type": "minecraft:uniform"
+  },
+  "density": 0.75,
+  "dimension_filter": [
+    "ad_astra:mars"
+  ],
+  "discard_chance_on_air_exposure": 0.75,
+  "generator": {
+    "type": "roll_mod:classic",
+    "primary": {
+      "layers": 4,
+      "targets": [
+        {
+          "material": "bauxite"
+        }
+      ]
+    },
+    "secondary": {
+      "layers": 3,
+      "targets": [
+        {
+          "material": "bauxite"
+        }
+      ]
+    },
+    "between": {
+      "layers": 4,
+      "targets": [
+        {
+          "material": "hematite"
+        }
+      ]
+    },
+    "sporadic": {
+      "layers": 1,
+      "targets": [
+        {
+          "material": "magnetite"
+        }
+      ]
+    }
+  },
+  "height_range": {
+    "height": {
+      "type": "minecraft:uniform",
+      "max_inclusive": {
+        "absolute": 20
+      },
+      "min_inclusive": {
+        "absolute": -20
+      }
+    }
+  },
+  "layer": "mars_stone",
+  "weight": 30,
+  "indicators": [
+    {
+      "type": "roll_mod:surface",
+      "materials": [
+        "bauxite",
+        "hematite",
+        "magnetite"
+      ],
+      "tries": 5,
+      "xz_spread": 14
+    }
+  ]
+}

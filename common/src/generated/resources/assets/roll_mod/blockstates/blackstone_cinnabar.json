@@ -1,7 +1,7 @@
 {
-    "variants": {
-        "": {
-            "model": "roll_mod:block/blackstone_cinnabar"
-        }
+  "variants": {
+    "": {
+      "model": "roll_mod:block/blackstone_cinnabar"
     }
+  }
 }
