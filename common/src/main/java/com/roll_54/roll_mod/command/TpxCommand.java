@@ -25,8 +25,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
  * {@code /tpx <dimension>}: teleports whoever runs it into that dimension — overworld, nether, end or
  * any modded one (the argument suggests every loaded level). Operators only (level 2).
  *
- * <p>The player lands at the same spot scaled by the two dimensions' coordinate scale (so x/8 going to
- * the nether, like a portal), on the highest safe floor under the dimension's ceiling: solid ground,
+ * <p>The player lands at the same x/z they stand on (no portal-style coordinate scaling), on the highest safe floor under the dimension's ceiling: solid ground,
  * two free blocks, no fluid. Where there is none, the dimension's spawn is used (the End's obsidian
  * platform for the End), and as a last resort a glass block is put under the player's feet.
  */
@@ -49,13 +48,9 @@ public final class TpxCommand {
 
     private static int teleport(CommandSourceStack source, ServerLevel target) throws CommandSyntaxException {
         ServerPlayer player = source.getPlayerOrException();
-        ServerLevel from = player.serverLevel();
+        BlockPos column = target.getWorldBorder().clampToBounds(player.getX(), player.getY(), player.getZ());
 
-        double scale = from.dimensionType().coordinateScale() / target.dimensionType().coordinateScale();
-        double x = target.getWorldBorder().clampToBounds(player.getX() * scale, player.getY(), player.getZ() * scale).getX();
-        double z = target.getWorldBorder().clampToBounds(player.getX() * scale, player.getY(), player.getZ() * scale).getZ();
-
-        Vec3 spot = landing(target, BlockPos.containing(x, 0, z));
+        Vec3 spot = landing(target, new BlockPos(column.getX(), 0, column.getZ()));
         player.teleportTo(target, spot.x, spot.y, spot.z, player.getYRot(), player.getXRot());
         player.fallDistance = 0;
 

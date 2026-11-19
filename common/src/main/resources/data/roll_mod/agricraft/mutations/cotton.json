@@ -1,6 +1,6 @@
 {
   "chance": 0.25,
   "child": "roll_mod:cotton",
-  "parent1": "minecraft:hops",
+  "parent1": "roll_mod:hops",
   "parent2": "minecraft:allium"
 }

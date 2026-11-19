@@ -8,7 +8,6 @@
     "TeiDefaultRecipePickMixin",
     "TeiJeiFluidMinPriceMixin",
     "TeiHideOnHubMixin",
-    "TeiCreativeScreenMixin",
     "TeiExclusionCacheMixin"
   ],
   "injectors": {
