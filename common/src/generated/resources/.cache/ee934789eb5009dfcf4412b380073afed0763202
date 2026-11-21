@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-18T19:08:41.840876885	Fluid Block States: roll_mod
+// 1.21.1	2026-11-21T11:25:38.764772541	Fluid Block States: roll_mod
 519b9a771feb676bebbd4d43236a0da635533c54 assets/roll_mod/blockstates/block_blencium.json
 b0ffa19e7c4132d9f8b6c498893412f7a12c2806 assets/roll_mod/blockstates/boron_trichloride.json
 50571d6221d37d85b561f4f8e841a145585a50b9 assets/roll_mod/blockstates/herbicide_tier_1.json
@@ -6,6 +6,7 @@ d37c61afa3c4b0b46ac9b12a8340e30514247ca3 assets/roll_mod/blockstates/herbicide_t
 d682e6f65e24f0e12eca56d3599b7bcefffd1051 assets/roll_mod/blockstates/herbicide_tier_3.json
 85377cf47193c4fea7ae4c9ff1c1a20c3ca5802d assets/roll_mod/blockstates/mutagen.json
 29b086c4bb1ed4cc5b28c9ef581b4367909ba276 assets/roll_mod/blockstates/nuclear_waste.json
+991ae15e5e0581e61743f607185126a90a93ef7d assets/roll_mod/blockstates/sculk.json
 e500d35968539875f4ce5fbf38183917e6140bb4 assets/roll_mod/models/block/block_blencium.json
 50812bd51e14ec5ea223afe239c89730a63e43b1 assets/roll_mod/models/block/boron_trichloride.json
 50812bd51e14ec5ea223afe239c89730a63e43b1 assets/roll_mod/models/block/herbicide_tier_1.json
@@ -13,6 +14,7 @@ e500d35968539875f4ce5fbf38183917e6140bb4 assets/roll_mod/models/block/block_blen
 50812bd51e14ec5ea223afe239c89730a63e43b1 assets/roll_mod/models/block/herbicide_tier_3.json
 5064e9f5922f7da011329cb771e6714df4a89b94 assets/roll_mod/models/block/mutagen.json
 2bb9407c947f5634f0b80b93180317d4415f1579 assets/roll_mod/models/block/nuclear_waste.json
+6e8513d3e9a5e51241051baca7df7cd153434c8c assets/roll_mod/models/block/sculk.json
 160ca63dc46e893bcf8fe013fe3c627d3fb5b670 assets/roll_mod/models/item/block_blencium_bucket.json
 eb0211290384d5360b0b31ef7b268fcf8fe4ca41 assets/roll_mod/models/item/boron_trichloride_bucket.json
 35d084571d14c15743ba7279247369eb0873f4a8 assets/roll_mod/models/item/herbicide_tier_1_bucket.json
@@ -20,3 +22,4 @@ d256950587b6a3e31475f7eec4eb59709208ab51 assets/roll_mod/models/item/herbicide_t
 8abb4102eb5ff37443cd27d25c94c05b60d58050 assets/roll_mod/models/item/herbicide_tier_3_bucket.json
 93dddfa695120c46efda817fb454f13a4c291c83 assets/roll_mod/models/item/mutagen_bucket.json
 4f1e54a45426dba1b330432b44f07b8ca40af91b assets/roll_mod/models/item/nuclear_waste_bucket.json
+5e522fa0fc4107808705379ae63e7c865d13bd11 assets/roll_mod/models/item/sculk_bucket.json

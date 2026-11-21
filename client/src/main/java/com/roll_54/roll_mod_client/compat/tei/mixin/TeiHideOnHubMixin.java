@@ -16,6 +16,7 @@ public abstract class TeiHideOnHubMixin {
 
     @Inject(method = "supports", at = @At("HEAD"), cancellable = true)
     private static void roll_mod$notOnHub(Screen screen, CallbackInfoReturnable<Boolean> cir) {
-        if (HubScreens.isHub(screen)) cir.setReturnValue(false);
+        // The service block's screen too: a recipe browser has nothing to offer there.
+        if (HubScreens.hidesRecipeBrowser(screen)) cir.setReturnValue(false);
     }
 }

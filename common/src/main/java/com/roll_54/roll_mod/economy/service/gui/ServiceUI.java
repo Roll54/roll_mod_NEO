@@ -442,7 +442,15 @@ public final class ServiceUI {
     }
   }
 
+  /** Marks the service block's window, so recipe viewers can stay off it (it has no recipes to look up). */
+  public static final String ROOT_ID = "roll_mod_service";
+
+  public static boolean isService(@javax.annotation.Nullable ModularUI ui) {
+    return ui != null && ui.getElementById(ROOT_ID) != null;
+  }
+
   private static ModularUI finish(UIElement root, Player player) {
+    root.setId(ROOT_ID);
     root.addChild(VendorUIHelper.playerInventory((W - 162) / 2, INVENTORY_Y));
     return ModularUI.of(RollUi.of(player, root), player);
   }

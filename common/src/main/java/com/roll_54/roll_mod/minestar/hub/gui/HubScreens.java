@@ -13,4 +13,11 @@ public final class HubScreens {
     public static boolean isHub(Object screen) {
         return screen instanceof ModularUIContainerScreen container && HubUI.isHub(container.getMenu().getModularUI());
     }
+
+    /** Screens the recipe browser stays off: the hub, and the service block's (nothing there to look up). */
+    public static boolean hidesRecipeBrowser(Object screen) {
+        return screen instanceof ModularUIContainerScreen container
+                && (HubUI.isHub(container.getMenu().getModularUI())
+                || com.roll_54.roll_mod.economy.service.gui.ServiceUI.isService(container.getMenu().getModularUI()));
+    }
 }

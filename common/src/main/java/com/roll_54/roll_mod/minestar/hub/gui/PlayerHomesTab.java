@@ -408,7 +408,11 @@ public final class PlayerHomesTab {
         }
         mine = HubOrder.sorted("homes", mine, home -> home.id().toString());
         if (!mine.isEmpty()) {
-            // No "Homes" header: the list is the homes list already, and the caption only took a row.
+            // Headed only under another section (pins, invites), as the warps list does: on its own the
+            // list is the homes list already, and the caption would only take a row.
+            boolean headed = !pinned.isEmpty()
+                    || homes.stream().anyMatch(home -> home.relation() == HomeView.Relation.INVITED);
+            if (headed) addHeader(list, "gui.roll_mod.hub.homes.section.all");
             List<String> ids = mine.stream().map(home -> home.id().toString()).toList();
             for (HomeView home : mine) {
                 UIElement row = homeRow(home, selected, creating, inviteDraft, ids);

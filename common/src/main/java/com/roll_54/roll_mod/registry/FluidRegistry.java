@@ -69,6 +69,9 @@ public final class FluidRegistry {
     public static final RollFluid BLOCK_BLENCIUM = register("block_blencium", 0x008DFF, MapColor.COLOR_BLUE,
             "block/fluid/block_blencium_still", "block/fluid/block_blencium_flow", false,
             FluidNameStyle.gradient(0x5555FF, 0x55FFFF));
+    /** Liquid sculk: dark teal with cyan sparks, named in the sculk sensor's cyan. */
+    public static final RollFluid SCULK = register("sculk", 0x0C1D24, MapColor.COLOR_CYAN,
+            "block/fluid/sculk_still", "block/fluid/sculk_flow", false, FluidNameStyle.solid(0x29DFEB));
 
     // Liquid herbicides for the Crop Managers, one per item tier: 1000 mB equals one item of that tier
     // (CropBreedingSettings). Each in its tier's lore colour.
