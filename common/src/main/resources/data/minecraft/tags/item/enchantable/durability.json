@@ -4,6 +4,18 @@
     "roll_mod:hazmat_helmet",
     "roll_mod:hazmat_chestplate",
     "roll_mod:hazmat_leggings",
-    "roll_mod:hazmat_boots"
+    "roll_mod:hazmat_boots",
+    {
+      "id": "roll_mod:bamboo_rod",
+      "required": false
+    },
+    {
+      "id": "roll_mod:carbon_fiber_rod",
+      "required": false
+    },
+    {
+      "id": "roll_mod:meteorite_metal_fishing_rod",
+      "required": false
+    }
   ]
 }

@@ -97,10 +97,16 @@ public final class HubUI {
     public static final int DEFAULT_CONTENT_H = 250;
 
     private static final int PADDING = 6;
-    private static final int TAB_H = 22;
-    private static final int TAB_W = 22;
+    /** The icon inside a bookmark, and the margin round it — the same on all four sides, the top's. */
+    // 16: the icons are 16x16 pixel art, and at 20 every fourth pixel doubled (stray pixels). Centred in the same
+    // bookmark by a 2px larger margin.
     private static final int TAB_ICON = 16;
+    private static final int TAB_ICON_MARGIN = 4;
+    private static final int TAB_H = TAB_ICON + 2 * TAB_ICON_MARGIN;
+    private static final int TAB_W = TAB_ICON + 2 * TAB_ICON_MARGIN;
     private static final int TAB_GAP = 2;
+    /** Between one bookmark and the next: wide enough that each reads as its own box, not one strip. */
+    private static final int TAB_SPACING = 4;
 
     /** The leave-the-hub button in the window's top-right corner. Square, like the tab icons. */
     private static final int BACK_BTN = 16;
@@ -195,6 +201,16 @@ public final class HubUI {
      * <p>The name is passed rather than derived from the tab id because the two do not line up:
      * the {@code home} tab wears {@code main.png} and the {@code homes} tab wears {@code home.png}.
      */
+    /**
+     * An icon drawn with a white outline, and its copy outlined dark for the light themes (LightText.active), where
+     * the white one vanished into the panel. Picked every frame, so changing theme switches it at once.
+     */
+    private static IGuiTexture lightAware(String name, String onLight) {
+        IGuiTexture normal = icon(name);
+        IGuiTexture light = icon(onLight);
+        return IGuiTexture.dynamic(() -> com.roll_54.roll_mod.minestar.theme.LightText.active() ? light : normal);
+    }
+
     private static IGuiTexture icon(String name) {
         return SpriteTexture.of(RollMod.id("textures/gui/hub/" + name + ".png"));
     }
@@ -232,16 +248,16 @@ public final class HubUI {
             new HubTab("moderation", icon("teleportation/warp/admin"),
                     ModerationTab::build,
                     () -> ClientModerationCache.ALLOWED, HubBadge::moderationPending),
-            // The envelope carries its own mark while something is unread (letter_new.png), so this
-            // bookmark takes no HubBadge on top — it would be the same mark twice.
+            // The plain envelope and the same HubBadge as every other bookmark while something is unread — not the
+            // envelope's own red mark (letter_new.png), which looked unlike the rest.
             new HubTab("letters",
-                    IGuiTexture.dynamic(() -> LetterIcons.envelope(HubBadge.mailPending())),
-                    (player, inventory) -> LettersTab.build(player)),
+                    IGuiTexture.dynamic(() -> LetterIcons.envelope(false)),
+                    (player, inventory) -> LettersTab.build(player), () -> true, HubBadge::mailPending),
             // Deprecated: merged into "interactions", as "tpa" above.
             new HubTab("friends", icon("friends"),
                     (player, inventory) -> FriendsTab.build(player), () -> false,
                     () -> !com.roll_54.roll_mod.minestar.friends.ClientFriendsCache.INCOMING.isEmpty()),
-            new HubTab("leaderboards", icon("leaderboard/leaderboard"),
+            new HubTab("leaderboards", lightAware("leaderboard/leaderboard", "leaderboard/leaderboard_dark_outline"),
                     (player, inventory) -> LeaderboardTab.build(player)),
             // Teleports and friends in one: everyone you can reach on the left, the chosen player's
             // profile and every action on them — teleport, friendship, money — on the right.
@@ -260,11 +276,14 @@ public final class HubUI {
                     (player, inventory) -> SkinsTab.build(player),
                     () -> MyConfig.INSTANCE.hub.skinsTab.get(), () -> false),
             // Settings, laid out like Eden's. No bookmark: the gear among the window controls opens it.
-            new HubTab("settings", Icons.SETTINGS,
+            new HubTab("settings", HubIcons.SETTINGS,
                     (player, inventory) -> SettingsTab.build(player), () -> false, () -> false),
             // The kits, a tab of their own as on Eden (they were in the home tab's side column).
             new HubTab("kits", new com.lowdragmc.lowdraglib2.gui.texture.ItemStackTexture(net.minecraft.world.item.Items.BUNDLE),
-                    (player, inventory) -> KitsTab.build(player)));
+                    (player, inventory) -> KitsTab.build(player)),
+            // The battle pass: free and Prime tracks, its tasks. The icon is textures/gui/hub/battlepass.png (a cup).
+            new HubTab("battlepass", icon("battlepass"),
+                    (player, inventory) -> BattlePassTab.build(player)));
 
     /**
      * Header order, as indices into {@link #TABS}. Purely visual: the content slots are still built
@@ -272,7 +291,7 @@ public final class HubUI {
      * having to be inserted second. {@link #indexOf} keeps returning tree indices, which is what
      * every caller passes to {@code HubCommand.open}.
      */
-    private static final List<Integer> DISPLAY_ORDER = List.of(0, 12, 11, 10, 1, 2, 4, 8, 16, 7, 6, 9, 14, 13, 3, 5, 15);
+    private static final List<Integer> DISPLAY_ORDER = List.of(0, 12, 17, 1, 11, 16, 2, 8, 10, 4, 14, 13, 7, 6, 9, 3, 5, 15);
 
     static {
         // Appending a tab and forgetting this list would silently hide it; fail at class-load
@@ -491,7 +510,9 @@ public final class HubUI {
         tabStrip.scrollerStyle(st -> st.mode(side.vertical() ? ScrollerMode.VERTICAL : ScrollerMode.HORIZONTAL)
                 .verticalScrollDisplay(ScrollDisplay.NEVER)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
-        tabStrip.viewPort(v -> v.layout(l -> l.paddingAll(0)
+        // Each side as well as "all": a theme's own padding-bottom (Ore's view port has 3) outranks a padding-all and
+        // cut the bookmarks' bottom off.
+        tabStrip.viewPort(v -> v.layout(l -> l.paddingAll(0).paddingTop(0).paddingBottom(0).paddingLeft(0).paddingRight(0)
                         .flexDirection(side.vertical() ? FlexDirection.COLUMN : FlexDirection.ROW))
                 .style(st -> st.background(IGuiTexture.EMPTY)));
         tabStrip.style(st -> st.background(IGuiTexture.EMPTY));
@@ -500,14 +521,14 @@ public final class HubUI {
             header.layout(l -> l.flexDirection(FlexDirection.COLUMN).width(TAB_W).flexShrink(0));
             tabStrip.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1).flexShrink(1));
             tabStrip.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN)
-                    .widthPercent(100).gapRow(TAB_GAP)));
+                    .widthPercent(100).gapRow(TAB_SPACING)));
         } else {
             header.layout(l -> l.flexDirection(FlexDirection.ROW).height(TAB_H).flexShrink(0));
             tabStrip.layout(l -> l.heightPercent(100).flexBasis(0).flexGrow(1).flexShrink(1));
             // On top the strip shares the band with the window controls; stop short of them.
             if (side == HubTabSide.TOP) tabStrip.layout(l -> l.marginRight(CONTROLS_W));
             tabStrip.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.ROW)
-                    .heightPercent(100).gapColumn(TAB_GAP)));
+                    .heightPercent(100).gapColumn(TAB_SPACING)));
         }
         header.addChild(tabStrip);
         // The title bar of the window: drag its empty stretch to move, double-click to maximize. With
@@ -613,7 +634,7 @@ public final class HubUI {
 
             UIElement icon = new UIElement();
             icon.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
-                    .left((TAB_W - TAB_ICON) / 2f).top((TAB_H - TAB_ICON) / 2f)
+                    .left(TAB_ICON_MARGIN).top(TAB_ICON_MARGIN)
                     .width(TAB_ICON).height(TAB_ICON));
             icon.style(s -> s.background(spec.texture()));
             tab.addChild(icon);
@@ -695,10 +716,10 @@ public final class HubUI {
         // behaviour is client-side, and an element that existed on one side only would shift every
         // positional binding after it — see the class javadoc.
         // The gear opens the Settings tab (it was a popup, HubSettings, before; that class is deprecated).
-        window.addChild(windowButton(3, () -> Icons.SETTINGS, "settings", () -> switchTo("settings")));
-        window.addChild(windowButton(2, () -> Icons.REPLAY, "reset", window::reset));
+        window.addChild(windowButton(3, () -> HubIcons.SETTINGS, "settings", () -> switchTo("settings")));
+        window.addChild(windowButton(2, () -> HubIcons.RESET, "reset", window::reset));
         window.addChild(windowButton(1,
-                () -> window.maximized() ? Icons.WINDOW_RESTORE : Icons.WINDOW_MAXIMIZE,
+                () -> window.maximized() ? HubIcons.RESTORE : HubIcons.MAXIMIZE,
                 null, window::toggleMaximize));
         window.addChild(back());
 
@@ -840,11 +861,13 @@ public final class HubUI {
         button.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
                 .right(BACK_INSET_X + 4 + slot * (BACK_BTN + WINDOW_BTN_GAP)).top(BACK_INSET_Y)
                 .width(BACK_BTN).height(BACK_BTN));
-        // Read through a supplier every frame: LdLib swaps its Icons fields at resource load.
-        button.style(s -> s.background(IGuiTexture.dynamic(texture)).zIndex(BACK_Z));
+        // Read through a supplier every frame: LdLib swaps its Icons fields at resource load. White icons vanish on the
+        // light themes, so there they are drawn in the theme's text colour (LightText.icon).
+        button.style(s -> s.background(IGuiTexture.dynamic(() -> com.roll_54.roll_mod.minestar.theme.LightText.icon(texture.get())))
+                .zIndex(BACK_Z));
         button.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> {
             String key = tip != null ? tip
-                    : texture.get() == Icons.WINDOW_RESTORE ? "restore" : "maximize";
+                    : texture.get() == HubIcons.RESTORE ? "restore" : "maximize";
             e.hoverTooltips = new HoverTooltips(
                     List.of(Component.translatable("gui." + RollMod.MODID + ".hub." + key + ".tip")),
                     null, null, ItemStack.EMPTY);

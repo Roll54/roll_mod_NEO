@@ -50,11 +50,21 @@ public final class HubBadge {
         return present;
     }
 
-    /** The PNG, or a rimmed gold dot in its place. */
+    /** The badge: the white body in the notification colour with its "!" over it ({@link #coloured}). */
     public static IGuiTexture texture() {
-        return hasTexture()
-                ? SpriteTexture.of(TEXTURE)
-                : new GuiTextureGroup(new ColorRectTexture(DOT_FILL), new ColorBorderTexture(1, DOT_RIM));
+        return IGuiTexture.dynamic(HubBadge::coloured);
+    }
+
+    /**
+     * The badge drawn straight with {@code graphics}, for the places outside LdLib (the chat buttons, the inventory's
+     * hub button): the body tinted to the notification colour, then the mark. Replaces the old red exclamation mark.
+     */
+    public static void draw(net.minecraft.client.gui.GuiGraphics graphics, int x, int y, int size) {
+        int argb = HubNotifications.color().argb();
+        graphics.setColor(((argb >> 16) & 0xFF) / 255f, ((argb >> 8) & 0xFF) / 255f, (argb & 0xFF) / 255f, 1f);
+        graphics.blit(BADGE_BODY, x, y, 0, 0, size, size, size, size);
+        graphics.setColor(1f, 1f, 1f, 1f);
+        graphics.blit(BADGE_MARK, x, y, 0, 0, size, size, size, size);
     }
 
     /** The moderation tab wants attention while a warp waits for a verdict or has been reported. */
@@ -118,8 +128,8 @@ public final class HubBadge {
     }
 
     /** The badge's white body and its "!" (copies of {@code exclamation_mark.png}, which stays red for warnings). */
-    private static final ResourceLocation BADGE_BODY = RollMod.id("textures/gui/hub/notification_badge.png");
-    private static final ResourceLocation BADGE_MARK = RollMod.id("textures/gui/hub/notification_badge_mark.png");
+    static final ResourceLocation BADGE_BODY = RollMod.id("textures/gui/hub/notification_badge.png");
+    static final ResourceLocation BADGE_MARK = RollMod.id("textures/gui/hub/notification_badge_mark.png");
     private static IGuiTexture tinted;
     private static int tintedFor;
 

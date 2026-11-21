@@ -15,7 +15,8 @@ public enum HistoryFilter {
     VENDING(EnumSet.of(LedgerReason.VENDOR_SALE, LedgerReason.VENDOR_PURCHASE)),
     AUCTION(EnumSet.of(LedgerReason.AUCTION_SALE, LedgerReason.AUCTION_FEE, LedgerReason.AUCTION_PURCHASE,
             LedgerReason.AUCTION_BID, LedgerReason.AUCTION_REFUND)),
-    REWARDS(EnumSet.of(LedgerReason.PLAYTIME, LedgerReason.DAILY, LedgerReason.QUEST, LedgerReason.LETTER));
+    REWARDS(EnumSet.of(LedgerReason.PLAYTIME, LedgerReason.DAILY, LedgerReason.QUEST, LedgerReason.LETTER,
+            LedgerReason.BATTLE_PASS));
 
     private final Set<LedgerReason> reasons;
 

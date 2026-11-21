@@ -67,9 +67,12 @@ import java.util.WeakHashMap;
 @EventBusSubscriber(modid = RollMod.MODID, value = Dist.CLIENT)
 public final class ContainerSkin {
 
+    /**
+     * The player's own inventory (vanilla's and Curios') is left vanilla, as it was before the skin: it is not in this
+     * set, and the Curios screen is no longer matched in {@link #onInit}.
+     */
     private static final Set<Class<?>> SKINNED = Set.of(ContainerScreen.class, ShulkerBoxScreen.class,
-            InventoryScreen.class, CraftingScreen.class, FurnaceScreen.class, BlastFurnaceScreen.class,
-            SmokerScreen.class);
+            CraftingScreen.class, FurnaceScreen.class, BlastFurnaceScreen.class, SmokerScreen.class);
 
     /**
      * Screens whose background pass draws real content over the texture — progress bars, the
@@ -101,6 +104,9 @@ public final class ContainerSkin {
 
     /** Vanilla's label grey, for themes without a palette (the vanilla-looking MC theme). */
     private static final int VANILLA_LABEL = 0xFF404040;
+
+    /** The packages whose container screens "Use the hub theme everywhere" overlay-skins; the rest are only recoloured. */
+    private static final List<String> OVERLAY_PACKAGES = List.of("net.minecraft.", "aztech.modern_industrialization.");
 
     private static final Map<Screen, Skin> SKINS = new WeakHashMap<>();
 
@@ -147,9 +153,9 @@ public final class ContainerSkin {
 
     @SubscribeEvent
     public static void onInit(ScreenEvent.Init.Post event) {
-        if (!(event.getScreen() instanceof AbstractContainerScreen<?> screen)
-                || !SKINNED.contains(screen.getClass()) && !OVERLAY_SKINNED.contains(screen.getClass())
-                && !CURIOS_SCREEN.equals(screen.getClass().getName())) return;
+        if (!(event.getScreen() instanceof AbstractContainerScreen<?> screen)) return;
+        if (!SKINNED.contains(screen.getClass()) && !OVERLAY_SKINNED.contains(screen.getClass())
+                && !everywhere(screen)) return;
         Skin skin = new Skin(screen);
         SKINS.put(screen, skin);
         // A listener, not a renderable: it is drawn by hand in the background pass, under the slots,
@@ -160,6 +166,32 @@ public final class ContainerSkin {
         event.addListener(skin.ui.getWidget());
         ((com.roll_54.roll_mod.mixin.client.ScreenRenderablesAccessor) screen).roll_mod$renderables()
                 .remove(skin.ui.getWidget());
+    }
+
+    /**
+     * With "Use the hub theme everywhere" on, every other container screen — the rest of vanilla's and other mods'
+     * (Modern Industrialization's machines…) — is overlay-skinned too: its full-size background texture becomes the
+     * theme's panel with framed slots, and whatever the screen draws over it stays its own. The player's inventory
+     * (vanilla, creative, Curios) is left vanilla on purpose. A screen whose background is not one full-size texture
+     * keeps it; the skin underneath is then simply covered.
+     */
+    private static boolean everywhere(AbstractContainerScreen<?> screen) {
+        if (!com.roll_54.roll_mod.minestar.theme.UiThemeState.forceEverywhere()) return false;
+        // LdLib's own screens (the hub, machines…) are themed already; skinned, the hub's full-screen host came out as
+        // one opaque panel over the world.
+        if (screen instanceof com.lowdragmc.lowdraglib2.gui.holder.ModularUIContainerScreen) return false;
+        // AE2 and its addons keep their own interfaces untouched.
+        if (com.roll_54.roll_mod.minestar.theme.ThemeArt.isAe2(screen)) return false;
+        // Only screens the skin is known to frame right: vanilla's, and Modern Industrialization's machines (EI's use
+        // them too). Other mods' screens keep their own art, recoloured by GuiRecolor; skinned, some (Tide's rod
+        // workbench) came out as an empty panel with no slots.
+        String name = screen.getClass().getName();
+        boolean known = false;
+        for (String prefix : OVERLAY_PACKAGES) known |= name.startsWith(prefix);
+        if (!known) return false;
+        if (screen instanceof InventoryScreen
+                || screen instanceof net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen) return false;
+        return !CURIOS_SCREEN.equals(screen.getClass().getName());
     }
 
     @SubscribeEvent
@@ -203,7 +235,8 @@ public final class ContainerSkin {
         Skin(AbstractContainerScreen<?> screen) {
             this.screen = screen;
             this.inventoryLike = screen instanceof InventoryScreen || CURIOS_SCREEN.equals(screen.getClass().getName());
-            this.overlay = OVERLAY_SKINNED.contains(screen.getClass());
+            // Everything not in SKINNED (the screens drawn whole) keeps its own drawing over the panel.
+            this.overlay = !SKINNED.contains(screen.getClass());
             // Full-screen but invisible: it must not count as taken space. LdLib reports every element's
             // rectangle to recipe viewers as an exclusion area, so a full-screen root left TEI no room for
             // its item lists beside the inventory. Only the panels below it are reported.
@@ -307,7 +340,9 @@ public final class ContainerSkin {
         void render(GuiGraphics graphics, int mouseX, int mouseY) {
             place();
             updateSlots();
-            ui.getWidget().render(graphics, mouseX, mouseY, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false));
+            // The skin is the theme's own art: drawn with the recolour shader off (it recolours what vanilla draws next).
+            com.roll_54.roll_mod.minestar.theme.GuiRecolor.withoutRecolor(() -> ui.getWidget().render(graphics, mouseX, mouseY,
+                    Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false)));
             // LdLib draws its layers forward in depth. Everything vanilla draws next — buttons (Curios',
             // other mods'), slot highlights — sits at depth 0 and would fail the depth test wherever the
             // panel was drawn, so it vanished or showed only in part. Clearing depth after the skin

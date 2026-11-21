@@ -402,8 +402,7 @@ public final class ChatButtonsHandler {
             graphics.pose().pushPose();
             // Over the caption and the frame, not under them.
             graphics.pose().translate(0, 0, 10);
-            graphics.blit(HubBadge.TEXTURE, getX() + width - BADGE + BADGE_OVERHANG, getY() - BADGE_OVERHANG,
-                    0, 0, BADGE, BADGE, BADGE, BADGE);
+            HubBadge.draw(graphics, getX() + width - BADGE + BADGE_OVERHANG, getY() - BADGE_OVERHANG, BADGE);
             graphics.pose().popPose();
         }
 

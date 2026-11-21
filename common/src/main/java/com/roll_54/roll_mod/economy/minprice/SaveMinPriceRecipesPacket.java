@@ -23,11 +23,14 @@ import java.util.Map;
  *   <li>{@code prices}: a price typed in by hand, independent of any recipe
  *       ({@link MinPriceConfig#itemWhitelist} / {@link MinPriceConfig#fluidWhitelist}, per bucket for a
  *       fluid); {@link #CLEAR} takes a typed price away again.</li>
+ *   <li>{@code choices}: for an ingredient that may be any of several items (a tag or list), which one it is
+ *       priced as — the options' ids joined with ',' → the chosen id ({@link MinPriceConfig#ingredientChoices}).</li>
  * </ul>
  * Entries for other keys stay. The config is saved and the table rebuilt at once, so every player's
  * prices change as soon as it is done.
  */
-public record SaveMinPriceRecipesPacket(Map<String, String> recipes, Map<String, Long> prices)
+public record SaveMinPriceRecipesPacket(Map<String, String> recipes, Map<String, Long> prices,
+                                        Map<String, String> choices)
     implements CustomPacketPayload {
 
   /** The same as the admin commands had: an operator. */
@@ -52,6 +55,11 @@ public record SaveMinPriceRecipesPacket(Map<String, String> recipes, Map<String,
       buf.writeUtf(key);
       buf.writeVarLong(price + 1); // CLEAR (-1) fits a var-long as 0
     });
+    buf.writeVarInt(payload.choices().size());
+    payload.choices().forEach((set, chosen) -> {
+      buf.writeUtf(set);
+      buf.writeUtf(chosen);
+    });
   }
 
   private static SaveMinPriceRecipesPacket decode(RegistryFriendlyByteBuf buf) {
@@ -61,7 +69,10 @@ public record SaveMinPriceRecipesPacket(Map<String, String> recipes, Map<String,
     count = size(buf);
     Map<String, Long> prices = new LinkedHashMap<>();
     for (int i = 0; i < count; i++) prices.put(buf.readUtf(), buf.readVarLong() - 1);
-    return new SaveMinPriceRecipesPacket(recipes, prices);
+    count = size(buf);
+    Map<String, String> choices = new LinkedHashMap<>();
+    for (int i = 0; i < count; i++) choices.put(buf.readUtf(), buf.readUtf());
+    return new SaveMinPriceRecipesPacket(recipes, prices, choices);
   }
 
   private static int size(RegistryFriendlyByteBuf buf) {
@@ -108,7 +119,26 @@ public record SaveMinPriceRecipesPacket(Map<String, String> recipes, Map<String,
         savedPrices++;
       }
 
-      if (savedRecipes + savedPrices > 0) {
+      Map<String, String> choices = new LinkedHashMap<>(config.ingredientChoices.get());
+      int savedChoices = 0;
+      for (Map.Entry<String, String> entry : payload.choices().entrySet()) {
+        // Every option and the choice must be real items, and the choice one of the options.
+        java.util.List<String> options = new java.util.ArrayList<>();
+        boolean ok = true;
+        for (String id : entry.getKey().split(",")) {
+          ResourceLocation rl = ResourceLocation.tryParse(id.trim());
+          if (rl == null || !BuiltInRegistries.ITEM.containsKey(rl)) { ok = false; break; }
+          options.add(rl.toString());
+        }
+        ResourceLocation chosen = ResourceLocation.tryParse(entry.getValue().trim());
+        if (!ok || options.size() < 2 || chosen == null || !options.contains(chosen.toString())) continue;
+        java.util.Collections.sort(options);
+        choices.put(String.join(",", options), chosen.toString());
+        savedChoices++;
+      }
+
+      if (savedRecipes + savedPrices + savedChoices > 0) {
+        if (savedChoices > 0) config.ingredientChoices.validateAndSet(choices);
         if (savedRecipes > 0) config.itemRecipes.validateAndSet(recipes);
         if (savedPrices > 0) {
           config.itemWhitelist.validateAndSet(items);
@@ -118,8 +148,8 @@ public record SaveMinPriceRecipesPacket(Map<String, String> recipes, Map<String,
         MinPriceService.rebuild(player.server);
       }
       player.sendSystemMessage(
-          Component.translatable("msg.roll_mod.minprice.saved", savedRecipes, savedPrices)
-              .withStyle(savedRecipes + savedPrices > 0 ? ChatFormatting.GREEN : ChatFormatting.RED));
+          Component.translatable("msg.roll_mod.minprice.saved", savedRecipes + savedChoices, savedPrices)
+              .withStyle(savedRecipes + savedPrices + savedChoices > 0 ? ChatFormatting.GREEN : ChatFormatting.RED));
     });
   }
 }

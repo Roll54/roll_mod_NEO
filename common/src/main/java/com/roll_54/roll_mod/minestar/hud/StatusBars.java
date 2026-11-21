@@ -45,7 +45,8 @@ public final class StatusBars {
             VanillaGuiLayers.VEHICLE_HEALTH);
 
     private static final int WIDTH = 81;
-    private static final int HEIGHT = 5;
+    /** Tall enough for the numbers written on the bar (17/20); rows stay vanilla's 10px apart. */
+    private static final int HEIGHT = 9;
     private static final int ROW = 10;
 
     private static final int FRAME = 0xFF000000;
@@ -63,9 +64,25 @@ public final class StatusBars {
 
     private StatusBars() {}
 
+    /** Whether the bars replace the vanilla rows (client config hud.statusBars); off, vanilla's own show. */
+    static boolean enabled() {
+        var config = com.roll_54.roll_mod.config.RollClientConfig.INSTANCE;
+        return config == null || config.hud == null || config.hud.statusBars;
+    }
+
     @SubscribeEvent(priority = EventPriority.HIGHEST)
     public static void onLayer(RenderGuiLayerEvent.Pre event) {
         ResourceLocation id = event.getName();
+        if (!enabled()) {
+            // Vanilla rows stay; only the free cursor still hides the crosshair. Health past 20 is the one exception:
+            // one row of tiered hearts (TieredHearts) in place of vanilla's growing stack.
+            if (id.equals(VanillaGuiLayers.CROSSHAIR) && FreeCursor.active()) event.setCanceled(true);
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (id.equals(VanillaGuiLayers.PLAYER_HEALTH) && player != null && TieredHearts.applies(player)) {
+                event.setCanceled(true);
+            }
+            return;
+        }
         if (REPLACED.contains(id) || "appleskin".equals(id.getNamespace())
                 || (id.equals(VanillaGuiLayers.CROSSHAIR) && FreeCursor.active())) {
             event.setCanceled(true);
@@ -75,12 +92,19 @@ public final class StatusBars {
     @SubscribeEvent
     public static void onRegisterLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.PLAYER_HEALTH, RollMod.id("status_bars"), StatusBars::render);
+        event.registerAbove(VanillaGuiLayers.PLAYER_HEALTH, RollMod.id("tiered_hearts"), (graphics, delta) -> {
+            Minecraft mc = Minecraft.getInstance();
+            LocalPlayer player = mc.player;
+            if (enabled() || player == null || mc.options.hideGui || mc.gameMode == null
+                    || !mc.gameMode.canHurtPlayer() || !TieredHearts.applies(player)) return;
+            TieredHearts.render(graphics, player, mc.gui);
+        });
     }
 
     private static void render(GuiGraphics graphics, DeltaTracker delta) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
-        if (player == null || mc.options.hideGui || mc.gameMode == null || !mc.gameMode.canHurtPlayer()) return;
+        if (!enabled() || player == null || mc.options.hideGui || mc.gameMode == null || !mc.gameMode.canHurtPlayer()) return;
         Gui gui = mc.gui;
         List<Hover> hovers = new ArrayList<>();
         int left = graphics.guiWidth() / 2 - 91;
@@ -94,14 +118,26 @@ public final class StatusBars {
         int healthColor = player.hasEffect(MobEffects.WITHER) ? WITHER
                 : player.hasEffect(MobEffects.POISON) ? POISON
                 : player.isFullyFrozen() ? FROZEN : HEALTH;
-        int y = graphics.guiHeight() - gui.leftHeight + 2;
+        int y = graphics.guiHeight() - gui.leftHeight + 1;
         int inner = WIDTH - 2;
         int healthW = Math.round(inner * health / scale);
         // Absorption lies over the health from the left, as diagonal gold strips the red shows between;
         // more absorption than the bar holds fills it.
         int absorbW = Math.min(inner, Math.round(inner * absorption / scale));
         frame(graphics, left, y);
-        graphics.fill(left + 1, y + 1, left + 1 + healthW, y + HEIGHT - 1, healthColor);
+        if (scale > TieredHearts.PER_ROW && healthColor == HEALTH) {
+            // Past 20 health the bar works as the hearts do (TieredHearts): it holds one row of 20, the row filling now
+            // in its colour over the full row below, and the row count beside it.
+            int row = TieredHearts.row(health);
+            float rest = health - TieredHearts.PER_ROW * row;
+            if (row > 0) graphics.fill(left + 1, y + 1, left + 1 + inner, y + HEIGHT - 1,
+                    row == 1 ? HEALTH : TieredHearts.color(row - 1));
+            int restW = Math.round(inner * Math.min(1f, rest / TieredHearts.PER_ROW));
+            graphics.fill(left + 1, y + 1, left + 1 + restW, y + HEIGHT - 1, row == 0 ? HEALTH : TieredHearts.color(row));
+            TieredHearts.rowLabel(graphics, left, y, health, max);
+        } else {
+            graphics.fill(left + 1, y + 1, left + 1 + healthW, y + HEIGHT - 1, healthColor);
+        }
         for (int c = 0; c < absorbW; c++) {
             for (int r = 0; r < HEIGHT - 2; r++) {
                 // Two pixels of gold, two of gap, rising to the right.
@@ -111,6 +147,8 @@ public final class StatusBars {
                 }
             }
         }
+        label(graphics, mc, left, y, absorption > 0 ? number(health) + "+" + number(absorption) + "/" + number(max)
+                : number(health) + "/" + number(max));
         hovers.add(new Hover(left, y, absorption > 0
                 ? List.of(Component.translatable("gui.roll_mod.bar.health", number(health), number(max)),
                         Component.translatable("gui.roll_mod.bar.absorption", number(absorption)).withStyle(ChatFormatting.GOLD))
@@ -119,8 +157,9 @@ public final class StatusBars {
 
         int armor = player.getArmorValue();
         if (armor > 0) {
-            int ay = graphics.guiHeight() - gui.leftHeight + 2;
+            int ay = graphics.guiHeight() - gui.leftHeight + 1;
             bar(graphics, left, ay, Math.min(armor, 20) / 20f, ARMOR);
+            label(graphics, mc, left, ay, armor + "/20");
             double toughness = player.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
             hovers.add(new Hover(left, ay, toughness > 0
                     ? List.of(Component.translatable("gui.roll_mod.bar.armor", armor),
@@ -130,14 +169,16 @@ public final class StatusBars {
         }
 
         // Right column: hunger, or the mount's health while riding one; air above.
-        int ry = graphics.guiHeight() - gui.rightHeight + 2;
+        int ry = graphics.guiHeight() - gui.rightHeight + 1;
         if (player.getVehicle() instanceof LivingEntity mount && mount.showVehicleHealth()) {
             bar(graphics, right, ry, mount.getHealth() / Math.max(mount.getMaxHealth(), 1f), MOUNT);
+            label(graphics, mc, right, ry, number(mount.getHealth()) + "/" + number(mount.getMaxHealth()));
             hovers.add(new Hover(right, ry, List.of(Component.translatable("gui.roll_mod.bar.mount",
                     mount.getDisplayName(), number(mount.getHealth()), number(mount.getMaxHealth())))));
         } else {
             int food = player.getFoodData().getFoodLevel();
             bar(graphics, right, ry, food / 20f, player.hasEffect(MobEffects.HUNGER) ? FOOD_HUNGER_EFFECT : FOOD);
+            label(graphics, mc, right, ry, food + "/20");
             hovers.add(new Hover(right, ry, List.of(Component.translatable("gui.roll_mod.bar.hunger", food, 20),
                     Component.translatable("gui.roll_mod.bar.saturation",
                             number(player.getFoodData().getSaturationLevel())).withStyle(ChatFormatting.GRAY))));
@@ -147,8 +188,9 @@ public final class StatusBars {
         int maxAir = player.getMaxAirSupply();
         int air = Math.min(player.getAirSupply(), maxAir);
         if (player.isEyeInFluid(FluidTags.WATER) || air < maxAir) {
-            int airY = graphics.guiHeight() - gui.rightHeight + 2;
+            int airY = graphics.guiHeight() - gui.rightHeight + 1;
             bar(graphics, right, airY, Math.max(air, 0) / (float) maxAir, AIR);
+            label(graphics, mc, right, airY, number(Math.max(air, 0) / 20f) + "/" + number(maxAir / 20f));
             hovers.add(new Hover(right, airY, List.of(Component.translatable("gui.roll_mod.bar.air",
                     number(Math.max(air, 0) / 20f), number(maxAir / 20f)))));
             gui.rightHeight += ROW;
@@ -158,7 +200,7 @@ public final class StatusBars {
         if (FreeCursor.active()) {
             int mx = FreeCursor.guiMouseX(mc), my = FreeCursor.guiMouseY(mc);
             for (Hover h : hovers) {
-                if (mx >= h.x && mx < h.x + WIDTH && my >= h.y - 2 && my < h.y - 2 + ROW) {
+                if (mx >= h.x && mx < h.x + WIDTH && my >= h.y - 1 && my < h.y - 1 + ROW) {
                     graphics.renderComponentTooltip(mc.font, h.lines, mx, my);
                     break;
                 }
@@ -173,6 +215,12 @@ public final class StatusBars {
     private static String number(float v) {
         float r = Math.round(v * 10f) / 10f;
         return r == (int) r ? String.valueOf((int) r) : String.valueOf(r);
+    }
+
+    /** The bar's numbers, centred on it, white with a shadow so they read over any fill. */
+    private static void label(GuiGraphics graphics, Minecraft mc, int x, int y, String text) {
+        int w = mc.font.width(text);
+        graphics.drawString(mc.font, text, x + (WIDTH - w) / 2, y, 0xFFFFFFFF, true); // 1px higher than before, so the digits sit centred in the bar
     }
 
     private static void bar(GuiGraphics graphics, int x, int y, float fraction, int color) {

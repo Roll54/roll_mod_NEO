@@ -74,7 +74,10 @@ public final class KitNamePackets {
             COOLDOWN,
             DELETE,
             /** The hub's kit editor window closed: what it holds becomes the kit. */
-            ITEMS_SAVE
+            ITEMS_SAVE,
+            /** One place up the list everyone sees. Last, so the ordinals before it keep their meaning. */
+            MOVE_UP,
+            MOVE_DOWN
         }
 
         public static final Type<Edit> TYPE = new Type<>(RollMod.id("edit_kit"));
@@ -100,6 +103,8 @@ public final class KitNamePackets {
                     case COOLDOWN -> KitService.setCooldown(player, payload.kit(), payload.ticks());
                     case DELETE -> KitService.deleteFromTab(player, payload.kit());
                     case ITEMS_SAVE -> com.roll_54.roll_mod.minestar.kits.HubKitEditor.save(player);
+                    case MOVE_UP -> KitService.move(player, payload.kit(), -1);
+                    case MOVE_DOWN -> KitService.move(player, payload.kit(), 1);
                 }
             });
         }

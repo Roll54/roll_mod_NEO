@@ -140,7 +140,9 @@ public final class DailyTaskManager {
         int quota = DailyTaskQuota.forGroup(server, group);
         // Row rewards (rewardsFor) deliberately leave the salt out, so a reroll keeps what each row pays.
         Random rng = new Random(seedFor(server, group.id(), period) ^ (state.rerollSalt * REROLL_SALT));
-        List<String> picked = pick(rng, quota);
+        // The members' earned extra slots, then one more for the Prime slot, while there is room and enough tasks.
+        int bonus = bonusFor(state, group);
+        List<String> picked = pick(rng, Math.min(MAX_TASK_COUNT, quota + bonus + 1));
         if (picked.size() < quota) {
             // Fewer tasks are registered than the group is owed; there is nothing to show.
             return null;
@@ -149,6 +151,8 @@ public final class DailyTaskManager {
         gs.periodDay = period;
         gs.taskIds.clear();
         gs.taskIds.addAll(picked);
+        gs.bonusSlots = Math.min(bonus, picked.size() - quota);
+        gs.primeSlot = picked.size() > quota + gs.bonusSlots;
         gs.rewardId = pickReward(rng);
         gs.clearProgress();
         Arrays.fill(gs.rerolls, 0);
@@ -198,13 +202,43 @@ public final class DailyTaskManager {
                                               DailyTaskGroups.TaskGroup group, int index) {
         Random rng = new Random(seedFor(server, group.id(), currentPeriodDay())
                 + index * REWARD_SALT);
-        return TaskRewardPool.draw(rng, TaskRewardPool.NUM_PER_TASK);
+        DailyRewardConfig.get(); // the server's own pool file, loaded (and applied) the first time
+        return TaskRewardPool.draw(rng, TaskRewardPool.NUM_PER_TASK, stage(server, group));
+    }
+
+    /**
+     * How far into the quest book the group is (0 = stone age, 1 = bronze … 7 = IV): the furthest of its online
+     * members, by the battle pass's block quests. Scales the ingots a task pays.
+     */
+    private static int stage(MinecraftServer server, DailyTaskGroups.TaskGroup group) {
+        int best = 0;
+        for (UUID member : group.members()) {
+            ServerPlayer p = server.getPlayerList().getPlayer(member);
+            if (p != null) best = Math.max(best, com.roll_54.roll_mod.minestar.battlepass.BattlePassService.stage(p));
+        }
+        return best;
+    }
+
+    /**
+     * Keeps only the first of the one-fish dailies (a task per Tide fish, see {@code TideFishTasks}) in a shuffled list:
+     * together they count as a single task in the draw, or there would be a fish to catch nearly every day.
+     */
+    private static void onePerFish(List<DailyTask> shuffled) {
+        boolean[] kept = {false};
+        shuffled.removeIf(t -> {
+            if (!t.id().startsWith("tide_fish_")) return false;
+            if (kept[0]) return true;
+            kept[0] = true;
+            return false;
+        });
     }
 
     /** Draws {@code count} task ids, preferring one per hook. */
     private static List<String> pick(Random rng, int count) {
         List<DailyTask> shuffled = new ArrayList<>(DailyTaskRegistry.all());
+        shuffled.removeIf(DailyTask::battlePassOnly); // the battle pass's own challenges never land on the board
         Collections.shuffle(shuffled, rng);
+        onePerFish(shuffled);
 
         // Prefer a different hook per task so a day never turns into "kill four things".
         List<DailyTask> picked = new ArrayList<>(count);
@@ -274,13 +308,16 @@ public final class DailyTaskManager {
         DailyTasksState state = state(server);
         Random rng = new Random();
         int quota = DailyTaskQuota.forPlayer(player);
-        List<String> picked = pick(rng, quota);
+        int bonus = bonusFor(state, DailyTaskGroups.of(player));
+        List<String> picked = pick(rng, Math.min(MAX_TASK_COUNT, quota + bonus + 1));
         if (picked.size() < quota) return null;
 
         DailyTasksState.GroupState gs = state.group(DailyTaskGroups.of(player).id());
         gs.periodDay = currentPeriodDay();
         gs.taskIds.clear();
         gs.taskIds.addAll(picked);
+        gs.bonusSlots = Math.min(bonus, picked.size() - quota);
+        gs.primeSlot = picked.size() > quota + gs.bonusSlots;
         gs.rewardId = pickReward(rng);
         gs.clearProgress();
         Arrays.fill(gs.rerolls, 0);
@@ -334,13 +371,55 @@ public final class DailyTaskManager {
      * already done, or the slot has used every reroll it gets today. The screen hides its button on
      * {@code -1}.
      */
+    /**
+     * Whether {@code player} neither sees nor claims slot {@code index}: the Prime slot to a non-Prime, or an earned
+     * extra slot past the ones they have earned themself.
+     */
+    public static boolean hiddenFrom(DailyTasksState.GroupState gs, int index, ServerPlayer player) {
+        if (index == gs.primeIndex()) return !com.roll_54.roll_mod.minestar.teleport.TeleportService.isPrime(player);
+        int bonus = gs.bonusIndex(index);
+        if (bonus >= 0) {
+            MinecraftServer server = player.getServer();
+            return server == null || state(server).extraSlots.getOrDefault(player.getUUID(), 0) <= bonus;
+        }
+        return false;
+    }
+
+    /** The most extra slots any member of {@code group} has earned: how many the group's board carries. */
+    private static int bonusFor(DailyTasksState state, DailyTaskGroups.TaskGroup group) {
+        int most = 0;
+        for (UUID member : group.members()) most = Math.max(most, state.extraSlots.getOrDefault(member, 0));
+        return most;
+    }
+
+    /**
+     * The FTB Quests reward "+1 daily task": one more slot for {@code player}, for good. Today's board gets it at
+     * once when it has room (before the Prime slot); otherwise it arrives with the next roll.
+     */
+    public static void grantExtraSlot(ServerPlayer player) {
+        MinecraftServer server = player.getServer();
+        if (server == null) return;
+        DailyTasksState state = state(server);
+        int earned = state.extraSlots.merge(player.getUUID(), 1, Integer::sum);
+        state.setDirty();
+        DailyTasksState.GroupState gs = current(server, state, DailyTaskGroups.of(player));
+        if (gs != null && gs.bonusSlots < earned && gs.taskCount() < MAX_TASK_COUNT) {
+            String task = pickReplacement(gs, -1, new Random());
+            if (task != null) {
+                gs.insertTask(gs.baseCount() + gs.bonusSlots, task);
+                gs.bonusSlots++;
+            }
+        }
+        DailyTaskStatus.markDirty();
+    }
+
     public static long rerollCost(ServerPlayer player, int index) {
         MinecraftServer server = player.getServer();
         if (server == null || index < 0 || index >= MAX_TASK_COUNT) return -1;
 
         DailyTasksState state = state(server);
         DailyTasksState.GroupState gs = current(server, state, DailyTaskGroups.of(player));
-        if (gs == null || index >= gs.taskCount() || gs.completed[index]) return -1;
+        if (gs == null || index >= gs.taskCount() || gs.completed[index] || hiddenFrom(gs, index, player)) return -1;
         if (gs.rerolls[index] >= REROLL_COSTS.length) return -1;
 
         return freeRerollsLeft(state, player) > 0 ? 0 : REROLL_COSTS[gs.rerolls[index]];
@@ -497,7 +576,9 @@ public final class DailyTaskManager {
     @Nullable
     private static String pickReplacement(DailyTasksState.GroupState gs, int index, Random rng) {
         List<DailyTask> shuffled = new ArrayList<>(DailyTaskRegistry.all());
+        shuffled.removeIf(DailyTask::battlePassOnly); // the battle pass's own challenges never land on the board
         Collections.shuffle(shuffled, rng);
+        onePerFish(shuffled);
 
         EnumSet<DailyTaskHook> otherHooks = EnumSet.noneOf(DailyTaskHook.class);
         for (int i = 0; i < gs.taskCount(); i++) {
@@ -538,6 +619,9 @@ public final class DailyTaskManager {
             server.execute(() -> progress(player, hook, detached, amount));
             return;
         }
+
+        // The battle pass's own tasks count the same events, per player.
+        com.roll_54.roll_mod.minestar.battlepass.BattlePassService.progress(player, hook, subject, amount);
 
         DailyTasksState state = state(server);
 
@@ -611,7 +695,7 @@ public final class DailyTaskManager {
         DailyTaskGroups.TaskGroup group = DailyTaskGroups.of(player);
         DailyTasksState.GroupState gs = current(server, state, group);
         // A group holding fewer tasks than the cap leaves the trailing slots empty.
-        if (gs == null || index >= gs.taskCount()) return ClaimResult.UNAVAILABLE;
+        if (gs == null || index >= gs.taskCount() || hiddenFrom(gs, index, player)) return ClaimResult.UNAVAILABLE;
 
         DailyTask task = DailyTaskRegistry.byId(gs.taskIds.get(index));
         if (task == null) return ClaimResult.UNAVAILABLE;
@@ -620,6 +704,8 @@ public final class DailyTaskManager {
         if (!gs.claimedBy.get(index).add(player.getUUID())) return ClaimResult.ALREADY_CLAIMED;
 
         state.tasksDone.merge(player.getUUID(), 1, Integer::sum);
+        // Every claimed daily task is worth battle pass points too.
+        com.roll_54.roll_mod.minestar.battlepass.BattlePassService.onDailyClaimed(player);
         state.setDirty();
         DailyTaskStatus.markDirty();
         // The same draw the row has been advertising all day, plus the flat currency payout. Paid
@@ -627,7 +713,8 @@ public final class DailyTaskManager {
         for (TaskReward reward : rewardsFor(server, group, index)) {
             reward.grant(player);
         }
-        TaskRewardPool.STARCOINS.grant(player);
+        // Starcoins come from the base board only: an earned extra slot or the Prime slot pays its draw, not money.
+        if (index != gs.primeIndex() && gs.bonusIndex(index) < 0) TaskRewardPool.STARCOINS.grant(player);
         return ClaimResult.OK;
     }
 
@@ -646,7 +733,7 @@ public final class DailyTaskManager {
         DailyReward reward = DailyRewardRegistry.byId(gs.rewardId);
         if (reward == null) return ClaimResult.UNAVAILABLE;
 
-        if (gs.completedCount() < gs.taskCount()) return ClaimResult.NOT_COMPLETED;
+        if (gs.completedCount() < gs.baseCount()) return ClaimResult.NOT_COMPLETED;
         if (!gs.rewardClaimedBy.add(player.getUUID())) return ClaimResult.ALREADY_CLAIMED;
 
         state.setDirty();
@@ -671,12 +758,13 @@ public final class DailyTaskManager {
 
         int count = 0;
         for (int i = 0; i < gs.taskCount(); i++) {
+            if (hiddenFrom(gs, i, player)) continue;
             if (gs.completed[i] && !gs.claimedBy.get(i).contains(player.getUUID())
                     && DailyTaskRegistry.byId(gs.taskIds.get(i)) != null) {
                 count++;
             }
         }
-        if (gs.completedCount() >= gs.taskCount() && gs.taskCount() > 0
+        if (gs.completedCount() >= gs.baseCount() && gs.baseCount() > 0
                 && DailyRewardRegistry.byId(gs.rewardId) != null
                 && !gs.rewardClaimedBy.contains(player.getUUID())) {
             count++;
@@ -698,7 +786,7 @@ public final class DailyTaskManager {
      *                task adds — the screen appends that itself rather than syncing a constant
      */
     public record TaskView(DailyTask task, int progress, int required, boolean completed,
-                           boolean claimed, List<TaskReward> rewards) {}
+                           boolean claimed, List<TaskReward> rewards, boolean prime, boolean bonus) {}
 
     /** A snapshot of the all-complete bonus panel as it should appear to {@code player}. */
     public record BonusView(DailyReward reward, int completed, int total, boolean claimed) {}
@@ -715,15 +803,15 @@ public final class DailyTaskManager {
         DailyTasksState state = state(server);
         DailyTaskGroups.TaskGroup group = DailyTaskGroups.of(player);
         DailyTasksState.GroupState gs = current(server, state, group);
-        // Null for a slot past this group's quota — the screen hides those rows.
-        if (gs == null || index >= gs.taskCount()) return null;
+        // Null for a slot past this group's quota — the screen hides those rows — and for the Prime slot to a non-Prime.
+        if (gs == null || index >= gs.taskCount() || hiddenFrom(gs, index, player)) return null;
 
         DailyTask task = DailyTaskRegistry.byId(gs.taskIds.get(index));
         if (task == null) return null;
 
         return new TaskView(task, gs.progress[index], requiredAmount(task, group),
                 gs.completed[index], gs.claimedBy.get(index).contains(player.getUUID()),
-                rewardsFor(server, group, index));
+                rewardsFor(server, group, index), index == gs.primeIndex(), gs.bonusIndex(index) >= 0);
     }
 
     /** The bonus panel for this player, or {@code null} when no reward is drawn or registered. */
@@ -739,7 +827,7 @@ public final class DailyTaskManager {
         DailyReward reward = DailyRewardRegistry.byId(gs.rewardId);
         if (reward == null) return null;
 
-        return new BonusView(reward, gs.completedCount(), gs.taskCount(),
+        return new BonusView(reward, gs.completedCount(), gs.baseCount(),
                 gs.rewardClaimedBy.contains(player.getUUID()));
     }
 

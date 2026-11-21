@@ -106,6 +106,10 @@ public final class LeaderboardService {
                     .thenCompose(fromFiles -> onServer(server, () -> playtimeBoard(server, fromFiles)));
             case QUESTS -> onServer(server, LeaderboardService::questBoard);
             case DAILY_TASKS -> onServer(server, () -> dailyTasksBoard(server));
+            case CHAPTERS -> onServer(server, LeaderboardService::chapterBoard);
+            case FOODS -> onServer(server, LeaderboardService::foodIds)
+                    .thenCompose(foods -> CompletableFuture.supplyAsync(() -> readFoods(server, foods), Util.backgroundExecutor())
+                            .thenCompose(fromFiles -> onServer(server, () -> foodsBoard(server, foods, fromFiles))));
         };
         BUILDING.put(category, built);
         return built.whenComplete((board, error) -> server.execute(() -> {
@@ -136,6 +140,11 @@ public final class LeaderboardService {
      * counter, which {@link #playtimeBoard} applies on top.
      */
     private static Map<UUID, Long> readPlaytimes(MinecraftServer server) {
+        return readStats(server, LeaderboardService::playTime);
+    }
+
+    /** One value per player from this world's statistics files; zeroes left out. Off the server thread. */
+    private static Map<UUID, Long> readStats(MinecraftServer server, java.util.function.ToLongFunction<JsonElement> value) {
         Map<UUID, Long> out = new HashMap<>();
         Path dir = server.getWorldPath(LevelResource.PLAYER_STATS_DIR);
         if (!Files.isDirectory(dir)) return out;
@@ -150,8 +159,8 @@ public final class LeaderboardService {
                 }
                 try (Reader reader = Files.newBufferedReader(file, StandardCharsets.UTF_8)) {
                     JsonElement root = JsonParser.parseReader(reader);
-                    long ticks = playTime(root);
-                    if (ticks > 0) out.put(id, ticks);
+                    long v = value.applyAsLong(root);
+                    if (v > 0) out.put(id, v);
                 } catch (Exception e) {
                     RollMod.LOGGER.debug("[Leaderboards] unreadable stats file {}", file, e);
                 }
@@ -160,6 +169,51 @@ public final class LeaderboardService {
             RollMod.LOGGER.warn("[Leaderboards] could not list {}", dir, e);
         }
         return out;
+    }
+
+    /* ----------------------------------------------- foods ----------------------------------------------- */
+
+    /** Ids of every item that is food by default. Server thread. */
+    private static java.util.Set<String> foodIds() {
+        java.util.Set<String> out = new java.util.HashSet<>();
+        for (net.minecraft.world.item.Item item : net.minecraft.core.registries.BuiltInRegistries.ITEM) {
+            if (item.components().has(net.minecraft.core.component.DataComponents.FOOD)) {
+                out.add(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).toString());
+            }
+        }
+        return java.util.Set.copyOf(out);
+    }
+
+    /** Distinct foods per player from this world's statistics files ({@code minecraft:used}). Off the server thread. */
+    private static Map<UUID, Long> readFoods(MinecraftServer server, java.util.Set<String> foods) {
+        return readStats(server, root -> {
+            if (!root.isJsonObject()) return 0;
+            JsonObject stats = root.getAsJsonObject().getAsJsonObject("stats");
+            if (stats == null) return 0;
+            JsonObject used = stats.getAsJsonObject("minecraft:used");
+            if (used == null) return 0;
+            long kinds = 0;
+            for (Map.Entry<String, JsonElement> entry : used.entrySet()) {
+                if (foods.contains(entry.getKey()) && entry.getValue().getAsLong() > 0) kinds++;
+            }
+            return kinds;
+        });
+    }
+
+    /** The files' counts with online players' live statistics on top. Server thread. */
+    private static Board foodsBoard(MinecraftServer server, java.util.Set<String> foods, Map<UUID, Long> fromFiles) {
+        Map<UUID, Long> kinds = new HashMap<>(fromFiles);
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            long count = 0;
+            for (String id : foods) {
+                net.minecraft.world.item.Item item = net.minecraft.core.registries.BuiltInRegistries.ITEM
+                        .get(net.minecraft.resources.ResourceLocation.parse(id));
+                if (player.getStats().getValue(Stats.ITEM_USED.get(item)) > 0) count++;
+            }
+            if (count > 0) kinds.put(player.getUUID(), count);
+            else kinds.remove(player.getUUID());
+        }
+        return ranked(server, kinds);
     }
 
     private static long playTime(JsonElement root) {
@@ -197,6 +251,13 @@ public final class LeaderboardService {
         return new Board(List.copyOf(all.subList(0, Math.min(TOP, all.size()))), all, System.currentTimeMillis());
     }
 
+    private static Board chapterBoard() {
+        List<LeaderboardChapters.Stage> stages = LeaderboardChapters.configured();
+        List<LeaderboardRow> all = ModList.get().isLoaded("ftbquests") && !stages.isEmpty()
+                ? Quests.chapterRows(stages) : List.of();
+        return new Board(List.copyOf(all.subList(0, Math.min(TOP, all.size()))), all, System.currentTimeMillis());
+    }
+
     /** Isolated holder for the FTB Quests API, only touched when the mod is loaded. */
     private static final class Quests {
 
@@ -213,7 +274,7 @@ public final class LeaderboardService {
                 for (dev.ftb.mods.ftbquests.quest.Quest quest : quests) {
                     if (!quest.isOptionalForProgression(data) && data.isCompleted(quest)) done++;
                 }
-                if (done > 0) rows.add(new LeaderboardRow(0, data.getTeamId(), data.getName(), done));
+                if (done > 0) rows.add(new LeaderboardRow(0, data.getTeamId(), teamName(data.getName()), done));
             }
             rows.sort(Comparator.comparingLong(LeaderboardRow::value).reversed());
             List<LeaderboardRow> ranked = new ArrayList<>(rows.size());
@@ -222,6 +283,53 @@ public final class LeaderboardService {
                 ranked.add(new LeaderboardRow(i + 1, row.id(), row.name(), row.value()));
             }
             return ranked;
+        }
+
+        /**
+         * Per team, the highest listed stage whose quest it has completed, shown by that stage's name. Each stage is
+         * one quest (a milestone, "reach HV"); higher in the list is further along, so it ranks above. A stage saved
+         * from before stages were quests names a chapter instead, and counts once the team has started it.
+         */
+        static List<LeaderboardRow> chapterRows(List<LeaderboardChapters.Stage> stages) {
+            dev.ftb.mods.ftbquests.quest.BaseQuestFile file =
+                    dev.ftb.mods.ftbquests.api.FTBQuestsAPI.api().getQuestFile(false);
+            if (file == null) return List.of();
+            List<LeaderboardRow> rows = new ArrayList<>();
+            for (dev.ftb.mods.ftbquests.quest.TeamData data : file.getAllTeamData()) {
+                for (int i = 0; i < stages.size(); i++) {
+                    LeaderboardChapters.Stage stage = stages.get(i);
+                    dev.ftb.mods.ftbquests.quest.Quest quest = file.getQuest(stage.chapter());
+                    String fallback;
+                    if (quest != null) {
+                        if (!data.isCompleted(quest)) continue;
+                        fallback = quest.getTitle().getString();
+                    } else {
+                        dev.ftb.mods.ftbquests.quest.Chapter chapter = file.getChapter(stage.chapter());
+                        if (chapter == null || !data.isStarted(chapter)) continue;
+                        fallback = chapter.getTitle().getString();
+                    }
+                    String name = stage.label().isBlank() ? fallback : stage.label();
+                    long value = (long) (stages.size() - i) * LeaderboardChapters.STAGE;
+                    rows.add(new LeaderboardRow(0, data.getTeamId(), teamName(data.getName()), value, name));
+                    break;
+                }
+            }
+            rows.sort(Comparator.comparingLong(LeaderboardRow::value).reversed());
+            List<LeaderboardRow> ranked = new ArrayList<>(rows.size());
+            for (int i = 0; i < rows.size(); i++) {
+                LeaderboardRow row = rows.get(i);
+                ranked.add(new LeaderboardRow(i + 1, row.id(), row.name(), row.value(), row.label()));
+            }
+            return ranked;
+        }
+
+        /**
+         * A team's name as the boards show it. FTB names a player's own (solo) team "nick#" plus the first 8 hex digits
+         * of its id, e.g. "TestPlayer#bb77495a"; that tail means nothing to a reader, so it is dropped. A party's own
+         * name has no such tail and is kept as it is.
+         */
+        static String teamName(String name) {
+            return name == null ? "" : name.replaceFirst("#[0-9a-fA-F]{8}$", "");
         }
 
         @Nullable
@@ -243,7 +351,7 @@ public final class LeaderboardService {
         UUID id = viewer.getUUID();
         String name = viewer.getGameProfile().getName();
         UUID key = id;
-        if (category == LeaderboardCategory.QUESTS) {
+        if (category.teams()) {
             key = ModList.get().isLoaded("ftbquests") ? Quests.teamOf(viewer) : null;
             if (key == null) return CompletableFuture.completedFuture(new LeaderboardRow(0, id, name, 0));
         }

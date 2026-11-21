@@ -11,6 +11,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.rendering.GUIContext;
 import com.mojang.authlib.minecraft.BanDetails;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.config.RollClientConfig;
 import com.roll_54.roll_mod.minestar.theme.RollUi;
 import dev.vfyjxf.taffy.style.TaffyPosition;
 import net.minecraft.Util;
@@ -22,6 +23,7 @@ import net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen;
 import net.minecraft.client.gui.screens.multiplayer.SafetyScreen;
 import net.minecraft.client.gui.screens.options.AccessibilityOptionsScreen;
 import net.minecraft.client.gui.screens.options.OptionsScreen;
+import net.minecraft.client.gui.screens.worldselection.SelectWorldScreen;
 import net.minecraft.client.resources.PlayerSkin;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -67,6 +69,8 @@ public final class RollTitleScreen extends ModularUIScreen {
 
     private final List<Placement> placements = new ArrayList<>();
     private final List<TitlePlayerElement> players = new ArrayList<>();
+    /** The optional Singleplayer button (Fzzy client config roll_mod:roll_mod_client). */
+    private Button singleplayer;
 
     private RollTitleScreen(UIElement root) {
         super(ModularUI.of(UI.of(root, RollUi.sheets(), size -> size)).shouldCloseOnEsc(false),
@@ -88,7 +92,8 @@ public final class RollTitleScreen extends ModularUIScreen {
         logo.style(s -> s.backgroundTexture(SpriteTexture.of(LOGO)));
         place(root, logo, -140, -128, 277, 45);
 
-        place(root, new TitleSplashElement(mc.getSplashManager().getSplash()), 57, -98, 115, 34);
+        // The mod's own splash lines now and then, vanilla's otherwise (RollSplashes).
+        place(root, new TitleSplashElement(RollSplashes.pick(mc)), 57, -98, 115, 34);
 
         PlayerSkin roll54 = new PlayerSkin(ROLL_54_SKIN, null, null, null, PlayerSkin.Model.SLIM, false);
         players.add(place(root, new TitlePlayerElement(() -> roll54, "roll_54", WALKING), -158, -30, 18, 54));
@@ -113,6 +118,14 @@ public final class RollTitleScreen extends ModularUIScreen {
         place(root, accessibilityButton(), -10, 29, 20, 20);
         place(root, button(Component.translatable("menu.quit"), mc::stop), 15, 29, 85, 19);
 
+        // Optional small Singleplayer button under the accessibility one (Fzzy client config
+        // roll_mod:roll_mod_client, titleScreen.singleplayerButton): the vanilla world list, for creating and playing local worlds.
+        // Always built; shown or hidden on every showing (added()), so turning the option on in the
+        // mod list's Config screen takes effect on coming back here, without a restart.
+        singleplayer = button(Component.literal("+"), () -> open(new SelectWorldScreen(this)));
+        singleplayer.style(s -> s.tooltips(Component.translatable("menu.singleplayer")));
+        place(root, singleplayer, -10, 54, 20, 20);
+
         // Credits link, bottom-right as vanilla's.
         UIElement credits = new CreditsLink();
         credits.layout(l -> l.positionType(TaffyPosition.ABSOLUTE).right(2).bottom(0)
@@ -121,6 +134,13 @@ public final class RollTitleScreen extends ModularUIScreen {
             if (e.button == 0) open(new CreditsAndAttributionScreen(this));
         });
         root.addChild(credits);
+    }
+
+    /** Each time the menu is shown: the Singleplayer button follows its config option. */
+    @Override
+    public void added() {
+        super.added();
+        singleplayer.setDisplay(RollClientConfig.INSTANCE != null && RollClientConfig.INSTANCE.titleScreen.singleplayerButton);
     }
 
     /** Runs on opening and on every resize: positions everything for the current size, then lays out. */
@@ -188,22 +208,21 @@ public final class RollTitleScreen extends ModularUIScreen {
         return button;
     }
 
-    /** Vanilla's accessibility icon on a themed button. */
+    /**
+     * Vanilla's accessibility icon on a themed button. A plain {@link Button} with the icon as a child: a subclass of
+     * Button is not the registered "button" element, so no theme's {@code button:host} rules reached it and it kept
+     * LdLib's dark default whatever theme was picked.
+     */
     private Button accessibilityButton() {
-        Button button = new Button() {
-            @Override
-            public void drawBackgroundAdditional(GUIContext context) {
-                super.drawBackgroundAdditional(context);
-                context.graphics.flush();
-                RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
-                RenderSystem.enableBlend();
-                RenderSystem.defaultBlendFunc();
-                context.graphics.blitSprite(ACCESSIBILITY_ICON,
-                        Math.round(getPositionX() + (getSizeWidth() - 15) / 2f),
-                        Math.round(getPositionY() + (getSizeHeight() - 15) / 2f), 15, 15);
-                context.graphics.flush();
-            }
-        };
+        Button button = new Button();
+        UIElement icon = new UIElement();
+        // Taffy's absolute, as place() uses: the icon takes no room in the button's own layout, so the button keeps
+        // its full 20x20 (with the icon in the flow, the theme's 14px button height and padding cut its bottom off).
+        icon.layout(l -> l.positionType(TaffyPosition.ABSOLUTE).left(3).top(2).width(15).height(15));
+        icon.style(s -> s.background(SpriteTexture.of(
+                ResourceLocation.withDefaultNamespace("textures/gui/sprites/icon/accessibility.png"))));
+        button.addChild(icon);
+        button.layout(l -> l.paddingAll(0));
         button.noText();
         button.setOnClick(e -> open(new AccessibilityOptionsScreen(this, Minecraft.getInstance().options)));
         button.style(s -> s.tooltips(Component.translatable("options.accessibility")));

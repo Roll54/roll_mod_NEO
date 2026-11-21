@@ -41,14 +41,20 @@ public final class RollUi {
     /** The current theme's sheets. Client only. */
     public static List<Stylesheet> sheets() {
         List<Stylesheet> out = new ArrayList<>();
-        for (ResourceLocation id : UiThemeState.get().sheets()) {
-            out.add(StylesheetManager.INSTANCE.getStylesheetSafe(id));
+        UiTheme theme = UiThemeState.get();
+        boolean square = theme.hasCorners() && UiThemeState.squareCorners();
+        for (ResourceLocation id : theme.sheets()) {
+            out.add(ThemeSheets.sheet(id, theme, square));
         }
+        if (theme.oreUi()) out.add(ThemeSheets.oreUiWidgets(square, theme));
+        if (theme == UiTheme.AE2) out.add(ThemeSheets.ae2Widgets(square));
+        if (theme.oreArt() && !square) out.add(ThemeSheets.oreRounded());
+        if (theme == UiTheme.GDP && square) out.add(ThemeSheets.gdpSquare());
         // The font from Settings, over the theme's own (UiFont); none for "as the theme".
         com.lowdragmc.lowdraglib2.gui.ui.style.Stylesheet font = UiFont.sheet();
         if (font != null) out.add(font);
         // Last: the same button size on every theme, and the switch (see geometry).
-        out.add(geometry(UiThemeState.get()));
+        out.add(geometry(theme, square));
         return out;
     }
 
@@ -63,19 +69,111 @@ public final class RollUi {
      * dark grey text — vanilla's label grey #404040, the same as assets/roll_mod/lss/ore.lss gives the rest of Ore's
      * text, rather than near-black; the I/O switch. Its buttons are as tall as everywhere else.
      */
-    private static Stylesheet geometry;
     private static Stylesheet oreGeometry;
+    /**
+     * Sizes every theme shares, so a screen is laid out the same whichever is picked: the themes gave scroll bars
+     * 5 to 14px, scroll areas 8 to 10px of margin and their inner padding 2 to 3px, so content moved and lists lost
+     * or gained width when switching. Only what an element does not set itself; a size set in code still wins.
+     * Tabs are left to each theme: the hub's bookmarks are tabs too, and a shared 16px height cropped their icons.
+     * No single-side paddings here: a sheet's padding-top/bottom outranks a padding-all set in code, so they undid
+     * the hub's paddingAll(0) (the bookmark strip lost 6px and cut its icons).
+     */
+    private static final String SHARED = """
+            scroller-horizontal:host {
+              height: 6;
+            }
+            scroller-vertical:host {
+              width: 6;
+            }
+            scroller-view,
+            text-area {
+              scroller-view-margin: 8;
+            }
+            .__scroller_view_view-port__ {
+              padding-all: 3;
+            }
+            .__scroller_view_horizontal-scroller__,
+            .__text-area_horizontal-scroller__ {
+              height: 6;
+              margin-top: 2;
+            }
+            .__scroller_view_vertical-scroller__,
+            .__text-area_vertical-scroller__ {
+              width: 6;
+              margin-left: 2;
+            }
+            .__scroller_scroll_container__ {
+              padding-all: 0;
+            }
+            .__scroller_head_button__,
+            .__scroller_tail_button__ {
+              display: none;
+            }
+            .panel_bg {
+              padding-all: 5;
+              gap-all: 4;
+            }
+            text-field:host,
+            .__tag-field_text-field__,
+            .__search-component_text-field__,
+            .__text-area_content-view__,
+            color-selector:host text-field {
+              padding-all: 3;
+            }
+            search-component:host,
+            selector:host,
+            color-selector:host text-field {
+              height: 16;
+            }
+            tag-field:host button,
+            color-selector:host button {
+              padding-all: 2;
+            }
+            progress-bar:host {
+              height: 8;
+            }
+            slider-horizontal:host {
+              height: 10;
+            }
+            slider-vertical:host {
+              width: 10;
+            }
+            toggle:host {
+              height: 14;
+            }
+            .__toggle_button__ {
+              padding-all: 0;
+            }
+            button:host {
+              height: 14;
+              padding-all: 2;
+            }
+            switch:host {
+              width: 26;
+              height: 14;
+            }
+            """;
+    /** By [square][0 for any non-OreUI theme, else 1 + the OreUI theme's ordinal]. */
+    private static final Stylesheet[][] GEOMETRY = new Stylesheet[2][1 + UiTheme.values().length];
+    /** {@link ThemeSheets#generation()} the cached geometry was parsed at: older ones are rebuilt, so they stay newer than the theme. */
+    private static int geometryGeneration = -1;
 
-    private static Stylesheet geometry(UiTheme theme) {
-        if (theme == UiTheme.ORE) {
+    private static Stylesheet geometry(UiTheme theme, boolean square) {
+        if (geometryGeneration != ThemeSheets.generation()) {
+            geometryGeneration = ThemeSheets.generation();
+            oreGeometry = null;
+            for (Stylesheet[] row : GEOMETRY) java.util.Arrays.fill(row, null);
+        }
+        if (theme.oreArt()) {
             if (oreGeometry == null) {
-                oreGeometry = Stylesheet.parse("""
+                oreGeometry = Stylesheet.parse(SHARED + """
                         button:host {
                           height: 14;
                           padding-all: 2;
+                          padding-top: 1;
+                          padding-bottom: 3;
                         }
                         button:host .__button_text__ {
-                          top: -1;
                           text-color: #404040;
                           text-shadow: false;
                         }
@@ -85,28 +183,84 @@ public final class RollUi {
                         switch:host {
                           padding-all: 0;
                         }
+                        text-field,
+                        text-area {
+                          text-color: #ffffff;
+                          cursor-color: #ffffff;
+                        }
                         """);
             }
             return oreGeometry;
         }
-        if (geometry == null) {
-            geometry = Stylesheet.parse("""
-                    button:host {
-                      height: 14;
-                      padding-all: 2;
-                    }
+        boolean oreui = theme.recoloured();
+        int variant = oreui ? 1 + theme.ordinal() : 0;
+        Stylesheet cached = GEOMETRY[square ? 1 : 0][variant];
+        if (cached != null) return cached;
+        String switchStyle;
+        if (theme == UiTheme.AE2) {
+            // GDP's switch in AE2's colours; the caption lifted off the button's 3px bottom bevel.
+            switchStyle = """
                     switch:host {
-                      base-background: built-in(ui-gdp:RECT_RD_DARK);
-                      pressed-background: built-in(ui-gdp:RECT_RD_T);
-                      unmark-background: built-in(ui-gdp:RECT_RD);
-                      mark-background: built-in(ui-gdp:RECT_RD);
+                      base-background: sdf(#9a9fb4, %1$d, 1, #413f54);
+                      pressed-background: sdf(#3a8fc4, %1$d, 1, #413f54);
+                      unmark-background: sdf(#f2f2f2, %1$d, 1, #413f54);
+                      mark-background: sdf(#f2f2f2, %1$d, 1, #413f54);
                       width: 26;
                       height: 14;
                       padding-all: 2;
                     }
-                    """);
+                    button:host .__button_text__ {
+                      padding-bottom: 2;
+                    }
+                    .__button_pre-icon__,
+                    .__button_post-icon__ {
+                      width: 10;
+                      height: 10;
+                      margin-bottom: 2;
+                    }
+                    """.formatted(square ? 0 : 2);
+        } else if (oreui) {
+            // Ore's own I/O switch (LdLib's ui-ore sprites), as the merged Ore theme had it. Dark dims it like the
+            // rest of its widgets.
+            String dim = theme == UiTheme.OREUI_DARK ? " color(#" + ThemeSheets.DARK_TINT + ")" : "";
+            switchStyle = """
+                    switch:host {
+                      base-background: built-in(ui-ore:SWITCH_OFF)%1$s;
+                      pressed-background: built-in(ui-ore:SWITCH_ON)%1$s;
+                      unmark-background: built-in(ui-ore:BTN_DEFAULT)%1$s;
+                      mark-background: built-in(ui-ore:BTN_PRESSED)%1$s;
+                      padding-all: 0;
+                      width: 26;
+                      height: 14;
+                    }
+                    button:host .__button_text__ {
+                      padding-bottom: 2;
+                    }
+                    """.formatted(dim);
+        } else {
+            String rd = square ? "RECT" : "RECT_RD";
+            switchStyle = """
+                    switch:host {
+                      base-background: built-in(ui-gdp:%1$s_DARK);
+                      pressed-background: %2$s;
+                      unmark-background: built-in(ui-gdp:%1$s);
+                      mark-background: built-in(ui-gdp:%1$s);
+                      width: 26;
+                      height: 14;
+                      padding-all: 2;
+                    }
+                    """.formatted(rd, square
+                            // GDP has no square see-through light box; RECT_LIGHT is a dark grey, so "on" looked off.
+                            ? "sdf(#c8c8c8, 0, 1, #1e1e1e)" : "built-in(ui-gdp:RECT_RD_T)");
         }
-        return geometry;
+        Stylesheet sheet = Stylesheet.parse(SHARED + """
+                button:host {
+                  height: 14;
+                  padding-all: 2;
+                }
+                """ + switchStyle);
+        GEOMETRY[square ? 1 : 0][variant] = sheet;
+        return sheet;
     }
 
     /**
@@ -117,7 +271,7 @@ public final class RollUi {
     public static boolean textShadow() {
         if (net.neoforged.fml.loading.FMLEnvironment.dist != net.neoforged.api.distmarker.Dist.CLIENT) return true;
         UiTheme theme = UiThemeState.get();
-        return theme != UiTheme.PAPER && theme != UiTheme.LATTE;
+        return theme != UiTheme.PAPER && theme != UiTheme.LATTE && theme != UiTheme.AE2;
     }
 
     /** Remembers {@code theme} and restyles {@code live}, the screen it was picked on, right away. */

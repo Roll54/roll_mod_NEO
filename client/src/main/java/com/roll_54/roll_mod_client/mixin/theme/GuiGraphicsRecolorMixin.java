@@ -6,7 +6,9 @@ import com.roll_54.roll_mod.minestar.theme.GuiRecolor;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.ShaderInstance;
 import org.spongepowered.asm.mixin.Mixin;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import java.util.function.Supplier;
 
@@ -39,5 +41,12 @@ public abstract class GuiGraphicsRecolorMixin {
             require = 0)
     private void roll_mod$recolorTinted(Supplier<ShaderInstance> shader, Operation<Void> original) {
         original.call(GuiRecolor.pick(shader, true));
+    }
+
+    /** The lists' blue hovered buttons in their grey form, so they take the theme's colours: {@link GuiRecolor#sprite}. */
+    @ModifyVariable(method = "blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIII)V",
+            at = @At("HEAD"), argsOnly = true, require = 0)
+    private ResourceLocation roll_mod$plainSprite(ResourceLocation sprite) {
+        return GuiRecolor.sprite(sprite);
     }
 }

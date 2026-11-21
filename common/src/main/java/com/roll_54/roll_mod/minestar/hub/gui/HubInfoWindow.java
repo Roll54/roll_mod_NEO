@@ -96,6 +96,8 @@ public final class HubInfoWindow {
 
         UIElement root = new UIElement();
         root.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).heightPercent(100));
+        // The theme's own panel look, as the hub window has it ("panel_bg").
+        root.addClass("panel_bg");
 
         UIElement titleBar = new UIElement();
         titleBar.layout(l -> l.flexDirection(FlexDirection.ROW).alignItems(AlignItems.CENTER)
@@ -110,8 +112,8 @@ public final class HubInfoWindow {
 
         // A Button, so ModularUIWindow.isDragBlocker keeps a press on it from moving the window.
         Button closeButton = new Button();
-        closeButton.noText().addPreIcon(Icons.WINDOW_CLOSE)
-                .layout(l -> l.width(TITLE_H).height(TITLE_H));
+        closeButton.noText().layout(l -> l.width(TITLE_H).height(TITLE_H).flexShrink(0).paddingAll(0));
+            HubIcons.iconOnly(closeButton, HubIcons.CLOSE, 8, TITLE_H, TITLE_H);
 
         titleBar.addChildren(caption, closeButton);
 
@@ -143,7 +145,8 @@ public final class HubInfoWindow {
                 ModularUI.of(UI.of(root, RollUi.sheets())),
                 title.getString());
         // The whole bar, label included — isOverDragArea walks up from whatever was hit.
-        window.setDragArea(titleBar);
+        // Moved by its bar only with the windows setting on (Settings → Hub).
+        if (HubWindowState.get().resizableWindows()) window.setDragArea(titleBar);
         // Both routes out go through our own close(), so the static below cannot be left pointing at
         // a window that is no longer there. onCloseRequested is what a platform close request lands
         // on; without a runnable it would take the window down behind our back.
@@ -154,12 +157,14 @@ public final class HubInfoWindow {
         // modal drag loop freezing the game while the window is being moved. It opens in the
         // middle of the game window, like every extra window.
         int[] at = HubPopupWindow.centre(WIDTH, HEIGHT);
+        // Resizable from the edges only with the setting on (Settings → Hub). Before open(): LdLib reads it there
+        // (it defaults to resizable), so setting it afterwards changed nothing.
+        window.setResizable(HubWindowState.get().resizableWindows());
         if (!window.open(at[0], at[1], WIDTH, HEIGHT, false)) return false;
 
         // Both only bite on a window that is already up, which is why they follow the open rather
         // than preceding it. Always-on-top is a no-op on a platform that has no such attribute
         // (Wayland); the window is simply an ordinary one there.
-        window.setResizable(true);
         window.setAlwaysOnTop(true);
 
         current = window;

@@ -37,6 +37,9 @@ void main() {
     if (color.a == 0.0) {
         discard;
     }
+    // Only fully opaque pixels are recoloured: semi-transparent ones (glass, shading, glints, overlays drawn
+    // with a lowered alpha) keep their own colour, as drawn.
+    vec3 rgb = (color.a * vertexColor.a * ColorModulator.a) < 0.999 ? color.rgb : recolor(color.rgb);
     // Recoloured before the tint, so a tinted blit (e.g. a disabled control) still reads as tinted.
-    fragColor = vec4(recolor(color.rgb), color.a) * vertexColor * ColorModulator;
+    fragColor = vec4(rgb, color.a) * vertexColor * ColorModulator;
 }

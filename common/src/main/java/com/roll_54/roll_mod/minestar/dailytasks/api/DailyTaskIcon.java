@@ -35,7 +35,9 @@ public sealed interface DailyTaskIcon {
 
         @Override
         public IGuiTexture texture() {
-            return label == null ? new ItemStackTexture(stack) : new ItemLabelTexture(stack, label);
+            // Always this texture, not LdLib's ItemStackTexture, which scales items flat (z 1) and so shades items
+            // that are not blocks. Without a caption the stack's count is vanilla's own small corner number.
+            return new ItemLabelTexture(stack, label);
         }
 
         @Override

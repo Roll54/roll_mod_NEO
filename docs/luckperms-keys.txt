@@ -398,6 +398,9 @@ Two features read LuckPerms without naming a node or a meta key.
    module's own logic. This is a group, not the rollmod.ah.prime permission -
    the two are related only by intent, so a rank meant to be premium usually
    wants both.
+   Members (and groups inheriting it, and operators) teleport with no cooldown:
+   neither /back's back.cooldownSeconds nor /rtp's cooldown applies to them.
+   Read by TeleportService.isPrime (the group named in config back.group).
 
  NOT LUCKPERMS AT ALL
    Operator rights are not a LuckPerms matter here: they live in

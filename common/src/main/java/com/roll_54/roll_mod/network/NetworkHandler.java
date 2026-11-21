@@ -439,6 +439,26 @@ public class NetworkHandler {
                 KitWindowPackets.Contents::handle
         );
         registrar.playToServer(
+                com.roll_54.roll_mod.network.packet.BattlePassPackets.Act.TYPE,
+                com.roll_54.roll_mod.network.packet.BattlePassPackets.Act.STREAM_CODEC,
+                com.roll_54.roll_mod.network.packet.BattlePassPackets.Act::handle
+        );
+        registrar.playToClient(
+                com.roll_54.roll_mod.network.packet.BattlePassPackets.Data.TYPE,
+                com.roll_54.roll_mod.network.packet.BattlePassPackets.Data.STREAM_CODEC,
+                com.roll_54.roll_mod.network.packet.BattlePassPackets.Data::handle
+        );
+        registrar.playToServer(
+                com.roll_54.roll_mod.network.packet.StaffPackets.Act.TYPE,
+                com.roll_54.roll_mod.network.packet.StaffPackets.Act.STREAM_CODEC,
+                com.roll_54.roll_mod.network.packet.StaffPackets.Act::handle
+        );
+        registrar.playToClient(
+                com.roll_54.roll_mod.network.packet.StaffPackets.Data.TYPE,
+                com.roll_54.roll_mod.network.packet.StaffPackets.Data.STREAM_CODEC,
+                com.roll_54.roll_mod.network.packet.StaffPackets.Data::handle
+        );
+        registrar.playToServer(
                 DeathLogPackets.Request.TYPE,
                 DeathLogPackets.Request.STREAM_CODEC,
                 DeathLogPackets.Request::handle

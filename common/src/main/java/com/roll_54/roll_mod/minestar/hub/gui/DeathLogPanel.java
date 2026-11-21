@@ -92,14 +92,17 @@ final class DeathLogPanel {
         title.layout(l -> l.flexGrow(1).height(ROW_H));
         title.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
         Button refresh = new Button();
-        refresh.setText(Component.literal("⟳"));
         refresh.layout(l -> l.width(ROW_H + 2).height(ROW_H).paddingAll(0).flexShrink(0));
+        HubIcons.iconOnly(refresh, HubIcons.REFRESH, 10, ROW_H + 2, ROW_H);
         HubSection.centreCaption(refresh);
         refresh.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
                 List.of(Component.translatable("gui.roll_mod.hub.moderation.deathlog.refresh")), null, null,
                 ItemStack.EMPTY));
         refresh.setOnClick(e -> refresh());
         header.addChildren(title, refresh);
+        // 2px over the list under it, and unclipped, so the refresh button keeps its bottom edge on AE2 and Ore.
+        header.layout(l -> l.marginBottom(2));
+        header.setOverflowVisible(true);
 
         deaths.layout(l -> l.height(LIST_H).flexBasis(LIST_H).flexGrow(0).flexShrink(0));
         deaths.style(s -> s.background(new ColorRectTexture(COLOR_PANEL)));

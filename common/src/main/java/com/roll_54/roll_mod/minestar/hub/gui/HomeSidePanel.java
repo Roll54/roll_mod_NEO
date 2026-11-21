@@ -31,7 +31,7 @@ public final class HomeSidePanel {
     private static final int OPEN = 1;
     private static final int W = KitsPanel.WIDTH;
     private static final int GAP = 4;
-    private static final int TRIP_H = 16;
+    private static final int TRIP_H = 18;
     private static final int COLOR_PANEL = 0x40000000;
 
     private HomeSidePanel() {}
@@ -99,7 +99,7 @@ public final class HomeSidePanel {
             Label about = new Label();
             about.setText(Component.translatable("gui.roll_mod.hub.home.side.trip." + trip.id)
                     .withStyle(ChatFormatting.GRAY));
-            about.layout(l -> l.widthPercent(100).marginBottom(4));
+            about.layout(l -> l.widthPercent(100).marginTop(3).marginBottom(4));
             about.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
             pane.addChildren(button, about);
             if (trip.action == TeleportActionPacket.Action.BACK) {

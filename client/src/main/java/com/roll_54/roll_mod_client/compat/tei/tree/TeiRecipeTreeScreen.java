@@ -105,6 +105,8 @@ public class TeiRecipeTreeScreen extends AbstractContainerScreen<TeiRecipeTreeSc
 
     @Override
     protected void init() {
+        // Back without a choice made on TEI's tag page (closed, or gone elsewhere): stop waiting for one.
+        TeiTagPicker.cancel();
         imageWidth = Math.min(width - 40, Math.max(240, width / 2));
         imageHeight = height - 30;
         super.init();
@@ -138,6 +140,11 @@ public class TeiRecipeTreeScreen extends AbstractContainerScreen<TeiRecipeTreeSc
     // ---- tree ----
 
     /** Called by {@link TeiRecipeTreePicker} once a recipe was picked in TEI for {@code ingredient}. */
+    /** The item a tag or list node stands for, chosen on TEI's tag page ({@link TeiTagPicker}). */
+    void narrow(TreeIngredient ingredient, ItemStack chosen) {
+        resolve(ingredient, new NarrowStep(chosen));
+    }
+
     void choose(TreeIngredient ingredient, TeiDisplay recipe) {
         resolve(ingredient, new RecipeStep(recipe));
     }
@@ -169,12 +176,15 @@ public class TeiRecipeTreeScreen extends AbstractContainerScreen<TeiRecipeTreeSc
     }
 
     /**
-     * Click: a single stack opens TEI's recipes for it in resolve mode; a tag or list is narrowed to the stack it
-     * shows right now (TEI's resolve mode works on one stack).
+     * Click: a single stack opens TEI's recipes for it in resolve mode; a tag opens TEI's page for the tag, where a
+     * click on one of its items narrows the node to it; a list that is no tag is narrowed to the stack it shows now.
      */
     private void pick(TreeIngredient ingredient) {
         if (!ingredient.single()) {
-            resolve(ingredient, new NarrowStep(ingredient.displayed().copyWithCount(1)));
+            // A tag: chosen on TEI's own tag page. A list that is no tag: the stack it shows right now.
+            if (!TeiTagPicker.pick(this, ingredient)) {
+                resolve(ingredient, new NarrowStep(ingredient.displayed().copyWithCount(1)));
+            }
             return;
         }
         Step current = resolution(ingredient);
@@ -231,11 +241,13 @@ public class TeiRecipeTreeScreen extends AbstractContainerScreen<TeiRecipeTreeSc
      * Sends the recipes picked in this tree to the server ({@code withRecipes}), item (or {@code fluid:<id>}) →
      * recipe id, as the recipes their minimal prices are computed from; and the root's price typed into the price
      * field, which then holds whatever its recipes say ("-" takes it away again). Only real recipes count: the choice
-     * of one stack of a tag, and pages without a recipe id, have no recipe the server knows.
+     * of one stack of a tag is saved too, as the item that set of items is priced as; pages without a recipe id
+     * have no recipe the server knows.
      */
     private void save(boolean withRecipes) {
         Map<String, String> recipes = new LinkedHashMap<>();
-        if (withRecipes && tree != null) collectPicked(tree, recipes);
+        Map<String, String> choices = new LinkedHashMap<>();
+        if (withRecipes && tree != null) collectPicked(tree, recipes, choices);
         Map<String, Long> prices = new LinkedHashMap<>();
         String key = root == null ? null : root.priceKey();
         String typed = priceBox == null ? "" : priceBox.getValue().trim();
@@ -251,16 +263,16 @@ public class TeiRecipeTreeScreen extends AbstractContainerScreen<TeiRecipeTreeSc
                 }
             }
         }
-        if (recipes.isEmpty() && prices.isEmpty()) {
+        if (recipes.isEmpty() && prices.isEmpty() && choices.isEmpty()) {
             showStatus(Component.translatable("gui.roll_mod.recipe_tree.nothing_to_save"));
             return;
         }
-        PacketDistributor.sendToServer(new SaveMinPriceRecipesPacket(recipes, prices));
+        PacketDistributor.sendToServer(new SaveMinPriceRecipesPacket(recipes, prices, choices));
         if (priceBox != null) {
             priceBox.setValue("");
             priceBox.setFocused(false);
         }
-        showStatus(Component.translatable("gui.roll_mod.recipe_tree.saving", recipes.size() + prices.size())
+        showStatus(Component.translatable("gui.roll_mod.recipe_tree.saving", recipes.size() + prices.size() + choices.size())
                 .withStyle(ChatFormatting.DARK_GREEN));
     }
 
@@ -282,13 +294,24 @@ public class TeiRecipeTreeScreen extends AbstractContainerScreen<TeiRecipeTreeSc
                         amount, ClientMinPrices.format(unit * amount));
     }
 
-    private static void collectPicked(TeiRecipeTreeNode node, Map<String, String> out) {
+    private static void collectPicked(TeiRecipeTreeNode node, Map<String, String> out, Map<String, String> choices) {
         if (node.step == null) return;
+        // A tag or list narrowed to one stack: the server prices that set of items as the chosen one from now on
+        // (MinPriceConfig.ingredientChoices) — before, the choice stayed in this tree and pricing ignored it.
+        if (node.step instanceof TeiRecipeTreeNode.NarrowStep narrow && !node.ingredient.single()
+                && !node.ingredient.isFluid()) {
+            java.util.Set<String> options = new java.util.TreeSet<>();
+            for (net.minecraft.world.item.ItemStack s : node.ingredient.stacks()) {
+                if (!s.isEmpty()) options.add(net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(s.getItem()).toString());
+            }
+            String chosen = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(narrow.chosen().getItem()).toString();
+            if (options.size() > 1 && options.contains(chosen)) choices.put(String.join(",", options), chosen);
+        }
         TeiDisplay recipe = node.recipe();
         ResourceLocation recipeId = recipe == null ? null : recipe.id();
         String key = node.ingredient.priceKey();
         if (key != null && recipeId != null) out.putIfAbsent(key, recipeId.toString());
-        for (TeiRecipeTreeNode child : node.children) collectPicked(child, out);
+        for (TeiRecipeTreeNode child : node.children) collectPicked(child, out, choices);
     }
 
     // ---- auto ----

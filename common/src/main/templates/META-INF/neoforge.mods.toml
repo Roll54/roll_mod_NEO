@@ -79,6 +79,10 @@ config = "${mod_id}.fallingtree.mixins.json"
 [[mixins]]
 config = "${mod_id}.tesseract.mixins.json"
 
+# Tide: the electric rod's steady perk halves the catch minigame's difficulty. Soft: without Tide the mixin is skipped.
+[[mixins]]
+config = "${mod_id}.tide.mixins.json"
+
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg
 #[[accessTransformers]]

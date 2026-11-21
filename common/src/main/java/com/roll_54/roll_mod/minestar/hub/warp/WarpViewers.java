@@ -40,6 +40,7 @@ public final class WarpViewers {
         // side that owns the visit counts — see WarpData.sorted().
         PacketDistributor.sendToPlayer(player, new SyncWarpsPacket(
                 WarpData.get(player.server).sorted(),
-                WarpService.limitFor(player)));
+                WarpService.limitFor(player),
+                WarpService.travelsInstantly(player)));
     }
 }

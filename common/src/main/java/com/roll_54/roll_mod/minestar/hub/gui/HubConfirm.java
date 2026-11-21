@@ -5,6 +5,9 @@ import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
+import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay;
+import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollerMode;
+import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
 import dev.vfyjxf.taffy.style.FlexDirection;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
@@ -22,7 +25,7 @@ import javax.annotation.Nullable;
 public final class HubConfirm {
 
     private static final int W = 270;
-    private static final int H = 140;
+    private static final int H = 160;
     private static final int ROW_H = 16;
 
     private HubSection.Floating floating;
@@ -32,9 +35,19 @@ public final class HubConfirm {
 
     public HubConfirm() {
         floating = HubSection.popup(Component.translatable("gui.roll_mod.hub.confirm.title"),
-                SpriteTexture.of(HubBadge.TEXTURE), W, H, body -> {
-                    message.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
+                HubBadge.texture(), W, H, body -> {
+                    // In a scroller that takes the room left over the buttons: a long question (a home
+                    // name, a larger font) used to run on under them instead of scrolling.
+                    ScrollerView text = new ScrollerView();
+                    text.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1).marginBottom(4));
+                    text.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
+                            .verticalScrollDisplay(ScrollDisplay.AUTO)
+                            .horizontalScrollDisplay(ScrollDisplay.NEVER));
+                    text.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)));
+                    text.viewPort(v -> v.layout(l -> l.paddingAll(0)));
+                    message.layout(l -> l.widthPercent(100));
                     message.textStyle(t -> t.textWrap(TextWrap.WRAP));
+                    text.addScrollViewChild(message);
 
                     UIElement buttons = new UIElement();
                     buttons.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
@@ -54,7 +67,7 @@ public final class HubConfirm {
                         close();
                     });
                     buttons.addChildren(confirm, cancel);
-                    body.addChildren(message, buttons);
+                    body.addChildren(text, buttons);
                 }).windowed().noCloseButton();
     }
 

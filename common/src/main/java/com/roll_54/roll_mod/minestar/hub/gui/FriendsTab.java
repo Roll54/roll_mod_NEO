@@ -121,8 +121,8 @@ public final class FriendsTab {
         hint(sorter, "gui.roll_mod.hub.friends.sort.tip");
 
         Button refresh = new Button();
-        refresh.setText(Component.literal("⟳"));
         refresh.layout(l -> l.width(REFRESH_W).height(ROW_H).paddingAll(0));
+        HubIcons.iconOnly(refresh, HubIcons.REFRESH, 10, REFRESH_W, ROW_H);
         refresh.setOnClick(e -> PacketDistributor.sendToServer(FriendActionPacket.refresh()));
         hint(refresh, "gui.roll_mod.hub.friends.refresh");
 
@@ -561,8 +561,26 @@ public final class FriendsTab {
     /** A square one-glyph button whose click stays its own. */
     static Button small(String glyph, ChatFormatting color, String tip, Runnable action) {
         Button button = new Button();
-        button.setText(Component.literal(glyph).withStyle(color));
-        button.layout(l -> l.width(ROW_H - 2).height(ROW_H - 2).paddingAll(0).flexShrink(0));
+        int size = ROW_H - 2;
+        button.layout(l -> l.width(size).height(size).paddingAll(0).flexShrink(0)
+                .alignSelf(dev.vfyjxf.taffy.style.AlignItems.CENTER));
+        // ✔ and ✖ as pixel icons (accept.png 8x6, decline.png 6x6) placed dead centre: as font glyphs they came from
+        // the unicode font, whose sizes LdLib measures wrong, and sat off-centre whatever the alignment.
+        String icon = "✔".equals(glyph) ? "accept" : "✖".equals(glyph) ? "decline" : null;
+        if (icon != null) {
+            button.setText(Component.empty());
+            int w = "accept".equals(icon) ? 8 : 6, h = 6;
+            UIElement mark = new UIElement();
+            mark.layout(l -> l.positionType(dev.vfyjxf.taffy.style.TaffyPosition.ABSOLUTE)
+                    .left((size - w) / 2).top((size - h) / 2).width(w).height(h));
+            mark.style(st -> st.background(HubIcons.snapped(com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture.of(
+                    com.roll_54.roll_mod.RollMod.id("textures/gui/hub/icons/" + icon + ".png")))));
+            mark.setAllowHitTest(false);
+            button.addChild(mark);
+        } else {
+            button.setText(Component.literal(glyph).withStyle(color));
+            HubSection.centreCaption(button);
+        }
         button.setOnClick(e -> {
             action.run();
             e.stopPropagation();

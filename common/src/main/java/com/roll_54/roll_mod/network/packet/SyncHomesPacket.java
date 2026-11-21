@@ -59,6 +59,7 @@ public record SyncHomesPacket(List<HomeView> homes, int limit, List<String> know
             buf.writeDouble(home.y());
             buf.writeDouble(home.z());
             buf.writeVarLong(home.created());
+            buf.writeUtf(home.description(), PlayerHome.MAX_DESCRIPTION);
             buf.writeByte(home.relation().ordinal());
             buf.writeVarInt(home.roster().size());
             for (HomeView.ShareView share : home.roster()) {
@@ -87,6 +88,7 @@ public record SyncHomesPacket(List<HomeView> homes, int limit, List<String> know
             double y = buf.readDouble();
             double z = buf.readDouble();
             long created = buf.readVarLong();
+            String description = buf.readUtf(PlayerHome.MAX_DESCRIPTION);
             // Modulo for the same reason WarpActionPacket does it: a malformed byte should pick a
             // valid relation rather than throw out of the decoder.
             HomeView.Relation relation =
@@ -98,7 +100,7 @@ public record SyncHomesPacket(List<HomeView> homes, int limit, List<String> know
                         buf.readUtf(MAX_PLAYER_NAME), buf.readBoolean()));
             }
             homes.add(new HomeView(id, owner, ownerName, name, dimension, x, y, z, created,
-                    relation, List.copyOf(roster)));
+                    relation, List.copyOf(roster), description));
         }
         return new SyncHomesPacket(homes, limit, List.copyOf(knownPlayers));
     }

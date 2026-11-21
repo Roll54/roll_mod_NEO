@@ -58,7 +58,7 @@ dependencies {
     implementation "curse.maven:rhino-416294:7104526"
     // MI 2.5.11 requires guideme [21.1.19, 21.2); same version as the live pack.
     implementation "org.appliedenergistics:guideme:21.1.19"
-    implementation files("jars/adastra-1.21.1-1.16.6-neoforge.jar")
+    implementation files("jars/adastra-1.21.1-1.16.26-neoforge.jar")
 
     // compileOnly: NanoArmorMixin implements FluidProvider from common_storage_lib.
     // Provided at runtime by the common_storage_lib mod, so not bundled.
@@ -89,6 +89,9 @@ dependencies {
     implementation "curse.maven:kubejs-238086:7143884"
     implementation "maven.modrinth:mi-tweaks:1.9.5-1.21.1"
     implementation "maven.modrinth:extended-industrialization:1.16.2-1.21.1"
+    // Tide 2.1.1 (NeoForge 1.21.1, Modrinth version id): our fishing rods are Tide rods (bait slots, accessories,
+    // the minigame), so they extend its rod class. Registered only when Tide is loaded; implementation so dev runs have it.
+    implementation "maven.modrinth:tide:1ki6UyqV"
     implementation "curse.maven:crafttweaker-239197:6929483"
 
     // compileOnly: the daily-tasks system reads FTB party membership through
@@ -102,7 +105,7 @@ dependencies {
 
     implementation "curse.maven:architectury-api-419699:5786327"
 
-    implementation files("jars/createcybernetics-0.4.8b-neoforge-1.21.1-PLAYTEST-PRERELEASE-4.jar")
+    implementation files("jars/createcybernetics-0.5.3-neoforge-1.21.1.jar")
 
     // Curios: the death log snapshots and restores worn curios. Soft like Farmer's Delight below —
     // only compat/curios/CuriosAccess names its classes, and only after ModList says it is loaded —
@@ -125,7 +128,7 @@ dependencies {
     // Open Parties and Claims owns plot claims; PlotService imports xaero.pac.* directly and calls
     // it with no isLoaded guard, so it is a hard dependency at both compile and run time. The Xaero
     // map mods are runtime-only companions — nothing here compiles against them.
-    compileOnly files("jars/open-parties-and-claims-neoforge-1.21.1-0.27.5.jar")
+    compileOnly files("jars/open-parties-and-claims-neoforge-1.21.1-0.33.0.jar")
 
     // Optional-mod integrations. compileOnly keeps them soft: the integration classes are only ever
     // loaded when the mod in question is present.
@@ -175,7 +178,7 @@ dependencies {
     // and the cooking tasks can be tested out of the box. Still soft for the shipped mod: only the
     // mixins in compat/farmersdelight name its classes, their config is required = false, and
     // neoforge.mods.toml lists it as optional.
-    implementation files("jars/FarmersDelight-1.21.1-1.3.2.jar")
+    implementation files("jars/FarmersDelight-1.21.1-1.3.4.jar")
     // additional food mod, used for pizza model implementation
     implementation "curse.maven:brewin-and-chewin-637808:8309583"
 

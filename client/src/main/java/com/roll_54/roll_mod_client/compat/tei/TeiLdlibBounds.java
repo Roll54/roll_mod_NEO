@@ -12,7 +12,7 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
  * Tells TEI where an LdLib screen's window is ({@link LdlibScreenBounds}), so it lays its item list and sidebars out
  * around it instead of over it — the arrows, pins and "Page 1 of 1" were drawn inside machine windows.
  */
-@EventBusSubscriber(modid = RollModClient.MODID, value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(modid = RollModClient.MODID, value = Dist.CLIENT)
 public final class TeiLdlibBounds {
 
     private TeiLdlibBounds() {}

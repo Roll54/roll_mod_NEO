@@ -46,7 +46,8 @@ public final class LeaderboardTab {
     private static final int ROW_H = 20;
     private static final int HEAD = 16;
     private static final int RANK_W = 16;
-    private static final int REFRESH_W = 16;
+    // Wider than tall, so the refresh button reads as a button next to the long drop-down.
+    private static final int REFRESH_W = 22;
 
     private static final int COLOR_ROW = 0x30FFFFFF;
     private static final int COLOR_ROW_HOVER = 0x50FFFFFF;
@@ -74,15 +75,21 @@ public final class LeaderboardTab {
         LeaderboardCategory[] category = {LeaderboardCategory.RICHEST};
 
         UIElement controls = new UIElement();
-        controls.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(16).flexShrink(0)
-                .gapColumn(2).marginBottom(3));
+        controls.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(18).flexShrink(0)
+                .gapColumn(2).marginBottom(3).alignItems(dev.vfyjxf.taffy.style.AlignItems.CENTER));
 
         Selector<LeaderboardCategory> selector = new Selector<>();
         // Null-safe: setCandidateUIProvider re-renders the current value, and there is none yet.
         selector.setCandidateUIProvider(UIElementProvider.text(c -> c == null ? Component.empty() : c.title()));
         selector.setCandidates(List.of(LeaderboardCategory.values()));
+        // Every board at once, no scroll bar.
+        selector.selectorStyle(st -> st.maxItemCount(LeaderboardCategory.values().length));
+        selector.scrollerView.scrollerStyle(st -> st.verticalScrollDisplay(
+                com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay.NEVER));
         selector.setSelected(LeaderboardCategory.RICHEST, false);
-        selector.layout(l -> l.flexGrow(1).height(16));
+        // 18 tall, as the refresh button beside it is drawn on the bevelled themes; the row grows with it, so the
+        // list under it is not overlapped.
+        selector.layout(l -> l.flexGrow(1).height(18));
         selector.setOnValueChanged(c -> {
             if (c == null) return;
             category[0] = c;
@@ -90,9 +97,15 @@ public final class LeaderboardTab {
         });
 
         Button refresh = new Button();
-        refresh.setText(Component.literal("⟳"));
-        refresh.layout(l -> l.width(REFRESH_W).height(16).paddingAll(0));
+        // As tall as the 18px drop-down beside it: 18 on the flat themes, 16 on AE2 and Ore, which draw a button's
+        // face a pixel past its box at the top and the bottom.
+        var theme = com.roll_54.roll_mod.minestar.theme.UiThemeState.get();
+        int refreshH = net.neoforged.fml.loading.FMLEnvironment.dist.isClient()
+                && (theme == com.roll_54.roll_mod.minestar.theme.UiTheme.AE2 || theme.oreArt()) ? 16 : 18;
+        refresh.layout(l -> l.width(REFRESH_W).height(refreshH).paddingAll(0));
+        HubIcons.iconOnly(refresh, HubIcons.REFRESH, 10, REFRESH_W, refreshH);
         refresh.setOnClick(e -> PacketDistributor.sendToServer(new LeaderboardPackets.Request(category[0])));
+        controls.setOverflowVisible(true);
         controls.addChildren(selector, refresh);
 
         ScrollerView list = new ScrollerView();
@@ -193,7 +206,8 @@ public final class LeaderboardTab {
         name.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
 
         Label value = new Label();
-        value.setText(board.format(row.value()).copy().withStyle(ChatFormatting.YELLOW));
+        value.setText((row.label().isBlank() ? board.format(row.value()) : Component.literal(row.label()))
+                .copy().withStyle(ChatFormatting.YELLOW));
         // As wide as its own text, measured in the theme's font: "3 400", "12 h 5 m" or "7 завдань",
         // whatever the language, and the name takes everything left. A fixed column had to be sized
         // for the longest of them and left most rows a wide empty gap.
@@ -230,7 +244,7 @@ public final class LeaderboardTab {
         }
         LeaderboardRow labelled = new LeaderboardRow(mine.rank(), mine.id(),
                 Component.translatable("gui.roll_mod.hub.leaderboards.own").getString()
-                        + (board.teams() ? " (" + mine.name() + ")" : ""), mine.value());
+                        + (board.teams() ? " (" + mine.name() + ")" : ""), mine.value(), mine.label());
         return row(board, labelled, true);
     }
 

@@ -193,7 +193,8 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
      */
     private void save(boolean withRecipes) {
         Map<String, String> recipes = new LinkedHashMap<>();
-        if (withRecipes && tree != null) collectPicked(tree, recipes);
+        Map<String, String> choices = new LinkedHashMap<>();
+        if (withRecipes && tree != null) collectPicked(tree, recipes, choices);
         Map<String, Long> prices = new LinkedHashMap<>();
         String key = rootKey();
         String typed = priceBox == null ? "" : priceBox.getValue().trim();
@@ -209,16 +210,16 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
                 }
             }
         }
-        if (recipes.isEmpty() && prices.isEmpty()) {
+        if (recipes.isEmpty() && prices.isEmpty() && choices.isEmpty()) {
             showStatus(Component.translatable("gui.roll_mod.recipe_tree.nothing_to_save"));
             return;
         }
-        PacketDistributor.sendToServer(new SaveMinPriceRecipesPacket(recipes, prices));
+        PacketDistributor.sendToServer(new SaveMinPriceRecipesPacket(recipes, prices, choices));
         if (priceBox != null) {
             priceBox.setValue("");
             priceBox.setFocused(false);
         }
-        showStatus(Component.translatable("gui.roll_mod.recipe_tree.saving", recipes.size() + prices.size())
+        showStatus(Component.translatable("gui.roll_mod.recipe_tree.saving", recipes.size() + prices.size() + choices.size())
                 .withStyle(ChatFormatting.DARK_GREEN));
     }
 
@@ -247,16 +248,26 @@ public class RecipeTreeScreen extends AbstractContainerScreen<RecipeTreeScreen.M
                         amount, ClientMinPrices.format(unit * amount));
     }
 
-    private static void collectPicked(RecipeTreeNode node, Map<String, String> out) {
+    private static void collectPicked(RecipeTreeNode node, Map<String, String> out, Map<String, String> choices) {
         if (node.recipe == null) return;
         List<EmiStack> stacks = node.ingredient.getEmiStacks();
+        // A tag or list narrowed to one item: the server prices that set of items as the chosen one from now on.
+        if (node.recipe instanceof EmiResolutionRecipe && stacks.size() > 1 && !node.recipe.getOutputs().isEmpty()) {
+            java.util.List<String> options = new java.util.ArrayList<>();
+            for (EmiStack s : stacks) if (!(s.getKey() instanceof Fluid)) options.add(s.getId().toString());
+            EmiStack chosen = node.recipe.getOutputs().get(0);
+            if (options.size() > 1 && !(chosen.getKey() instanceof Fluid)) {
+                java.util.Collections.sort(options);
+                choices.put(String.join(",", new java.util.LinkedHashSet<>(options)), chosen.getId().toString());
+            }
+        }
         ResourceLocation recipeId = node.recipe.getId();
         if (stacks.size() == 1 && recipeId != null && !(node.recipe instanceof EmiResolutionRecipe)) {
             EmiStack stack = stacks.get(0);
             String key = stack.getKey() instanceof Fluid ? "fluid:" + stack.getId() : stack.getId().toString();
             out.putIfAbsent(key, recipeId.toString());
         }
-        for (RecipeTreeNode child : node.children) collectPicked(child, out);
+        for (RecipeTreeNode child : node.children) collectPicked(child, out, choices);
     }
 
     // ---- auto ----

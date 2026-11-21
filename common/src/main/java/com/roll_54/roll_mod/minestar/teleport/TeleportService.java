@@ -109,6 +109,14 @@ public final class TeleportService {
     /** When each player last used {@code /back}, for its cooldown. */
     private static final Map<UUID, Long> LAST_BACK = new ConcurrentHashMap<>();
 
+    /**
+     * Whether the player is Prime: the LuckPerms group Prime is granted as (config back.group, "prime") or one inheriting
+     * it, or an operator. Prime players teleport with no cooldown, whatever the teleport ({@code /back}, {@code /rtp}).
+     */
+    public static boolean isPrime(ServerPlayer player) {
+        return mayBack(player);
+    }
+
     /** Whether the player may use {@code /back}: the configured group (Prime) or one inheriting it, or an operator. */
     public static boolean mayBack(ServerPlayer player) {
         var config = com.roll_54.roll_mod.config.MyConfig.INSTANCE;
@@ -129,7 +137,8 @@ public final class TeleportService {
         var config = com.roll_54.roll_mod.config.MyConfig.INSTANCE;
         long cooldown = Math.max(0, config == null ? 30 : config.back.cooldownSeconds) * 1000L;
         long since = System.currentTimeMillis() - LAST_BACK.getOrDefault(player.getUUID(), 0L);
-        if (since < cooldown && !player.hasPermissions(2)) {
+        // No cooldown for Prime (operators are Prime too) — and /back is Prime-only, so it never has one now.
+        if (since < cooldown && !isPrime(player)) {
             refuse(player, "msg.roll_mod.back.cooldown", (cooldown - since + 999) / 1000);
             return false;
         }

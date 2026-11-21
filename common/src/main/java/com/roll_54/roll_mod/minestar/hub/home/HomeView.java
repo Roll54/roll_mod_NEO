@@ -20,7 +20,13 @@ import java.util.UUID;
  */
 public record HomeView(UUID id, UUID owner, String ownerName, String name,
                        ResourceLocation dimension, double x, double y, double z,
-                       long created, Relation relation, List<ShareView> roster) {
+                       long created, Relation relation, List<ShareView> roster, String description) {
+
+    public HomeView(UUID id, UUID owner, String ownerName, String name,
+                    ResourceLocation dimension, double x, double y, double z,
+                    long created, Relation relation, List<ShareView> roster) {
+        this(id, owner, ownerName, name, dimension, x, y, z, created, relation, roster, "");
+    }
 
     public enum Relation {
         /** Mine. */

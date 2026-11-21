@@ -51,8 +51,8 @@ final class SkinsTab {
     private static final int GAP = 6;
     private static final int TILE_W = 76;
     private static final int TILE_ICON = 36;
-    private static final int PICKER_W = 210;
-    private static final int PICKER_H = 180;
+    private static final int PICKER_W = 420;
+    private static final int PICKER_H = 360;
     private static final int ROW_H = 22;
     private static final int ROW_ICON = 18;
     private static final int COLOR_PANEL = 0x40000000;
@@ -181,12 +181,17 @@ final class SkinsTab {
                     List.of(Component.translatable("gui.roll_mod.hub.skins.tile.tip")), null, null, ItemStack.EMPTY));
 
             SkinDollElement.Icon icon = SkinDollElement.Icon.slot(slot, covered);
-            icon.layout(l -> l.width(TILE_ICON).height(TILE_ICON));
+            // The head is drawn lower in its box than the tools are, and ran into the caption: lifted 4px. An offset,
+            // not a margin, so the tile keeps its height (a -4 margin shrank it and the next tile slid up over it).
+            icon.layout(l -> l.width(TILE_ICON).height(TILE_ICON)
+                    .top(slot == com.roll_54.roll_mod.cosmetics.SkinCategory.HELMET ? -4 : 0));
             icon.setAllowHitTest(false);
 
             Label name = label(slotName(slot).copy().withStyle(ChatFormatting.GRAY));
+            // Both captions 2px lower: an offset, so the tile keeps its height.
+            name.layout(l -> l.top(2));
             show(null);
-            skinName.layout(l -> l.widthPercent(100).height(10));
+            skinName.layout(l -> l.widthPercent(100).height(10).top(2));
             skinName.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textAlignVertical(Vertical.CENTER)
                     .textWrap(TextWrap.HIDE));
             skinName.setAllowHitTest(false);
@@ -202,7 +207,12 @@ final class SkinsTab {
         }
 
         void select(boolean on) {
-            root.style(s -> s.background(new ColorRectTexture(on ? COLOR_ROW_SELECTED : COLOR_ROW)));
+            // The slot the doll holds: the same fill as the others, framed — a lighter fill read as the tile (and its
+            // sword) being a different colour.
+            root.style(s -> s.background(on
+                    ? new com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup(new ColorRectTexture(COLOR_ROW),
+                            new com.lowdragmc.lowdraglib2.gui.texture.ColorBorderTexture(1, 0xA0FFFFFF))
+                    : new ColorRectTexture(COLOR_ROW)));
         }
 
         private static Label label(Component text) {

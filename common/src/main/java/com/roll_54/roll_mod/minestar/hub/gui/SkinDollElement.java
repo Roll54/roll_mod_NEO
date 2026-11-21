@@ -109,19 +109,45 @@ public class SkinDollElement extends UIElement {
     }
 
     /** Isolated holder for the client-only rendering. */
+    /**
+     * Skins taking turns, a second each: a random skin (a case) shown as what it might be. Guarded like {@link Icon}.
+     */
+    public static final class Cycle extends UIElement {
+        private final java.util.List<ItemSkinDefinition> skins;
+
+        public Cycle(java.util.List<ItemSkinDefinition> skins) {
+            this.skins = java.util.List.copyOf(skins);
+        }
+
+        @Override
+        public void drawBackgroundAdditional(GUIContext context) {
+            super.drawBackgroundAdditional(context);
+            if (skins.isEmpty() || FMLEnvironment.dist != Dist.CLIENT || collapsed(this) || HubSettings.isOpenIn(this)) return;
+            ItemSkinDefinition skin = skins.get((int) ((net.minecraft.Util.getMillis() / 1000) % skins.size()));
+            ClientRender.drawIcon(context, getPositionX(), getPositionY(), getSizeWidth(), getSizeHeight(), null, skin, false);
+        }
+    }
+
+    /** Draws {@code skin}'s picture at any box — the case roll's cards. Client only. */
+    public static void drawSkin(GUIContext context, float x, float y, float w, float h, ItemSkinDefinition skin) {
+        ClientRender.drawIcon(context, x, y, w, h, null, skin, false);
+    }
+
     private static final class ClientRender {
 
         /** The picker's stand-in. Random once per run; it only ever lives in this client's cache. */
         private static final java.util.UUID PREVIEW = java.util.UUID.randomUUID();
 
-        // TODO(art): placeholder lock mark — swap in a real lock texture.
+        /** The hub's own pixel lock (12x12), as the battle pass and the warps use it. */
         private static final net.minecraft.resources.ResourceLocation LOCK =
-                RollMod.id("textures/item/error_item.png");
+                RollMod.id("textures/gui/hub/icons/lock.png");
 
         /** How far a slot tile's 3D head draws past its box, right and bottom. */
         private static final float HEAD_GROW = 5;
         /** How far a slot tile's head is raised off the slot's name under it. */
         private static final float HEAD_LIFT = 3;
+        /** How far above its box a head's clip reaches. */
+        private static final float HEAD_CLIP = 6;
 
         @Nullable private static Doll own;
         @Nullable private static Doll preview;
@@ -167,7 +193,8 @@ public class SkinDollElement extends UIElement {
                 float lift = skin == null ? HEAD_LIFT : 0;
                 drawHead(context, x, y - lift, w + grow, h + grow, doll);
             } else {
-                drawTool(context, x, y, w, h, doll, placeholder(category));
+                drawTool(context, x, y, w, h, doll, placeholder(category, skin != null ? skin
+                        : skinOf(skins.get(category))));
             }
 
             if (locked) {
@@ -176,7 +203,10 @@ public class SkinDollElement extends UIElement {
                 graphics.pose().pushPose();
                 // Above the item, which renders around z 150.
                 graphics.pose().translate(0, 0, 400);
-                graphics.blit(LOCK, (int) (x + w) - size, (int) (y + h) - size, size, size, 0, 0, 16, 16, 16, 16);
+                // Whole multiples of the 12px art on bigger tiles (the hub's pixel-art rule); a small row icon has no room
+                // for a 12px lock, so there it keeps its corner size.
+                int lock = size >= 12 ? size / 12 * 12 : size;
+                graphics.blit(LOCK, (int) (x + w) - lock, (int) (y + h) - lock, lock, lock, 0, 0, 12, 12, 12, 12);
                 graphics.pose().popPose();
             }
         }
@@ -190,7 +220,8 @@ public class SkinDollElement extends UIElement {
             int scale = (int) Math.max(4, size / 0.9F);
             // yOffset puts the head's centre (≈1.75 blocks up) at the box's centre instead of the
             // middle of the body; the mouse a little to the left turns the face three-quarters.
-            drawEntity(context, x, y, w, h, scale, 0.85F, cx - 15, cy, doll);
+            // The clip reaches HEAD_CLIP above the box, so the top of the head (and a hat) is not cut off by it.
+            drawEntity(context, x, y, w, h, scale, 0.85F, cx - 15, cy, doll, HEAD_CLIP);
         }
 
         /**
@@ -207,6 +238,12 @@ public class SkinDollElement extends UIElement {
         private static void drawEntity(GUIContext context, float x, float y, float w, float h, int scale,
                                        float yOffset, float mouseX, float mouseY,
                                        net.minecraft.world.entity.LivingEntity entity) {
+            drawEntity(context, x, y, w, h, scale, yOffset, mouseX, mouseY, entity, 0);
+        }
+
+        private static void drawEntity(GUIContext context, float x, float y, float w, float h, int scale,
+                                       float yOffset, float mouseX, float mouseY,
+                                       net.minecraft.world.entity.LivingEntity entity, float clipAbove) {
             float cx = x + w / 2F;
             float cy = y + h / 2F;
             float turnX = (float) Math.atan((cx - mouseX) / 40.0F);
@@ -229,9 +266,14 @@ public class SkinDollElement extends UIElement {
             float entityScale = entity.getScale();
             var offset = new org.joml.Vector3f(0.0F, entity.getBbHeight() / 2.0F + yOffset * entityScale, 0.0F);
             context.graphics.flush();
-            context.enableScissor(x, y, w, h);
+            context.enableScissor(x, y - clipAbove, w, h + clipAbove);
+            // Lifted toward the viewer: with the mouse high above, the head tips back past the panel's depth and
+            // vanished behind it.
+            context.graphics.pose().pushPose();
+            context.graphics.pose().translate(0, 0, 150);
             net.minecraft.client.gui.screens.inventory.InventoryScreen.renderEntityInInventory(
                     context.graphics, cx, cy, scale / entityScale, offset, pose, camera, entity);
+            context.graphics.pose().popPose();
             context.disableScissor();
 
             entity.yBodyRot = bodyRot;
@@ -291,6 +333,30 @@ public class SkinDollElement extends UIElement {
             return preview;
         }
 
+        @Nullable
+        private static ItemSkinDefinition skinOf(@Nullable Object id) {
+            return id instanceof net.minecraft.resources.ResourceLocation rl
+                    ? com.roll_54.roll_mod.cosmetics.ItemSkinRegistry.get(rl) : null;
+        }
+
+        /**
+         * What a skin is shown on: the slot's plain item, or — for a skin that fits only some items (a saber skin, a
+         * drill skin) — one of those, the EV one where there is one. A plain iron sword would refuse a saber skin and
+         * show bare.
+         */
+        private static net.minecraft.world.item.ItemStack placeholder(SkinCategory category,
+                                                                       @Nullable ItemSkinDefinition skin) {
+            if (skin != null && !skin.onlyOn().isEmpty()) {
+                net.minecraft.world.item.Item pick = null;
+                for (net.minecraft.world.item.Item item : skin.onlyOn()) {
+                    String path = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(item).getPath();
+                    if (pick == null || path.startsWith("ev_")) pick = item;
+                }
+                if (pick != null) return new net.minecraft.world.item.ItemStack(pick);
+            }
+            return placeholder(category);
+        }
+
         private static net.minecraft.world.item.ItemStack placeholder(SkinCategory category) {
             return new net.minecraft.world.item.ItemStack(switch (category) {
                 case HELMET -> net.minecraft.world.item.Items.IRON_HELMET;
@@ -345,7 +411,8 @@ public class SkinDollElement extends UIElement {
                 put(net.minecraft.world.entity.EquipmentSlot.HEAD,
                         active.containsKey(SkinCategory.HELMET) ? placeholder(SkinCategory.HELMET) : null);
                 put(net.minecraft.world.entity.EquipmentSlot.MAINHAND,
-                        heldTool != null && active.containsKey(heldTool) ? placeholder(heldTool) : null);
+                        heldTool != null && active.containsKey(heldTool)
+                                ? placeholder(heldTool, skinOf(active.get(heldTool))) : null);
                 put(net.minecraft.world.entity.EquipmentSlot.OFFHAND, null);
             }
 

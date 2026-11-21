@@ -172,6 +172,12 @@ public class ItemRegistry {
             new TooltipOptions(1, METEORITE_DARK_BLUE, METEORITE_LIGHT_BLUE, false)
     );
 
+    /** A small piece of meteorite metal: what the meteorite fishing rod's Starfall brings up. */
+    public static final DeferredHolder<Item, Item> METEORITE_METAL_NUGGET = registerTooltip(
+            "meteorite_metal_nugget",
+            new TooltipOptions(1, METEORITE_DARK_BLUE, METEORITE_LIGHT_BLUE, false)
+    );
+
     public static final DeferredHolder<Item, Item> METEORITE_METAL_PLATE = registerTooltip(
             "meteorite_metal_plate",
             new Item.Properties(), TooltipOptions.name(METEORITE_DARK_BLUE)
@@ -2453,6 +2459,8 @@ public class ItemRegistry {
         for (String tier : List.of("i", "ii", "iii", "iv", "v")) {
             ITEMS.addAlias(RollMod.id("looting_module_" + tier), RollMod.id("fortune_module_" + tier));
         }
+        // Our fishing rods are Tide rods, so they exist only with Tide.
+        if (net.neoforged.fml.ModList.get().isLoaded("tide")) com.roll_54.roll_mod.compat.tide.TideRods.register(ITEMS);
         ITEMS.register(modBus);
         CROPS.register(modBus);
     }

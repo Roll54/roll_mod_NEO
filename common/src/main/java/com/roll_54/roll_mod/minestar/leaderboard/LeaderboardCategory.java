@@ -20,7 +20,17 @@ public enum LeaderboardCategory {
     /** Income from selling to other players over the last 7 days, net of the auction fee. */
     EARNERS_7D,
     /** Daily task rewards claimed, per player, over this world's lifetime. */
-    DAILY_TASKS;
+    DAILY_TASKS,
+    /**
+     * The quest chapter each team is on: the highest of the chapters set in the moderation tab
+     * ({@link LeaderboardChapters}) it has started, shown by the name set there ("HV", "IV"), then how far into it.
+     */
+    CHAPTERS,
+    /**
+     * Distinct foods each player has eaten: every item with a food component whose vanilla
+     * {@code minecraft:used} statistic is above zero.
+     */
+    FOODS;
 
     public Component title() {
         return Component.translatable("gui.roll_mod.hub.leaderboards.category." + name().toLowerCase(Locale.ROOT));
@@ -28,7 +38,7 @@ public enum LeaderboardCategory {
 
     /** Whether rows are teams (no face to draw) rather than players. */
     public boolean teams() {
-        return this == QUESTS;
+        return this == QUESTS || this == CHAPTERS;
     }
 
     public Component format(long value) {
@@ -37,6 +47,9 @@ public enum LeaderboardCategory {
             case EARNERS_7D -> Component.literal("+" + money(value));
             case QUESTS -> Component.translatable("gui.roll_mod.hub.leaderboards.quests", value);
             case DAILY_TASKS -> Component.translatable("gui.roll_mod.hub.leaderboards.daily_tasks", value);
+            case FOODS -> Component.translatable("gui.roll_mod.hub.leaderboards.foods", value);
+            // Rows carry their stage's name (LeaderboardRow.label); this is only the fallback.
+            case CHAPTERS -> Component.literal(String.valueOf(value / LeaderboardChapters.STAGE));
             case PLAYTIME -> {
                 long minutes = value / 20 / 60;
                 yield Component.translatable("gui.roll_mod.hub.leaderboards.playtime", minutes / 60, minutes % 60);

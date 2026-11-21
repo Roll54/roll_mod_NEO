@@ -101,6 +101,14 @@ public interface DailyTask {
         return null;
     }
 
+    /**
+     * A battle-pass challenge rather than a daily: dealt only by the pass, never put on the daily board. Registered
+     * like every task all the same, so the GUI can name it by index.
+     */
+    default boolean battlePassOnly() {
+        return false;
+    }
+
     /** Convenience for {@link #icon()}'s toast stack. */
     default ItemStack toastIcon() {
         return icon().toastStack();

@@ -24,13 +24,55 @@ public enum UiTheme {
     PAPER(StylesheetManager.PAPER_MERGED),
     LATTE(StylesheetManager.LATTE_MERGED),
     MC(StylesheetManager.MC_MERGED, StylesheetManager.GDP_MERGED),
+    /**
+     * LdLib's own Ore look.
+     * @deprecated Merged into {@link #OREUI}: no longer offered, and a saved "ore" reads as green OreUI, its look ({@link #byId}).
+     */
+    @Deprecated
     ORE(StylesheetManager.ORE_MERGED),
+    /** The old Ore look, as {@link #OREUI_GREEN} has it, in greys: the same LdLib Ore sheets and art, no green. */
+    OREUI(StylesheetManager.ORE_MERGED),
+    /** Bedrock's Ore UI at night: Dusk recoloured, with the OreUI pack's widgets darkened — see {@link ThemeSheets}. */
+    OREUI_DARK(StylesheetManager.DUSK_MERGED),
+    /** {@link #OREUI} in green: the old Ore look (LdLib's Ore sheets and art), which this theme took over. */
+    OREUI_GREEN(StylesheetManager.ORE_MERGED),
+    /**
+     * Applied Energistics 2's screens: its lavender-grey panels, bevelled buttons and search field, drawn from AE2's own
+     * GUI textures (the pack ships AE2), with the ME controller's flowing light along tab headers ({@link MeLights}).
+     */
+    AE2(StylesheetManager.DUSK_MERGED),
     GDP(StylesheetManager.GDP_MERGED);
 
     /** What a player who never opened the settings gets. */
     public static final UiTheme DEFAULT = GDP;
 
     private final List<ResourceLocation> sheets;
+
+    /** Drawn from the OreUI pack's textures by {@link ThemeSheets} (now only the dark take). */
+    public boolean oreUi() {
+        return this == OREUI_DARK;
+    }
+
+    /** Whether its sheets are Dusk re-read with another palette ({@link ThemeSheets#sheet}). */
+    public boolean recoloured() {
+        return oreUi() || this == AE2;
+    }
+
+    /** Drawn with LdLib's own Ore sheets and art (the old Ore theme: OreUI and green OreUI). */
+    public boolean oreArt() {
+        return this == ORE || this == OREUI || this == OREUI_GREEN;
+    }
+
+    /** Whether Settings offers it: everything but the merged-away {@link #ORE}. */
+    public boolean offered() {
+        return this != ORE;
+    }
+
+    /** Whether the square/rounded corners setting changes anything: not on the pixel-art MC and Ore. */
+    public boolean hasCorners() {
+        // Every theme but vanilla's: AE2 and Ore round by their own cut-corner art (textures/gui/*_rounded).
+        return this != MC;
+    }
 
     UiTheme(ResourceLocation... sheets) {
         this.sheets = List.of(sheets);
@@ -76,6 +118,11 @@ public enum UiTheme {
             case GDP -> new Palette(0xFF3A3A3A, 0xFF4A4A4A, 0xFFE0E0E0, 0xFF9A9A9A, 0xFF5AA0E6, 0xFF1E1E1E);
             // Text in vanilla's label grey rather than Ore's #222 — see assets/roll_mod/lss/ore.lss.
             case ORE -> new Palette(0xFF5A8A3C, 0xFF6B9E4A, 0xFF404040, 0xFF3A4A30, 0xFFF0E68C, 0xFF2E4A1E);
+            // Ore's palette with its greens turned grey.
+            case OREUI -> new Palette(0xFF7D7D7F, 0xFF8D8E90, 0xFF404040, 0xFF4A4B4F, 0xFFF0E68C, 0xFF3A3A3B);
+            case OREUI_DARK -> new Palette(0xFF444445, 0xFF3A3A3B, 0xFFFFFFFF, 0xFFA0A1A4, 0xFF3C8527, 0xFF0C0C0C);
+            case AE2 -> new Palette(0xFFCBCCD4, 0xFFE2E3E9, 0xFF413F54, 0xFF5D5B73, 0xFF3A8FC4, 0xFF413F54);
+            case OREUI_GREEN -> ORE.palette();
             case MC -> null;
         };
     }
@@ -105,14 +152,21 @@ public enum UiTheme {
             case PAPER -> new Recolor(0xFF9AA0AB, 0xFFB4BAC5, 0xFFDFE3EA, 0xFFEFF1F5, 0xFFFFFFFF, 0xFF1B1E24);
             case LATTE -> new Recolor(0xFFA1958A, 0xFFC4B8AA, 0xFFE8E0D5, 0xFFF5EFE6, 0xFFFFFCF7, 0xFF2B2622);
             case MODERN -> new Recolor(0xFF111114, 0xFF1E1F22, 0xFF1E1F22, 0xFF2C2C34, 0xFF3A3A44, 0xFFFFFFFF);
-            case GDP -> new Recolor(0xFF111111, 0xFF1E1E1E, 0xFF262626, 0xFF3A3A3A, 0xFF4A4A4A, 0xFFE0E0E0);
+            // Sampled from LdLib's gdp_styles.png, so vanilla screens wear the same violet-grey as GDP's own panels and slots.
+            case GDP -> new Recolor(0xFF0D0D11, 0xFF231C26, 0xFF2F2A34, 0xFF47434F, 0xFF85818D, 0xFFF3F2F2);
             case ORE -> new Recolor(0xFF1B2E12, 0xFF2E4A1E, 0xFF3F6A2A, 0xFF5A8A3C, 0xFF7AA85A, 0xFF404040);
+            case OREUI -> new Recolor(0xFF1E1E1F, 0xFF3A3A3B, 0xFF58595B, 0xFF7D7D7F, 0xFFA1A1A1, 0xFF404040);
+            case OREUI_DARK -> new Recolor(0xFF0C0C0C, 0xFF121212, 0xFF19191A, 0xFF252526, 0xFF3A3A3B, 0xFFFFFFFF);
+            case AE2 -> new Recolor(0xFF413F54, 0xFF878FA5, 0xFFADB0C4, 0xFFCBCCD4, 0xFFF2F2F2, 0xFF413F54);
+            case OREUI_GREEN -> ORE.recolor();
             case MC -> null;
         };
     }
 
     /** {@link #DEFAULT} for anything unknown, so a hand-edited or outdated file never breaks a screen. */
     public static UiTheme byId(String id) {
+        // Ore was merged into OreUI.
+        if ("ore".equals(id)) return OREUI_GREEN;
         for (UiTheme theme : values()) {
             if (theme.id().equals(id)) return theme;
         }

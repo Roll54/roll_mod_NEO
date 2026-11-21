@@ -184,7 +184,15 @@ final class SettingsTab {
         // A pixel of room on every side, so the outer cards' frames are not cut by the scroller's edge.
         grid.layout(l -> l.flexDirection(FlexDirection.ROW).flexWrap(FlexWrap.WRAP).widthPercent(100)
                 .gapColumn(4).gapRow(4).paddingAll(1));
-        for (UiTheme theme : UiTheme.values()) grid.addChild(themeCard(theme, client));
+        // GDP, AE2, the Ore themes, then everything else in its own order.
+        List<UiTheme> order = new java.util.ArrayList<>(List.of(UiTheme.GDP, UiTheme.AE2, UiTheme.OREUI,
+                UiTheme.OREUI_GREEN, UiTheme.OREUI_DARK));
+        for (UiTheme theme : UiTheme.values()) {
+            if (!order.contains(theme)) order.add(theme);
+        }
+        for (UiTheme theme : order) {
+            if (theme.offered()) grid.addChild(themeCard(theme, client));
+        }
         body.addScrollViewChild(grid);
 
         body.addScrollViewChild(heading("gui.roll_mod.hub.settings.section.appearance"));
@@ -200,10 +208,28 @@ final class SettingsTab {
             RollUi.apply(font.getModularUI());
         });
         body.addScrollViewChild(option("gui.roll_mod.hub.settings.font", "gui.roll_mod.hub.settings.font.tip", font));
+        // Square or rounded corners, on every theme that has them (not the pixel-art MC and Ore) — see ThemeSheets.
+        Switch[] corners = new Switch[1];
+        corners[0] = toggle(client && UiThemeState.squareCorners(), on -> {
+            if (!client) return;
+            UiThemeState.setSquareCorners(on);
+            RollUi.apply(corners[0].getModularUI());
+        });
+        // Picking a theme resets its corners (UiThemeState.set), so the switch follows the theme without a rebuild.
+        if (client) corners[0].addEventListener(UIEvents.TICK, e -> {
+            boolean square = UiThemeState.squareCorners();
+            if (corners[0].isOn() != square) corners[0].setOn(square);
+        });
+        body.addScrollViewChild(option("gui.roll_mod.hub.settings.corners", "gui.roll_mod.hub.settings.corners.tip", corners[0]));
+        // The AE2 theme's moving lights (MeLights): read every frame, so no restyle is needed.
+        body.addScrollViewChild(option("gui.roll_mod.hub.settings.me_lights", "gui.roll_mod.hub.settings.me_lights.tip",
+                toggle(!client || UiThemeState.meLights(), on -> {
+                    if (client) UiThemeState.setMeLights(on);
+                })));
         // Experimental: the theme on other mods' LdLib screens too, flagged with a warning mark.
         UIElement warning = new UIElement();
         warning.layout(l -> l.width(WARNING).height(WARNING).flexShrink(0));
-        warning.style(s -> s.background(SpriteTexture.of(RollMod.id("textures/gui/hub/exclamation_mark.png"))));
+        warning.style(s -> s.background(HubBadge.texture()));
         warning.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(List.of(
                 Component.translatable("gui.roll_mod.hub.settings.experimental").withStyle(ChatFormatting.GOLD),
                 Component.translatable("gui.roll_mod.hub.settings.force.warning").withStyle(ChatFormatting.GRAY)),
@@ -229,6 +255,15 @@ final class SettingsTab {
         colorControl.addChildren(badge, notifyColor);
         body.addScrollViewChild(option("gui.roll_mod.hub.settings.notify_color", "gui.roll_mod.hub.settings.notify_color.tip",
                 colorControl));
+
+        // The HUD's health, hunger, armour and air: flat bars with numbers, or vanilla's icons (client config hud.statusBars).
+        var clientConfig = com.roll_54.roll_mod.config.RollClientConfig.INSTANCE;
+        body.addScrollViewChild(option("gui.roll_mod.hub.settings.status_bars", "gui.roll_mod.hub.settings.status_bars.tip",
+                toggle(!client || clientConfig == null || clientConfig.hud.statusBars, on -> {
+                    if (!client || clientConfig == null) return;
+                    clientConfig.hud.statusBars = on;
+                    clientConfig.save();
+                })));
     }
 
     /**
@@ -257,7 +292,12 @@ final class SettingsTab {
         UIElement preview = new UIElement();
         preview.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).height(CARD_PREVIEW_H)
                 .paddingAll(4).gapRow(3));
-        preview.style(s -> s.background(new GuiTextureGroup(new ColorRectTexture(surface), new ColorBorderTexture(1, outline))));
+        // A light theme's outline is nearly its surface (Latte, Paper), so its preview had no visible frame: there the
+        // frame takes the theme's line colour, as the boxes inside do.
+        int r = (surface >> 16) & 0xFF, g = (surface >> 8) & 0xFF, b = surface & 0xFF;
+        boolean light = (r * 299 + g * 587 + b * 114) / 1000 > 160;
+        int frame = light ? line : outline;
+        preview.style(s -> s.background(new GuiTextureGroup(new ColorRectTexture(surface), new ColorBorderTexture(1, frame))));
         Label caption = new Label();
         caption.setText(Component.literal("Aa"));
         caption.layout(l -> l.widthPercent(100).height(9));
@@ -285,8 +325,12 @@ final class SettingsTab {
         name.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
         name.textStyle(t -> t.textWrap(TextWrap.HIDE).textAlignVertical(Vertical.CENTER));
         Label state = new Label();
-        state.setText(Component.translatable("gui.roll_mod.hub.settings.theme.picked"));
-        state.layout(l -> l.heightPercent(100));
+        // A tick, not the word: the word ran over long theme names ("OreUI зелена"). The word stays on hover.
+        state.setText(Component.literal("✔"));
+        state.layout(l -> l.width(8).heightPercent(100).flexShrink(0));
+        state.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new com.lowdragmc.lowdraglib2.gui.ui.event
+                .HoverTooltips(List.of(Component.translatable("gui.roll_mod.hub.settings.theme.picked")), null, null,
+                net.minecraft.world.item.ItemStack.EMPTY));
         state.textStyle(t -> t.textColor(PICKED).textAlignVertical(Vertical.CENTER).textAlignHorizontal(Horizontal.RIGHT));
         state.addEventListener(UIEvents.TICK, e -> state.setDisplay(client && UiThemeState.get() == theme));
         footer.addChildren(name, state);
@@ -317,6 +361,15 @@ final class SettingsTab {
                     if (!client) return;
                     HubWindowState state = HubWindowState.get();
                     state.setMovable(on);
+                    state.save();
+                })));
+
+        // Whether the info window and the hub's popup windows can be resized; off by default. Applies to the next one opened.
+        body.addScrollViewChild(option("gui.roll_mod.hub.settings.resizable", "gui.roll_mod.hub.settings.resizable.tip",
+                toggle(client && HubWindowState.get().resizableWindows(), on -> {
+                    if (!client) return;
+                    HubWindowState state = HubWindowState.get();
+                    state.setResizableWindows(on);
                     state.save();
                 })));
 
@@ -366,8 +419,13 @@ final class SettingsTab {
         };
         rebuild[0].run();
         Button reset = new Button();
-        reset.setText(Component.translatable("gui.roll_mod.hub.settings.tab_order.reset"));
-        reset.layout(l -> l.width(CONTROL_W).height(ROW_H).flexShrink(0));
+        Component resetText = Component.translatable("gui.roll_mod.hub.settings.tab_order.reset");
+        reset.setText(resetText);
+        // As wide as its caption plus 5px a side (3px clear of the frame, which the bevel themes draw 1px out), never
+        // narrower than the other controls: "Як за замовчуванням" ran into both edges at CONTROL_W.
+        int resetW = client ? Math.max(CONTROL_W, net.minecraft.client.Minecraft.getInstance().font.width(resetText) + 10)
+                : CONTROL_W;
+        reset.layout(l -> l.width(resetW).height(ROW_H).flexShrink(0));
         reset.setOnClick(e -> {
             if (!client) return;
             HubUI.setTabOrder(List.of());
@@ -484,7 +542,11 @@ final class SettingsTab {
             channels.clearAllChildren();
             if (!client) return;
             ChatChannelState state = ChatChannelState.get();
-            List<ChatButton> all = state.all();
+            // The Commands (DEV) tab only for operators, as the chat bar has it (ClientChatStore.devAccess, from the server).
+            List<ChatButton> all = new java.util.ArrayList<>(state.all());
+            if (!com.roll_54.roll_mod.minestar.chat.client.ClientChatStore.devAccess()) {
+                all.removeIf(b -> b.channel() == com.roll_54.roll_mod.minestar.chat.ChatChannel.DEV);
+            }
             for (int i = 0; i < all.size(); i++) {
                 channels.addChild(channelRow(state, all.get(i), i == 0, i == all.size() - 1, rebuild[0]));
             }
@@ -493,7 +555,9 @@ final class SettingsTab {
 
         // Adding one: a caption and a template.
         UIElement addRow = row();
-        addRow.layout(l -> l.paddingHorizontal(2).marginTop(2));
+        // 2px under it, and unclipped: on AE2 and Ore the Add button's face reaches a pixel below its box.
+        addRow.layout(l -> l.paddingHorizontal(2).marginTop(2).marginBottom(2));
+        addRow.setOverflowVisible(true);
         TextField name = new TextField();
         name.setText("");
         name.layout(l -> l.width(80).height(ROW_H));
@@ -588,7 +652,10 @@ final class SettingsTab {
         if (hint != null) {
             Label text = new Label();
             text.setText(hint.copy().withStyle(ChatFormatting.GRAY));
-            text.layout(l -> l.widthPercent(100));
+            // At least 3px under the control's box (CLAUDE.md, UI rule): the row's gap is 2, plus 1; a drop-down's
+            // frame reaches lower than the row, so 3 more under it.
+            boolean underSelector = control instanceof com.lowdragmc.lowdraglib2.gui.ui.elements.Selector<?>;
+            text.layout(l -> l.widthPercent(100).marginTop(underSelector ? 3 : 1));
             text.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
             tile.addChild(text);
         }
@@ -674,6 +741,8 @@ final class SettingsTab {
     }
 
     private static Button small(String glyph, boolean active, Runnable action) {
+        // ▲▼ as the theme's drop-down chevron, like the selectors'.
+        if ("▲".equals(glyph) || "▼".equals(glyph)) return HubIcons.arrow("▲".equals(glyph), active, SMALL, action);
         Button button = new Button();
         button.setText(Component.literal(glyph));
         button.layout(l -> l.width(SMALL).height(SMALL).paddingAll(0).flexShrink(0));

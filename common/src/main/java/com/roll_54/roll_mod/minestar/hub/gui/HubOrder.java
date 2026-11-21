@@ -83,6 +83,17 @@ public final class HubOrder {
         });
     }
 
+    /** Moves {@code id} one place up ({@code -1}) or down ({@code +1}) in {@code shown}, saved as the new order. */
+    public static void move(String list, String id, List<String> shown, int delta) {
+        List<String> order = new ArrayList<>(shown);
+        int from = order.indexOf(id);
+        int to = from + delta;
+        if (from < 0 || to < 0 || to >= order.size()) return;
+        order.remove(from);
+        order.add(to, id);
+        set(list, order);
+    }
+
     private static void set(String list, List<String> order) {
         load().put(list, List.copyOf(order));
         version++;

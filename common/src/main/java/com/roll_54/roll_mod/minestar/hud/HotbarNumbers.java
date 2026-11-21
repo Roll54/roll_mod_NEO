@@ -7,22 +7,25 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 /**
  * Each hotbar slot's key in its top-left corner — normally 1 to 9, or whatever the player rebound
  * the slot to. Half-size, drawn over the items.
+ * <p>Deprecated: no longer subscribed (the bus rejects a subscriber with no listeners); kept for reuse.
  */
+@Deprecated
 @OnlyIn(Dist.CLIENT)
-@EventBusSubscriber(modid = RollMod.MODID, value = Dist.CLIENT)
 public final class HotbarNumbers {
 
     private HotbarNumbers() {}
 
-    @SubscribeEvent
+    /**
+     * Not registered any more: the hotbar shows no slot keys (as asked). The drawing below is kept, unused, should
+     * they come back.
+     */
+    @SuppressWarnings("unused")
     public static void onRegisterLayers(RegisterGuiLayersEvent event) {
         event.registerAbove(VanillaGuiLayers.HOTBAR, RollMod.id("hotbar_numbers"), HotbarNumbers::render);
     }

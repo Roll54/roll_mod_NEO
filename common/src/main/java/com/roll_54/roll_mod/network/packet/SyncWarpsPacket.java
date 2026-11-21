@@ -19,9 +19,10 @@ import java.util.UUID;
 
 /**
  * Server → client: every warp on the server, plus how many the receiving player may own. Sent when
- * the hub opens and whenever a warp is created or deleted.
+ * the hub opens and whenever a warp is created or deleted. {@code instant}: this player travels with no
+ * warm-up (Prime, or the bypass permission), so the tab drops the countdown from its button.
  */
-public record SyncWarpsPacket(List<Warp> warps, int limit) implements CustomPacketPayload {
+public record SyncWarpsPacket(List<Warp> warps, int limit, boolean instant) implements CustomPacketPayload {
 
     public static final Type<SyncWarpsPacket> TYPE = new Type<>(RollMod.id("sync_warps"));
 
@@ -30,6 +31,7 @@ public record SyncWarpsPacket(List<Warp> warps, int limit) implements CustomPack
 
     private static void encode(RegistryFriendlyByteBuf buf, SyncWarpsPacket packet) {
         buf.writeVarInt(packet.limit);
+        buf.writeBoolean(packet.instant);
         buf.writeVarInt(packet.warps.size());
         for (Warp warp : packet.warps) {
             buf.writeUUID(warp.id());
@@ -58,6 +60,7 @@ public record SyncWarpsPacket(List<Warp> warps, int limit) implements CustomPack
 
     private static SyncWarpsPacket decode(RegistryFriendlyByteBuf buf) {
         int limit = buf.readVarInt();
+        boolean instant = buf.readBoolean();
         int count = buf.readVarInt();
         List<Warp> warps = new ArrayList<>(count);
         for (int i = 0; i < count; i++) {
@@ -85,7 +88,7 @@ public record SyncWarpsPacket(List<Warp> warps, int limit) implements CustomPack
                     yaw, pitch, price, created, approval, moderator, synthetic(reportCount),
                     synthetic(visitorCount), DailyTaskManager.currentPeriodDay(), visitsTotal, requiredQuest));
         }
-        return new SyncWarpsPacket(warps, limit);
+        return new SyncWarpsPacket(warps, limit, instant);
     }
 
     /** Stand-in ids for a count the client is told but the identities of which it is not. */
@@ -106,6 +109,7 @@ public record SyncWarpsPacket(List<Warp> warps, int limit) implements CustomPack
         context.enqueueWork(() -> {
             ClientWarpCache.WARPS = List.copyOf(payload.warps);
             ClientWarpCache.LIMIT = payload.limit;
+            ClientWarpCache.INSTANT = payload.instant;
         });
     }
 }

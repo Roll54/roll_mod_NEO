@@ -156,7 +156,7 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
         titleBar.addChildren(title,
                 windowButton(() -> window.maximized() ? Icons.WINDOW_RESTORE : Icons.WINDOW_MAXIMIZE,
                         "gui.roll_mod.config.maximize.tip", window::toggleMaximize),
-                windowButton(() -> Icons.WINDOW_CLOSE, "gui.roll_mod.config.close.tip", this::onClose));
+                closeButton());
         window.dragBy(titleBar);
         window.dragBy(title);
         window.addChild(titleBar);
@@ -206,6 +206,17 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
         Button button = new Button();
         button.setText(Component.translatable(key));
         button.layout(l -> l.height(BAR_H - 2).flexShrink(0));
+        return button;
+    }
+
+    /** The hub's themed pixel ✕, the same one every hub panel closes with. */
+    private UIElement closeButton() {
+        com.lowdragmc.lowdraglib2.gui.ui.elements.Button button = new com.lowdragmc.lowdraglib2.gui.ui.elements.Button();
+        button.noText().layout(l -> l.width(BAR_H - 2).height(BAR_H - 2).flexShrink(0).paddingAll(0));
+        com.roll_54.roll_mod.minestar.hub.gui.HubIcons.iconOnly(button,
+                com.roll_54.roll_mod.minestar.hub.gui.HubIcons.CLOSE, 8, BAR_H - 2, BAR_H - 2);
+        button.style(s -> s.tooltips(Component.translatable("gui.roll_mod.config.close.tip")));
+        button.setOnClick(e -> onClose());
         return button;
     }
 

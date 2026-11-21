@@ -75,7 +75,7 @@ public final class HomeViewers {
             }
             views.add(new HomeView(home.id(), home.owner(), home.ownerName(), home.name(),
                     home.dimension(), home.x(), home.y(), home.z(), home.created(), relation,
-                    roster));
+                    roster, home.description()));
         }
         addLegacy(player, views);
         return views;

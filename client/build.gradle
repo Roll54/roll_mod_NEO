@@ -28,6 +28,7 @@ neoForge {
             systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
             programArgument '--username'
             programArgument 'TestPlayer'
+            jvmArgument '-Xmx4G'
         }
         // A second client, for everything that needs two players on the dev server at once: seeing
         // someone else's warp and paying its price, buying another player's auction listing, and
@@ -70,14 +71,14 @@ dependencies {
     // compileOnly: GuiGraphicsOxygenBarMixin reads the nano suit's oxygen tank for rendering. These
     // classes are provided at runtime by the loaded mods (common exposes them non-transitively, so
     // they must be named explicitly here for compilation).
-    compileOnly files("../common/jars/adastra-1.21.1-1.16.6-neoforge.jar")
+    compileOnly files("../common/jars/adastra-1.21.1-1.16.26-neoforge.jar")
     compileOnly files("../common/jars/common-storage-lib-neoforge-1.21.1-0.0.9.jar")
     compileOnly files("../common/jars/common-storage-lib-resources-neoforge-1.21.1-0.0.9.jar")
 
     // compileOnly: CyberwareSkinLayer reads createcybernetics' synced PlayerCyberwareData to draw
     // roll_mod cyberware overlays on the player. Common depends on this jar non-transitively (as
     // implementation), so it must be named explicitly here for compilation; loaded at runtime.
-    compileOnly files("../common/jars/createcybernetics-0.4.8b-neoforge-1.21.1-PLAYTEST-PRERELEASE-4.jar")
+    compileOnly files("../common/jars/createcybernetics-0.5.3-neoforge-1.21.1.jar")
     compileOnly "maven.modrinth:extended-industrialization:1.16.2-1.21.1"
 
     // compileOnly: AnvilTooExpensiveLabelMixin reads ModConfigs.MAIN.anvil.removeLevelCap, whose
@@ -164,7 +165,7 @@ neoForge.ideSyncTask generateModMetadata
     // Open Parties and Claims backs plot ownership and :common only compiles against it, so the run
     // needs its own copy or PlotService throws NoClassDefFoundError the first time plots are opened.
     // The Xaero maps are its usual companions and make the plot map worth looking at.
-    dependencies.add(runCfg.name, files("../common/jars/open-parties-and-claims-neoforge-1.21.1-0.27.5.jar"))
+    dependencies.add(runCfg.name, files("../common/jars/open-parties-and-claims-neoforge-1.21.1-0.33.0.jar"))
     dependencies.add(runCfg.name, files("../common/jars/xaerominimap-neoforge-1.21.1-26.1.0.jar"))
     dependencies.add(runCfg.name, files("../common/jars/xaeroworldmap-neoforge-1.21.1-1.41.2.jar"))
 }

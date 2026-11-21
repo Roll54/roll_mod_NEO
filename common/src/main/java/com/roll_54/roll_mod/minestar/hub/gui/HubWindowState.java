@@ -50,6 +50,8 @@ public final class HubWindowState implements WindowGeometry {
     /** Whether the window can be dragged around by its title band. */
     /** Off by default: the hub stays where it opens unless the player turns dragging on. */
     private boolean movable = false;
+    /** Whether the info window and the hub's popup windows can be resized from their edges. Off by default. */
+    private boolean resizableWindows = false;
     /** Whether the desktop windows the hub opened (info, popups) go when the hub screen does. */
     private boolean closeWindowsWithHub = true;
 
@@ -142,6 +144,16 @@ public final class HubWindowState implements WindowGeometry {
         return movable;
     }
 
+    public boolean resizableWindows() {
+        return resizableWindows;
+    }
+
+    public void setResizableWindows(boolean resizable) {
+        if (this.resizableWindows == resizable) return;
+        this.resizableWindows = resizable;
+        dirty = true;
+    }
+
     public void setMovable(boolean movable) {
         if (this.movable == movable) return;
         this.movable = movable;
@@ -199,6 +211,7 @@ public final class HubWindowState implements WindowGeometry {
         json.addProperty("maximized", maximized);
         json.addProperty("tabSide", tabSide.name());
         json.addProperty("movable", movable);
+        json.addProperty("resizableWindows", resizableWindows);
         json.addProperty("closeWindowsWithHub", closeWindowsWithHub);
         com.google.gson.JsonArray orderJson = new com.google.gson.JsonArray();
         tabOrder.forEach(orderJson::add);
@@ -259,6 +272,9 @@ public final class HubWindowState implements WindowGeometry {
         }
         if (json.has("movable") && json.get("movable").isJsonPrimitive()) {
             state.movable = json.get("movable").getAsBoolean();
+        }
+        if (json.has("resizableWindows") && json.get("resizableWindows").isJsonPrimitive()) {
+            state.resizableWindows = json.get("resizableWindows").getAsBoolean();
         }
         if (json.has("splits") && json.get("splits").isJsonObject()) {
             for (var entry : json.getAsJsonObject("splits").entrySet()) {

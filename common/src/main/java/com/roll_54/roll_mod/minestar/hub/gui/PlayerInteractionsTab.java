@@ -398,7 +398,10 @@ public final class PlayerInteractionsTab {
         requestsBar.addEventListener(UIEvents.TICK, e -> applyRequests.run());
         applyRequests.run();
         body.addChildren(left, split, foldBar, right, requestsBar, requestsSlot);
-        root.addChildren(HubSection.header("interactions", section), body, section.overlay(), moneyWindow[0].root(),
+        // 3px further right than other tabs, in line with this tab's right fold bar.
+        UIElement header = HubSection.header("interactions", section);
+        section.nudge(3);
+        root.addChildren(header, body, section.overlay(), moneyWindow[0].root(),
                 configureWindow.root());
 
         /* --------------------------------------------- tick -------------------------------------------- */

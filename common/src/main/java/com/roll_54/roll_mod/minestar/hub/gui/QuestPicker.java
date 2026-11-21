@@ -42,19 +42,32 @@ final class QuestPicker {
 
     final HubSection.Floating popup;
 
-    private final LongConsumer onPick;
+    private LongConsumer onPick;
+    /** Lists the book's chapters instead of its quests (the leaderboard's chapter stages). */
+    private final boolean chapters;
     private final TextField search = new TextField();
     private final ScrollerView list = new ScrollerView();
     private List<QuestGate.Entry> quests = List.of();
     private String shown;
 
     QuestPicker(LongConsumer onPick) {
+        this(onPick, false);
+    }
+
+    QuestPicker(LongConsumer onPick, boolean chapters) {
         this.onPick = onPick;
-        this.popup = HubSection.popup(Component.translatable("gui.roll_mod.hub.questPicker.title"), W, H, this::fill);
+        this.chapters = chapters;
+        this.popup = HubSection.popup(Component.translatable(chapters ? "gui.roll_mod.hub.chapterPicker.title"
+                : "gui.roll_mod.hub.questPicker.title"), W, H, this::fill);
+    }
+
+    /** For a picker built before the screen that uses it (the moderation tab's chapter stages). */
+    void setOnPick(LongConsumer onPick) {
+        this.onPick = onPick;
     }
 
     void open() {
-        quests = QuestGate.all(true);
+        quests = chapters ? QuestGate.chapters(true) : QuestGate.all(true);
         shown = null;
         search.setText("");
         popup.open();

@@ -83,6 +83,29 @@ public final class QuestGate {
         }
     }
 
+    /** Every chapter in the book, in the book's order, as picker entries (no chapter line). Empty without FTB Quests. */
+    public static List<Entry> chapters(boolean client) {
+        if (!LOADED) return List.of();
+        try {
+            return Ftb.chapters(client);
+        } catch (Throwable ignored) {
+            return List.of();
+        }
+    }
+
+    /** A chapter's title, or its hex id if this side has no such chapter. */
+    public static Component chapterTitle(boolean client, long chapterId) {
+        if (LOADED) {
+            try {
+                Component title = Ftb.chapterTitle(client, chapterId);
+                if (title != null) return title;
+            } catch (Throwable ignored) {
+                // Fall through to the id.
+            }
+        }
+        return Component.literal(code(chapterId));
+    }
+
     /** FTB's own spelling of a quest id: 16 hex digits. */
     public static String code(long questId) {
         return String.format("%016X", questId);
@@ -144,6 +167,25 @@ public final class QuestGate {
             out.sort(Comparator.comparing((Entry e) -> e.chapter().getString())
                     .thenComparing(e -> e.title().getString()));
             return out;
+        }
+
+        static List<Entry> chapters(boolean client) {
+            dev.ftb.mods.ftbquests.quest.BaseQuestFile file = file(client);
+            if (file == null) return List.of();
+            List<Entry> out = new ArrayList<>();
+            for (dev.ftb.mods.ftbquests.quest.Chapter chapter : file.getAllChapters()) {
+                Component title = chapter.getTitle();
+                out.add(new Entry(chapter.id, title, Component.empty(),
+                        (title.getString() + " " + chapter.getCodeString()).toLowerCase()));
+            }
+            return out;
+        }
+
+        static Component chapterTitle(boolean client, long chapterId) {
+            dev.ftb.mods.ftbquests.quest.BaseQuestFile file = file(client);
+            if (file == null) return null;
+            dev.ftb.mods.ftbquests.quest.Chapter chapter = file.getChapter(chapterId);
+            return chapter == null ? null : chapter.getTitle();
         }
 
         private static dev.ftb.mods.ftbquests.quest.BaseQuestFile file(boolean client) {

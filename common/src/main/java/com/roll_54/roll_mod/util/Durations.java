@@ -25,6 +25,30 @@ public final class Durations {
     }
 
     /**
+     * A wait in its largest units, the two biggest that apply: {@code 1 міс 3 д}, {@code 6 д 17 год},
+     * {@code 20 год 27 хв}, {@code 27 хв 34 с}, {@code 34 с}. A month is counted as 30 days. Rounds up to the
+     * second, never to nothing. Translated on the side that shows it.
+     */
+    public static net.minecraft.network.chat.Component readable(long millis) {
+        long seconds = Math.max(1L, (Math.max(0L, millis) + 999L) / 1000L);
+        long[] sizes = {30L * 86_400L, 86_400L, 3_600L, 60L, 1L};
+        String[] keys = {"month", "day", "hour", "minute", "second"};
+        net.minecraft.network.chat.MutableComponent out = null;
+        int shown = 0;
+        for (int i = 0; i < sizes.length && shown < 2; i++) {
+            long n = seconds / sizes[i];
+            if (n == 0 && out == null) continue;
+            seconds -= n * sizes[i];
+            if (n > 0) {
+                net.minecraft.network.chat.Component part = net.minecraft.network.chat.Component.translatable("time.roll_mod.unit." + keys[i], n);
+                out = out == null ? part.copy() : out.append(" ").append(part);
+            }
+            shown++;
+        }
+        return out == null ? net.minecraft.network.chat.Component.translatable("time.roll_mod.unit.second", 1) : out;
+    }
+
+    /**
      * The inverse of {@link #parse}: the largest units first, whole minutes and up — {@code 6d23h},
      * {@code 2w}, {@code 45m} — so a value loaded into an input field reads back as itself. {@code 0}
      * for nothing (which {@link #parse} reads as "no end"); anything under a minute rounds up to

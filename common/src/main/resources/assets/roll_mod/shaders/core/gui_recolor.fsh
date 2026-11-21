@@ -36,5 +36,8 @@ void main() {
     if (color.a == 0.0) {
         discard;
     }
-    fragColor = vec4(recolor(color.rgb), color.a) * ColorModulator;
+    // Only fully opaque pixels are recoloured: semi-transparent ones (glass, shading, glints, overlays drawn
+    // with a lowered alpha) keep their own colour, as drawn.
+    vec3 rgb = (color.a * ColorModulator.a) < 0.999 ? color.rgb : recolor(color.rgb);
+    fragColor = vec4(rgb, color.a) * ColorModulator;
 }

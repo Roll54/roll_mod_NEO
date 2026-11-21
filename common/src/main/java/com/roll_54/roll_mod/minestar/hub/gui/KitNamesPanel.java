@@ -78,13 +78,19 @@ final class KitNamesPanel {
     KitNamesPanel(UIElement pane, HubConfirm confirmer, java.util.function.Consumer<String> editItems) {
         Label hint = new Label();
         hint.setText(Component.translatable("gui.roll_mod.hub.moderation.kitNames.hint").withStyle(ChatFormatting.GRAY));
-        hint.layout(l -> l.widthPercent(100).flexShrink(0));
+        // 3px under the mode drop-down above it and over the box below (CLAUDE.md, UI rules).
+        hint.layout(l -> l.widthPercent(100).flexShrink(0).marginTop(3).marginBottom(3));
         hint.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
 
-        UIElement box = new UIElement();
-        box.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).flexBasis(0).flexGrow(1)
-                .paddingAll(4).gapRow(4));
+        // Scrolls: the editor and the new-kit form are taller than the pane on a small window.
+        ScrollerView box = new ScrollerView();
+        box.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
         box.style(s -> s.background(new ColorRectTexture(COLOR_PANEL)));
+        box.scrollerStyle(s -> s.mode(com.lowdragmc.lowdraglib2.gui.ui.data.ScrollerMode.VERTICAL)
+                .verticalScrollDisplay(com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay.AUTO)
+                .horizontalScrollDisplay(com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay.NEVER));
+        box.viewPort(v -> v.layout(l -> l.paddingAll(4)));
+        box.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).gapRow(4)));
 
         empty.setText(Component.translatable("gui.roll_mod.hub.moderation.kitNames.pick").withStyle(ChatFormatting.GRAY));
         empty.layout(l -> l.widthPercent(100));
@@ -212,13 +218,17 @@ final class KitNamesPanel {
                 newCooldown, createButton);
         Label createHint = new Label();
         createHint.setText(Component.translatable("gui.roll_mod.hub.moderation.kits.newHint").withStyle(ChatFormatting.GRAY));
-        createHint.layout(l -> l.widthPercent(100).flexShrink(0));
+        // 3px under the Create button (whose face reaches a pixel below its box on AE2 and Ore).
+        createRow.setOverflowVisible(true);
+        createHint.layout(l -> l.widthPercent(100).flexShrink(0).marginTop(2));
         createHint.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
+        // Empty until there is something to say: a new Label reads "Label" until it is given text.
+        status.setText(Component.empty());
         status.layout(l -> l.widthPercent(100).flexShrink(0));
         status.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
         create.addChildren(createTitle, nameRow, createRow, createHint, status);
 
-        box.addChildren(empty, editor, create);
+        box.addScrollViewChildren(empty, editor, create);
         pane.addChildren(hint, box);
     }
 
@@ -369,11 +379,25 @@ final class KitNamesPanel {
             label.setText(Component.empty()
                     .append(LegacyText.display(kit.displayName().isBlank() ? kit.name() : kit.displayName()))
                     .append(Component.literal("  " + kit.name()).withStyle(ChatFormatting.GRAY)));
-            label.layout(l -> l.flexGrow(1).heightPercent(100));
+            label.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
             label.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
             row.addChild(label);
+            // Up and down the list every player sees. Its place in the whole list, not in the filtered one.
+            int at = ClientKitNamesCache.KITS.indexOf(kit);
+            row.addChildren(
+                    moveButton("▲", at > 0, KitNamePackets.Edit.Action.MOVE_UP, kit.name()),
+                    moveButton("▼", at >= 0 && at < ClientKitNamesCache.KITS.size() - 1,
+                            KitNamePackets.Edit.Action.MOVE_DOWN, kit.name()));
             list.addScrollViewChild(row);
         }
+    }
+
+    private static final int MOVE_SIZE = 14;
+
+    /** A small ▲/▼ on a kit's row; the server moves it and sends the list back, which rebuilds the rows. */
+    private static Button moveButton(String glyph, boolean active, KitNamePackets.Edit.Action action, String kit) {
+        return HubIcons.arrow("▲".equals(glyph), active, MOVE_SIZE,
+                () -> PacketDistributor.sendToServer(new KitNamePackets.Edit(action, kit, 0L)));
     }
 
     private static List<ClientKitNamesCache.Entry> matching(String filter) {

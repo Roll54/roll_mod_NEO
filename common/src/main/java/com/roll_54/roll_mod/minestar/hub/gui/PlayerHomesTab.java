@@ -101,8 +101,9 @@ public final class PlayerHomesTab {
     private static final int EDIT_GAP = 12;
 
     /** The Change window: pin, delete or leave, and the invite picker, which can expand in place. */
-    private static final int CHANGE_W = 220;
-    private static final int CHANGE_H = 250;
+    // Wider and taller than the content, so it never needs to scroll (the in-hub panel still fits the tab).
+    private static final int CHANGE_W = 380;
+    private static final int CHANGE_H = 420;
 
     /** The Invite button's width; the player picker takes whatever is left of the row. */
     private static final int INVITE_W = 68;
@@ -114,7 +115,8 @@ public final class PlayerHomesTab {
      * How many names the picker shows before it scrolls. Fixed rather than sized to its names, so
      * the window does not jump as a search narrows the list.
      */
-    private static final int PICKER_VISIBLE = 5;
+    // 3, not 5: with the description added the Change window outgrew the tab and had to scroll.
+    private static final int PICKER_VISIBLE = 3;
 
     /**
      * Vanilla's own ender-pearl file, for the one-click teleport on the owner's rows.
@@ -128,7 +130,8 @@ public final class PlayerHomesTab {
             ResourceLocation.withDefaultNamespace("textures/item/ender_pearl.png");
 
     /** The pearl's drawn size. Deliberately larger than the {@link #ROW_H} row it sits in. */
-    private static final int PEARL_SIZE = 22;
+    // Vanilla's ender pearl beside the star, at its own 16px (a pixel-art icon is drawn at its own size).
+    private static final int PEARL_SIZE = 16;
 
     /**
      * Centres the pearl on the row's content box. Negative by however much {@link #PEARL_SIZE}
@@ -151,7 +154,20 @@ public final class PlayerHomesTab {
         return build(player, false);
     }
 
+    /**
+     * The list column and the detail panel apart, for the travel tab's three columns (warps | detail | homes).
+     * {@code out[0]} gets them; the returned element is an overlay carrying the popups and the tick, to add on top.
+     */
+    public static UIElement parts(Player player, TravelTab.Pick pick, int me, TravelTab.Parts[] out) {
+        return build(player, false, pick, me, out);
+    }
+
     private static UIElement build(Player player, boolean titled) {
+        return build(player, titled, null, 0, null);
+    }
+
+    private static UIElement build(Player player, boolean titled, @Nullable TravelTab.Pick pick, int me,
+                                   @Nullable TravelTab.Parts[] out) {
         // A column now, so the section title can sit above the list and detail panel. The old row
         // lives on as `body`, unchanged apart from taking its height from the leftover space.
         UIElement root = new UIElement();
@@ -189,7 +205,8 @@ public final class PlayerHomesTab {
 
         Button create = new Button();
         create.setText(Component.translatable("gui.roll_mod.hub.homes.create"));
-        create.layout(l -> l.widthPercent(100).height(ROW_H));
+        // 1px clear above and 2px below: on AE2 and Ore the face reaches a pixel past the box and ran into the search.
+        create.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(1).marginBottom(2));
         create.setOnClick(e -> {
             creating[0] = true;
             selected[0] = null;
@@ -227,14 +244,35 @@ public final class PlayerHomesTab {
         HubSection.Floating changeWindow = HubSection.popup(
                 Component.translatable("gui.roll_mod.hub.change.title"), CHANGE_W, CHANGE_H, content -> {
                     content.layout(l -> l.flexDirection(FlexDirection.COLUMN));
-                    changeBody[0] = content;
+                    // Scrolls inside the window's frame: with the description and the invite picker the body grew
+                    // past the bottom edge and hung out of the window with no frame under it.
+                    ScrollerView scroll = new ScrollerView();
+                    // 3px: room for the buttons' bevelled edges, drawn a pixel past their box on AE2 and Ore.
+                    scroll.viewPort(v -> v.layout(l -> l.paddingAll(3)));
+                    scroll.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
+                    scroll.scrollerStyle(st -> st.mode(ScrollerMode.VERTICAL)
+                            .verticalScrollDisplay(ScrollDisplay.AUTO)
+                            .horizontalScrollDisplay(ScrollDisplay.NEVER));
+                    scroll.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)));
+                    UIElement inner = new UIElement();
+                    inner.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100));
+                    scroll.addScrollViewChild(inner);
+                    content.addChild(scroll);
+                    changeBody[0] = inner;
                 }).windowed();
         // The divider between the list and the panel: drag to resize, double-click to reset.
-        body.addChildren(left, HubSplit.handle(titled ? "homes" : TravelTab.SPLIT_KEY, left, LIST_W, player.level().isClientSide()), detail);
+        if (out == null) {
+            body.addChildren(left, HubSplit.handle(titled ? "homes" : TravelTab.SPLIT_KEY, left, LIST_W, player.level().isClientSide()), detail);
+        } else {
+            out[0] = new TravelTab.Parts(left, detail);
+            // Only an overlay for the popups and the tick: the travel tab places the list and the panel itself.
+            root.layout(l -> l.positionType(dev.vfyjxf.taffy.style.TaffyPosition.ABSOLUTE).left(0).top(0));
+            root.setAllowHitTest(false);
+        }
         // The panel last, so it covers the body when opened.
         if (titled) {
             root.addChildren(HubSection.header("homes", section), body, section.overlay());
-        } else {
+        } else if (out == null) {
             root.addChildren(body);
         }
         root.addChildren(changeWindow.root(), confirmer.root());
@@ -243,7 +281,20 @@ public final class PlayerHomesTab {
         String[] detailSignature = {null};
         String[] changeSignature = {null};
 
+        boolean[] had = {false};
         root.addEventListener(UIEvents.TICK, e -> {
+            // The travel tab shows one panel at a time: picking here takes it over, and a pick on the other side
+            // lets go of this one.
+            if (pick != null) {
+                boolean has = selected[0] != null || creating[0];
+                if (has && !had[0]) pick.active = me;
+                else if (has && pick.active != me) {
+                    selected[0] = null;
+                    creating[0] = false;
+                    has = false;
+                }
+                had[0] = has;
+            }
             List<HomeView> homes = ClientHomeCache.HOMES;
 
             long owned = homes.stream()
@@ -322,7 +373,7 @@ public final class PlayerHomesTab {
     /** Roster state, so the detail panel repaints when a guest accepts, declines or leaves. */
     private static String fingerprint(@Nullable HomeView home) {
         if (home == null) return "none";
-        StringBuilder out = new StringBuilder(home.name());
+        StringBuilder out = new StringBuilder(home.name()).append('|').append(home.description());
         for (HomeView.ShareView share : home.roster()) {
             out.append('|').append(share.name()).append(share.accepted());
         }
@@ -357,10 +408,10 @@ public final class PlayerHomesTab {
         }
         mine = HubOrder.sorted("homes", mine, home -> home.id().toString());
         if (!mine.isEmpty()) {
-            addHeader(list, "gui.roll_mod.hub.homes.section.mine");
+            // No "Homes" header: the list is the homes list already, and the caption only took a row.
             List<String> ids = mine.stream().map(home -> home.id().toString()).toList();
             for (HomeView home : mine) {
-                UIElement row = homeRow(home, selected, creating, inviteDraft);
+                UIElement row = homeRow(home, selected, creating, inviteDraft, ids);
                 HubOrder.draggable(row, "homes", home.id().toString(), () -> ids);
                 list.addScrollViewChild(row);
             }
@@ -409,6 +460,12 @@ public final class PlayerHomesTab {
      */
     private static UIElement homeRow(HomeView home, UUID[] selected, boolean[] creating,
                                      String[] inviteDraft) {
+        return homeRow(home, selected, creating, inviteDraft, null);
+    }
+
+    /** {@code ids}: the player's own list as shown, for the ▲▼ that reorder it; null where a row has none. */
+    private static UIElement homeRow(HomeView home, UUID[] selected, boolean[] creating,
+                                     String[] inviteDraft, @Nullable List<String> ids) {
         boolean isSelected = home.id().equals(selected[0]);
 
         UIElement row = new UIElement();
@@ -428,11 +485,23 @@ public final class PlayerHomesTab {
 
         Label name = new Label();
         name.setText(LegacyText.display(home.name()));
-        name.layout(l -> l.flexGrow(1).height(MARK));
-        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        // Takes only the room left beside the arrows, star and pearl, and is cut there: a long name ran over them.
+        name.layout(l -> l.flexBasis(0).flexGrow(1).flexShrink(1).height(MARK));
+        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
+        name.setOverflowVisible(false);
         row.addChild(name);
 
         // Both relations here may travel: an accepted guest passes PlayerHome.canTeleport.
+        // ▲▼ move it in the player's own order (dragging still works too).
+        if (ids != null) {
+            String id = home.id().toString();
+            int at = ids.indexOf(id);
+            row.addChildren(
+                    HubIcons.rowArrow(true, at > 0, 11, () -> HubOrder.move("homes", id, ids, -1)),
+                    HubIcons.rowArrow(false, at >= 0 && at < ids.size() - 1, 11, () -> HubOrder.move("homes", id, ids, 1)));
+        }
+        // The star pins it to the top (Eden_LD's waystone favourites); the pearl travels.
+        row.addChild(HubPins.star(HubWindowState.PinKind.HOMES, home.id(), 11));
         row.addChild(quickTeleport(home));
 
         return row;
@@ -479,8 +548,9 @@ public final class PlayerHomesTab {
         button.buttonStyle(s -> s.baseTexture(IGuiTexture.EMPTY)
                 .hoverTexture(IGuiTexture.EMPTY)
                 .pressedTexture(IGuiTexture.EMPTY));
-        button.layout(l -> l.width(PEARL_SIZE).height(PEARL_SIZE)
-                .marginTop(PEARL_INSET).marginBottom(PEARL_INSET));
+        // paddingAll(0): a Button's own 3px padding shrank the pearl inside its box to a few pixels.
+        button.layout(l -> l.width(PEARL_SIZE).height(PEARL_SIZE).paddingAll(0).flexShrink(0)
+                .alignSelf(dev.vfyjxf.taffy.style.AlignItems.CENTER));
         button.setOnClick(e -> {
             PacketDistributor.sendToServer(HomeActionPacket.teleport(home.id()));
             // The row under it is the selector for the detail panel. Teleporting from a row must not
@@ -491,7 +561,7 @@ public final class PlayerHomesTab {
 
         UIElement icon = new UIElement();
         icon.layout(l -> l.widthPercent(100).heightPercent(100));
-        icon.style(s -> s.background(SpriteTexture.of(PEARL)));
+        icon.style(s -> s.background(HubIcons.snapped(SpriteTexture.of(PEARL))));
         button.addChild(icon);
 
         hint(button, "gui.roll_mod.hub.homes.teleport.quick");
@@ -518,8 +588,10 @@ public final class PlayerHomesTab {
 
         Label name = new Label();
         name.setText(LegacyText.display(home.name()));
-        name.layout(l -> l.flexGrow(1).height(MARK));
-        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        // Takes only the room left beside the arrows, star and pearl, and is cut there: a long name ran over them.
+        name.layout(l -> l.flexBasis(0).flexGrow(1).flexShrink(1).height(MARK));
+        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
+        name.setOverflowVisible(false);
         row.addChild(name);
 
         // A SpriteTexture rather than an item, as everywhere else in this list — see PEARL.
@@ -577,16 +649,20 @@ public final class PlayerHomesTab {
         row.addChild(ownerHead(home, INVITE_HEAD));
 
         UIElement text = new UIElement();
-        text.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexGrow(1).heightPercent(100));
+        // Only the room left of the mark and the buttons, and cut there: a long name or sender ran under them.
+        text.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexBasis(0).flexGrow(1).flexShrink(1).heightPercent(100));
+        text.setOverflowVisible(false);
 
         Label name = new Label();
         name.setText(LegacyText.display(home.name()));
         name.layout(l -> l.widthPercent(100).height(11));
+        name.textStyle(t -> t.textWrap(TextWrap.HIDE));
 
         Label from = new Label();
         from.setText(Component.translatable("gui.roll_mod.hub.homes.invitedBy", home.ownerName())
                 .withStyle(ChatFormatting.GRAY));
         from.layout(l -> l.widthPercent(100).height(9));
+        from.textStyle(t -> t.textWrap(TextWrap.HIDE));
 
         text.addChildren(name, from);
         row.addChild(text);
@@ -595,31 +671,24 @@ public final class PlayerHomesTab {
         // ItemStackTexture draws outside the UI batch and always on top, so inside a scroller a
         // row that had scrolled away would keep painting its icon over the edge of the list.
         UIElement alert = new UIElement();
-        alert.layout(l -> l.width(MARK).height(MARK).marginTopAuto().marginBottomAuto());
-        alert.style(s -> s.background(Icons.ALERT.copy().setColor(COLOR_ALERT)));
-        row.addChild(alert);
+        // The hub's own notification badge, as on the bookmarks, not a separate orange mark.
+        alert.layout(l -> l.width(HubBadge.SIZE).height(HubBadge.SIZE).marginTopAuto().marginBottomAuto().flexShrink(0));
+        alert.style(s -> s.background(HubBadge.texture()));
+        // Not shown any more (the user asked): the Invites heading and the ✔/✖ say it already.
+        // row.addChild(alert);
 
         row.addChild(answerButton(home, true));
         row.addChild(answerButton(home, false));
         return row;
     }
 
+    /** The same ✔ / ✖ buttons as the Player Interactions tab's requests. */
     private static Button answerButton(HomeView home, boolean accept) {
-        Button button = new Button();
-        button.text.setDisplay(false);
-        button.layout(l -> l.width(ACTION).height(ACTION).marginTopAuto().marginBottomAuto()
-                .paddingAll(1));
-        button.setOnClick(e -> PacketDistributor.sendToServer(accept
-                ? HomeActionPacket.accept(home.id())
-                : HomeActionPacket.decline(home.id())));
-
-        UIElement icon = new UIElement();
-        icon.layout(l -> l.widthPercent(100).heightPercent(100));
-        icon.style(s -> s.background(accept ? Icons.CHECK : Icons.CLOSE));
-        button.addChild(icon);
-
-        hint(button, accept ? "gui.roll_mod.hub.homes.accept" : "gui.roll_mod.hub.homes.decline");
-        return button;
+        return FriendsTab.small(accept ? "✔" : "✖", accept ? ChatFormatting.GREEN : ChatFormatting.RED,
+                accept ? "gui.roll_mod.hub.homes.accept" : "gui.roll_mod.hub.homes.decline",
+                () -> PacketDistributor.sendToServer(accept
+                        ? HomeActionPacket.accept(home.id())
+                        : HomeActionPacket.decline(home.id())));
     }
 
     /* -------------------------------------------- detail -------------------------------------------- */
@@ -660,9 +729,18 @@ public final class PlayerHomesTab {
         Label world = new Label();
         world.setText(Component.translatable("gui.roll_mod.hub.homes.world",
                 home.dimension().toString()).withStyle(ChatFormatting.GRAY));
-        world.layout(l -> l.widthPercent(100).height(LINE_H));
+        world.layout(l -> l.widthPercent(100));
+        world.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
 
         detail.addChildren(coordinates, world);
+
+        if (!home.description().isEmpty()) {
+            Label description = new Label();
+            description.setText(LegacyText.display(home.description()));
+            description.layout(l -> l.widthPercent(100).marginTop(6));
+            description.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
+            detail.addChild(description);
+        }
 
         if (mine) addRoster(detail, home);
 
@@ -700,18 +778,33 @@ public final class PlayerHomesTab {
                                     String[] inviteDraft, InviteSearch inviteSearch, HubConfirm confirmer) {
         Label title = new Label();
         title.setText(LegacyText.display(home.name()));
-        title.layout(l -> l.widthPercent(100).height(LINE_H + 2));
+        // 3px lower than the box's top edge, so the name is not pressed against the frame.
+        title.layout(l -> l.widthPercent(100).height(LINE_H + 5).paddingTop(3));
         title.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         body.addChild(title);
 
-        Button pin = HubPins.toggle(player, HubWindowState.PinKind.HOMES, home.id());
-        pin.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(3));
-        body.addChild(pin);
+        // No "Pin to top" here any more: the star on the home's row does that.
 
         boolean mine = home.relation() == HomeView.Relation.OWNER;
+        // The owner writes the description here; & colour codes work, as in the name.
+        if (mine) {
+            TextField description = new TextField();
+            description.setText(home.description());
+            description.setTextValidator(text -> text.length() <= PlayerHome.MAX_DESCRIPTION);
+            description.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(6));
+            description.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
+                    List.of(Component.translatable("gui.roll_mod.hub.homes.description.tip")), null, null, ItemStack.EMPTY));
+            Button save = new Button();
+            save.setText(Component.translatable("gui.roll_mod.hub.homes.description.save"));
+            save.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(3));
+            save.setOnClick(e -> PacketDistributor.sendToServer(
+                    HomeActionPacket.describe(home.id(), description.getText())));
+            body.addChildren(description, save);
+        }
+
         Button drop = new Button();
         drop.setText(Component.translatable(mine ? "gui.roll_mod.hub.homes.delete" : "gui.roll_mod.hub.homes.leave"));
-        drop.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(EDIT_GAP));
+        drop.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(6));
         Component name = LegacyText.display(home.name());
         drop.setOnClick(e -> confirmer.ask(
                 Component.translatable(mine ? "gui.roll_mod.hub.confirm.homeDelete" : "gui.roll_mod.hub.confirm.homeLeave", name),
@@ -851,10 +944,12 @@ public final class PlayerHomesTab {
         names.style(sy -> sy.background(new ColorRectTexture(COLOR_PANEL)));
 
         UIElement sendRow = new UIElement();
-        sendRow.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H).gapColumn(3));
+        sendRow.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).minHeight(ROW_H).gapColumn(3)
+                .alignItems(dev.vfyjxf.taffy.style.AlignItems.CENTER));
         Label chosen = new Label();
-        chosen.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
-        chosen.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
+        // Wraps instead of being cut off ("Choose a…") beside the Invite button.
+        chosen.layout(l -> l.flexBasis(0).flexGrow(1));
+        chosen.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.WRAP).adaptiveHeight(true));
         Button send = new Button();
         send.setText(Component.translatable("gui.roll_mod.hub.homes.invite"));
         send.layout(l -> l.width(INVITE_W).height(ROW_H).flexShrink(0));

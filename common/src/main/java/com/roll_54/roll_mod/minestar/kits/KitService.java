@@ -316,6 +316,15 @@ public final class KitService {
         return true;
     }
 
+    /** Moves a kit one place up (-1) or down (+1) in the list every player sees. */
+    public static boolean move(ServerPlayer player, String rawName, int delta) {
+        if (!mayRename(player)) return false;
+        if (!KitStore.move(player.server, rawName, delta)) return false;
+        KitViewers.resync(player.server);
+        syncNames(player.server);
+        return true;
+    }
+
     /** {@link #delete} from the moderation tab, which — unlike the command — has to check the player itself. */
     public static boolean deleteFromTab(ServerPlayer player, String rawName) {
         return mayRename(player) && delete(player, rawName);

@@ -158,7 +158,7 @@ public record RecipeSnapshot(
     }
 
     // ---- tag main items: an ingredient drawn from a tag is priced as its main item, not its cheapest.
-    Map<String, Set<String>> mainOf = new LinkedHashMap<>();
+    List<Map.Entry<String, Set<String>>> mainOf = new ArrayList<>();
     config.tagMainItems.get().forEach((itemRef, tagRef) -> {
       List<String> main = items(itemRef, "tagMainItems", problems);
       if (main.size() != 1 || itemRef.trim().startsWith("#")) {
@@ -172,7 +172,23 @@ public record RecipeSnapshot(
         problems.add("tagMainItems: '" + itemRef + "' is not in tag '" + tagRef + "'");
         return;
       }
-      mainOf.put(main.get(0), Set.copyOf(members));
+      mainOf.add(Map.entry(main.get(0), Set.copyOf(members)));
+    });
+    // ---- the recipe tree's choices: exactly this set of items -> priced as the chosen one.
+    config.ingredientChoices.get().forEach((set, chosenRef) -> {
+      List<String> members = new ArrayList<>();
+      for (String id : set.split(",")) {
+        if (id.isBlank()) continue;
+        List<String> found = items(id, "ingredientChoices", problems);
+        members.addAll(found);
+      }
+      List<String> chosen = items(chosenRef, "ingredientChoices", problems);
+      if (chosen.size() != 1 || members.size() < 2) return;
+      if (!members.contains(chosen.get(0))) {
+        problems.add("ingredientChoices: '" + chosenRef + "' is not one of '" + set + "'");
+        return;
+      }
+      mainOf.add(Map.entry(chosen.get(0), Set.copyOf(members)));
     });
     if (!mainOf.isEmpty()) recipes.replaceAll(recipe -> withMainItems(recipe, mainOf));
 
@@ -418,14 +434,14 @@ public record RecipeSnapshot(
    * Narrows every input whose options all belong to a configured tag (and include its main item)
    * down to that main item. When several tags fit, the smallest one wins: it is the most specific.
    */
-  private static Recipe withMainItems(Recipe recipe, Map<String, Set<String>> mainOf) {
+  private static Recipe withMainItems(Recipe recipe, List<Map.Entry<String, Set<String>>> mainOf) {
     List<Input> inputs = new ArrayList<>(recipe.inputs().size());
     boolean changed = false;
     for (Input input : recipe.inputs()) {
       String chosen = null;
       int chosenSize = Integer.MAX_VALUE;
       if (input.options().size() > 1) {
-        for (var e : mainOf.entrySet()) {
+        for (var e : mainOf) {
           Set<String> members = e.getValue();
           if (members.size() < chosenSize
               && input.options().contains(e.getKey())

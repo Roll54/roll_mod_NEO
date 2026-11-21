@@ -109,7 +109,7 @@ public final class HubSection {
      * panel is prose, and prose over a busy list is unreadable. The border keeps it from bleeding
      * into the hub's own dark panel, which is the same family of colour.
      */
-    private static final int PANEL_FILL = 0xF0101010;
+    private static final int PANEL_FILL = 0xFF101010;
     private static final int PANEL_BORDER = 0xFF707070;
 
     /** Above the tab's own contents, including anything the tab itself layers. */
@@ -173,14 +173,23 @@ public final class HubSection {
      * be added to the tab: the button wherever the tab wants it, the panel to the tab's root and
      * last, so it covers everything.
      */
-    public record Info(UIElement button, UIElement overlay) {}
+    public record Info(UIElement button, UIElement overlay) {
+        /**
+         * Moves the I {@code dx} px right of where {@link #header} puts it, so it lines up with this tab's own
+         * right edge (each tab's panels end at a different place).
+         */
+        public Info nudge(int dx) {
+            button.layout(l -> l.marginRight(2 - dx));
+            return this;
+        }
+    }
 
     public static Info info(String id) {
         Panel panel = overlay(id);
 
         UIElement button = new UIElement();
         button.layout(l -> l.width(BUTTON).height(BUTTON));
-        button.style(s -> s.background(Icons.INFORMATION));
+        button.style(s -> s.background(IGuiTexture.dynamic(() -> com.roll_54.roll_mod.minestar.theme.LightText.icon(HubIcons.INFO))));
         button.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
                 List.of(Component.translatable("gui." + RollMod.MODID + ".hub.info.tip")),
                 null, null, ItemStack.EMPTY));
@@ -221,6 +230,13 @@ public final class HubSection {
      * place — is the shared row, which is the point.
      */
     public static UIElement header(Component caption, Info info, UIElement... extras) {
+        return header(() -> caption, info, extras);
+    }
+
+    /** As {@link #header(Component, Info, UIElement...)}, with a caption that may change — read every tick. */
+    public static UIElement header(java.util.function.Supplier<Component> captionOf, Info info, UIElement... extras) {
+        Component[] shown = {captionOf.get()};
+        Component caption = shown[0];
         UIElement header = new UIElement();
         header.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(HEADER_H)
                 .marginBottom(HEADER_GAP));
@@ -231,6 +247,25 @@ public final class HubSection {
         title.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
 
         header.addChild(title);
+        // The AE2 theme: the title shimmers in the ME controller's colours (MeLights). Every other tick, and only while
+        // that is on; back to the plain caption once it is switched off or the theme changes.
+        boolean[] lit = {false};
+        int[] tick = {0};
+        title.addEventListener(com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents.TICK, e -> {
+            // The client's copy only: the server's (and singleplayer's server thread) never reads the client theme.
+            if (FMLEnvironment.dist != Dist.CLIENT || !com.mojang.blaze3d.systems.RenderSystem.isOnRenderThread()) return;
+            Component now = captionOf.get();
+            boolean changed = !now.equals(shown[0]);
+            shown[0] = now;
+            boolean on = com.roll_54.roll_mod.minestar.theme.MeLights.active();
+            if (on) {
+                if ((tick[0]++ & 1) == 0 || changed) title.setText(com.roll_54.roll_mod.minestar.theme.MeLights.title(now));
+                lit[0] = true;
+            } else if (lit[0] || changed) {
+                title.setText(now);
+                lit[0] = false;
+            }
+        });
         // Unclipped: a control taller than the 12px row — a themed button wants 16 — overhangs it
         // evenly instead of being cut off at the top. The row's own height, and with it every tab's
         // alignment, stays the same. This also lets clicks reach the overhang.
@@ -240,7 +275,10 @@ public final class HubSection {
         for (UIElement extra : extras) {
             header.addChild(extra);
         }
-        header.addChild(info.button());
+        // 2px in from the right edge, the I and whatever sits beside it with it.
+        UIElement infoButton = info.button();
+        infoButton.layout(l -> l.marginRight(2));
+        header.addChild(infoButton);
         return header;
     }
 
@@ -267,7 +305,8 @@ public final class HubSection {
 
         UIElement button = new UIElement();
         button.layout(l -> l.width(BUTTON).height(BUTTON).marginRight(BUTTON_GAP));
-        button.style(s -> s.background(icon));
+        // White icons in the theme's text colour on the light themes, as the window controls are.
+        button.style(s -> s.background(IGuiTexture.dynamic(() -> com.roll_54.roll_mod.minestar.theme.LightText.icon(icon))));
         button.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
                 List.of(tip), null, null, ItemStack.EMPTY));
         button.addEventListener(UIEvents.CLICK, e -> floating.toggle());
@@ -443,7 +482,9 @@ public final class HubSection {
         panel.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
                 .left(pos[0]).top(pos[1]).width(width).height(height)
                 .flexDirection(FlexDirection.COLUMN).paddingAll(PANEL_PADDING));
-        panel.style(s -> s.background(frame(panel)).zIndex(PANEL_Z));
+        // The theme's own panel look, the one the hub window wears (its "panel_bg" class), not a flat palette fill.
+        panel.addClass("panel_bg");
+        panel.style(s -> s.zIndex(PANEL_Z));
         panel.setDisplay(false);
         // Swallows clicks landing on the panel itself, so a press meant for it cannot fall through
         // to the tab behind.
@@ -464,6 +505,15 @@ public final class HubSection {
         captionText.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
         captionText.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         caption.addChild(captionText);
+        // Closed by an ✕ in the caption's right end, as a window's own title bar has it.
+        // A theme button with a pixel ✕ on it (HubIcons.CLOSE): it follows the theme like every other button,
+        // rather than vanilla's fixed cross. Level with the caption's text, clear of the underline.
+        Button close = new Button();
+        close.layout(l -> l.width(CLOSE_X).height(CLOSE_X).flexShrink(0).paddingAll(0)
+                .marginTop((HEADER_H - CLOSE_X) / 2f - 2));
+        HubIcons.iconOnly(close, HubIcons.CLOSE, 8, CLOSE_X, CLOSE_X);
+        close.style(s -> s.tooltips(Component.translatable("gui." + RollMod.MODID + ".hub.info.close")));
+        caption.addChild(close);
         drag(panel, pos, width, height);
         keepInsideWhileOpen(panel, pos, width, height);
 
@@ -472,12 +522,9 @@ public final class HubSection {
                 .flexBasis(0).flexGrow(1).gapRow(2));
         body.accept(content);
 
-        Button close = new Button();
-        close.setText(Component.translatable("gui." + RollMod.MODID + ".hub.info.close"));
-        close.layout(l -> l.width(CLOSE_W).height(CLOSE_H).marginTop(HEADER_GAP).marginLeftAuto());
         close.setOnClick(e -> closePanel());
 
-        panel.addChildren(caption, content, close);
+        panel.addChildren(caption, content);
         Floating floating = new Floating(panel, pos, width, height, title, icon, content, close);
         // The panel's Close closes this floating, whichever way it is shown.
         close.setOnClick(e -> floating.close());
@@ -512,19 +559,25 @@ public final class HubSection {
         panel.layout(l -> l.positionType(YogaPositionType.ABSOLUTE)
                 .left(pos[0]).top(pos[1]).width(PANEL_W).height(PANEL_H)
                 .flexDirection(FlexDirection.COLUMN).paddingAll(PANEL_PADDING));
-        panel.style(s -> s.background(frame(panel)).zIndex(PANEL_Z));
+        // The theme's own panel look, the one the hub window wears (its "panel_bg" class), not a flat palette fill.
+        panel.addClass("panel_bg");
+        panel.style(s -> s.zIndex(PANEL_Z));
         panel.setDisplay(false);
         // Swallows clicks landing on the window itself, so a press meant for it cannot fall through
         // to the list behind. Clicks outside it now reach the tab, which is the point of the window
         // being a window: the section stays usable while its explanation is open.
         panel.addEventListener(UIEvents.CLICK, e -> {});
 
+        UIElement titleRow = new UIElement();
+        titleRow.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(HEADER_H)
+                .marginBottom(HEADER_GAP));
+        titleRow.style(s -> s.background(underline()));
         Label title = new Label();
         title.setText(title(id));
-        title.layout(l -> l.widthPercent(100).height(HEADER_H).marginBottom(HEADER_GAP));
+        title.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
         title.textStyle(t -> t.font(HubInfo.FONT)
                 .textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
-        title.style(s -> s.background(underline()));
+        // Draggable only with the windows setting on, like the popups (see drag()).
         drag(panel, pos, PANEL_W, PANEL_H);
         keepInsideWhileOpen(panel, pos, PANEL_W, PANEL_H);
 
@@ -544,12 +597,16 @@ public final class HubSection {
         // panel's own padding. Same override DailyTasksUI makes.
         body.viewPort(v -> v.layout(l -> l.paddingAll(0)));
 
+        // The same themed ✕ as a floating panel's caption, in the title row's right end.
         Button close = new Button();
-        close.setText(Component.translatable("gui." + RollMod.MODID + ".hub.info.close"));
-        close.layout(l -> l.width(CLOSE_W).height(CLOSE_H).marginTop(HEADER_GAP).marginLeftAuto());
+        close.layout(l -> l.width(CLOSE_X).height(CLOSE_X).flexShrink(0).paddingAll(0)
+                .marginTop((HEADER_H - CLOSE_X) / 2f - 2));
+        HubIcons.iconOnly(close, HubIcons.CLOSE, 8, CLOSE_X, CLOSE_X);
+        close.style(s -> s.tooltips(Component.translatable("gui." + RollMod.MODID + ".hub.info.close")));
         close.setOnClick(e -> closePanel());
+        titleRow.addChildren(title, close);
 
-        panel.addChildren(title, body, close);
+        panel.addChildren(titleRow, body);
 
         // Filled now, not on first open. ScrollerView sizes its bars from LAYOUT_CHANGED on its
         // viewport, so lines added after the tree has already been laid out leave it still believing
@@ -586,6 +643,8 @@ public final class HubSection {
             // The frame only: a press on anything inside — a field, a button, the caption — is that
             // child's, and only one landing on the panel's own padding grabs the window.
             if (e.target != panel) return;
+            // Moved only with the setting on (Settings → Hub, "Movable and resizable windows").
+            if (!HubWindowState.get().resizableWindows()) return;
             handle.startDrag(new float[] {pos[0], pos[1]}, null);
             // As Scroller does: the grab must not also read as a press on the panel behind it.
             e.stopPropagation();
@@ -608,6 +667,10 @@ public final class HubSection {
      * a theme change shows at once. The frame is the drag handle: it lights up in the theme's accent
      * while the cursor is on it. The vanilla-looking themes, which have no palette, keep the grey.
      */
+    /** The caption's close ✕. */
+    // Even, like the 8px ✕ on it, so the ✕ sits dead centre.
+    private static final int CLOSE_X = 12;
+
     private static IGuiTexture frame(UIElement panel) {
         return IGuiTexture.dynamic(() -> {
             UiTheme.Palette palette = UiThemeState.get().palette();
@@ -615,9 +678,10 @@ public final class HubSection {
                 return new GuiTextureGroup(new ColorRectTexture(PANEL_FILL),
                         new ColorBorderTexture(FRAME, panel.isHover() ? 0xFFB0B0B0 : PANEL_BORDER));
             }
-            int fill = (palette.raised() & 0x00FFFFFF) | 0xF0000000;
+            // Opaque: a see-through panel let the tab behind show through it.
+            int fill = palette.raised() | 0xFF000000;
             int border = panel.isHover() ? palette.accent() | 0xFF000000
-                    : (palette.accent() & 0x00FFFFFF) | 0x80000000;
+                    : HubBevel.scale(palette.accent() | 0xFF000000, 0.7f);
             return new GuiTextureGroup(new ColorRectTexture(fill), new ColorBorderTexture(FRAME, border));
         });
     }
@@ -631,12 +695,13 @@ public final class HubSection {
         });
     }
 
-    /** A 1px line along the bottom edge of whatever it is drawn on. */
+    /** A 1px line 2px under the bottom edge of whatever it is drawn on. */
     private record UnderlineTexture(int color) implements IGuiTexture {
         @Override
         public void draw(net.minecraft.client.gui.GuiGraphics graphics, float mouseX, float mouseY, float x, float y,
                          float width, float height, float partialTicks) {
-            new ColorRectTexture(color).draw(graphics, mouseX, mouseY, x, y + height - 1, width, 1, partialTicks);
+            // 2px below the row's own bottom edge, clear of the ✕ button beside the caption.
+            new ColorRectTexture(color).draw(graphics, mouseX, mouseY, x, y + height + 1, width, 1, partialTicks);
         }
     }
 

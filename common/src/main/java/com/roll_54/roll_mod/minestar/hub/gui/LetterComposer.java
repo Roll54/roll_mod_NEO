@@ -58,7 +58,7 @@ final class LetterComposer {
     private static final int ROW_H = 16;
     private static final int LINE_H = 12;
     private static final int GAP = 3;
-    private static final int PLUS = 16;
+    private static final int PLUS = 15;
     private static final int FIELD_W = 44;
     private static final String DEFAULT_EXPIRY = "7d";
 
@@ -165,14 +165,20 @@ final class LetterComposer {
                 List.of(Component.translatable("gui.roll_mod.hub.moderation.letters.add.tip")),
                 null, null, ItemStack.EMPTY));
         rewardStrip = new UIElement();
-        rewardStrip.layout(l -> l.flexGrow(1));
+        // 3px clear of the + button beside it.
+        rewardStrip.layout(l -> l.flexGrow(1).marginLeft(3));
         rewards.addChildren(plus, rewardStrip);
 
         status = new Label();
-        status.layout(l -> l.widthPercent(100));
+        // 3px clear of the + button above it.
+        status.layout(l -> l.widthPercent(100).marginTop(3).marginBottom(3));
         status.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
 
         buttons = row();
+        // 1px off the pane's bottom edge, which clips, and unclipped itself: on AE2 and Ore a button's face reaches a
+        // pixel past its box, and its bottom border was cut off.
+        buttons.layout(l -> l.marginBottom(1));
+        buttons.setOverflowVisible(true);
 
         pane.addChildren(top, iconRow, body, rewards, status, buttons);
 

@@ -73,7 +73,9 @@ public final class AuctionUI {
    * Wide enough for the longest sort label — uk_ua's "Скоро завершаться" needs ~100px, and a
    * Button spends 8 of its width on padding and margins. The search field takes the rest of the row.
    */
-  private static final int SORT_W = 120;
+  private static final int SORT_W = 74;
+  // Leaves the title room in the row.
+  private static final int SEARCH_W = 120;
   private static final int HEAD_BTN_W = 56;
   /**
    * The header buttons keep a full button's height and overhang the shared 12px title row by
@@ -181,14 +183,24 @@ public final class AuctionUI {
     historyBtn.layout(l -> l.width(HEAD_BTN_W).height(HEAD_BTN_H).flexShrink(0)
         .marginTop(-HEAD_BTN_OVERHANG).marginBottom(-HEAD_BTN_OVERHANG).marginRight(4));
 
+    // The browse panel's search and sort, up in the title row left of Create; shown only while browsing.
+    UIElement toolbar = new UIElement();
+    toolbar.layout(l -> l.flexDirection(FlexDirection.ROW).height(HEAD_BTN_H).flexShrink(1)
+        .alignItems(AlignItems.CENTER).marginTop(-HEAD_BTN_OVERHANG).marginBottom(-HEAD_BTN_OVERHANG)
+        .marginRight(4).marginLeft(6));
+    toolbar.setOverflowVisible(true);
+    root.addEventListener(UIEvents.TICK, e -> {
+      boolean browsing = shown[0] == 0;
+      if (toolbar.isDisplayed() != browsing) toolbar.setDisplay(browsing);
+    });
     root.addChild(HubSection.header(
-        Component.translatable("menu.roll_mod.ah.title"), section, createBtn, collectionBtn,
+        Component.translatable("menu.roll_mod.ah.title"), section, toolbar, createBtn, collectionBtn,
         historyBtn));
 
     UUID[] selected = {null};
     Runnable[] rebuildDetail = {() -> {}};
 
-    buildBrowse(player, browse, select, selected, rebuildDetail);
+    buildBrowse(player, browse, select, selected, rebuildDetail, toolbar);
     buildDetail(player, detail, select, selected, rebuildDetail);
     buildCreate(player, create, select);
     buildCollection(player, collection, select);
@@ -251,7 +263,7 @@ public final class AuctionUI {
       UIElement panel,
       IntConsumer select,
       UUID[] selected,
-      Runnable[] rebuildDetail) {
+      Runnable[] rebuildDetail, UIElement toolbar) {
     String[] filter = {""};
     int[] sort = {0};
     int[] page = {0};
@@ -260,8 +272,6 @@ public final class AuctionUI {
 
     panel.layout(l -> l.paddingHorizontal(GRID_X));
 
-    UIElement toolbar = row(14);
-    toolbar.layout(l -> l.marginTop(2));
 
     TextField search = new TextField();
     search.setText("");
@@ -270,7 +280,8 @@ public final class AuctionUI {
           filter[0] = t;
           page[0] = 0;
         });
-    search.layout(l -> l.flexGrow(1).height(14).marginRight(4));
+    // A fixed, shorter search with the sort button right beside it (no longer pushed to the far end).
+    search.layout(l -> l.width(SEARCH_W).flexShrink(1).height(14).marginRight(4));
 
     Button sortBtn = new Button();
     sortBtn.setText(sortLabel(sort[0]));
@@ -280,7 +291,9 @@ public final class AuctionUI {
           sortBtn.setText(sortLabel(sort[0]));
           page[0] = 0;
         });
-    sortBtn.layout(l -> l.width(SORT_W).height(14).flexShrink(0));
+    // The same size and spacing as Create, Collection and History beside it.
+    // As tall as the buttons beside it, and wide enough for its longest label ("Ending soon") with 3px either side.
+    sortBtn.layout(l -> l.width(SORT_W).height(HEAD_BTN_H).flexShrink(0));
     toolbar.addChildren(search, sortBtn);
 
     // Wraps plain slot-sized cells, so a wider window is simply more columns. Clipped, because a
@@ -311,7 +324,7 @@ public final class AuctionUI {
     next.layout(l -> l.width(20).height(FIELD_H).flexShrink(0));
     pager.addChildren(prev, pageLabel, next);
 
-    panel.addChildren(toolbar, grid, pager);
+    panel.addChildren(grid, pager);
 
     String[] sig = {null};
     Runnable rebuild =
@@ -560,6 +573,8 @@ public final class AuctionUI {
     // height than it needs in a small window.
     ScrollerView form = scroller();
     form.viewContainer(c -> c.layout(l -> l.paddingHorizontal(INSET).paddingTop(8)));
+    // The form fits without scrolling now that the price sits beside the days: no bar.
+    form.scrollerStyle(st -> st.verticalScrollDisplay(ScrollDisplay.NEVER));
     panel.addChild(form);
 
     ItemSlot pick = VendorUIHelper.phantomSlot();
@@ -695,7 +710,8 @@ public final class AuctionUI {
 
     UIElement daysGroup = new UIElement();
     daysGroup.layout(l -> l.flexDirection(FlexDirection.COLUMN).marginTop(8).flexShrink(0));
-    Label daysLabel = fieldLabel(Component.translatable("menu.roll_mod.ah.daysField"), 120);
+    // As wide as its field, not 120: the wide label held the price far off to the right.
+    Label daysLabel = fieldLabel(Component.translatable("menu.roll_mod.ah.daysField"), 50);
     TextField daysField = VendorUIHelper.intField("10", t -> {});
     daysField.layout(l -> l.width(50).height(FIELD_H).marginTop(2));
     daysGroup.addChildren(daysLabel, daysField);
@@ -731,7 +747,13 @@ public final class AuctionUI {
     buttons.layout(l -> l.marginTop(10).marginBottom(4));
     buttons.addChildren(list, back);
 
-    form.addScrollViewChildren(itemRow, pickHint, fixedGroup, bidGroup, daysGroup, buttons);
+    // Days, then the price (or the bidding fields) right beside it; List/Back under both.
+    daysGroup.layout(l -> l.marginRight(4));
+    UIElement fields = new UIElement();
+    fields.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexShrink(0));
+    fields.addChildren(daysGroup, fixedGroup, bidGroup);
+
+    form.addScrollViewChildren(itemRow, pickHint, fields, buttons);
   }
 
   /**
@@ -844,13 +866,16 @@ public final class AuctionUI {
   private static void buildHistory(Player player, UIElement panel, IntConsumer select) {
     ScrollerView list = scroller();
     list.layout(l -> l.marginTop(4).marginHorizontal(EDGE).widthAuto());
-    list.viewPort(v -> v.layout(l -> l.paddingAll(0)));
+    // Inset from the list's frame, like every other list: at 0 the first line ran into it.
+    list.viewPort(v -> v.layout(l -> l.paddingAll(7)));
     panel.addChild(list);
 
     Button refresh = new Button();
-    refresh.setText(Component.literal("⟳"));
     refresh.setOnClick(e -> requestHistory());
-    refresh.layout(l -> l.width(FIELD_H + 4).height(FIELD_H).flexShrink(0).marginRight(10));
+    refresh.layout(l -> l.width(FIELD_H + 4).height(FIELD_H).flexShrink(0).marginRight(10).paddingAll(0));
+    // The hub's pixel refresh icon, not a "⟳" glyph.
+    com.roll_54.roll_mod.minestar.hub.gui.HubIcons.iconOnly(refresh,
+        com.roll_54.roll_mod.minestar.hub.gui.HubIcons.REFRESH, 10, FIELD_H + 4, FIELD_H);
 
     Button back = new Button();
     back.setText(Component.translatable("menu.roll_mod.ah.back"));
@@ -956,7 +981,8 @@ public final class AuctionUI {
   private static Label historyNote(String key) {
     Label label = new Label();
     label.setText(Component.translatable(key).withStyle(ChatFormatting.GRAY));
-    label.layout(l -> l.widthPercent(100).height(HIST_ROW_H));
+    // 3px more in from the list's frame on its own: the theme's frame is up to 4px thick (CLAUDE.md, UI rules).
+    label.layout(l -> l.widthPercent(100).height(HIST_ROW_H).marginLeft(3).marginTop(3));
     label.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
     return label;
   }

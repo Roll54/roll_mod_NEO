@@ -51,6 +51,7 @@ public final class UiFont {
     private static Choice choice;
     @Nullable private static Stylesheet sheet;
     @Nullable private static Choice sheetFor;
+    private static int sheetGeneration = -1;
 
     private UiFont() {}
 
@@ -69,8 +70,17 @@ public final class UiFont {
     public static synchronized Stylesheet sheet() {
         Choice current = get();
         if (current.font == null) return null;
-        if (sheet == null || sheetFor != current) {
-            sheet = Stylesheet.parse(SELECTORS + " {\n  font: " + current.font + ";\n}\n");
+        // Rebuilt whenever a theme sheet was (re)parsed, so this one is newer and wins ties — see ThemeSheets.generation.
+        if (sheet == null || sheetFor != current || sheetGeneration != ThemeSheets.generation()) {
+            sheetGeneration = ThemeSheets.generation();
+            // Each selector carries a :not() that always matches. A theme's rules match the same elements with the
+            // same specificity, and LdLib breaks such ties by the rule's place in its own sheet, not by which sheet
+            // came last — so a 600-line theme's "text, label" beat this one-rule sheet, and every label stayed in the
+            // theme's JetBrains Mono while buttons (matched more specifically here) switched. The :not() outranks it.
+            String selectors = java.util.Arrays.stream(SELECTORS.split(","))
+                    .map(sel -> sel.trim() + ":not(.__roll_mod_font_never__)")
+                    .collect(java.util.stream.Collectors.joining(", "));
+            sheet = Stylesheet.parse(selectors + " {\n  font: " + current.font + ";\n}\n");
             sheetFor = current;
         }
         return sheet;

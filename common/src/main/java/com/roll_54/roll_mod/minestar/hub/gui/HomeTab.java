@@ -83,7 +83,9 @@ public final class HomeTab {
         HubSection.Info history = HistoryPanel.build();
 
         UIElement body = new UIElement();
-        body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexGrow(1)
+        // flexBasis(0): with the default auto basis the row took its content's height, so the level card's scroller
+        // below grew past the tab instead of scrolling.
+        body.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).flexBasis(0).flexGrow(1)
                 .gapColumn(PADDING));
         // The doll is told when the information window is up, because it draws over everything —
         // see PlayerPreviewElement's class javadoc.
@@ -131,7 +133,8 @@ public final class HomeTab {
 
     /** Minestar's level pink, as the friends and interactions tabs show it. */
     private static final int COLOR_LEVEL = 0xFF6EC7;
-    private static final int COLOR_STARCOINS = 0xFFD54F;
+    /** The starcoin colour the daily tasks' reroll price uses too: a light orchid. */
+    private static final int COLOR_STARCOINS = 0xD7A1F9;
 
     /* ------------------------------------------- the header ------------------------------------------ */
 
@@ -154,7 +157,7 @@ public final class HomeTab {
                 .width(HEAD + 4).height(HEAD + 4).paddingAll(2));
         frame.style(s -> s.background(new com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup(
                 new ColorRectTexture(0x90000000),
-                new com.lowdragmc.lowdraglib2.gui.texture.ColorBorderTexture(1, COLOR_FRAME))));
+                com.roll_54.roll_mod.minestar.theme.MeLights.border(COLOR_FRAME))));
         PlayerHeadElement head = new PlayerHeadElement(player.getUUID(), player.getGameProfile().getName());
         head.layout(l -> l.width(HEAD).height(HEAD));
         frame.addChild(head);
@@ -165,7 +168,7 @@ public final class HomeTab {
                 .textAlignVertical(Vertical.CENTER).fontSize(7).textColor(0xFFFFFFFF));
         badge.style(s -> s.background(new com.lowdragmc.lowdraglib2.gui.texture.GuiTextureGroup(
                 new ColorRectTexture(0xFF1B1530),
-                new com.lowdragmc.lowdraglib2.gui.texture.ColorBorderTexture(1, COLOR_FRAME))));
+                com.roll_54.roll_mod.minestar.theme.MeLights.border(COLOR_FRAME))));
         badge.setDisplay(false);
         avatar.addChildren(frame, badge);
 
@@ -175,8 +178,12 @@ public final class HomeTab {
         nameLine.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(14).gapColumn(5)
                 .alignItems(dev.vfyjxf.taffy.style.AlignItems.CENTER));
         Label name = new Label();
-        name.setText(Component.literal(player.getGameProfile().getName()));
-        name.layout(l -> l.height(14));
+        Component nameText = Component.literal(player.getGameProfile().getName());
+        name.setText(nameText);
+        // A label in a row gets no width from its text: without one the nickname collapsed to nothing
+        // and the rank badge after it was drawn where the name should be. Scaled from the 9px font to 13.
+        float nameWidth = ClientFont.layoutWidth(nameText) * 13f / 9f + 2;
+        name.layout(l -> l.height(14).width(nameWidth).flexShrink(0));
         name.textStyle(t -> t.fontSize(13).textAlignVertical(Vertical.CENTER));
         Label group = new Label();
         group.layout(l -> l.height(12).paddingHorizontal(3));
@@ -215,6 +222,10 @@ public final class HomeTab {
         if (grouped) {
             MutableComponent text = Component.literal(own.groupName());
             if (own.groupColor() >= 0) text = text.withColor(own.groupColor());
+            if (!text.equals(header.group().getText())) {
+                float groupWidth = ClientFont.layoutWidth(text) + 6; // + its horizontal padding
+                header.group().layout(l -> l.width(groupWidth).flexShrink(0));
+            }
             setIfChanged(header.group(), text);
         }
         float progress = own.levelXpNeeded() > 0 ? Math.min(1f, (float) own.levelXp() / own.levelXpNeeded()) : 0f;
@@ -339,7 +350,11 @@ public final class HomeTab {
                 null, null, ItemStack.EMPTY));
 
         // As on Eden's profile: what the level gives, and the rewards earned on the site. No sync values.
-        column.addChild(LevelRewardsCard.build(player));
+        // In a scroller of its own taking the rest of the column: with many perks and site rewards it ran off the bottom.
+        com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView rewardsScroll = StaffUi.scroller();
+        rewardsScroll.layout(l -> l.marginTop(2));
+        rewardsScroll.addScrollViewChild(LevelRewardsCard.build(player));
+        column.addChild(rewardsScroll);
 
         return column;
     }
@@ -418,6 +433,12 @@ public final class HomeTab {
     private static final class ClientFont {
         static int width(Component text) {
             if (!FMLEnvironment.dist.isClient()) return Integer.MAX_VALUE / 4;
+            return net.minecraft.client.Minecraft.getInstance().font.width(text);
+        }
+
+        /** A text's width for sizing an element: 0 on the dedicated server, which draws nothing. */
+        static int layoutWidth(Component text) {
+            if (!FMLEnvironment.dist.isClient()) return 0;
             return net.minecraft.client.Minecraft.getInstance().font.width(text);
         }
     }

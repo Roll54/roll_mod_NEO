@@ -86,6 +86,10 @@ public final class RollMod {
         // Cosmetics keep their own storage and their own config: they are permanent entitlements
         // that must outlive any world, and must not depend on an economy being configured at all.
         CosmeticsConfig.init();
+        // This player's own client settings (title screen etc.): never synced, so client only.
+        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+            com.roll_54.roll_mod.config.RollClientConfig.init();
+        }
         container.registerConfig(net.neoforged.fml.config.ModConfig.Type.COMMON, CleanDropConfig.SPEC);
         MenuTypes.register(eventBus);
         RecipeRegistry.register(eventBus);
@@ -160,6 +164,8 @@ public final class RollMod {
             CurrencyTaskType.init();
             CurrencyRewardType.init();
             com.roll_54.roll_mod.minestar.hub.warp.ftb.WarpUnlockRewardType.init();
+            com.roll_54.roll_mod.minestar.dailytasks.ftb.DailySlotRewardType.init();
+            com.roll_54.roll_mod.cosmetics.ftb.RandomWeaponSkinRewardType.init();
         }
 
         event.enqueueWork(() -> {

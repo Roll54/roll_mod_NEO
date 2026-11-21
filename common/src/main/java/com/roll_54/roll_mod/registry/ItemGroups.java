@@ -187,7 +187,7 @@ public final class ItemGroups {
         if (item instanceof TieredItem || item instanceof ArmorItem || item instanceof ISimpleEnergyItem
                 || item instanceof DrillModuleItem || item instanceof InjectionItem
                 || item instanceof ComponentApplicatorItem || item instanceof SkinAnchorItem
-                || item instanceof NetheriteSteamDrillItem) {
+                || item instanceof NetheriteSteamDrillItem || item instanceof net.minecraft.world.item.FishingRodItem) {
             return Category.TOOLS_ARMOR;
         }
         if (isFood(item)) return Category.FOOD;

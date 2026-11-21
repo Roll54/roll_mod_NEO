@@ -28,7 +28,18 @@ import java.util.UUID;
  */
 public record PlayerHome(UUID id, UUID owner, String ownerName, String name,
                          ResourceLocation dimension, double x, double y, double z,
-                         float yaw, float pitch, long created, List<HomeShare> shares) {
+                         float yaw, float pitch, long created, List<HomeShare> shares,
+                         String description) {
+
+    /** Without a description — every home made before descriptions existed, and the callers that make one fresh. */
+    public PlayerHome(UUID id, UUID owner, String ownerName, String name,
+                      ResourceLocation dimension, double x, double y, double z,
+                      float yaw, float pitch, long created, List<HomeShare> shares) {
+        this(id, owner, ownerName, name, dimension, x, y, z, yaw, pitch, created, shares, "");
+    }
+
+    /** The longest description the tab's field accepts and the server keeps. */
+    public static final int MAX_DESCRIPTION = 200;
 
     /** The longest name the create form will accept, and the server enforces. */
     public static final int MAX_NAME = 24;
@@ -74,12 +85,18 @@ public record PlayerHome(UUID id, UUID owner, String ownerName, String name,
         return new PlayerHome(id, owner, ownerName, name,
                 player.level().dimension().location(),
                 player.getX(), player.getY(), player.getZ(),
-                player.getYRot(), player.getXRot(), created, shares);
+                player.getYRot(), player.getXRot(), created, shares, description);
+    }
+
+    /** The same home with a new description; blank clears it. */
+    public PlayerHome withDescription(String text) {
+        return new PlayerHome(id, owner, ownerName, name, dimension, x, y, z, yaw, pitch, created,
+                shares, trim(text, MAX_DESCRIPTION));
     }
 
     public PlayerHome withShares(List<HomeShare> shares) {
         return new PlayerHome(id, owner, ownerName, name, dimension, x, y, z, yaw, pitch, created,
-                List.copyOf(shares));
+                List.copyOf(shares), description);
     }
 
     public boolean isOwner(UUID player) {
@@ -165,6 +182,7 @@ public record PlayerHome(UUID id, UUID owner, String ownerName, String name,
         tag.putFloat("yaw", yaw);
         tag.putFloat("pitch", pitch);
         tag.putLong("created", created);
+        if (!description.isEmpty()) tag.putString("description", description);
 
         ListTag shared = new ListTag();
         for (HomeShare share : shares) {
@@ -192,6 +210,6 @@ public record PlayerHome(UUID id, UUID owner, String ownerName, String name,
                 ResourceLocation.parse(tag.getString("dimension")),
                 tag.getDouble("x"), tag.getDouble("y"), tag.getDouble("z"),
                 tag.getFloat("yaw"), tag.getFloat("pitch"),
-                tag.getLong("created"), List.copyOf(shares));
+                tag.getLong("created"), List.copyOf(shares), tag.getString("description"));
     }
 }

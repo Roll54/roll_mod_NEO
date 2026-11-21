@@ -35,17 +35,17 @@ public final class ChatChannelState {
      */
     private static final List<ChatButton> BUILT_INS = List.of(
             ChatButton.ALL_BUTTON, ChatButton.LOCAL_BUTTON, ChatButton.GLOBAL_BUTTON, ChatButton.TEAM_BUTTON, ChatButton.PM_BUTTON,
-            ChatButton.SPAM_BUTTON, ChatButton.TRADE_BUTTON, ChatButton.DEV_BUTTON);
+            ChatButton.TRADE_BUTTON, ChatButton.SPAM_BUTTON, ChatButton.DEV_BUTTON);
 
     private static ChatChannelState instance;
 
     /** Every button, hidden ones included, in display order. */
     private final List<ChatButton> order = new ArrayList<>(BUILT_INS);
     /**
-     * Unticked buttons: not over the chat box. Spam and DEV start unticked — noise next to people
-     * talking — until the player ticks them in Settings.
+     * Unticked buttons: not over the chat box. Every button starts ticked (DEV still shows only to
+     * operators, ChatButtonsHandler); Spam and DEV start out of All instead (notInAll).
      */
-    private final Set<String> hidden = new HashSet<>(Set.of(ChatChannel.SPAM.id(), ChatChannel.DEV.id()));
+    private final Set<String> hidden = new HashSet<>();
     /**
      * Channels the All tab leaves out, set apart from {@link #hidden}: a channel can have no button over the
      * chat box and still show in All, or the other way round. Spam and DEV start out of All.

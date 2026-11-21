@@ -39,6 +39,8 @@ public final class DailyTaskRegistry {
         if (!tasks.isEmpty()) return;
 
         List<DailyTask> found = AutoScanner.scan(AutoDailyTask.class, DailyTask.class);
+        // A task per Tide fish, made rather than annotated (there are 95).
+        found.addAll(TideFishTasks.all());
 
         // Deterministic order: the roll seeds off it, and the GUI syncs positions in this list.
         found.sort(Comparator.comparing(DailyTask::id));

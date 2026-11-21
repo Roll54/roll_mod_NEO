@@ -3,7 +3,6 @@ package com.roll_54.roll_mod.data.datagen;
 import com.roll_54.roll_mod.items.BlockogrizItem;
 import com.roll_54.roll_mod.items.HerbicideItem;
 import com.roll_54.roll_mod.items.modularsaber.ModularSaberItem;
-import com.roll_54.roll_mod.items.electricItems.refactored.ComponentEnergyDrill;
 import com.roll_54.roll_mod.registry.ItemRegistry;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinition;
 import com.roll_54.roll_mod.data.datagen.ore.OreDefinitions;
@@ -63,6 +62,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
         addTierArmorTags();
         addHerbicideTag();
         addVanillaLikeTags();
+        addCropFoodTags();
 
         var raw = tag(RAW_ORE);
         var crushed = tag(CRUSHED_ORE);
@@ -175,7 +175,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
      * <p>{@code SkinCategory#of} now also probes {@code instanceof} and {@code ItemAbility} at
      * runtime, so this no longer has to enumerate everything skinnable — anything from another mod
      * classifies itself. What it still has to cover is the mod's own gear that neither probe can
-     * see: {@code EnergySwordItem} and {@code ComponentEnergyDrill} extend plain {@link Item} and
+     * see: {@code EnergySwordItem} extends plain {@link Item} and
      * answer no ability. Emitting those here keeps a misclassification visible in
      * {@code src/generated/resources} instead of showing up only as a skin that refuses to apply.
      *
@@ -198,7 +198,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
             // as a pickaxe. SkinCategory repeats this ordering for untagged third-party tools.
             if (item instanceof ModularSaberItem || item instanceof SwordItem) {
                 swords.add(item);
-            } else if (item instanceof ComponentEnergyDrill
+            } else if (item instanceof com.roll_54.roll_mod.items.modulardrill.ModularDrillItem
                     || item instanceof BlockogrizItem
                     || item instanceof PickaxeItem) {
                 pickaxes.add(item);
@@ -262,7 +262,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
                 tag(ItemTags.AXES).add(item);
                 tag(ItemTags.SHOVELS).add(item);
                 miningTool(item);
-            } else if (item instanceof PickaxeItem || item instanceof ModularDrillItem || item instanceof ComponentEnergyDrill) {
+            } else if (item instanceof PickaxeItem || item instanceof ModularDrillItem) {
                 tag(ItemTags.PICKAXES).add(item);
                 miningTool(item);
             } else if (item instanceof AxeItem) {
@@ -311,6 +311,27 @@ public class RollItemTagProvider extends ItemTagsProvider {
         }
     }
 
+    /**
+     * Food and drinks from the crops register, which {@link #addVanillaLikeTags} does not walk: the fruit, berries and
+     * vegetables themselves ({@code c:foods/*}), and every harvest as {@code c:crops/<crop>}.
+     */
+    private void addCropFoodTags() {
+        for (var holder : ItemRegistry.CROPS.getEntries()) {
+            Item item = holder.get();
+            String id = holder.getId().getPath();
+            ItemStack stack = item.getDefaultInstance();
+            FoodProperties food = stack.get(DataComponents.FOOD);
+            if (item.getUseAnimation(stack) == UseAnim.DRINK) {
+                tag(Tags.Items.DRINKS).add(item);
+            } else if (food != null) {
+                tag(Tags.Items.FOODS).add(item);
+                foodKind(item, id, food);
+                tag(Tags.Items.CROPS).add(item);
+                tag(commonTag("crops/" + id)).add(item);
+            }
+        }
+    }
+
     private void miningTool(Item item) {
         tag(Tags.Items.MINING_TOOL_TOOLS).add(item);
         tag(Tags.Items.TOOLS).add(item);
@@ -325,6 +346,12 @@ public class RollItemTagProvider extends ItemTagsProvider {
         if (id.contains("pie") && !id.contains("pineapple")) tag(Tags.Items.FOODS_PIE).add(item);
         if (id.contains("candy") || id.contains("gum")) tag(Tags.Items.FOODS_CANDY).add(item);
         if (id.startsWith("golden_")) tag(Tags.Items.FOODS_GOLDEN).add(item);
+        // A mush is eaten from a bowl, like a stew.
+        if (id.endsWith("_mush")) tag(Tags.Items.FOODS_SOUP).add(item);
+        // Burgers: cooked meat in a bun.
+        if (id.contains("burger")) tag(Tags.Items.FOODS_COOKED_MEAT).add(item);
+        // Jam is cooked fruit.
+        if (id.endsWith("_jam")) tag(Tags.Items.FOODS_FRUIT).add(item);
         for (FoodProperties.PossibleEffect effect : food.effects()) {
             var type = effect.effect().getEffect();
             if (type.is(MobEffects.POISON) || type.is(MobEffects.HUNGER)) {

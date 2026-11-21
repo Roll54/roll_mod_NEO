@@ -26,7 +26,9 @@ public enum LedgerReason {
     PLOT(Group.OTHER, false),
     WARP(Group.OTHER, false),
     TRANSFER(Group.OTHER, false),
-    ADMIN(Group.OTHER, false);
+    ADMIN(Group.OTHER, false),
+    /** A battle pass level's money reward. */
+    BATTLE_PASS(Group.REWARD, false);
 
     /** What the history's filter drop-down groups by. */
     public enum Group { AUCTION, VENDING, REWARD, OTHER }

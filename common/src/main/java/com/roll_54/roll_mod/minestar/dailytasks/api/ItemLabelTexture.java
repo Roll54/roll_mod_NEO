@@ -77,7 +77,9 @@ public final class ItemLabelTexture extends TransformTexture {
         if (stack.isEmpty()) return;
         graphics.flush();
         graphics.pose().pushPose();
-        graphics.pose().scale(width / CELL, height / CELL, 1);
+        // Depth scaled with the rest: a 1 on z skewed the normals of a flat item's quad, and vanilla's GUI lighting
+        // then shaded it like a block's side — items that are not blocks came out darkened.
+        graphics.pose().scale(width / CELL, height / CELL, Math.min(width, height) / CELL);
         graphics.pose().translate(x * CELL / width, y * CELL / height, -200);
         // No decoration text of its own: the count is meaningless here and the caption replaces it.
         DrawerHelper.drawItemStack(graphics, stack, 0, 0, drawColor, null);
@@ -87,6 +89,7 @@ public final class ItemLabelTexture extends TransformTexture {
 
     @OnlyIn(Dist.CLIENT)
     private void drawLabel(GuiGraphics graphics) {
+        if (label == null || label.isEmpty()) return;
         Font font = Minecraft.getInstance().font;
         int width = font.width(label);
         float scale = width <= CELL ? 1f : Math.max(MIN_SCALE, (float) CELL / width);

@@ -110,7 +110,20 @@ public final class WarpTab {
         return build(player, false);
     }
 
+    /**
+     * The list column and the detail panel apart, for the travel tab's three columns (warps | detail | homes).
+     * {@code out[0]} gets them; the returned element is an overlay carrying the popups and the tick, to add on top.
+     */
+    public static UIElement parts(Player player, TravelTab.Pick pick, int me, TravelTab.Parts[] out) {
+        return build(player, false, pick, me, out);
+    }
+
     private static UIElement build(Player player, boolean titled) {
+        return build(player, titled, null, 0, null);
+    }
+
+    private static UIElement build(Player player, boolean titled, @Nullable TravelTab.Pick pick, int me,
+                                   @Nullable TravelTab.Parts[] out) {
         // A column now, so the section title can sit above the list and detail panel. The old row
         // lives on as `body`, unchanged apart from taking its height from the leftover space.
         UIElement root = new UIElement();
@@ -140,7 +153,8 @@ public final class WarpTab {
 
         Button create = new Button();
         create.setText(Component.translatable("gui.roll_mod.hub.warp.create"));
-        create.layout(l -> l.widthPercent(100).height(ROW_H));
+        // 1px clear above and 2px below: on AE2 and Ore the face reaches a pixel past the box and ran into the search.
+        create.layout(l -> l.widthPercent(100).height(ROW_H).marginTop(1).marginBottom(2));
         create.setOnClick(e -> {
             creating[0] = true;
             selected[0] = null;
@@ -168,7 +182,14 @@ public final class WarpTab {
 
         left.addChildren(create, search, list);
         // The divider between the list and the panel: drag to resize, double-click to reset.
-        body.addChildren(left, HubSplit.handle(titled ? "warps" : TravelTab.SPLIT_KEY, left, LIST_W, player.level().isClientSide()), detail);
+        if (out == null) {
+            body.addChildren(left, HubSplit.handle(titled ? "warps" : TravelTab.SPLIT_KEY, left, LIST_W, player.level().isClientSide()), detail);
+        } else {
+            out[0] = new TravelTab.Parts(left, detail);
+            // Only an overlay for the popups and the tick: the travel tab places the list and the panel itself.
+            root.layout(l -> l.positionType(dev.vfyjxf.taffy.style.TaffyPosition.ABSOLUTE).left(0).top(0));
+            root.setAllowHitTest(false);
+        }
         // The panel last, so it covers the body when opened.
         // Deleting a warp cannot be undone, so it asks first.
         HubConfirm confirmer = new HubConfirm();
@@ -201,7 +222,7 @@ public final class WarpTab {
 
         if (titled) {
             root.addChildren(HubSection.header("warps", section), body, section.overlay());
-        } else {
+        } else if (out == null) {
             root.addChildren(body);
         }
         root.addChildren(changeWindow.root(), countdown.root(), notice.root(), confirmer.root());
@@ -211,7 +232,20 @@ public final class WarpTab {
         String[] changeSignature = {null};
         boolean[] countingDown = {false};
 
+        boolean[] had = {false};
         root.addEventListener(UIEvents.TICK, e -> {
+            // The travel tab shows one panel at a time: picking here takes it over, and a pick on the other side
+            // lets go of this one.
+            if (pick != null) {
+                boolean has = selected[0] != null || creating[0];
+                if (has && !had[0]) pick.active = me;
+                else if (has && pick.active != me) {
+                    selected[0] = null;
+                    creating[0] = false;
+                    has = false;
+                }
+                had[0] = has;
+            }
             List<Warp> warps = ClientWarpCache.WARPS;
 
             // Opened when a warm-up starts and closed when it ends — arrival, Cancel, or a refusal
@@ -353,7 +387,7 @@ public final class WarpTab {
     private static void addDraggable(ScrollerView list, String name, List<Warp> warps, UUID[] selected, boolean[] creating) {
         List<String> ids = warps.stream().map(w -> w.id().toString()).toList();
         for (Warp warp : warps) {
-            UIElement row = warpRow(warp, selected, creating);
+            UIElement row = warpRow(warp, selected, creating, name, ids);
             HubOrder.draggable(row, name, warp.id().toString(), () -> ids);
             list.addScrollViewChild(row);
         }
@@ -367,7 +401,7 @@ public final class WarpTab {
         return header;
     }
 
-    private static UIElement warpRow(Warp warp, UUID[] selected, boolean[] creating) {
+    private static UIElement warpRow(Warp warp, UUID[] selected, boolean[] creating, String list, List<String> ids) {
         boolean isSelected = warp.id().equals(selected[0]);
 
         // A row is a container rather than a bare Label so the status badge has somewhere to sit:
@@ -404,11 +438,40 @@ public final class WarpTab {
 
         Label name = new Label();
         name.setText(LegacyText.display(warp.name()));
-        name.layout(l -> l.flexGrow(1).height(MARK));
-        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        // Takes only the room left beside the arrows, star and pearl, and is cut there: a long name ran over them.
+        name.layout(l -> l.flexBasis(0).flexGrow(1).flexShrink(1).height(MARK));
+        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
+        name.setOverflowVisible(false);
         row.addChild(name);
+        // ▲▼ move it in the player's order, then the star (pins it to the top, as on Eden_LD's waystones), then the
+        // pearl that travels at once — the same row the homes have.
+        String id = warp.id().toString();
+        int at = ids.indexOf(id);
+        row.addChildren(
+                HubIcons.rowArrow(true, at > 0, 11, () -> HubOrder.move(list, id, ids, -1)),
+                HubIcons.rowArrow(false, at >= 0 && at < ids.size() - 1, 11, () -> HubOrder.move(list, id, ids, 1)));
+        row.addChild(HubPins.star(HubWindowState.PinKind.WARPS, warp.id(), 11));
+        row.addChild(quickTeleport(warp));
 
         return row;
+    }
+
+    private static final net.minecraft.resources.ResourceLocation PEARL =
+            net.minecraft.resources.ResourceLocation.withDefaultNamespace("textures/item/ender_pearl.png");
+
+    /** The pearl on a warp's row: teleports at once (the server still checks price, lock and warm-up). */
+    private static UIElement quickTeleport(Warp warp) {
+        UIElement pearl = new UIElement();
+        // Vanilla's ender pearl at its own 16px, the same as on the homes' rows.
+        pearl.layout(l -> l.width(16).height(16).flexShrink(0).alignSelf(dev.vfyjxf.taffy.style.AlignItems.CENTER));
+        pearl.style(s -> s.background(HubIcons.snapped(com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture.of(PEARL))));
+        pearl.addEventListener(UIEvents.CLICK, e -> {
+            PacketDistributor.sendToServer(WarpActionPacket.teleport(warp.id()));
+            e.stopPropagation();
+        });
+        pearl.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
+                List.of(Component.translatable("gui.roll_mod.hub.warp.teleport.quick")), null, null, ItemStack.EMPTY));
+        return pearl;
     }
 
     /* -------------------------------------------- detail -------------------------------------------- */
@@ -474,7 +537,10 @@ public final class WarpTab {
 
         Button teleport = new Button();
         // Official warps travel at once, so the label must not promise a countdown that never runs.
-        teleport.setText(warp.isAdmin()
+        // Prime travels with no warm-up anywhere, so their button just says Teleport.
+        teleport.setText(com.roll_54.roll_mod.minestar.hub.warp.ClientWarpCache.INSTANT
+                ? Component.translatable("gui.roll_mod.hub.homes.teleport")
+                : warp.isAdmin()
                 ? Component.translatable("gui.roll_mod.hub.warp.teleport.instant")
                 : Component.translatable("gui.roll_mod.hub.warp.teleport",
                         WarpService.WARMUP_SECONDS));
@@ -679,7 +745,9 @@ public final class WarpTab {
     private static Label infoLine(Component text, int marginTop) {
         Label line = new Label();
         line.setText(text.copy().withStyle(ChatFormatting.GRAY));
-        line.layout(l -> l.widthPercent(100).height(LINE_H).marginTop(marginTop));
+        // Wraps in a narrow column instead of running past its edge (a long dimension id did).
+        line.layout(l -> l.widthPercent(100).marginTop(marginTop));
+        line.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
         return line;
     }
 
@@ -720,7 +788,9 @@ public final class WarpTab {
                         (int) player.getX(), (int) player.getY(), (int) player.getZ(),
                         player.level().dimension().location().toString())
                 .withStyle(ChatFormatting.GRAY));
-        here.layout(l -> l.widthPercent(100).height(LINE_H).marginTop(6));
+        // Wraps in a narrow column rather than running past its edge.
+        here.layout(l -> l.widthPercent(100).marginTop(6));
+        here.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
 
         Button confirm = new Button();
         confirm.setText(Component.translatable("gui.roll_mod.hub.warp.confirm"));

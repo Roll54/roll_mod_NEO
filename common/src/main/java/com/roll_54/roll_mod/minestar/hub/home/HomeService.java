@@ -179,6 +179,19 @@ public final class HomeService {
         HomeViewers.resync(player.server);
     }
 
+    /** Sets a home's description. Owner only; blank clears it. */
+    public static void describe(ServerPlayer player, UUID homeId, String text) {
+        HomeData data = HomeData.get(player.server);
+        PlayerHome home = data.byId(homeId);
+        if (home == null) return;
+        if (!home.isOwner(player.getUUID())) {
+            refuse(player, "msg.roll_mod.homes.notOwner");
+            return;
+        }
+        data.replace(home.withDescription(text));
+        HomeViewers.resync(player.server);
+    }
+
     /* -------------------------------------------- travelling ------------------------------------------- */
 
     /** Instant and free — no warm-up, so nothing here can be interrupted or refunded. */

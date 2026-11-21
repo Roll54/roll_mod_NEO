@@ -91,6 +91,10 @@ public class MinPriceConfig extends Config {
   public ValidatedStringMap<String> tagMainItems =
       new ValidatedStringMap<>(new LinkedHashMap<>(), new ValidatedString(), new ValidatedString());
 
+  @Comment("Choices made in the recipe tree for an ingredient that may be any of several items (a tag or list): the items it may be, as ids joined with ',' -> the one it is priced as. Like tagMainItems, but for exactly that set of items, and written by the tree's Save. Every recipe ingredient that is exactly that set is priced as the chosen item.")
+  public ValidatedStringMap<String> ingredientChoices =
+      new ValidatedStringMap<>(new LinkedHashMap<>(), new ValidatedString(), new ValidatedString());
+
   @Comment("Price of one RAW ORE piece per tier. Referenced by name from oreTiers.")
   public ValidatedStringMap<Long> tiers =
       new ValidatedStringMap<>(

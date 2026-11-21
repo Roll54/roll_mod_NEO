@@ -93,15 +93,58 @@ public final class GuiRecolor {
         return recolor == null ? vanilla : recolor.text() & 0xFFFFFF;
     }
 
+    /**
+     * The sprite to draw in place of {@code sprite}. The world and server lists' hovered buttons (play, move up and
+     * down, delete) are drawn by vanilla in blue: coloured, so the recolour left them blue on every theme. While the
+     * recolour is on they are swapped for the plain grey ones, which it maps into the theme's tones; the hovered row
+     * still shows through vanilla's highlight over its icon.
+     */
+    public static net.minecraft.resources.ResourceLocation sprite(net.minecraft.resources.ResourceLocation sprite) {
+        String path = sprite.getPath();
+        if (!path.endsWith("_highlighted") || !"minecraft".equals(sprite.getNamespace())) return sprite;
+        if (!path.startsWith("world_list/") && !path.startsWith("server_list/") && !path.startsWith("transferable_list/")) {
+            return sprite;
+        }
+        if (active() == null) return sprite;
+        return sprite.withPath(path.substring(0, path.length() - "_highlighted".length()));
+    }
+
+    /** How deep we are in drawing the theme's own art (its panel, buttons, fields), which must not be recoloured. */
+    private static int themeArtDepth;
+
+    /** Runs {@code draw} with the recolouring off: the theme's own art is drawn in its true colours. Render thread only. */
+    public static void withoutRecolor(Runnable draw) {
+        themeArtDepth++;
+        try {
+            draw.run();
+        } finally {
+            themeArtDepth--;
+        }
+    }
+
+    /**
+     * Whether the HUD (hotbar, hearts, armour, food) is being drawn. The HUD is drawn in the same frame as an open
+     * screen, before it — so with chat or the inventory open, a check on {@code Minecraft.screen} alone recoloured the
+     * HUD too, and the hearts' and hotbar's greys changed whenever a screen opened. Set by the client's
+     * {@code GuiHudNoRecolorMixin}. Render thread only.
+     */
+    private static boolean drawingHud;
+
+    public static void setDrawingHud(boolean hud) {
+        drawingHud = hud;
+    }
+
     /** The recolour to apply right now, or null when vanilla should draw as it always has. */
     @Nullable
     private static UiTheme.Recolor active() {
-        if (!UiThemeState.forceEverywhere()) return null;
+        if (themeArtDepth > 0 || drawingHud || !UiThemeState.forceEverywhere()) return null;
         Screen screen = Minecraft.getInstance().screen;
-        if (screen == null) return null;
+        if (screen == null || ThemeArt.isAe2(screen)) return null;
         if (screen instanceof ModularUIContainerScreen || screen instanceof ModularUIScreen) return null;
-        // A container drawn by the LdLib skin is themed already; its panel is not vanilla grey art.
-        if (com.roll_54.roll_mod.minestar.containers.ContainerSkin.isSkinned(screen)) return null;
+        // A container the LdLib skin draws whole is themed already. On an overlay-skinned one only the background was
+        // replaced: what the screen still draws itself (arrows, progress bars, the enchanting book, a mod's own
+        // widgets) is recoloured here automatically, so it matches the theme's panel without any new textures.
+        if (com.roll_54.roll_mod.minestar.containers.ContainerSkin.isFullSkin(screen)) return null;
         return UiThemeState.get().recolor();
     }
 

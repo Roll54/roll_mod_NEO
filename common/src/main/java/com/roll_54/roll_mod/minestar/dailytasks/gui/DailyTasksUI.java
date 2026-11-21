@@ -11,6 +11,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay;
 import com.lowdragmc.lowdraglib2.gui.ui.data.ScrollerMode;
 import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
 import com.lowdragmc.lowdraglib2.gui.ui.data.Vertical;
+import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ProgressBar;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
@@ -84,9 +85,11 @@ public final class DailyTasksUI {
      * The reroll button in the row's bottom-right corner: its icon, then the price. The caption is
      * sized for the longest translation of "free" — uk_ua's «Безкоштовно» — not for the price.
      */
-    private static final int REROLL_ICON = 12;
+    private static final int REROLL_ICON = 10;
     private static final int REROLL_TEXT_W = 64;
     private static final ResourceLocation REROLL_TEXTURE = RollMod.id("textures/gui/hub/daily/reroll.png");
+    /** The pixel-art reroll mark for AE2 and Ore, drawn at its own 15x14. */
+    private static final ResourceLocation REROLL_SMALL_TEXTURE = RollMod.id("textures/gui/hub/daily/small_reroll.png");
     /** The gap between the stacked pieces of a row's middle column. */
     private static final int ROW_INNER_GAP = 4;
 
@@ -109,6 +112,10 @@ public final class DailyTasksUI {
     private static final int RESETS_GAP = 4;
 
     private static final int COLOR_ROW = 0x40000000;
+    /** The Prime slot's row: purple in every theme (not a black tint, so AE2's fill recolour leaves it alone). */
+    private static final int COLOR_ROW_PRIME = 0x806A2C91;
+    /** A slot earned from an FTB quest: bluish in every theme. */
+    private static final int COLOR_ROW_BONUS = 0x802C6E91;
     private static final int COLOR_BUTTON = 0x80000000;
 
     /** Claim states, as synced in {@code state}. */
@@ -132,7 +139,21 @@ public final class DailyTasksUI {
         // This section already had a title row of its own, so it keeps it and only gains the I
         // button on the end.
         HubSection.Info section = HubSection.info("daily_tasks");
-        root.addChild(header(server, section));
+        // Daily | Weekly | Seasonal: the last two are the battle pass's tasks, in a list of their own.
+        int[] page = {0};
+        com.lowdragmc.lowdraglib2.gui.ui.elements.Button[] pageButtons = new com.lowdragmc.lowdraglib2.gui.ui.elements.Button[3];
+        String[] pageKeys = {"gui.roll_mod.daily_tasks.page.daily", "gui.roll_mod.daily_tasks.page.weekly",
+                "gui.roll_mod.daily_tasks.page.seasonal"};
+        for (int i = 0; i < 3; i++) {
+            int index = i;
+            com.lowdragmc.lowdraglib2.gui.ui.elements.Button b = new com.lowdragmc.lowdraglib2.gui.ui.elements.Button();
+            b.setText(Component.translatable(pageKeys[i]));
+            b.layout(l -> l.width(58).height(16).paddingAll(0).marginRight(3).marginTop(-2).marginBottom(-2).flexShrink(0));
+            com.roll_54.roll_mod.minestar.hub.gui.HubSection.centreCaption(b);
+            b.setOnClick(e -> page[0] = index);
+            pageButtons[i] = b;
+        }
+        root.addChild(header(server, section, pageButtons));
 
         // The rows move into their own column so the bonus panel can sit beside them, and take
         // whatever height the window leaves under the header, so a taller hub shows more rows.
@@ -165,6 +186,50 @@ public final class DailyTasksUI {
         body.addChildren(tasks, HubSplit.handleRight("daily_tasks", bonus, BONUS_W,
                 player.level().isClientSide(), BONUS_MIN_W, TASKS_MIN_W), bonus);
         root.addChild(body);
+
+        // The battle pass's weekly or seasonal tasks. The daily page is squashed to no height rather than hidden
+        // while they show: hidden, its rows would stop syncing.
+        ScrollerView passTasks = new ScrollerView();
+        passTasks.layout(l -> l.widthPercent(100).height(0));
+        passTasks.scrollerStyle(s2 -> s2.mode(ScrollerMode.VERTICAL)
+                .verticalScrollDisplay(ScrollDisplay.AUTO).horizontalScrollDisplay(ScrollDisplay.NEVER));
+        passTasks.viewPort(v -> v.layout(l -> l.paddingAll(7)));
+        passTasks.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)));
+        passTasks.setOverflowVisible(false);
+        root.addChild(passTasks);
+        int[] shownPage = {-1, -1};
+        root.addEventListener(UIEvents.TICK, e -> {
+            if (!player.level().isClientSide()) return;
+            int version = com.roll_54.roll_mod.minestar.battlepass.ClientBattlePassCache.VERSION;
+            if (shownPage[0] == page[0] && (page[0] == 0 || shownPage[1] == version)) return;
+            boolean changedPage = shownPage[0] != page[0];
+            shownPage[0] = page[0];
+            shownPage[1] = version;
+            if (changedPage) {
+                boolean daily = page[0] == 0;
+                body.layout(l -> {
+                    if (daily) l.flexBasis(0).flexGrow(1).heightAuto();
+                    else l.flexGrow(0).flexBasis(0).height(0);
+                });
+                body.setOverflowVisible(!daily ? false : true);
+                passTasks.layout(l -> {
+                    if (daily) l.flexGrow(0).flexBasis(0).height(0);
+                    else l.flexBasis(0).flexGrow(1).heightAuto();
+                });
+                for (int i = 0; i < 3; i++) {
+                    int idx = i;
+                    pageButtons[i].setText(Component.translatable(pageKeys[i]).withStyle(idx == page[0]
+                            ? ChatFormatting.YELLOW : ChatFormatting.WHITE));
+                }
+                // Every page asks: the daily page shows what each daily adds to the battle pass too.
+                net.neoforged.neoforge.network.PacketDistributor.sendToServer(
+                        new com.roll_54.roll_mod.network.packet.BattlePassPackets.Act("get", new net.minecraft.nbt.CompoundTag()));
+            }
+            if (page[0] != 0) {
+                com.roll_54.roll_mod.minestar.hub.gui.BattlePassTab.fillTasksFor(passTasks,
+                        com.roll_54.roll_mod.minestar.battlepass.ClientBattlePassCache.DATA, page[0] == 2);
+            }
+        });
         // Last, so it covers the rows when opened.
         root.addChild(section.overlay());
 
@@ -174,22 +239,32 @@ public final class DailyTasksUI {
     /* ------------------------------------------------- header ------------------------------------------------- */
 
     /** The shared title row (see {@link HubSection#header}), with the reset countdown beside the I. */
-    private static UIElement header(@Nullable ServerPlayer server, HubSection.Info section) {
+    private static UIElement header(@Nullable ServerPlayer server, HubSection.Info section, UIElement... pages) {
         // Seconds come from the server: the roll follows the server machine's clock, which is not
         // the viewer's. Only the formatting happens client-side.
         SimpleBinding<Integer> secondsLeft = intBinding(
                 () -> server == null ? 0 : (int) DailyTaskManager.secondsUntilNextRoll(), 0);
 
         Label resets = new Label();
-        resets.layout(l -> l.width(96).height(RESETS_H).marginRight(RESETS_GAP));
-        resets.textStyle(t -> t.textAlignHorizontal(Horizontal.RIGHT)
+        // Right after the title, taking the rest of the row: the title shrinks to its own text below.
+        resets.layout(l -> l.flexGrow(1).height(RESETS_H).marginLeft(6).marginRight(RESETS_GAP));
+        resets.textStyle(t -> t.textAlignHorizontal(Horizontal.LEFT)
                 .textAlignVertical(Vertical.CENTER)
                 .textColor(0xFFAAAAAA));
         resets.addSyncValue(secondsLeft.getSyncValue());
         resets.addEventListener(UIEvents.TICK, e -> resets.setText(Component.translatable(
                 "gui.roll_mod.daily_tasks.resets_in", formatDuration(value(secondsLeft, 0)))));
 
-        return HubSection.header(Component.translatable("gui.roll_mod.daily_tasks.title"), section, resets);
+        UIElement[] extras = new UIElement[pages.length + 1];
+        extras[0] = resets;
+        System.arraycopy(pages, 0, extras, 1, pages.length);
+        UIElement header = HubSection.header(Component.translatable("gui.roll_mod.daily_tasks.title"), section, extras);
+        // The countdown beside the title rather than across the row by the I: the title stops growing.
+        if (header.getChildren().get(0) instanceof Label title) {
+            title.layout(l -> l.flexGrow(0).flexShrink(0));
+            title.textStyle(t -> t.adaptiveWidth(true));
+        }
+        return header;
     }
 
     /* ---------------------------------------------- bonus panel ----------------------------------------------- */
@@ -231,8 +306,9 @@ public final class DailyTasksUI {
                 .textAlignVertical(Vertical.CENTER));
 
         Label counter = new Label();
-        counter.layout(l -> l.widthPercent(100).height(12));
-        counter.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
+        // As wide as its text, centred together with the badge right after it.
+        counter.layout(l -> l.height(12));
+        counter.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER).adaptiveWidth(true)
                 .textAlignVertical(Vertical.CENTER)
                 .textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
 
@@ -247,16 +323,17 @@ public final class DailyTasksUI {
         footer.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)
                 .alignItems(AlignItems.CENTER));
 
-        Label collect = new Label();
-        collect.layout(l -> l.width(COLLECT_W).height(14));
-        collect.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
-                .textAlignVertical(Vertical.CENTER)
-                .textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
-        collect.style(s -> s.background(new ColorRectTexture(COLOR_BUTTON)));
+        // A real button, so it takes the theme's button shape (AE2's bevel, Ore's art), not a flat dark plate.
+        Button collect = new Button();
+        // 2px lower (and with it the hint and the reward under it), clear of the bonus icon above.
+        collect.layout(l -> l.width(COLLECT_W).height(14).paddingAll(0).marginTop(2));
+        com.roll_54.roll_mod.minestar.hub.gui.HubSection.centreCaption(collect);
         // Sent unconditionally, like the per-task Claim: claimBonus re-validates on the server and
         // silently rejects a click on an unfinished or already-collected board.
-        collect.addEventListener(UIEvents.CLICK,
-                e -> PacketDistributor.sendToServer(new ClaimDailyBonusPacket()));
+        // Not clickable while greyed out (until the board is complete).
+        collect.addEventListener(UIEvents.CLICK, e -> {
+            if (collect.isActive()) PacketDistributor.sendToServer(new ClaimDailyBonusPacket());
+        });
 
         // Says what the icons below it are. The panel is only 126px of content wide and the line is
         // far wider, so it has to wrap and take whatever height that needs.
@@ -302,6 +379,8 @@ public final class DailyTasksUI {
             counter.setText(Component.literal(done + " / " + goal)
                     .withStyle(done >= goal ? ChatFormatting.GREEN : ChatFormatting.WHITE));
             collect.setText(bonusCaption(state));
+            // Greyed out until the board is complete: before that a click does nothing.
+            if (collect.isActive() != (state == CLAIMABLE)) collect.setActive(state == CLAIMABLE);
         });
 
         panel.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> {
@@ -316,8 +395,14 @@ public final class DailyTasksUI {
             e.hoverTooltips = new HoverTooltips(lines, null, null, ItemStack.EMPTY);
         });
 
+        // The "ready to collect" badge right after the count, not off in the panel's corner.
         UIElement badge = badge();
-        panel.addChildren(heading, counter, icon, footer, badge);
+        UIElement countRow = new UIElement();
+        countRow.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(12).gapColumn(3)
+                .justifyContent(org.appliedenergistics.yoga.YogaJustify.CENTER).alignItems(AlignItems.CENTER));
+        countRow.setOverflowVisible(true);
+        countRow.addChildren(counter, badge);
+        panel.addChildren(heading, countRow, icon, footer);
         // Toggled by this panel's own TICK below: the badge has no listener or sync value of its own.
         panel.addEventListener(UIEvents.TICK, e -> {
             boolean flag = value(claimState, LOCKED) == CLAIMABLE;
@@ -333,8 +418,7 @@ public final class DailyTasksUI {
      */
     private static UIElement badge() {
         UIElement badge = new UIElement();
-        badge.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).right(2).top(2)
-                .width(HubBadge.SIZE).height(HubBadge.SIZE));
+        badge.layout(l -> l.width(HubBadge.SIZE).height(HubBadge.SIZE).flexShrink(0));
         badge.style(s -> s.background(com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.dynamic(HubBadge::coloured)).zIndex(1));
         badge.setDisplay(false);
         return badge;
@@ -348,6 +432,8 @@ public final class DailyTasksUI {
         SimpleBinding<Integer> progress = intBinding(view(server, index, DailyTaskManager.TaskView::progress, 0), 0);
         SimpleBinding<Integer> required = intBinding(view(server, index, DailyTaskManager.TaskView::required, 0), 0);
         SimpleBinding<Integer> claimState = intBinding(view(server, index, DailyTasksUI::stateOf, LOCKED), LOCKED);
+        // 0 a plain row, 1 the Prime slot (purple), 2 a slot earned from a quest (blue).
+        SimpleBinding<Integer> prime = intBinding(view(server, index, v -> v.prime() ? 1 : v.bonus() ? 2 : 0, 0), 0);
         // The row's two drawn rewards, as indices into TaskRewardPool.all(). The starcoin payout
         // every task adds is a constant, so the client appends it rather than the server syncing it.
         SimpleBinding<Integer> rewardA = intBinding(view(server, index, v -> rewardIndex(v, 0), -1), -1);
@@ -362,14 +448,22 @@ public final class DailyTasksUI {
 
         UIElement row = new UIElement();
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .marginBottom(ROW_GAP).paddingAll(3).paddingHorizontal(com.roll_54.roll_mod.minestar.hub.gui.HubSection.ROW_INSET));
-        row.style(s -> s.background(new ColorRectTexture(COLOR_ROW)));
-        // Collapsed rows keep their fixed-height children, so clip them to the row's own box.
-        row.setOverflowVisible(false);
+                .marginTop(index > 0 ? ROW_GAP : 0).paddingAll(3).paddingHorizontal(com.roll_54.roll_mod.minestar.hub.gui.HubSection.ROW_INSET));
+        ColorRectTexture plain = new ColorRectTexture(COLOR_ROW);
+        ColorRectTexture purple = new ColorRectTexture(COLOR_ROW_PRIME);
+        ColorRectTexture blue = new ColorRectTexture(COLOR_ROW_BONUS);
+        row.style(s -> s.background(com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.dynamic(() -> switch (value(prime, 0)) {
+            case 1 -> purple;
+            case 2 -> blue;
+            default -> plain;
+        })));
+        // Clipped only once it collapses (the tick below): a collapsed row keeps its fixed-height children.
+        row.setOverflowVisible(true);
         row.addSyncValue(taskIndex.getSyncValue());
         row.addSyncValue(progress.getSyncValue());
         row.addSyncValue(required.getSyncValue());
         row.addSyncValue(claimState.getSyncValue());
+        row.addSyncValue(prime.getSyncValue());
         row.addSyncValue(rewardA.getSyncValue());
         row.addSyncValue(rewardB.getSyncValue());
         row.addSyncValue(rerollCost.getSyncValue());
@@ -384,8 +478,9 @@ public final class DailyTasksUI {
         middle.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexGrow(1).marginRight(4));
 
         Label name = new Label();
-        name.layout(l -> l.widthPercent(100).height(10));
-        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        // As wide as its text, so the badge can sit right after it.
+        name.layout(l -> l.height(10).flexShrink(1));
+        name.textStyle(t -> t.textAlignVertical(Vertical.CENTER).adaptiveWidth(true).textWrap(TextWrap.HIDE));
 
         ProgressBar bar = new ProgressBar();
         bar.layout(l -> l.widthPercent(100).height(12));
@@ -393,8 +488,23 @@ public final class DailyTasksUI {
         // ProgressBar's own constructor pads barContainer by 4px on every side and sizes the
         // element to 14px. At a row-sized height that padding eats the whole content box and the
         // fill collapses to zero height — invisible, while the label still draws because the
-        // constructor positions it ABSOLUTE. 1px keeps the frame without starving the fill.
-        bar.barContainer(container -> container.layout(l -> l.paddingAll(1)));
+        // constructor positions it ABSOLUTE. 2px keeps the fill inside the themes' 2px frame (at 1px a small fill sat on
+        // the frame's left edge) without starving it.
+        bar.barContainer(container -> container.layout(l -> l.paddingAll(2)));
+        // The Prime and earned slots tint their bar too (purple, blue), not just the row: a tint over the track, under
+        // the fill.
+        UIElement barTint = new UIElement();
+        barTint.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).left(0).top(0).widthPercent(100).heightPercent(100));
+        barTint.setAllowHitTest(false);
+        ColorRectTexture tintPrime = new ColorRectTexture(0x806A2C91);
+        ColorRectTexture tintBonus = new ColorRectTexture(0x802C6E91);
+        barTint.style(s -> s.zIndex(-1).background(com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.dynamic(() ->
+                switch (value(prime, 0)) {
+                    case 1 -> tintPrime;
+                    case 2 -> tintBonus;
+                    default -> com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.EMPTY;
+                })));
+        bar.barContainer(container -> container.addChild(barTint));
 
         // The bottom line under the bar: the button that claims the task, then what it pays, both
         // packed against the column's left edge.
@@ -402,30 +512,46 @@ public final class DailyTasksUI {
         bottom.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100)
                 .height(REWARD_ICON).marginTop(ROW_INNER_GAP).alignItems(AlignItems.CENTER));
 
-        Label claim = new Label();
-        claim.layout(l -> l.width(CLAIM_W).height(14).marginRight(ROW_INNER_GAP));
-        claim.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
-                .textAlignVertical(Vertical.CENTER)
-                .textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
-        claim.style(s -> s.background(new ColorRectTexture(COLOR_BUTTON)));
+        // A real button, so it takes the theme's button shape, not a flat dark plate.
+        Button claim = new Button();
+        claim.layout(l -> l.width(CLAIM_W).height(14).marginRight(ROW_INNER_GAP).paddingAll(0));
+        tint(claim, prime);
+        claim.text.layout(l -> l.top(1)); // the caption 1px lower, level with the reroll price
+        com.roll_54.roll_mod.minestar.hub.gui.HubSection.centreCaption(claim);
         // Sent unconditionally: DailyTaskManager.claim re-validates on the server and silently
         // rejects a click on a task that is not finished or already taken.
-        claim.addEventListener(UIEvents.CLICK,
-                e -> PacketDistributor.sendToServer(new ClaimDailyTaskPacket(index)));
+        // Not clickable while greyed out (until the task is done).
+        claim.addEventListener(UIEvents.CLICK, e -> {
+            if (claim.isActive()) PacketDistributor.sendToServer(new ClaimDailyTaskPacket(index));
+        });
 
         // Icons sit flush against each other, so the strip reads as one run.
         UIElement rewards = new UIElement();
         rewards.layout(l -> l.flexDirection(FlexDirection.ROW).height(REWARD_ICON));
 
-        bottom.addChildren(claim, rewards);
-        middle.addChildren(name, bar, bottom);
-        UIElement badge = badge();
         Label rerollPrice = new Label();
         UIElement reroll = rerollButton(index, rerollCost, rerollsLeft, rerollPrice);
-        row.addChildren(icon, middle, badge, reroll);
+        tint(reroll, prime);
+        // What a claimed daily adds to the battle pass, after its rewards.
+        Label passPoints = new Label();
+        passPoints.layout(l -> l.height(REWARD_ICON).marginLeft(4).paddingTop(1));
+        passPoints.textStyle(t -> t.textAlignVertical(Vertical.CENTER).fontSize(7).adaptiveWidth(true));
+        UIElement passIcon = com.roll_54.roll_mod.minestar.hub.gui.BattlePassTab.pointsIcon();
+        passIcon.layout(l -> l.marginLeft(4));
+        passPoints.layout(l -> l.marginLeft(2));
+        bottom.addChildren(claim, rewards, passIcon, passPoints);
+        // The "ready to claim" badge right after the task's name, not off in the row's corner.
+        UIElement badge = badge();
+        UIElement title = new UIElement();
+        title.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(10).gapColumn(3)
+                .alignItems(AlignItems.CENTER));
+        title.setOverflowVisible(true);
+        title.addChildren(name, badge);
+        middle.addChildren(title, bar, bottom);
+        row.addChildren(icon, middle, reroll);
 
         int[] shownTask = {Integer.MIN_VALUE};
-        int[] shownRewards = {Integer.MIN_VALUE, Integer.MIN_VALUE};
+        int[] shownRewards = {Integer.MIN_VALUE, Integer.MIN_VALUE, Integer.MIN_VALUE};
         boolean[] shownPresent = {true};
         row.addEventListener(UIEvents.TICK, e -> {
             DailyTask task = DailyTaskRegistry.byIndex(value(taskIndex, -1));
@@ -445,8 +571,14 @@ public final class DailyTasksUI {
             boolean present = value(taskIndex, -1) >= 0;
             if (shownPresent[0] != present) {
                 shownPresent[0] = present;
+                // Only an empty row clips (its fixed-height children would show otherwise); a shown one lets its
+                // buttons' bevelled bottom edge (AE2, Ore) draw past the row's padding instead of being cut off.
+                row.setOverflowVisible(present);
+                // The padding too: kept on an empty row it left 6px each, and four of them made the list scroll.
                 row.layout(l -> l.height(present ? ROW_H : 0)
-                        .marginBottom(present ? ROW_GAP : 0));
+                        // The gap goes above a row, not under it: under the last one it doubled up with the list's own
+                        // edge into one thick bar.
+                        .marginTop(present && index > 0 ? ROW_GAP : 0).paddingTop(present ? 3 : 0).paddingBottom(present ? 3 : 0));
             }
 
             // The icon only changes at the daily roll, so only rebuild the texture when it does.
@@ -458,18 +590,35 @@ public final class DailyTasksUI {
             // Same again for the reward strip, which also only moves at the roll.
             int drawnA = value(rewardA, -1);
             int drawnB = value(rewardB, -1);
-            if (shownRewards[0] != drawnA || shownRewards[1] != drawnB) {
+            int slotKind = value(prime, 0);
+            if (shownRewards[0] != drawnA || shownRewards[1] != drawnB || shownRewards[2] != slotKind) {
                 shownRewards[0] = drawnA;
                 shownRewards[1] = drawnB;
+                shownRewards[2] = slotKind;
 
                 rewards.clearAllChildren();
                 if (task != null) {
                     for (TaskReward reward : drawn(drawnA, drawnB)) {
                         rewards.addChild(rewardIcon(reward.icon()));
                     }
+                    // Only the base board pays starcoins; the Prime and earned slots pay their draw alone.
+                    if (slotKind == 0) {
                     rewards.addChild(rewardIcon(TaskRewardPool.STARCOINS.icon()));
+                    // How many starcoins, written after their icon as the battle-pass points are.
+                    Label coins = new Label();
+                    coins.setText(Component.literal("+" + TaskRewardPool.STARCOIN_AMOUNT).withColor(0xD7A1F9));
+                    coins.layout(l -> l.height(REWARD_ICON).marginLeft(2).paddingTop(1));
+                    coins.textStyle(t -> t.textAlignVertical(Vertical.CENTER).fontSize(7).adaptiveWidth(true));
+                    rewards.addChild(coins);
+                    }
                 }
             }
+
+            int bp = com.roll_54.roll_mod.minestar.battlepass.ClientBattlePassCache.DATA.getInt("pDaily");
+            boolean showBp = task != null && bp > 0;
+            if (passIcon.isDisplayed() != showBp) passIcon.setDisplay(showBp);
+            passPoints.setText(!showBp ? Component.empty()
+                    : Component.translatable("gui.roll_mod.daily_tasks.bp_points", bp).withStyle(ChatFormatting.GOLD));
 
             name.setText(task == null
                     ? Component.translatable("gui.roll_mod.daily_tasks.unavailable")
@@ -479,6 +628,8 @@ public final class DailyTasksUI {
             bar.label.setText(task == null ? Component.empty()
                     : Component.literal(done + " / " + goal));
             claim.setText(claimCaption(state));
+            // Greyed out until the task is done (and after it is taken): before that a click does nothing.
+            if (claim.isActive() != (state == CLAIMABLE)) claim.setActive(state == CLAIMABLE);
 
             int cost = value(rerollCost, -1);
             boolean canReroll = task != null && cost >= 0;
@@ -496,7 +647,7 @@ public final class DailyTasksUI {
             addLine(lines, Component.literal(value(progress, 0) + " / " + value(required, 0)),
                     ChatFormatting.DARK_GRAY);
             addLine(lines, Component.translatable("gui.roll_mod.daily_tasks.rewards",
-                            rewardNames(value(rewardA, -1), value(rewardB, -1))),
+                            rewardNames(value(rewardA, -1), value(rewardB, -1), value(prime, 0) == 0)),
                     ChatFormatting.AQUA);
             e.hoverTooltips = new HoverTooltips(lines, null, null, ItemStack.EMPTY);
         });
@@ -509,21 +660,62 @@ public final class DailyTasksUI {
      * so it takes no room from the claim button and reward strip on the left. The row's TICK shows
      * it only while the slot can still be rerolled — never on a finished task.
      */
+    /**
+     * The Prime (purple) and earned (blue) slots tint their buttons too: a translucent wash over the button's face,
+     * under its caption and icon.
+     */
+    private static void tint(UIElement button, SimpleBinding<Integer> kind) {
+        UIElement wash = new UIElement();
+        wash.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).left(1).top(1).right(1).bottom(1));
+        wash.setAllowHitTest(false);
+        ColorRectTexture prime = new ColorRectTexture(0x606A2C91);
+        ColorRectTexture bonus = new ColorRectTexture(0x602C6E91);
+        wash.style(s -> s.zIndex(-1).background(com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.dynamic(() ->
+                switch (value(kind, 0)) {
+                    case 1 -> prime;
+                    case 2 -> bonus;
+                    default -> com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture.EMPTY;
+                })));
+        button.addChild(wash);
+    }
+
     private static UIElement rerollButton(int index, SimpleBinding<Integer> cost,
                                           SimpleBinding<Integer> left, Label price) {
-        UIElement reroll = new UIElement();
-        reroll.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).right(8).bottom(3)
+        // A real button with the icon and price as its content, so it is the theme's button shape.
+        Button reroll = new Button();
+        reroll.noText();
+        boolean bevel = net.neoforged.fml.loading.FMLEnvironment.dist.isClient()
+                && (com.roll_54.roll_mod.minestar.theme.UiThemeState.get() == com.roll_54.roll_mod.minestar.theme.UiTheme.AE2
+                || com.roll_54.roll_mod.minestar.theme.UiThemeState.get().oreArt());
+        // AE2 and Ore use the pixel-art small_reroll.png, squeezed into the usual icon box: the button keeps its size.
+        int grow = 0;
+        int side = 0;
+        // Anchored on the right, so the 3px left padding widens it leftwards and the price stays put.
+        // At the row's right end, as it was, and level with Locked: that one is centred in the 16px bottom line over
+        // the row's padding, and measured in game its bottom edge sits 6px up. Wider than before,
+        // same height.
+        reroll.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).right(8 - side).bottom(6 - grow)
                 .flexDirection(FlexDirection.ROW).alignItems(AlignItems.CENTER)
-                .height(14).paddingLeft(1));
-        reroll.style(s -> s.background(new ColorRectTexture(COLOR_BUTTON)).zIndex(1));
+                .height(14 + 2 * grow).paddingAll(0).paddingLeft(6 + side).paddingRight(3 + side));
+        reroll.style(s -> s.zIndex(1));
         reroll.setDisplay(false);
 
         UIElement icon = new UIElement();
-        icon.layout(l -> l.width(REROLL_ICON).height(REROLL_ICON));
-        icon.style(s -> s.background(SpriteTexture.of(REROLL_TEXTURE)));
+        // Neither the icon nor the price may shrink: squeezed, the button came out narrower than its content and the
+        // icon hung out past its left edge.
+        // Placed exactly, out of the flow: the theme's button padding (which beats an inline paddingAll(0)) pushed it
+        // down past the button's bottom edge on Ore and AE2.
+        int iconLeft = 6 + side;
+        icon.layout(l -> l.positionType(YogaPositionType.ABSOLUTE).left(iconLeft).top((14 + 2 * grow - REROLL_ICON) / 2f)
+                .width(REROLL_ICON).height(REROLL_ICON));
+        icon.setAllowHitTest(false);
+        icon.style(s -> s.background(SpriteTexture.of(bevel ? REROLL_SMALL_TEXTURE : REROLL_TEXTURE)));
 
-        price.layout(l -> l.width(REROLL_TEXT_W).height(14));
-        price.textStyle(t -> t.textAlignHorizontal(Horizontal.CENTER)
+        // Right after the icon and as wide as the price: a fixed 64px box with the price centred in it left a wide
+        // gap between them. The button shrinks to fit.
+        // Starts after the icon, which is out of the flow now; 1px lower than centred.
+        price.layout(l -> l.height(14).marginLeft(REROLL_ICON + 3).marginRight(4).flexShrink(0).top(1));
+        price.textStyle(t -> t.adaptiveWidth(true).textAlignHorizontal(Horizontal.LEFT)
                 .textAlignVertical(Vertical.CENTER)
                 .textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         reroll.addChildren(icon, price);
@@ -538,8 +730,8 @@ public final class DailyTasksUI {
                     ? Component.translatable("gui.roll_mod.daily_tasks.reroll.free")
                     : Component.translatable("gui.roll_mod.daily_tasks.reroll.price", now);
             e.hoverTooltips = new HoverTooltips(List.of(
-                    Component.translatable("gui.roll_mod.daily_tasks.reroll.tip", what)
-                            .withStyle(ChatFormatting.GOLD),
+                    // The button's orchid, not gold.
+                    Component.translatable("gui.roll_mod.daily_tasks.reroll.tip", what).withColor(0xD7A1F9),
                     Component.translatable("gui.roll_mod.daily_tasks.reroll.left", value(left, 0))
                             .withStyle(ChatFormatting.GRAY)),
                     null, null, ItemStack.EMPTY);
@@ -553,7 +745,8 @@ public final class DailyTasksUI {
         return cost == 0
                 ? Component.translatable("gui.roll_mod.daily_tasks.reroll.free")
                         .withStyle(ChatFormatting.GREEN)
-                : Component.literal(String.valueOf(cost)).withStyle(ChatFormatting.GOLD);
+                // A light orchid, from the reroll icon's own pink-to-violet, rather than gold, which clashed with it.
+                : Component.literal(String.valueOf(cost)).withColor(0xD7A1F9);
     }
 
     /* ------------------------------------------------- rewards ------------------------------------------------ */
@@ -586,12 +779,16 @@ public final class DailyTasksUI {
     }
 
     /** {@code "8 × Diamond, 2 × Netherite Ingot, 2500 Starcoins"}, for the row tooltip. */
-    private static Component rewardNames(int first, int second) {
+    private static Component rewardNames(int first, int second, boolean coins) {
         MutableComponent out = Component.empty();
+        boolean any = false;
         for (TaskReward reward : drawn(first, second)) {
-            out.append(reward.name()).append(", ");
+            if (any) out.append(", ");
+            out.append(reward.name());
+            any = true;
         }
-        return out.append(TaskRewardPool.STARCOINS.name());
+        if (coins) out.append(any ? ", " : "").append(TaskRewardPool.STARCOINS.name());
+        return out;
     }
 
     /* ------------------------------------------------- content ------------------------------------------------ */

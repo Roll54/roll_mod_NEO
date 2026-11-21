@@ -104,7 +104,8 @@ public final class HubButtonHandler {
      * its hairline, as the chat channel buttons — with the hub icon on it. The vanilla-looking themes,
      * which have no palette, get vanilla's own button under the icon.
      */
-    private static final class HubButton extends Button {
+    private static final class HubButton extends Button
+            implements com.roll_54.roll_mod.minestar.theme.ThemeArt.KeepsOwnLook {
 
         private Component shownTip;
 
@@ -146,6 +147,11 @@ public final class HubButtonHandler {
 
         @Override
         protected void renderWidget(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+            // Always as it was: "Use the hub theme everywhere" neither swaps its art nor recolours it.
+            com.roll_54.roll_mod.minestar.theme.GuiRecolor.withoutRecolor(() -> draw(graphics, mouseX, mouseY, partialTick));
+        }
+
+        private void draw(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
             UiTheme.Palette palette = UiThemeState.get().palette();
             if (palette == null) {
                 // Vanilla's button; its message is empty, so it draws no text over the icon.
@@ -166,8 +172,7 @@ public final class HubButtonHandler {
             if (HubBadge.hubButton()) {
                 if (HubBadge.hasTexture()) {
                     int x = getX() + WIDTH - HubBadge.SIZE;
-                    graphics.blit(HubBadge.TEXTURE, x, getY(), 0, 0,
-                            HubBadge.SIZE, HubBadge.SIZE, HubBadge.SIZE, HubBadge.SIZE);
+                    HubBadge.draw(graphics, x, getY(), HubBadge.SIZE);
                 } else {
                     int x = getX() + WIDTH - BADGE_SIZE - 1;
                     int y = getY() + 1;

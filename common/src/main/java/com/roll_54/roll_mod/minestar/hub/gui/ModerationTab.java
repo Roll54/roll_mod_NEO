@@ -102,13 +102,26 @@ public final class ModerationTab {
     private static final int MODE_DEATHS = 4;
     /** The server's settings for what was ported from Eden (join history, mentions) and the chat's other knobs. */
     private static final int MODE_SETTINGS = 5;
+    /** The command blocker (ported from Eden_LD), the staff's polls and the players' tickets. */
+    private static final int MODE_COMMANDS = 6;
+    private static final int MODE_POLLS = 7;
+    private static final int MODE_TICKETS = 8;
+    /** The battle pass editor: points, block quests, every reward. */
+    private static final int MODE_BATTLEPASS = 9;
+    /** What the daily tasks pay: the reward pool and the stage ingots. */
+    private static final int MODE_DAILIES = 10;
     private static final String[] MODE_KEYS = {
             "gui.roll_mod.hub.moderation.mode.players",
             "gui.roll_mod.hub.moderation.mode.warps",
             "gui.roll_mod.hub.moderation.mode.letters",
             "gui.roll_mod.hub.moderation.mode.kits",
             "gui.roll_mod.hub.moderation.mode.deaths",
-            "gui.roll_mod.hub.moderation.mode.settings"};
+            "gui.roll_mod.hub.moderation.mode.settings",
+            "gui.roll_mod.hub.moderation.mode.commands",
+            "gui.roll_mod.hub.moderation.mode.polls",
+            "gui.roll_mod.hub.moderation.mode.tickets",
+            "gui.roll_mod.hub.moderation.mode.battlepass",
+            "gui.roll_mod.hub.moderation.mode.dailies"};
     private static final int MODE_W = 110;
 
     /** The player list's presence filter, cycled by its button. */
@@ -125,6 +138,11 @@ public final class ModerationTab {
             "gui.roll_mod.hub.moderation.search.letters",
             "gui.roll_mod.hub.moderation.search.kits",
             "gui.roll_mod.hub.moderation.search.deaths",
+            "gui.roll_mod.hub.moderation.search.settings",
+            "gui.roll_mod.hub.moderation.search.settings",
+            "gui.roll_mod.hub.moderation.search.settings",
+            "gui.roll_mod.hub.moderation.search.settings",
+            "gui.roll_mod.hub.moderation.search.settings",
             "gui.roll_mod.hub.moderation.search.settings"};
 
     private ModerationTab() {}
@@ -165,7 +183,8 @@ public final class ModerationTab {
         search.setTextResponder(text -> filter[0] = text == null ? "" : text.strip().toLowerCase());
         // The hint follows the mode: what the box searches is whatever the list is showing.
         search.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> e.hoverTooltips = new HoverTooltips(
-                List.of(Component.translatable(SEARCH_KEYS[mode[0]])), null, null, ItemStack.EMPTY));
+                // Bounded: a mode added without its own hint falls back to the last one rather than crashing the screen.
+                List.of(Component.translatable(SEARCH_KEYS[Math.min(mode[0], SEARCH_KEYS.length - 1)])), null, null, ItemStack.EMPTY));
 
         ScrollerView players = scroller();
 
@@ -173,11 +192,14 @@ public final class ModerationTab {
         // "punished" toggle. Squashed to nothing in the other modes — height, not setDisplay, as the
         // panes are. Client state only, so no sync value.
         UIElement filters = new UIElement();
+        // 2px more above and below than the column's gap: on AE2 and Ore the buttons' faces reach a pixel past their
+        // box, and ran into the search field.
         filters.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .gapColumn(GAP));
-        filters.setOverflowVisible(false);
+                .gapColumn(GAP).marginTop(2).marginBottom(2));
+        filters.setOverflowVisible(true);
         Button presenceButton = new Button();
         presenceButton.layout(l -> l.flexGrow(1).flexBasis(0).height(ROW_H));
+        presenceButton.text.layout(l -> l.marginTop(1)); // the caption 1px lower
         presenceButton.setText(presenceLabel(presence[0]));
         presenceButton.setOnClick(e -> {
             presence[0] = (presence[0] + 1) % PRESENCE_KEYS.length;
@@ -186,6 +208,7 @@ public final class ModerationTab {
         hint(presenceButton, "gui.roll_mod.hub.moderation.filter.presence.tip");
         Button punishedButton = new Button();
         punishedButton.layout(l -> l.flexGrow(1).flexBasis(0).height(ROW_H));
+        punishedButton.text.layout(l -> l.marginTop(1)); // the caption 1px lower
         punishedButton.setText(punishedLabel(false));
         punishedButton.setOnClick(e -> {
             punishedOnly[0] = !punishedOnly[0];
@@ -210,8 +233,10 @@ public final class ModerationTab {
                 .initialValue(2000).build();
 
         UIElement modeRow = new UIElement();
+        // 2px clear of the pane under it, which otherwise covered the drop-down's bottom edge.
         modeRow.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .gapColumn(GAP));
+                .gapColumn(GAP).marginBottom(2));
+        modeRow.setOverflowVisible(true);
         modeRow.addSyncValue(tps.getSyncValue());
 
         // A drop-down of the modes. Letters is only offered to those who may write them, Kits to those
@@ -226,6 +251,10 @@ public final class ModerationTab {
                 ClientModerationCache.MAY_DEATHLOG));
         modeSelector.setSelected(MODE_PLAYERS, false);
         modeSelector.layout(l -> l.width(MODE_W).height(ROW_H));
+        // Every mode at once, no scroll bar.
+        modeSelector.selectorStyle(st -> st.maxItemCount(MODE_KEYS.length));
+        modeSelector.scrollerView.scrollerStyle(st -> st.verticalScrollDisplay(
+                com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay.NEVER));
         modeSelector.setOnValueChanged(m -> {
             if (m != null) mode[0] = m;
         });
@@ -262,8 +291,21 @@ public final class ModerationTab {
         UIElement deathPane = pane();
         DeathLogPanel deaths = new DeathLogPanel(deathPane, confirmer, player.level().isClientSide());
         UIElement settingsPane = pane();
-        settingsPane.addChild(ModerationSettings.build(player.level().isClientSide()));
-        stack.addChildren(playerPane, warpPane, composer.pane, kitPane, deathPane, settingsPane);
+        QuestPicker chapterPicker = new QuestPicker(id -> {});
+        settingsPane.addChild(ModerationSettings.build(player.level().isClientSide(), chapterPicker));
+        UIElement commandsPane = pane();
+        UIElement pollsPane = pane();
+        UIElement ticketsPane = pane();
+        StaffModerationPanels staffPanels = new StaffModerationPanels(player.level().isClientSide(),
+                commandsPane, pollsPane, ticketsPane);
+        UIElement battlePassPane = pane();
+        QuestPicker battlePassPicker = new QuestPicker(id -> {});
+        BattlePassAdminPanel battlePass = new BattlePassAdminPanel(battlePassPane, battlePassPicker,
+                player.level().isClientSide());
+        UIElement dailiesPane = pane();
+        DailyRewardsAdminPanel dailies = new DailyRewardsAdminPanel(dailiesPane, player.level().isClientSide());
+        stack.addChildren(playerPane, warpPane, composer.pane, kitPane, deathPane, settingsPane,
+                commandsPane, pollsPane, ticketsPane, battlePassPane, dailiesPane);
 
         right.addChildren(modeRow, stack);
 
@@ -277,8 +319,9 @@ public final class ModerationTab {
 
         // Built once, so a message being typed survives the detail's once-a-second rebuilds.
         UIElement whitelist = new UIElement();
+        // 1px off the pane's bottom edge, which clips: the Save button's face reaches a pixel below its box on AE2 and Ore.
         whitelist.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(ROW_H)
-                .gapColumn(GAP));
+                .gapColumn(GAP).marginBottom(1));
 
         Switch whitelistSwitch = new Switch();
         whitelistSwitch.layout(l -> l.width(26).height(ROW_H));
@@ -347,7 +390,9 @@ public final class ModerationTab {
         // Overlays last, so they cover everything.
         root.addChildren(HubSection.header("moderation", section), body,
                 section.overlay(), mute.floating.root(), warn.floating.root(), ban.floating.root(),
-                composer.popup.root(), warpEditor.picker.popup.root(), confirmer.root(), kitItems.popup.root());
+                composer.popup.root(), warpEditor.picker.popup.root(), chapterPicker.popup.root(),
+                battlePassPicker.popup.root(), confirmer.root(),
+                kitItems.popup.root());
         root.addEventListener(UIEvents.TICK, e -> kitItems.sync());
 
         /* --------------------------------------------- tick -------------------------------------------- */
@@ -378,6 +423,9 @@ public final class ModerationTab {
             if (!ClientKitNamesCache.ALLOWED && mode[0] == MODE_KITS) mode[0] = MODE_PLAYERS;
             if (!ClientModerationCache.MAY_DEATHLOG && mode[0] == MODE_DEATHS) mode[0] = MODE_PLAYERS;
             if (!ClientModerationCache.MAY_BAN && mode[0] == MODE_SETTINGS) mode[0] = MODE_PLAYERS;
+            if (!ClientModerationCache.MAY_BAN && mode[0] == MODE_COMMANDS) mode[0] = MODE_PLAYERS;
+            if (!ClientModerationCache.MAY_BAN && mode[0] == MODE_BATTLEPASS) mode[0] = MODE_PLAYERS;
+            if (!ClientModerationCache.MAY_BAN && mode[0] == MODE_DAILIES) mode[0] = MODE_PLAYERS;
             if (lettersOffered[0] != ClientModerationCache.MAY_WRITE_LETTERS
                     || kitsOffered[0] != ClientKitNamesCache.ALLOWED
                     || deathsOffered[0] != ClientModerationCache.MAY_DEATHLOG
@@ -403,12 +451,23 @@ public final class ModerationTab {
                 shownMode[0] = mode[0];
                 boolean playersMode = mode[0] == MODE_PLAYERS;
                 filters.layout(l -> l.height(playersMode ? ROW_H : 0));
+                // Clipped only while squashed: shown, the buttons' bevelled edges (drawn a pixel past their box on
+                // AE2 and Ore) must not be cut off.
+                filters.setOverflowVisible(playersMode);
                 show(playerPane, mode[0] == MODE_PLAYERS);
                 show(warpPane, mode[0] == MODE_WARPS);
                 show(composer.pane, mode[0] == MODE_LETTERS);
                 show(kitPane, mode[0] == MODE_KITS);
                 show(deathPane, mode[0] == MODE_DEATHS);
                 show(settingsPane, mode[0] == MODE_SETTINGS);
+                show(commandsPane, mode[0] == MODE_COMMANDS);
+                show(pollsPane, mode[0] == MODE_POLLS);
+                show(ticketsPane, mode[0] == MODE_TICKETS);
+                show(battlePassPane, mode[0] == MODE_BATTLEPASS);
+                if (mode[0] == MODE_BATTLEPASS) battlePass.enter();
+                show(dailiesPane, mode[0] == MODE_DAILIES);
+                if (mode[0] == MODE_DAILIES) dailies.enter();
+                staffPanels.enter(mode[0] == MODE_COMMANDS, mode[0] == MODE_POLLS, mode[0] == MODE_TICKETS);
                 if (mode[0] == MODE_DEATHS) deaths.enter();
                 if (!Integer.valueOf(mode[0]).equals(modeSelector.getValue())) {
                     modeSelector.setSelected(mode[0], false);
@@ -416,6 +475,9 @@ public final class ModerationTab {
             }
             composer.tick(mode[0] == MODE_LETTERS);
             if (mode[0] == MODE_KITS) kits.tick();
+            staffPanels.tick(mode[0] == MODE_COMMANDS, mode[0] == MODE_POLLS, mode[0] == MODE_TICKETS);
+            if (mode[0] == MODE_BATTLEPASS) battlePass.tick();
+            if (mode[0] == MODE_DAILIES) dailies.tick();
             if (mode[0] == MODE_DEATHS) deaths.tick();
 
             // Left list: whatever the mode is about.
@@ -496,7 +558,8 @@ public final class ModerationTab {
                 boolean mayBan = ClientModerationCache.MAY_BAN;
                 // height(0) rather than setDisplay: see the class javadoc.
                 whitelist.layout(l -> l.height(mayBan ? ROW_H : 0));
-                whitelist.setOverflowVisible(false);
+                // Clipped only while squashed: shown, the Save button's bevelled edge must not be cut off.
+                whitelist.setOverflowVisible(mayBan);
                 whitelistSwitch.setOn(ClientModerationCache.WHITELIST, false);
                 whitelistLabel.setText(Component.translatable(ClientModerationCache.WHITELIST
                         ? "gui.roll_mod.hub.moderation.whitelist.on"
@@ -544,6 +607,12 @@ public final class ModerationTab {
         if (deaths) out.add(MODE_DEATHS);
         // Server settings: for those who may ban, as the server checks too (ServerSettingPacket).
         if (ClientModerationCache.MAY_BAN) out.add(MODE_SETTINGS);
+        // The command blocker wants the stricter node, as the server checks; polls and tickets are any moderator's.
+        if (ClientModerationCache.MAY_BAN) out.add(MODE_COMMANDS);
+        if (ClientModerationCache.MAY_BAN) out.add(MODE_BATTLEPASS);
+        if (ClientModerationCache.MAY_BAN) out.add(MODE_DAILIES);
+        out.add(MODE_POLLS);
+        out.add(MODE_TICKETS);
         return out;
     }
 

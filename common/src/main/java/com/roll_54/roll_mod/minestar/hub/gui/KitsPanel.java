@@ -275,12 +275,14 @@ public final class KitsPanel {
         preview.setText(Component.translatable("gui.roll_mod.hub.kits.preview"));
         preview.layout(l -> l.width(BUTTON_W).height(BUTTON_H).flexShrink(0).paddingAll(0));
         HubSection.centreCaption(preview);
+        preview.text.layout(l -> l.marginTop(1)); // 1px lower: centred, it sat high against the bottom bevel
         preview.setOnClick(e -> PacketDistributor.sendToServer(new KitWindowPackets.Preview(kit.name())));
 
         Button claim = new Button();
         claim.setText(Component.translatable("gui.roll_mod.hub.kits.claim"));
         claim.layout(l -> l.width(BUTTON_W).height(BUTTON_H).flexShrink(0).paddingAll(0));
         HubSection.centreCaption(claim);
+        claim.text.layout(l -> l.marginTop(1)); // 1px lower: centred, it sat high against the bottom bevel
         claim.setActive(ready);
         if (ready) {
             claim.setOnClick(e -> PacketDistributor.sendToServer(KitActionPacket.claim(kit.name())));
@@ -304,10 +306,10 @@ public final class KitsPanel {
     private static Component statusText(KitView kit, long remaining) {
         if (kit.locked()) return Component.translatable("gui.roll_mod.hub.kits.locked");
         if (remaining < 0) return Component.translatable("gui.roll_mod.hub.kits.claimed_once");
-        if (remaining > 0) return Component.translatable("gui.roll_mod.hub.kits.ready_in", Durations.format(remaining));
+        if (remaining > 0) return Component.translatable("gui.roll_mod.hub.kits.ready_in", Durations.readable(remaining));
         if (kit.cooldownTicks() < 0) return Component.translatable("gui.roll_mod.hub.kits.ready_once");
         if (kit.cooldownTicks() > 0) {
-            return Component.translatable("gui.roll_mod.hub.kits.ready_every", Durations.format(kit.cooldownTicks() * 50L));
+            return Component.translatable("gui.roll_mod.hub.kits.ready_every", Durations.readable(kit.cooldownTicks() * 50L));
         }
         return Component.translatable("gui.roll_mod.hub.kits.ready");
     }
@@ -322,7 +324,7 @@ public final class KitsPanel {
     private static Component cooldownLine(KitView kit) {
         if (kit.cooldownTicks() < 0) return Component.translatable("gui.roll_mod.hub.kits.preview.once");
         if (kit.cooldownTicks() > 0) {
-            return Component.translatable("gui.roll_mod.hub.kits.preview.every", Durations.format(kit.cooldownTicks() * 50L));
+            return Component.translatable("gui.roll_mod.hub.kits.preview.every", Durations.readable(kit.cooldownTicks() * 50L));
         }
         return Component.translatable("gui.roll_mod.hub.kits.preview.anytime");
     }
@@ -356,10 +358,11 @@ public final class KitsPanel {
         long remaining = ClientKitCache.remainingMillis(kit);
         Button claim = new Button();
         claim.setText(remaining > 0
-                ? Component.literal(Durations.format(remaining)).withStyle(ChatFormatting.GRAY)
+                ? Durations.readable(remaining).copy().withStyle(ChatFormatting.GRAY)
                 : Component.translatable("gui.roll_mod.hub.kits.claim"));
         claim.layout(l -> l.width(BUTTON_W).height(BUTTON_H).flexGrow(0).flexShrink(0).paddingAll(0));
         HubSection.centreCaption(claim);
+        claim.text.layout(l -> l.marginTop(1)); // 1px lower: centred, it sat high against the bottom bevel
         if (remaining <= 0) {
             claim.setOnClick(e -> PacketDistributor.sendToServer(KitActionPacket.claim(kit.name())));
         }

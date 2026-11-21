@@ -24,7 +24,7 @@ public final class HubNotice {
     private final Label message = new Label();
 
     public HubNotice(Component title) {
-        floating = HubSection.popup(title, SpriteTexture.of(HubBadge.TEXTURE), W, H, body -> {
+        floating = HubSection.popup(title, HubBadge.texture(), W, H, body -> {
             message.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
             message.textStyle(t -> t.textWrap(TextWrap.WRAP));
 

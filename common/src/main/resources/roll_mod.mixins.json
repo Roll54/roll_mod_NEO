@@ -30,6 +30,7 @@
     "MIKeyMapInvoker",
     "mi.EnergyComponentMixin",
     "mi.EnergyHelperMixin",
+    "mi.ChunkEventListenersMixin",
     "mi.ElectricityNetworkMixin",
     "mi.ElectricityNetworkNodeMixin",
     "mi.FluidPipeDrainGuardMixin",
@@ -114,7 +115,16 @@
     "client.NeoForgeLoadingOverlayMixin",
     "client.LoadingOverlayMixin",
     "client.ScreenRenderablesAccessor",
-    "client.LoomScreenAccessor"
+    "client.LoomScreenAccessor",
+    "client.VanillaWidgetThemeMixin",
+    "client.EditBoxThemeMixin",
+    "client.SliderThemeMixin",
+    "client.MenuBackgroundThemeMixin",
+    "client.SelectionListThemeMixin",
+    "client.LdLibTextColorMixin",
+    "client.LdLibColorRectMixin",
+    "client.LdLibPixelSnapMixin",
+    "client.LdLibBevelButtonMixin"
   ],
   "injectors": {
     "defaultRequire": 1

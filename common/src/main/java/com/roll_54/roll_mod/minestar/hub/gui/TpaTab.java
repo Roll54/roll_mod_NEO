@@ -352,6 +352,10 @@ public final class TpaTab {
         button.layout(l -> l.flexBasis(0).flexGrow(1).height(TRIP_H));
         button.setText(Component.translatable(key));
         button.addPostIcon(SpriteTexture.of(RollMod.id(texture)));
+        var children = button.getChildren();
+        // A fixed 12px square, centred: left to the button's height, a taller button stretched it.
+        if (!children.isEmpty()) children.get(children.size() - 1).layout(l -> l.width(12).height(12).flexShrink(0)
+                .alignSelf(dev.vfyjxf.taffy.style.AlignItems.CENTER));
         button.setOnClick(e -> PacketDistributor.sendToServer(TeleportActionPacket.of(action)));
         return button;
     }

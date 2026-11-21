@@ -17,13 +17,13 @@ import java.util.UUID;
  *
  * @param home the target, unused by {@link Action#CREATE}
  * @param text the home's name for {@code CREATE}, the invitee's nickname for {@code INVITE}, the
- *     FTB home's name for {@code MIGRATE}, empty otherwise. One field rather than two because no
+ *     FTB home's name for {@code MIGRATE}, the new description for {@code DESCRIBE}, empty otherwise. One field rather than two because no
  *     action ever needs both.
  */
 public record HomeActionPacket(Action action, UUID home, String text)
         implements CustomPacketPayload {
 
-    public enum Action { CREATE, DELETE, TELEPORT, INVITE, ACCEPT, DECLINE, LEAVE, MIGRATE }
+    public enum Action { CREATE, DELETE, TELEPORT, INVITE, ACCEPT, DECLINE, LEAVE, MIGRATE, DESCRIBE }
 
     public static final Type<HomeActionPacket> TYPE = new Type<>(RollMod.id("home_action"));
 
@@ -82,15 +82,25 @@ public record HomeActionPacket(Action action, UUID home, String text)
         return new HomeActionPacket(Action.MIGRATE, NONE, clamp(ftbName));
     }
 
+    /** Sets the home's description; blank clears it. Owner only, checked on the server. */
+    public static HomeActionPacket describe(UUID home, String description) {
+        String clean = description == null ? "" : description.strip();
+        if (clean.length() > PlayerHome.MAX_DESCRIPTION) clean = clean.substring(0, PlayerHome.MAX_DESCRIPTION);
+        return new HomeActionPacket(Action.DESCRIBE, home, clean);
+    }
+
+    /** The longest text any action carries: names are shorter than descriptions. */
+    private static final int MAX_TEXT = Math.max(PlayerHome.MAX_NAME, PlayerHome.MAX_DESCRIPTION);
+
     private static void encode(RegistryFriendlyByteBuf buf, HomeActionPacket packet) {
         buf.writeVarInt(packet.action.ordinal());
         buf.writeUUID(packet.home);
-        buf.writeUtf(packet.text, PlayerHome.MAX_NAME);
+        buf.writeUtf(packet.text, MAX_TEXT);
     }
 
     private static HomeActionPacket decode(RegistryFriendlyByteBuf buf) {
         Action action = Action.values()[buf.readVarInt() % Action.values().length];
-        return new HomeActionPacket(action, buf.readUUID(), buf.readUtf(PlayerHome.MAX_NAME));
+        return new HomeActionPacket(action, buf.readUUID(), buf.readUtf(MAX_TEXT));
     }
 
     @Override
@@ -110,6 +120,7 @@ public record HomeActionPacket(Action action, UUID home, String text)
                 case DECLINE -> HomeService.decline(player, payload.home);
                 case LEAVE -> HomeService.leave(player, payload.home);
                 case MIGRATE -> HomeService.migrate(player, payload.text);
+                case DESCRIBE -> HomeService.describe(player, payload.home, payload.text);
             }
         });
     }

@@ -45,9 +45,9 @@ final class LetterRewardChips {
     /** The starcoin art the rest of the mod already uses for money. */
     private static final IGuiTexture MONEY_ICON = SpriteTexture.of(RollMod.id("textures/item/lp.png"));
 
-    // TODO(art): placeholder — swap for a real command icon when one exists.
+    /** A command reward wears the server's new logo. */
     private static final IGuiTexture COMMAND_ICON =
-            SpriteTexture.of(RollMod.id("textures/gui/hub/teleportation/settings.png"));
+            SpriteTexture.of(RollMod.id("textures/item/minestar_logo_new.png"));
     private static final int COLOR_CHIP = 0x30FFFFFF;
 
     private LetterRewardChips() {}

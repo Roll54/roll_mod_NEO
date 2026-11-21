@@ -73,16 +73,24 @@ final class LevelRewardsCard {
         // The next perk is the highlighted chip below; a line of its own only once there is none.
         if (next <= 0) card.addChild(text(Component.translatable("gui.roll_mod.hub.home.perks.max"), 0xFFAAAAAA));
 
-        // The last two perk levels reached, then the next four.
-        List<Integer> track = new ArrayList<>();
-        for (int at = level; at >= 1 && track.size() < 2; at--) {
-            if (!LevelPerks.at(rules, at).isEmpty()) track.add(0, at);
+        // Always the same number of chips (six, or every perk level when there are fewer), so the box does not shrink
+        // as levels are reached: the last two reached and the next ones, and once the next ones run out, older
+        // reached ones fill in.
+        List<Integer> reachedAll = new ArrayList<>();
+        for (int at = level; at >= 1; at--) {
+            if (!LevelPerks.at(rules, at).isEmpty()) reachedAll.add(0, at);
         }
-        int reached = track.size();
-        for (int at = next; at > 0 && track.size() < reached + 4; at = LevelPerks.nextPerkLevel(rules, at)) track.add(at);
+        List<Integer> nextAll = new ArrayList<>();
+        for (int at = next; at > 0 && nextAll.size() < 6; at = LevelPerks.nextPerkLevel(rules, at)) nextAll.add(at);
+        int target = Math.min(6, reachedAll.size() + nextAll.size());
+        int reachedCount = Math.min(reachedAll.size(), Math.max(Math.min(2, reachedAll.size()), target - nextAll.size()));
+        List<Integer> track = new ArrayList<>(reachedAll.subList(reachedAll.size() - reachedCount, reachedAll.size()));
+        track.addAll(nextAll.subList(0, Math.min(nextAll.size(), target - reachedCount)));
         if (!track.isEmpty()) {
             UIElement chips = new UIElement();
-            chips.layout(l -> l.flexDirection(FlexDirection.ROW).flexWrap(FlexWrap.WRAP).widthPercent(100).gapColumn(3).gapRow(3));
+            // A little apart from the line above, so the chips' frames do not touch its text.
+            chips.layout(l -> l.flexDirection(FlexDirection.ROW).flexWrap(FlexWrap.WRAP).widthPercent(100).gapColumn(3).gapRow(3)
+                    .marginTop(3));
             for (int at : track) chips.addChild(chip(rules, at, at <= level, at == next));
             card.addChild(chips);
         }
@@ -103,15 +111,43 @@ final class LevelRewardsCard {
     private static UIElement chip(List<LevelPerks.Rule> rules, int level, boolean reached, boolean next) {
         int border = reached ? COLOR_REACHED : next ? 0xFFB45CFF : 0x50FFFFFF;
         Label chip = new Label();
-        chip.setText((reached ? Component.literal("✔ ") : Component.empty()).copy()
+        Component text = (reached ? Component.literal("✔ ") : Component.empty()).copy()
                 .append(Component.translatable("gui.roll_mod.hub.home.perks.level", level)).append(" · ")
-                .append(LevelPerks.describeAt(rules, level)));
-        chip.layout(l -> l.height(12).paddingHorizontal(4).flexShrink(0));
-        chip.textStyle(t -> t.textAlignVertical(Vertical.CENTER).adaptiveWidth(true)
+                .append(LevelPerks.describeAt(rules, level));
+        chip.setText(text);
+        // paddingTop(2): the caption 1px lower than centred. Never wider than the card: a long perk line wraps onto a
+        // second line inside its chip instead of running past the card's edge. The width is the text's own, set here
+        // rather than by adaptiveWidth: LdLib lays an adaptive-width label out on one endless line and never wraps it,
+        // so its box was clamped to the card while the text ran on past the frame.
+        int textWidth = net.minecraft.client.Minecraft.getInstance().font.width(text);
+        chip.layout(l -> l.width(textWidth + 8).minHeight(12).maxWidthPercent(100).paddingHorizontal(4).paddingTop(2)
+                .paddingBottom(1).flexShrink(0));
+        chip.textStyle(t -> t.textAlignVertical(Vertical.CENTER).adaptiveWidth(false).adaptiveHeight(true)
+                .textWrap(TextWrap.WRAP)
                 .textColor(reached ? COLOR_REACHED : next ? 0xFFFFFFFF : 0xFFAAAAAA));
         chip.style(s -> s.background(new GuiTextureGroup(new ColorRectTexture(reached ? 0x3040C050 : 0x30000000),
-                new ColorBorderTexture(1, border))));
+                next && !reached ? com.roll_54.roll_mod.minestar.theme.MeLights.border(border)
+                        : edge(border))));
         return chip;
+    }
+
+    /**
+     * A 1px frame drawn on the box's own edge pixels, the same way {@code MeLights.border} draws the next level's: a
+     * {@code ColorBorderTexture} sat 1px further in, so a chip looked 1px smaller once its level was reached.
+     */
+    private static com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture edge(int argb) {
+        return new com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture() {
+            @Override
+            public void draw(net.minecraft.client.gui.GuiGraphics g, float mx, float my, float x, float y, float w, float h,
+                             float pt) {
+                int x0 = net.minecraft.util.Mth.floor(x), y0 = net.minecraft.util.Mth.floor(y);
+                int x1 = net.minecraft.util.Mth.floor(x + w), y1 = net.minecraft.util.Mth.floor(y + h);
+                g.fill(x0, y0, x1, y0 + 1, argb);
+                g.fill(x0, y1 - 1, x1, y1, argb);
+                g.fill(x0, y0 + 1, x0 + 1, y1 - 1, argb);
+                g.fill(x1 - 1, y0 + 1, x1, y1 - 1, argb);
+            }
+        };
     }
 
     /** One site reward: a star in its rarity's colour, framed; title, description and rarity on hover. */

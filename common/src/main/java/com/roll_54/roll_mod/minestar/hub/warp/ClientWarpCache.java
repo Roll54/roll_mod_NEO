@@ -15,5 +15,8 @@ public final class ClientWarpCache {
     /** How many warps the viewing player may own. Drives whether the create button is offered. */
     public static volatile int LIMIT = WarpService.DEFAULT_LIMIT;
 
+    /** Whether the viewing player teleports with no warm-up: Prime, or the bypass permission. */
+    public static volatile boolean INSTANT = false;
+
     private ClientWarpCache() {}
 }

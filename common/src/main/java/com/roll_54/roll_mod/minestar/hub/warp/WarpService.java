@@ -300,13 +300,19 @@ public final class WarpService {
         return warp.priceFor(player.getUUID());
     }
 
+    /** No warm-up for this player on any warp: the bypass permission, or Prime (no wait on any teleport). */
+    public static boolean travelsInstantly(ServerPlayer player) {
+        return LuckPermsCompat.canBypassWarmup(player)
+                || com.roll_54.roll_mod.minestar.teleport.TeleportService.isPrime(player);
+    }
+
     private static void begin(ServerPlayer player, Warp warp) {
         // An official warp is staff-made and staff-vouched, so there is nothing for a countdown to
         // protect against and it travels at once; the bypass permission says the same about a rank.
         // Note that "instant" means no warm-up, not no latency: a priced one has already been
         // through requestTeleport's balance lookup, which hops off the main thread and back, so it
         // lands a tick or more after the click either way.
-        if (warp.isAdmin() || LuckPermsCompat.canBypassWarmup(player)) {
+        if (warp.isAdmin() || travelsInstantly(player)) {
             long now = player.server.getTickCount();
             Long last = INSTANT.get(player.getUUID());
             if (last != null && now - last < INSTANT_COOLDOWN_TICKS) return;

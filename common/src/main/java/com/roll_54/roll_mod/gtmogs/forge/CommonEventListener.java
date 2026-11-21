@@ -14,7 +14,7 @@ import com.roll_54.roll_mod.gtmogs.api.registry.GTRegistries;
 import com.roll_54.roll_mod.gtmogs.api.worldgen.ores.ServerStallWatchdog;
 import com.roll_54.roll_mod.gtmogs.common.data.loader.PostRegistryListener;
 
-@EventBusSubscriber(modid = GTMOGS.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = GTMOGS.MOD_ID)
 public class CommonEventListener {
 
     @SubscribeEvent

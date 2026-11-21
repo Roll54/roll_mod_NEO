@@ -74,6 +74,12 @@ public class DailyTasksState extends SavedData {
      */
     public final Map<UUID, Integer> tasksDone = new HashMap<>();
 
+    /**
+     * Extra daily task slots each player has earned for good — the FTB Quests reward "+1 daily task"
+     * ({@code DailySlotReward}). Never cleared.
+     */
+    public final Map<UUID, Integer> extraSlots = new HashMap<>();
+
     /** One group's task set, bonus reward and progress for the day it was rolled on. */
     public static class GroupState {
         /**
@@ -92,6 +98,19 @@ public class DailyTasksState extends SavedData {
          * Empty when nothing has been rolled, or when the id no longer resolves.
          */
         public String rewardId = "";
+
+        /**
+         * Whether the last drawn task is the Prime slot: an extra task only Prime players see and claim, which the
+         * all-complete bonus does not count. False on boards rolled before it existed.
+         */
+        public boolean primeSlot;
+
+        /**
+         * How many earned extra slots ({@link DailyTasksState#extraSlots}) this board carries, right after the base
+         * tasks and before the Prime slot. The j-th one shows only to members with more than j extra slots; the
+         * all-complete bonus does not count them.
+         */
+        public int bonusSlots;
 
         public final int[] progress = new int[MAX_TASK_COUNT];
         /**
@@ -162,10 +181,46 @@ public class DailyTasksState extends SavedData {
             return Math.min(taskIds.size(), MAX_TASK_COUNT);
         }
 
-        /** How many of the day's tasks are finished — what the bonus panel counts. */
+        /** The tasks the all-complete bonus counts: every one but the Prime slot. */
+        public int baseCount() {
+            return Math.max(0, taskCount() - (primeSlot ? 1 : 0) - bonusSlots);
+        }
+
+        /** Which earned extra slot {@code index} is (0 for the first), or -1 when it is not one. */
+        public int bonusIndex(int index) {
+            int base = baseCount();
+            return index >= base && index < base + bonusSlots ? index - base : -1;
+        }
+
+        /**
+         * Puts {@code taskId} in at {@code at}, shifting the tasks after it (and their progress, claims and rerolls)
+         * one place along. For an extra slot earned mid-day, which goes in before the Prime slot.
+         */
+        public void insertTask(int at, String taskId) {
+            if (taskCount() >= MAX_TASK_COUNT || at < 0 || at > taskCount()) return;
+            for (int i = taskCount(); i > at; i--) {
+                progress[i] = progress[i - 1];
+                completed[i] = completed[i - 1];
+                rerolls[i] = rerolls[i - 1];
+            }
+            progress[at] = 0;
+            completed[at] = false;
+            rerolls[at] = 0;
+            claimedBy.add(at, new HashSet<>());
+            claimedBy.remove(claimedBy.size() - 1);
+            taskIds.add(at, taskId);
+            invalidateHooks();
+        }
+
+        /** The Prime slot's index, or -1 when this board has none. */
+        public int primeIndex() {
+            return primeSlot && taskCount() > 0 ? taskCount() - 1 : -1;
+        }
+
+        /** How many of the bonus's tasks are finished — what the bonus panel counts (the Prime slot is not). */
         public int completedCount() {
             int done = 0;
-            for (int i = 0; i < taskCount(); i++) {
+            for (int i = 0; i < baseCount(); i++) {
                 if (completed[i]) done++;
             }
             return done;
@@ -201,6 +256,8 @@ public class DailyTasksState extends SavedData {
             // Absent in saves written before per-group rolls: those groups redraw on first touch.
             state.periodDay = g.contains("periodDay") ? g.getLong("periodDay") : Long.MIN_VALUE;
             state.rewardId = g.getString("rewardId");
+            state.primeSlot = g.getBoolean("primeSlot");
+            state.bonusSlots = g.getInt("bonusSlots");
 
             ListTag groupTasks = g.getList("taskIds", Tag.TAG_STRING);
             for (int t = 0; t < groupTasks.size(); t++) {
@@ -249,6 +306,11 @@ public class DailyTasksState extends SavedData {
             CompoundTag e = tasksDone.getCompound(i);
             s.tasksDone.put(e.getUUID("id"), e.getInt("count"));
         }
+        ListTag extra = tag.getList("extraSlots", Tag.TAG_COMPOUND);
+        for (int i = 0; i < extra.size(); i++) {
+            CompoundTag e = extra.getCompound(i);
+            s.extraSlots.put(e.getUUID("id"), e.getInt("count"));
+        }
         return s;
     }
 
@@ -263,6 +325,8 @@ public class DailyTasksState extends SavedData {
             g.putUUID("id", id);
             g.putLong("periodDay", state.periodDay);
             g.putString("rewardId", state.rewardId);
+            g.putBoolean("primeSlot", state.primeSlot);
+            g.putInt("bonusSlots", state.bonusSlots);
 
             ListTag groupTasks = new ListTag();
             for (String taskId : state.taskIds) {
@@ -316,6 +380,15 @@ public class DailyTasksState extends SavedData {
             tasksDoneList.add(e);
         });
         tag.put("tasksDone", tasksDoneList);
+
+        ListTag extraList = new ListTag();
+        extraSlots.forEach((id, count) -> {
+            CompoundTag e = new CompoundTag();
+            e.putUUID("id", id);
+            e.putInt("count", count);
+            extraList.add(e);
+        });
+        tag.put("extraSlots", extraList);
         return tag;
     }
 

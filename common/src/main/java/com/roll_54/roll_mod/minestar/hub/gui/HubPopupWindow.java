@@ -66,7 +66,8 @@ public final class HubPopupWindow {
 
         UIElement root = new UIElement();
         root.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).heightPercent(100));
-        root.style(s -> s.background(HubSection.frameFor(root)));
+        // The theme's own panel look, as the hub window has it ("panel_bg").
+        root.addClass("panel_bg");
 
         UIElement titleBar = new UIElement();
         titleBar.layout(l -> l.flexDirection(FlexDirection.ROW).alignItems(AlignItems.CENTER)
@@ -86,7 +87,8 @@ public final class HubPopupWindow {
         if (floating.closable) {
             // A Button, so ModularUIWindow.isDragBlocker keeps a press on it from moving the window.
             Button closeButton = new Button();
-            closeButton.noText().addPreIcon(Icons.WINDOW_CLOSE).layout(l -> l.width(TITLE_H).height(TITLE_H));
+            closeButton.noText().layout(l -> l.width(TITLE_H).height(TITLE_H).flexShrink(0).paddingAll(0));
+            HubIcons.iconOnly(closeButton, HubIcons.CLOSE, 8, TITLE_H, TITLE_H);
             closeButton.setOnClick(e -> close());
             titleBar.addChild(closeButton);
         }
@@ -100,17 +102,20 @@ public final class HubPopupWindow {
 
         ModularUIWindow window = new ModularUIWindow(ModularUI.of(UI.of(root, RollUi.sheets())),
                 floating.title.getString());
-        window.setDragArea(titleBar);
+        // Moved by its bar only with the windows setting on (Settings → Hub).
+        if (HubWindowState.get().resizableWindows()) window.setDragArea(titleBar);
         window.setOnCloseRequested(HubPopupWindow::close);
         int w = Math.max(ModularUIWindow.MIN_WIDTH, Math.round(floating.width() * SCALE));
         int h = Math.max(ModularUIWindow.MIN_HEIGHT, Math.round(floating.height() * SCALE) + TITLE_H);
         int[] at = centre(w, h);
+        // Resizable from the edges only with the setting on (Settings → Hub). Before open(): LdLib reads it there
+        // (it defaults to resizable), so setting it afterwards changed nothing.
+        window.setResizable(HubWindowState.get().resizableWindows());
         if (!window.open(at[0], at[1], w, h, false)) {
             // No window after all: the body goes home and the caller shows the panel instead.
             floating.reclaim();
             return false;
         }
-        window.setResizable(true);
         window.setAlwaysOnTop(true);
 
         current = window;

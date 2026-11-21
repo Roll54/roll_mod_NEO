@@ -75,11 +75,3 @@ Saber modules — 23/23
 [✓] wave_module                Wave Module                        tier 1  textures/item/tool/modules/wave_module.png
 
 
-TODO
-----
-[ ] Tooltip colours: give each part of the module tooltip a consistent colour scheme
-    (effect line, Parameters block, conflicts, Description, hints) and colour module
-    names by tier. Code: DrillModuleItem.appendHoverText / costLine / detailLines.
-[ ] Tooltip text design: rewrite the effect lines and the Shift descriptions
-    (tooltip.roll_mod.module.<type> and .<type>.desc.N in en_us.json / uk_ua.json)
-    so they read consistently in length, tone and formatting.

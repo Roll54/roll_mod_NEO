@@ -90,13 +90,17 @@ public final class LettersTab {
         // The divider between the list and the panel: drag to resize, double-click to reset.
         body.addChildren(list, HubSplit.handle("letters", list, LIST_W, player.level().isClientSide()), detail);
 
-        root.addChildren(HubSection.header("letters", section), body, section.overlay());
+        // "Write to moderation" (a suggestion or a bug report) and the staff's polls, in windows of their own.
+        PlayerStaffPopups staff = new PlayerStaffPopups();
+        root.addChildren(HubSection.header("letters", section, staff.buttons()), body, section.overlay(),
+                staff.write.root(), staff.polls.root());
 
         int[] listVersion = {-1};
         UUID[] listSelected = {null};
         String[] detailSig = {null};
 
         root.addEventListener(UIEvents.TICK, e -> {
+            if (player.level().isClientSide()) staff.tick();
             // Staff are sent due, expired and deleted letters too, for the moderation tab; a reader
             // only ever sees what is out, in date and still in their list.
             long now = System.currentTimeMillis();
@@ -135,7 +139,8 @@ public final class LettersTab {
         if (letters.isEmpty()) {
             Label none = new Label();
             none.setText(Component.translatable("gui.roll_mod.letters.none").withStyle(ChatFormatting.GRAY));
-            none.layout(l -> l.widthPercent(100));
+            // 3px in from the list's top-left, clear of its frame.
+            none.layout(l -> l.widthPercent(100).marginTop(3).marginLeft(3));
             none.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
             list.addScrollViewChild(none);
             return;
@@ -294,8 +299,9 @@ public final class LettersTab {
         head.addChildren(caption, pageLabel);
 
         UIElement row = new UIElement();
+        // 2px up: the chips sat on the Accept button's top edge.
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(LetterRewardChips.SLOT)
-                .gapColumn(CHIP_GAP));
+                .gapColumn(CHIP_GAP).marginTop(-2).marginBottom(2));
         Button prev = pageArrow("‹");
         Button next = pageArrow("›");
         UIElement chips = new UIElement();

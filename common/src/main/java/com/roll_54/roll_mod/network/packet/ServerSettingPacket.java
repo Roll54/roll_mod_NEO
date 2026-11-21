@@ -28,13 +28,15 @@ public record ServerSettingPacket(String key, String value) implements CustomPac
     public static final StreamCodec<FriendlyByteBuf, ServerSettingPacket> STREAM_CODEC = StreamCodec.of(
             (buf, p) -> {
                 buf.writeUtf(p.key, 64);
-                buf.writeUtf(p.value, 256);
+                buf.writeUtf(p.value, 2048);
             },
-            buf -> new ServerSettingPacket(buf.readUtf(64), buf.readUtf(256)));
+            buf -> new ServerSettingPacket(buf.readUtf(64), buf.readUtf(2048)));
 
     /** The settings the tab offers. */
     public enum Key {
-        JOIN_HISTORY_MINUTES, JOIN_HISTORY_LINES, MENTIONS, HIDE_ADVANCEMENTS, DISCORD_MARKER, WIXIE_MINUTES;
+        JOIN_HISTORY_MINUTES, JOIN_HISTORY_LINES, MENTIONS, HIDE_ADVANCEMENTS, DISCORD_MARKER, WIXIE_MINUTES,
+        /** The leaderboard's chapter stages, as {@code LeaderboardChapters} writes them. */
+        LEADERBOARD_CHAPTERS;
 
         public String id() {
             return name().toLowerCase(Locale.ROOT);
@@ -61,6 +63,12 @@ public record ServerSettingPacket(String key, String value) implements CustomPac
                 return;
             }
             ConfigApi.save(config);
+            if (Key.valueOf(payload.key) == Key.LEADERBOARD_CHAPTERS) {
+                com.roll_54.roll_mod.minestar.leaderboard.LeaderboardService.invalidate();
+                // The battle pass's blocks (and so the daily ingots' stage) follow the same table: re-sent at once.
+                com.roll_54.roll_mod.minestar.battlepass.BattlePassService.applyChanges(player.server);
+                com.roll_54.roll_mod.minestar.battlepass.BattlePassService.sendAdmin(player);
+            }
             RollMod.LOGGER.info("[Moderation] {} set {} to {}", player.getGameProfile().getName(), payload.key, payload.value);
         });
     }
@@ -75,6 +83,10 @@ public record ServerSettingPacket(String key, String value) implements CustomPac
             case DISCORD_MARKER -> config.chat_changes.discordLineMarker = value.strip();
             // Ticks between Wixie's tips, given in minutes; never under one, or it would post every tick.
             case WIXIE_MINUTES -> config.messages.TIME_TO_BROADCAST = clamp(value, 1, 24 * 60) * 1200;
+            // Parsed and written back, so only well-formed stages are ever stored.
+            case LEADERBOARD_CHAPTERS -> config.hub.leaderboardChapters =
+                    com.roll_54.roll_mod.minestar.leaderboard.LeaderboardChapters.write(
+                            com.roll_54.roll_mod.minestar.leaderboard.LeaderboardChapters.parse(value));
         }
     }
 

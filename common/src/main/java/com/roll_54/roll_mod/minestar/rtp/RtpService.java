@@ -277,6 +277,8 @@ public final class RtpService {
     /** Milliseconds left before this player may use {@code /rtp} again; {@code 0} when ready. */
     public static long cooldownRemainingMillis(ServerPlayer player) {
         if (LuckPermsCompat.canBypassRtpCooldown(player)) return 0L;
+        // Prime teleports with no cooldown.
+        if (com.roll_54.roll_mod.minestar.teleport.TeleportService.isPrime(player)) return 0L;
 
         Integer meta = LuckPermsCompat.rtpCooldownTicks(player);
         long ticks = meta != null ? meta : MyConfig.INSTANCE.rtp.cooldownTicks.get();

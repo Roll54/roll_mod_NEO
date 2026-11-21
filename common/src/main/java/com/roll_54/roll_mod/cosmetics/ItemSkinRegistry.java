@@ -97,7 +97,47 @@ public final class ItemSkinRegistry {
                 Set.of()
         ));
 
+        registerPride();
+
         bootstrapped = true;
+    }
+
+    /** The pride flags the pride skins come in (textures/item/skin/pride/&lt;flag&gt;/). */
+    public static final List<String> PRIDE_FLAGS = List.of("pride", "gay", "lesbian", "bi", "pan", "trans", "enby",
+            "ace", "aro", "aroace", "agender", "demiboy", "demigirl", "demi_r", "demi_s", "genderfluid", "genderqueer",
+            "grey_r", "grey_s", "greyrose", "intersex", "poly");
+
+    /**
+     * Six skins per pride flag, each drawn for one kind of tool and fitting only that kind: a sword (plain swords, not
+     * sabers), a pickaxe (not drills), an axe, a saber (LV–EV sabers, EV's lit blade), the IV saber (its own model)
+     * a drill (LV–EV) and the IV drill (its own model, on the IV saber's flag texture, which it shares). Models in models/skin/pride/&lt;flag&gt;/, ids
+     * {@code pride_<flag>_<tool>}.
+     */
+    private static void registerPride() {
+        Set<Item> sabers = Set.of(ItemRegistry.LV_MODULAR_SABER.get(), ItemRegistry.MV_MODULAR_SABER.get(),
+                ItemRegistry.HV_MODULAR_SABER.get(), ItemRegistry.EV_MODULAR_SABER.get());
+        Set<Item> ivSaber = Set.of(ItemRegistry.IV_MODULAR_SABER.get());
+        Set<Item> allSabers = new java.util.HashSet<>(sabers);
+        allSabers.addAll(ivSaber);
+        Set<Item> drills = Set.of(ItemRegistry.LV_MODULAR_DRILL.get(), ItemRegistry.MV_MODULAR_DRILL.get(),
+                ItemRegistry.HV_MODULAR_DRILL.get(), ItemRegistry.EV_MODULAR_DRILL.get());
+        Set<Item> allDrills = new java.util.HashSet<>(drills);
+        allDrills.add(ItemRegistry.IV_MODULAR_DRILL.get());
+        for (String flag : PRIDE_FLAGS) {
+            pride(flag, "sword", SkinCategory.SWORD, Set.of(), allSabers);
+            pride(flag, "saber", SkinCategory.SWORD, sabers, Set.of());
+            pride(flag, "iv_saber", SkinCategory.SWORD, ivSaber, Set.of());
+            pride(flag, "pickaxe", SkinCategory.PICKAXE, Set.of(), allDrills);
+            pride(flag, "drill", SkinCategory.PICKAXE, drills, Set.of());
+            pride(flag, "iv_drill", SkinCategory.PICKAXE, Set.of(ItemRegistry.IV_MODULAR_DRILL.get()), Set.of());
+            pride(flag, "axe", SkinCategory.AXE, Set.of(), Set.of());
+        }
+    }
+
+    private static void pride(String flag, String tool, SkinCategory category, Set<Item> onlyOn, Set<Item> notOn) {
+        register(new ItemSkinDefinition(RollMod.id("pride_" + flag + "_" + tool), category, SkinKind.ITEM_MODEL,
+                RollMod.id("skin/pride/" + flag + "/" + tool), Optional.empty(), Set.of(), Set.copyOf(onlyOn),
+                Set.copyOf(notOn)));
     }
 
     private static void register(ItemSkinDefinition definition) {
@@ -125,7 +165,10 @@ public final class ItemSkinRegistry {
      * That pairing is the case the whole feature was originally asked for.
      */
     public static boolean canApply(ItemSkinDefinition skin, Item item) {
-        return skin.category() == SkinCategory.of(item) || skin.alsoAllowed().contains(item);
+        if (skin.alsoAllowed().contains(item)) return true;
+        if (skin.category() != SkinCategory.of(item)) return false;
+        if (!skin.onlyOn().isEmpty() && !skin.onlyOn().contains(item)) return false;
+        return !skin.notOn().contains(item);
     }
 
     /**
@@ -143,7 +186,9 @@ public final class ItemSkinRegistry {
         SkinCategory category = SkinCategory.of(item);
         if (category != null) {
             ResourceLocation direct = active.get(category);
-            if (direct != null) {
+            // The slot's skin only where it fits: a saber skin chosen for the sword slot leaves plain swords bare.
+            ItemSkinDefinition skin = direct == null ? null : BY_ID.get(direct);
+            if (skin != null && canApply(skin, item)) {
                 return direct;
             }
         }

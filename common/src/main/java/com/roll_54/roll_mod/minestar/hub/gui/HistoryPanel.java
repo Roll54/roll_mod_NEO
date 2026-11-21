@@ -39,8 +39,8 @@ import java.util.Locale;
  */
 final class HistoryPanel {
 
-    private static final int WIDTH = 490;
-    private static final int HEIGHT = 332;
+    private static final int WIDTH = 320;
+    private static final int HEIGHT = 220;
     private static final int ROW_H = 20;
     private static final int AMOUNT_W = 64;
     private static final int COLOR_ROW = 0x30FFFFFF;
@@ -51,7 +51,7 @@ final class HistoryPanel {
         HistoryFilter[] filter = {HistoryFilter.ALL};
         HubSection.Info info = HubSection.panel(
                 Component.translatable("gui.roll_mod.hub.history.title"),
-                IGuiTexture.dynamic(() -> Icons.HISTORY),
+                HubIcons.HISTORY,
                 Component.translatable("gui.roll_mod.hub.history.tip"),
                 // Inside the hub, centred on the screen like the info panel (a desktop window before).
                 WIDTH, HEIGHT, false,
@@ -70,6 +70,10 @@ final class HistoryPanel {
         selector.setCandidates(List.of(HistoryFilter.values()));
         selector.setSelected(HistoryFilter.ALL, false);
         selector.layout(l -> l.widthPercent(100).height(16).flexShrink(0).marginBottom(3));
+        // Every filter at once, no scroll bar.
+        selector.selectorStyle(st -> st.maxItemCount(HistoryFilter.values().length));
+        selector.scrollerView.scrollerStyle(st -> st.verticalScrollDisplay(
+                com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay.NEVER));
         // Above the floating panel it sits in: the drop-down list hangs off the UI root.
         selector.dialog.style(s -> s.zIndex(30));
         selector.setOnValueChanged(f -> {
@@ -79,7 +83,8 @@ final class HistoryPanel {
         });
 
         ScrollerView list = new ScrollerView();
-        list.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
+        // 2px clear of the filter above, so the list's top frame line is not hidden under it.
+        list.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1).marginTop(2));
         list.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));

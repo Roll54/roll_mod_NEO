@@ -25,6 +25,10 @@ import java.util.Set;
  * @param alsoAllowed items outside {@code category} this skin may still be applied to. The escape
  *                    hatch that lets the murasama sword skin sit on a paxel without loosening the
  *                    category rule for everything else.
+ * @param onlyOn      when not empty, the only items of {@code category} the skin fits: a pride saber
+ *                    skin is drawn for sabers, so it must not land on a plain sword
+ * @param notOn       items of {@code category} the skin never fits: a pride sword skin is a 16px sword,
+ *                    so it stays off the sabers, which have skins of their own
  */
 public record ItemSkinDefinition(
         ResourceLocation skinId,
@@ -32,7 +36,9 @@ public record ItemSkinDefinition(
         SkinKind kind,
         ResourceLocation model,
         Optional<ResourceLocation> texture,
-        Set<Item> alsoAllowed
+        Set<Item> alsoAllowed,
+        Set<Item> onlyOn,
+        Set<Item> notOn
 ) {
     public static final Codec<ItemSkinDefinition> CODEC = RecordCodecBuilder.create(instance -> instance.group(
             ResourceLocation.CODEC.fieldOf("skin_id").forGetter(ItemSkinDefinition::skinId),
@@ -41,8 +47,18 @@ public record ItemSkinDefinition(
             ResourceLocation.CODEC.fieldOf("model").forGetter(ItemSkinDefinition::model),
             ResourceLocation.CODEC.optionalFieldOf("texture").forGetter(ItemSkinDefinition::texture),
             BuiltInRegistries.ITEM.byNameCodec().listOf().xmap(Set::copyOf, List::copyOf)
-                    .optionalFieldOf("also_allowed", Set.of()).forGetter(ItemSkinDefinition::alsoAllowed)
+                    .optionalFieldOf("also_allowed", Set.of()).forGetter(ItemSkinDefinition::alsoAllowed),
+            BuiltInRegistries.ITEM.byNameCodec().listOf().xmap(Set::copyOf, List::copyOf)
+                    .optionalFieldOf("only_on", Set.of()).forGetter(ItemSkinDefinition::onlyOn),
+            BuiltInRegistries.ITEM.byNameCodec().listOf().xmap(Set::copyOf, List::copyOf)
+                    .optionalFieldOf("not_on", Set.of()).forGetter(ItemSkinDefinition::notOn)
     ).apply(instance, ItemSkinDefinition::new));
+
+    /** A skin for its whole slot, as every skin was before {@code onlyOn}/{@code notOn}. */
+    public ItemSkinDefinition(ResourceLocation skinId, SkinCategory category, SkinKind kind, ResourceLocation model,
+                              Optional<ResourceLocation> texture, Set<Item> alsoAllowed) {
+        this(skinId, category, kind, model, texture, alsoAllowed, Set.of(), Set.of());
+    }
 
     public ItemSkinDefinition {
         if (kind == SkinKind.GEO_ARMOR && texture.isEmpty()) {
