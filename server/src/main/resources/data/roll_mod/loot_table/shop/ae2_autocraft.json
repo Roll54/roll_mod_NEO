@@ -1,0 +1,87 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:blue_shulker_box",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": "{\"text\":\"Набір базового автокрафту\",\"color\":\"blue\",\"italic\":false}",
+                "minecraft:container": [
+                  {
+                    "slot": 0,
+                    "item": {
+                      "id": "ae2:pattern_provider",
+                      "count": 16
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "item": {
+                      "id": "ae2:interface",
+                      "count": 16
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "item": {
+                      "id": "ae2:purple_smart_cable",
+                      "count": 64
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "item": {
+                      "id": "ae2:purple_smart_dense_cable",
+                      "count": 16
+                    }
+                  },
+                  {
+                    "slot": 4,
+                    "item": {
+                      "id": "ae2:blank_pattern",
+                      "count": 64
+                    }
+                  },
+                  {
+                    "slot": 5,
+                    "item": {
+                      "id": "ae2:pattern_encoding_terminal",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 6,
+                    "item": {
+                      "id": "ae2:import_bus",
+                      "count": 8
+                    }
+                  },
+                  {
+                    "slot": 7,
+                    "item": {
+                      "id": "ae2:export_bus",
+                      "count": 8
+                    }
+                  },
+                  {
+                    "slot": 8,
+                    "item": {
+                      "id": "ae2:4k_crafting_storage",
+                      "count": 2
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

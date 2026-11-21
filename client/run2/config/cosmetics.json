@@ -1,9 +1,0 @@
-{
-  "version": 0,
-  "storage": {
-    "jdbcUrl": "",
-    "dbUser": "",
-    "dbPassword": "",
-    "fallbackToLocalFile": true
-  }
-}

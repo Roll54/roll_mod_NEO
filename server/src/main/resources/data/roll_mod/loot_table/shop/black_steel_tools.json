@@ -1,0 +1,123 @@
+{
+  "type": "minecraft:generic",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:black_shulker_box",
+          "functions": [
+            {
+              "function": "minecraft:set_components",
+              "components": {
+                "minecraft:custom_name": "{\"text\":\"Набір із чорної сталі\",\"color\":\"dark_gray\",\"italic\":false}",
+                "minecraft:container": [
+                  {
+                    "slot": 0,
+                    "item": {
+                      "id": "roll_mod:black_steel_helmet",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 1,
+                    "item": {
+                      "id": "roll_mod:black_steel_chestplate",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 2,
+                    "item": {
+                      "id": "roll_mod:black_steel_leggings",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 3,
+                    "item": {
+                      "id": "roll_mod:black_steel_boots",
+                      "count": 1
+                    }
+                  },
+                  {
+                    "slot": 4,
+                    "item": {
+                      "id": "roll_mod:black_steel_sword",
+                      "count": 1,
+                      "components": {
+                        "minecraft:enchantments": {
+                          "levels": {
+                            "minecraft:sharpness": 5
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "slot": 5,
+                    "item": {
+                      "id": "roll_mod:black_steel_pickaxe",
+                      "count": 1,
+                      "components": {
+                        "minecraft:enchantments": {
+                          "levels": {
+                            "minecraft:efficiency": 5
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "slot": 6,
+                    "item": {
+                      "id": "roll_mod:black_steel_axe",
+                      "count": 1,
+                      "components": {
+                        "minecraft:enchantments": {
+                          "levels": {
+                            "minecraft:efficiency": 5,
+                            "minecraft:sharpness": 5
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "slot": 7,
+                    "item": {
+                      "id": "roll_mod:black_steel_shovel",
+                      "count": 1,
+                      "components": {
+                        "minecraft:enchantments": {
+                          "levels": {
+                            "minecraft:efficiency": 5
+                          }
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "slot": 8,
+                    "item": {
+                      "id": "roll_mod:black_steel_hoe",
+                      "count": 1,
+                      "components": {
+                        "minecraft:enchantments": {
+                          "levels": {
+                            "minecraft:efficiency": 5
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
