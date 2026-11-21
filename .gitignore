@@ -124,3 +124,25 @@ src/generated/resources/
 /common/src/generated/
 /client/run2/
 
+
+# Backups / editor leftovers
+*.old
+*.bak
+*.orig
+*.rej
+*.swp
+*.swo
+*.tmp
+
+# Editors / tools
+.vscode/
+.claude/settings.local.json
+
+# Minecraft runtime output in any module
+**/run/
+**/run2/
+logs/
+crash-reports/
+
+# Datagen hash cache
+common/src/generated/resources/.cache/
