@@ -30,6 +30,7 @@ public class OreRecipeProvider extends RecipeProvider {
 
     @Override
     protected void buildRecipes(RecipeOutput recipeOutput) {
+        com.roll_54.roll_mod.data.datagen.RollMIMaterialDatagen.buildRecipes(recipeOutput);
         // Resolve generated ore items/blocks by registry-name (same pattern as OreLootTableProvider).
         Map<String, Item> items = GeneratedOreRegistry.ITEMS.getEntries().stream()
                 .collect(Collectors.toMap(entry -> entry.getId().getPath(), DeferredHolder::get));

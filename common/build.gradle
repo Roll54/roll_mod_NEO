@@ -58,24 +58,23 @@ dependencies {
     implementation "curse.maven:rhino-416294:7104526"
     // MI 2.5.11 requires guideme [21.1.19, 21.2); same version as the live pack.
     implementation "org.appliedenergistics:guideme:21.1.19"
-    implementation files("jars/adastra-1.21.1-1.16.26-neoforge.jar")
+    // Ad Astra 1.16.26. Needs resourceful-lib, resourceful-config and common-storage-lib at runtime (below).
+    implementation "maven.modrinth:ad-astra:${ad_astra_modrinth_id}"
 
     // compileOnly: NanoArmorMixin implements FluidProvider from common_storage_lib.
     // Provided at runtime by the common_storage_lib mod, so not bundled.
-    // FluidResource and other API types live in nested jar-in-jar modules that
-    // Gradle won't unpack from the main jar, so they're referenced explicitly.
-    compileOnly files("jars/common-storage-lib-neoforge-1.21.1-0.0.9.jar")
-    compileOnly files("jars/common-storage-lib-resources-neoforge-1.21.1-0.0.9.jar")
-    compileOnly files("jars/common-storage-lib-data-neoforge-1.21.1-0.0.9.jar")
-    compileOnly files("jars/common-storage-lib-lookup-neoforge-1.21.1-0.0.9.jar")
+    // FluidResource and other API types live in the -resources/-data/-lookup modules, which Team
+    // Resourceful's maven pulls in transitively.
+    compileOnly "earth.terrarium.common_storage_lib:common-storage-lib-neoforge-1.21.1:${common_storage_lib_version}"
 
     // Runtime-only libraries required by ad_astra / agricraft (declared above). They must be present
     // at runtime or the dev client/server crash with "Mod ad_astra requires resourcefullib/...".
     // runtimeOnly keeps them off the compile classpath and out of any published jar; the client and
     // server dev runs inherit them through `implementation project(':common')`.
-    runtimeOnly files("jars/common-storage-lib-neoforge-1.21.1-0.0.9.jar")
-    runtimeOnly files("../run/mods/resourcefulconfig-neoforge-1.21-3.0.11.jar")
-    runtimeOnly files("../run/mods/resourcefullib-neoforge-1.21-3.0.12.jar")
+    // The Modrinth jar (byte-identical to the one the pack runs), not the maven one: no transitive modules.
+    runtimeOnly "maven.modrinth:common-storage-lib:${common_storage_lib_modrinth_id}"
+    runtimeOnly "maven.modrinth:resourceful-config:${resourceful_config_modrinth_id}"
+    runtimeOnly "maven.modrinth:resourceful-lib:${resourceful_lib_modrinth_id}"
 
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
         version {
@@ -105,18 +104,20 @@ dependencies {
 
     implementation "curse.maven:architectury-api-419699:5786327"
 
-    implementation files("jars/createcybernetics-0.5.3-neoforge-1.21.1.jar")
+    // Local: HOTFIX2 is not published on Modrinth or any maven (Modrinth stops at 0.5.3-HOTFIX).
+    implementation files("jars/${createcybernetics_jar}")
 
     // Curios: the death log snapshots and restores worn curios. Soft like Farmer's Delight below —
     // only compat/curios/CuriosAccess names its classes, and only after ModList says it is loaded —
     // but implementation so the dev runs have curio slots to test against.
-    implementation files("jars/curios-neoforge-9.5.1+1.21.1.jar")
+    implementation "maven.modrinth:curios:${curios_version}"
 
 
     // Advanced AE: the oxygen tank card goes into its quantum chestplate (mixin/aae). Same version as the pack.
     implementation "maven.modrinth:advancedae:${advanced_ae_version}"
 
-    implementation files("jars/Multiblocked2-1.21-1.21.1-21.1.2-all.jar")
+    // Modrinth's primary file for this version is the -all jar.
+    implementation "maven.modrinth:multiblocked2:mc1.21.1-${mdb2_version}-neoforge"
 
     /* ------------------------------------- economy (ex roll_mod_currency) ------------------------------------- */
 
@@ -128,7 +129,7 @@ dependencies {
     // Open Parties and Claims owns plot claims; PlotService imports xaero.pac.* directly and calls
     // it with no isLoaded guard, so it is a hard dependency at both compile and run time. The Xaero
     // map mods are runtime-only companions — nothing here compiles against them.
-    compileOnly files("jars/open-parties-and-claims-neoforge-1.21.1-0.33.0.jar")
+    compileOnly "maven.modrinth:open-parties-and-claims:neoforge-1.21.1-${opac_version}"
 
     // Optional-mod integrations. compileOnly keeps them soft: the integration classes are only ever
     // loaded when the mod in question is present.
@@ -140,15 +141,15 @@ dependencies {
     compileOnly "curse.maven:carry-on-274259:7393892"
     compileOnly "net.luckperms:api:5.4"
     // AE2 is required: the vending block's inventory is an ME interface (AE2's InterfaceLogic).
-    // implementation, so every dev run loads it; from the pack's jar (modmaven has no 19.2.17).
+    // implementation, so every dev run loads it; from Modrinth (modmaven has no 19.2.17).
     // GuideME, which AE2 needs, is already an implementation dependency above.
-    implementation files("jars/appliedenergistics2-19.2.17.jar")
+    implementation "maven.modrinth:ae2:${ae2_version}"
 
     // FallingTree: compat/fallingtree lets tools tagged #minecraft:axes (MI/EI chainsaws) fell whole
-    // trees. implementation from the pack's jar, so every dev run loads it and the chainsaws can be
+    // trees. implementation, so every dev run loads it and the chainsaws can be
     // tested. Still soft for the shipped mod: the mixin config is required = false, so without
     // FallingTree it is simply skipped.
-    implementation files("jars/FallingTree-1.21.1-1.21.1.11.jar")
+    implementation "maven.modrinth:fallingtree:1.21.1-${fallingtree_version}"
 
     // Ore veins: GTMOGS (GregTech Modern Ore Gen Standalone, fork of 1.0.8, LGPL-3.0) is part of roll_mod, in
     // com.roll_54.roll_mod.gtmogs, not a mod of its own. These are the libraries it shipped inside itself,
@@ -178,7 +179,7 @@ dependencies {
     // and the cooking tasks can be tested out of the box. Still soft for the shipped mod: only the
     // mixins in compat/farmersdelight name its classes, their config is required = false, and
     // neoforge.mods.toml lists it as optional.
-    implementation files("jars/FarmersDelight-1.21.1-1.3.4.jar")
+    implementation "maven.modrinth:farmers-delight:1.21.1-${farmers_delight_version}"
     // additional food mod, used for pizza model implementation
     implementation "curse.maven:brewin-and-chewin-637808:8309583"
 

@@ -85,11 +85,11 @@ dependencies {
     compileOnly "net.luckperms:api:5.4"
     implementation files("jars/luckperms-neoforge.jar")
     if (hasMinestar) implementation files(minestarJar)
-    runtimeOnly files("jars/tab.jar")
+    runtimeOnly "maven.modrinth:tab-was-taken:${tab_modrinth_id}"
 
     // compileOnly: needed so GasTankItemMixin can reference StorageIO in its @WrapOperation
     // handler signature. Provided at runtime by the common_storage_lib mod, so not bundled.
-    compileOnly files("jars/common-storage-lib-neoforge-1.21.1-0.0.9.jar")
+    compileOnly "earth.terrarium.common_storage_lib:common-storage-lib-neoforge-1.21.1:${common_storage_lib_version}"
 
     // DimThreads (Minestar fork, built from ../dimthreads): ticks dimensions in parallel and carries the thread-safety
     // fixes for MI, EI, Tesseract, AE2, Advanced AE, Ad Astra and Multiblocked2. A required dependency of this jar
@@ -120,7 +120,7 @@ dependencies {
 
     implementation("com.lowdragmc.ldlib2:ldlib2-neoforge-${minecraft_version}:${ldlib2_version}:all")
 
-    implementation files("jars/Multiblocked2-1.21-1.21.1-21.1.2-all.jar")
+    implementation "maven.modrinth:multiblocked2:mc1.21.1-${mdb2_version}-neoforge"
 
 }
 
@@ -139,10 +139,10 @@ dependencies {
     dbLibs.each { dependencies.add(runCfg.name, it) }
     // Open Parties and Claims owns plot claims, and :common only compiles against it. The server is
     // where PlotService actually runs, so without this every plot command throws.
-    dependencies.add(runCfg.name, files("../common/jars/open-parties-and-claims-neoforge-1.21.1-0.33.0.jar"))
+    dependencies.add(runCfg.name, "maven.modrinth:open-parties-and-claims:neoforge-1.21.1-${opac_version}")
     // Sophisticated Core supplies the liquid XP (sophisticatedcore:xp_still) the service block's XP
     // services trade in. Test runs only; nothing compiles against it.
-    dependencies.add(runCfg.name, files("../common/jars/sophisticatedcore-1.21.1-1.5.5.2363.jar"))
+    dependencies.add(runCfg.name, "maven.modrinth:sophisticated-core:1.21.1-${sophisticated_core_version}")
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

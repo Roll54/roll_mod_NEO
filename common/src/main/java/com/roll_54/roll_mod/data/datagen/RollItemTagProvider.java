@@ -57,6 +57,7 @@ public class RollItemTagProvider extends ItemTagsProvider {
 
     @Override
     protected void addTags(HolderLookup.Provider provider) {
+        RollMIMaterialDatagen.addTags((tag, item) -> tag(tag).add(item), (target, tag) -> tag(target).addTag(tag));
 
         addSkinSlotTags();
         addTierArmorTags();
