@@ -153,7 +153,7 @@ public final class DailyTasksUI {
             b.setOnClick(e -> page[0] = index);
             pageButtons[i] = b;
         }
-        root.addChild(header(server, section, pageButtons));
+        root.addChild(header(server, section, page, pageButtons));
 
         // The rows move into their own column so the bonus panel can sit beside them, and take
         // whatever height the window leaves under the header, so a taller hub shows more rows.
@@ -239,11 +239,16 @@ public final class DailyTasksUI {
     /* ------------------------------------------------- header ------------------------------------------------- */
 
     /** The shared title row (see {@link HubSection#header}), with the reset countdown beside the I. */
-    private static UIElement header(@Nullable ServerPlayer server, HubSection.Info section, UIElement... pages) {
+    private static UIElement header(@Nullable ServerPlayer server, HubSection.Info section, int[] page,
+                                    UIElement... pages) {
         // Seconds come from the server: the roll follows the server machine's clock, which is not
         // the viewer's. Only the formatting happens client-side.
         SimpleBinding<Integer> secondsLeft = intBinding(
                 () -> server == null ? 0 : (int) DailyTaskManager.secondsUntilNextRoll(), 0);
+        // The weekly page counts down to the next Monday/Thursday batch instead; the seasonal page has no timer
+        // (a season runs until an admin starts the next one).
+        SimpleBinding<Integer> weeklyLeft = intBinding(
+                () -> server == null ? 0 : (int) DailyTaskManager.secondsUntilNextWeeklyBatch(), 0);
 
         Label resets = new Label();
         // Right after the title, taking the rest of the row: the title shrinks to its own text below.
@@ -252,8 +257,12 @@ public final class DailyTasksUI {
                 .textAlignVertical(Vertical.CENTER)
                 .textColor(0xFFAAAAAA));
         resets.addSyncValue(secondsLeft.getSyncValue());
-        resets.addEventListener(UIEvents.TICK, e -> resets.setText(Component.translatable(
-                "gui.roll_mod.daily_tasks.resets_in", formatDuration(value(secondsLeft, 0)))));
+        resets.addSyncValue(weeklyLeft.getSyncValue());
+        resets.addEventListener(UIEvents.TICK, e -> resets.setText(switch (page[0]) {
+            case 1 -> Component.translatable("gui.roll_mod.daily_tasks.weekly_in", formatDuration(value(weeklyLeft, 0)));
+            case 2 -> Component.empty();
+            default -> Component.translatable("gui.roll_mod.daily_tasks.resets_in", formatDuration(value(secondsLeft, 0)));
+        }));
 
         UIElement[] extras = new UIElement[pages.length + 1];
         extras[0] = resets;
@@ -263,6 +272,15 @@ public final class DailyTasksUI {
         if (header.getChildren().get(0) instanceof Label title) {
             title.layout(l -> l.flexGrow(0).flexShrink(0));
             title.textStyle(t -> t.adaptiveWidth(true));
+            // The title names the page shown: daily, weekly or seasonal tasks.
+            String[] titles = {"gui.roll_mod.daily_tasks.title", "gui.roll_mod.daily_tasks.title.weekly",
+                    "gui.roll_mod.daily_tasks.title.seasonal"};
+            int[] shown = {0};
+            title.addEventListener(UIEvents.TICK, e -> {
+                if (shown[0] == page[0]) return;
+                shown[0] = page[0];
+                title.setText(Component.translatable(titles[page[0]]));
+            });
         }
         return header;
     }

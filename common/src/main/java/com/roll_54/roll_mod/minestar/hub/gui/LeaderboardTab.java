@@ -114,7 +114,8 @@ public final class LeaderboardTab {
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
         list.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)));
-        list.viewPort(v -> v.layout(l -> l.paddingAll(4)));
+        // Inside the themed frame: up to 4px frame + 3px clear of the text.
+        list.viewPort(v -> v.layout(l -> l.paddingAll(7)));
 
         // The viewer's own line, pinned under the list so it is visible however far down they are.
         UIElement own = new UIElement();
@@ -264,8 +265,10 @@ public final class LeaderboardTab {
 
     private static Label note(String key) {
         Label label = new Label();
-        label.setText(Component.translatable(key).withStyle(ChatFormatting.GRAY));
-        label.layout(l -> l.widthPercent(100).height(ROW_H));
+        // Light grey, not GRAY: GRAY on the list's grey panel barely read.
+        label.setText(Component.translatable(key).withStyle(s -> s.withColor(0xD8D8D8)));
+        // Same inset as a row's own text, so the note lines up with the names it stands in for.
+        label.layout(l -> l.widthPercent(100).height(ROW_H).paddingHorizontal(HubSection.ROW_INSET));
         label.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
         return label;
     }

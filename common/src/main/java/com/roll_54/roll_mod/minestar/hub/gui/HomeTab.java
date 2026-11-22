@@ -335,8 +335,9 @@ public final class HomeTab {
             setIfChanged(standingRow, standing());
             int unread = ClientPlayerStatusCache.UNREAD_LETTERS;
             setIfChanged(lettersRow, unread > 0
-                    ? Component.translatable("gui.roll_mod.hub.status.letters", unread)
-                            .withStyle(ChatFormatting.GOLD)
+                    // Only the count in colour.
+                    ? Component.translatable("gui.roll_mod.hub.status.letters",
+                            Component.literal(String.valueOf(unread)).withStyle(ChatFormatting.GOLD))
                     : Component.empty());
             setIfChanged(staffRow, staff());
         });
@@ -373,7 +374,7 @@ public final class HomeTab {
                 Component.literal(String.valueOf(warns)).withStyle(warns == 0 ? ChatFormatting.GREEN
                         : warns >= ModerationService.WARNS_BEFORE_BAN - 1 ? ChatFormatting.RED
                         : ChatFormatting.GOLD),
-                ModerationService.WARNS_BEFORE_BAN));
+                Component.literal(String.valueOf(ModerationService.WARNS_BEFORE_BAN)).withStyle(ChatFormatting.RED)));
         if (ClientPlayerStatusCache.muted()) {
             long left = ClientPlayerStatusCache.muteRemaining();
             parts.add((left < 0L
@@ -394,14 +395,16 @@ public final class HomeTab {
             if (row.row().online()) online++;
             if (row.banned(now)) banned++;
         }
+        // Only the numbers in colour; the words read in the text colour.
         return lines(List.of(
-                Component.translatable("gui.roll_mod.hub.home.staff.online", online),
-                Component.translatable("gui.roll_mod.hub.home.staff.banned", banned),
+                Component.translatable("gui.roll_mod.hub.home.staff.online",
+                        Component.literal(String.valueOf(online)).withStyle(ChatFormatting.AQUA)),
+                Component.translatable("gui.roll_mod.hub.home.staff.banned",
+                        Component.literal(String.valueOf(banned)).withStyle(ChatFormatting.AQUA)),
                 Component.translatable("gui.roll_mod.hub.home.staff.server",
                         Component.translatable(ClientModerationCache.WHITELIST
                                 ? "gui.roll_mod.hub.moderation.whitelist.on"
-                                : "gui.roll_mod.hub.moderation.whitelist.off")))
-        ).copy().withStyle(ChatFormatting.AQUA);
+                                : "gui.roll_mod.hub.moderation.whitelist.off"))));
     }
 
     /**

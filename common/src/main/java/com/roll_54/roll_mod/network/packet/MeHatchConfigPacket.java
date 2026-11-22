@@ -69,8 +69,11 @@ public record MeHatchConfigPacket(BlockPos pos, int action, int slot, Optional<A
             var config = hatch.getConfig();
             if (packet.slot() < 0 || packet.slot() >= config.size()) return;
             switch (packet.action()) {
-                case SET -> packet.key().ifPresent(key ->
-                        config.setStack(packet.slot(), new GenericStack(key, Math.max(1, packet.amount()))));
+                case SET -> packet.key().ifPresent(key -> {
+                    // Only the slot's own kind (a mixed hatch's rows differ).
+                    if ((key instanceof appeng.api.stacks.AEFluidKey) != hatch.slotIsFluid(packet.slot())) return;
+                    config.setStack(packet.slot(), new GenericStack(key, Math.max(1, packet.amount())));
+                });
                 case SET_AMOUNT -> {
                     @Nullable AEKey current = config.getKey(packet.slot());
                     // An amount of 0 or less clears the slot, as on an interface.

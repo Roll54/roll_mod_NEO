@@ -88,6 +88,30 @@ public class RollMachineModelProvider implements DataProvider {
                 machine(cache, writes, id, spec.casing(), overlays);
             }
         }
+        for (com.roll_54.roll_mod.compat.mi.machines.ItemHatches.Spec spec
+                : com.roll_54.roll_mod.compat.mi.machines.ItemHatches.ALL) {
+            // Same overlays MI gives its own item hatches.
+            JsonObject overlays = new JsonObject();
+            overlays.addProperty("item_auto", "modern_industrialization:block/overlays/item_auto");
+            overlays.addProperty("output", "modern_industrialization:block/overlays/output_item");
+            overlays.addProperty("side", "modern_industrialization:block/machines/hatch_item/overlay_side");
+            for (String id : spec.ids()) {
+                machine(cache, writes, id, spec.casing(), overlays);
+            }
+        }
+        for (com.roll_54.roll_mod.compat.mi.machines.MixedHatches.Spec spec
+                : com.roll_54.roll_mod.compat.mi.machines.MixedHatches.ALL) {
+            // Yet Another Industrialization's mixed hatch overlays, with both auto-extract ones.
+            JsonObject overlays = new JsonObject();
+            overlays.addProperty("fluid_auto", "modern_industrialization:block/overlays/fluid_auto");
+            overlays.addProperty("front", com.roll_54.roll_mod.compat.mi.machines.MixedHatches.OVERLAYS + "/overlay_front");
+            overlays.addProperty("item_auto", "modern_industrialization:block/overlays/item_auto");
+            overlays.addProperty("output", com.roll_54.roll_mod.compat.mi.machines.MixedHatches.OUTPUT_OVERLAY.toString());
+            overlays.addProperty("side", com.roll_54.roll_mod.compat.mi.machines.MixedHatches.OVERLAYS + "/overlay_side");
+            for (String id : spec.ids()) {
+                machine(cache, writes, id, spec.casing(), overlays);
+            }
+        }
         for (MultiFluidHatches.Spec spec : MultiFluidHatches.ALL) {
             JsonObject overlays = new JsonObject();
             overlays.addProperty("fluid_auto", "modern_industrialization:block/overlays/fluid_auto");

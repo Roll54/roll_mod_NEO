@@ -18,8 +18,10 @@ public final class TeleportEvents {
 
     private TeleportEvents() {}
 
-    @SubscribeEvent
+    // Last, so a death a totem (or another mod) cancelled is not remembered: the player never left.
+    @SubscribeEvent(priority = net.neoforged.bus.api.EventPriority.LOWEST)
     public static void onDeath(LivingDeathEvent event) {
+        if (event.isCanceled()) return;
         if (event.getEntity() instanceof ServerPlayer player) {
             PlayerPositions.rememberBack(player);
         }

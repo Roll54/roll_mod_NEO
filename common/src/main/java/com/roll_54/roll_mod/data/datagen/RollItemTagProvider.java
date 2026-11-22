@@ -64,6 +64,12 @@ public class RollItemTagProvider extends ItemTagsProvider {
         addHerbicideTag();
         addVanillaLikeTags();
         addCropFoodTags();
+        // Once in hand-written files under src/main/resources, which shadowed these generated tags in the jar
+        // (processResources keeps the first copy of a path): the tool, armour and crop tags of every other item were
+        // dropped. Their only entries of their own live here now.
+        tag(Tags.Items.CROPS).add(ItemRegistry.LATEX_DANDELION_SEED.get());
+        tag(ItemTags.PICKAXES).add(ItemRegistry.NETHERITE_STEAM_MINING_DRILL.get());
+        tag(ItemTags.SHOVELS).add(ItemRegistry.NETHERITE_STEAM_MINING_DRILL.get());
 
         var raw = tag(RAW_ORE);
         var crushed = tag(CRUSHED_ORE);
@@ -162,6 +168,11 @@ public class RollItemTagProvider extends ItemTagsProvider {
      */
     private void addHerbicideTag() {
         var herbicides = tag(HERBICIDES);
+        // The meteorite metal block (registered with the blocks, so not in the loops over ItemRegistry below).
+        tag(Tags.Items.STORAGE_BLOCKS).addTag(commonTag("storage_blocks/meteorite_metal"));
+        tag(commonTag("storage_blocks/meteorite_metal"))
+                .add(com.roll_54.roll_mod.registry.BlockRegistry.METEORITE_METAL_BLOCK.get().asItem());
+
         for (var holder : ItemRegistry.ITEMS.getEntries()) {
             // The plain roll_mod:herbicide is kept out on purpose: only the tiered herbicides feed the machines.
             if (holder.get() instanceof HerbicideItem && holder.get() != ItemRegistry.HERBICIDE.get()) {
@@ -286,6 +297,14 @@ public class RollItemTagProvider extends ItemTagsProvider {
                     default -> ItemTags.FOOT_ARMOR;
                 }).add(item);
                 tag(Tags.Items.ARMORS).add(item);
+                // Trimmable when drawn with vanilla's armour layers (a trim is an overlay on those). The pieces with
+                // a GeckoLib model of their own (RollModClient.registerArmorRenderers) have no layer for the trim to
+                // sit on; every other piece, GeoItem or not (TooltipArmorItem only is one for skins), uses the layers.
+                if (item != ItemRegistry.EXAMPLE_ARMOR_HELMET.get() && item != ItemRegistry.CLOWN_HAT.get()
+                        && item != ItemRegistry.HAZMAT_HELMET.get()
+                        && item != ItemRegistry.MULTI_PROTECTING_GRAVI_CHESTPLATE.get()) {
+                    tag(ItemTags.TRIMMABLE_ARMOR).add(item);
+                }
             }
 
             // Food and drinks.

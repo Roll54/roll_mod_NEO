@@ -240,6 +240,9 @@ final class SkinsTab {
         private final Label lockedHow = new Label();
         private SkinCategory slot = SkinCategory.HELMET;
         @Nullable private ResourceLocation chosenLocked;
+        /** The list's order: by rarity (rarest first) or by name. Kept for the session. */
+        private static boolean byRarity;
+        private final com.lowdragmc.lowdraglib2.gui.ui.elements.Button sort = new com.lowdragmc.lowdraglib2.gui.ui.elements.Button();
 
         Picker(Player player) {
             this.player = player;
@@ -259,8 +262,19 @@ final class SkinsTab {
         private void fill(UIElement body) {
             body.layout(l -> l.flexDirection(FlexDirection.COLUMN).gapRow(3));
 
-            caption.layout(l -> l.widthPercent(100).height(10).flexShrink(0));
+            caption.layout(l -> l.flexBasis(0).flexGrow(1).heightPercent(100));
             caption.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
+            // The order switch, at the caption's right: by name or by rarity.
+            sort.layout(l -> l.width(84).heightPercent(100).flexShrink(0));
+            sort.setOnClick(e -> {
+                byRarity = !byRarity;
+                rebuild();
+            });
+            UIElement header = new UIElement();
+            header.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(16).flexShrink(0)
+                    .gapColumn(4).alignItems(AlignItems.CENTER));
+            header.setOverflowVisible(true);
+            header.addChildren(caption, sort);
 
             list.layout(l -> l.widthPercent(100).flexBasis(0).flexGrow(1));
             list.scrollerStyle(s -> s.mode(ScrollerMode.VERTICAL)
@@ -277,7 +291,7 @@ final class SkinsTab {
                 label.setDisplay(false);
             }
 
-            body.addChildren(caption, list, lockedTitle, lockedHow);
+            body.addChildren(header, list, lockedTitle, lockedHow);
         }
 
         void rebuild() {
@@ -293,6 +307,15 @@ final class SkinsTab {
                 if (skin.category() != slot) continue;
                 (owned.contains(skin.skinId()) ? unlocked : locked).add(skin);
             }
+            sort.setText(Component.translatable(byRarity ? "gui.roll_mod.hub.skins.sort.rarity" : "gui.roll_mod.hub.skins.sort.name"));
+            java.util.Comparator<ItemSkinDefinition> byName = java.util.Comparator.comparing(
+                    skin -> skin.displayName().getString().toLowerCase(java.util.Locale.ROOT));
+            java.util.Comparator<ItemSkinDefinition> order = byRarity
+                    ? java.util.Comparator.<ItemSkinDefinition, Integer>comparing(
+                            skin -> -ItemSkinRegistry.rarity(skin).ordinal()).thenComparing(byName)
+                    : byName;
+            unlocked.sort(order);
+            locked.sort(order);
             // Unlocked while the window was up — it is no longer the locked one being explained.
             if (chosenLocked != null && owned.contains(chosenLocked)) chosenLocked = null;
 
@@ -331,8 +354,9 @@ final class SkinsTab {
 
             Component name = skin == null
                     ? Component.translatable("gui.roll_mod.hub.skins.none").withStyle(ChatFormatting.GRAY)
-                    : skin.displayName().copy().withStyle(isLocked ? ChatFormatting.DARK_GRAY
-                            : highlighted ? ChatFormatting.AQUA : ChatFormatting.WHITE);
+                    : isLocked ? skin.displayName().copy().withStyle(ChatFormatting.DARK_GRAY)
+                    // In its rarity's colour; the one worn is marked by its row.
+                    : skin.displayName().copy().withColor(ItemSkinRegistry.rarity(skin).color);
             Label label = new Label();
             label.setText(name);
             label.layout(l -> l.flexGrow(1).height(ROW_H));

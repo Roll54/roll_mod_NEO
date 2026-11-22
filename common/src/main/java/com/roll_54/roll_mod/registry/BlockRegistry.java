@@ -54,6 +54,14 @@ public class BlockRegistry {
      * ({@code minecraft:wither_immune}, in {@code RollBlockTagDatagen}). Unlike vanilla glass it drops
      * itself, and it connects into one pane with its neighbours through Fusion.
      */
+    /** Nine meteorite metal ingots in one block; a beacon base, like the vanilla metal blocks. */
+    public static final DeferredBlock<Block> METEORITE_METAL_BLOCK = BLOCKS.register(
+            "meteorite_metal_block",
+            () -> new Block(BlockBehaviour.Properties.ofFullCopy(Blocks.IRON_BLOCK)
+                    .mapColor(MapColor.COLOR_BLUE)
+                    .strength(6.0F, 12.0F))
+    );
+
     public static final DeferredBlock<Block> BOROSILICATE_GLASS = BLOCKS.register(
             "borosilicate_glass",
             () -> new TransparentBlock(BlockBehaviour.Properties.ofFullCopy(Blocks.GLASS)
@@ -266,6 +274,10 @@ public class BlockRegistry {
         ITEMS.register("treated_log", () -> new BlockItem(TREATED_LOG.get(), new Item.Properties()));
         ITEMS.register("lapotronic_laser_block", () -> new BlockItem(LAPOTRONIC_LASER_BLOCK.get(), new Item.Properties()));
         ITEMS.register("borosilicate_glass", () -> new BlockItem(BOROSILICATE_GLASS.get(), new Item.Properties()));
+        // Named and lored in the meteorite metal's blues, as its ingot is.
+        ITEMS.register("meteorite_metal_block", () -> new com.roll_54.roll_mod.util.TooltipManager.TooltipBlockItem(
+                METEORITE_METAL_BLOCK.get(), new Item.Properties(),
+                new com.roll_54.roll_mod.util.TooltipOptions(1, 0x3B2AB8, 0x005ACF, false)));
         ITEMS.register("research_workbench", () -> new BlockItem(RESEARCH_WORKBENCH.get(), new Item.Properties()));
         // Its name follows the client's "show new items" option, like the modules it installs.
         ITEMS.register("module_installation_table", () -> new BlockItem(MODULE_INSTALLATION_TABLE.get(), new Item.Properties()) {

@@ -117,7 +117,9 @@ public class MachineRegistry {
      */
     public static void hatches(HatchMIHookContext hook) {
         FluidHatches.register(hook);
+        com.roll_54.roll_mod.compat.mi.machines.ItemHatches.register(hook);
         MultiFluidHatches.register(hook);
+        com.roll_54.roll_mod.compat.mi.machines.MixedHatches.register(hook);
         MeHatches.register(hook);
     }
 

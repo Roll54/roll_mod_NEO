@@ -60,7 +60,6 @@ public final class MeHatchUI {
 
     public static ModularUI input(MeInputHatchBlockEntity hatch, Player player) {
         boolean client = player.level().isClientSide();
-        boolean fluid = hatch.isFluid();
         UIElement root = root(238);
         header(root, hatch);
 
@@ -77,7 +76,7 @@ public final class MeHatchUI {
                 GenericStack current = hatch.getConfig().getStack(slot);
                 amount.setText(current == null ? "" : String.valueOf(current.amount()));
             };
-            UIElement configSlot = fluid ? fluidConfigSlot(hatch, slot, select) : itemConfigSlot(hatch, slot, select);
+            UIElement configSlot = hatch.slotIsFluid(slot) ? fluidConfigSlot(hatch, slot, select) : itemConfigSlot(hatch, slot, select);
             root.addChild(VendorUIHelper.abs(configSlot, gridX(slot), 38 + gridY(slot), SLOT, SLOT));
         }
 
@@ -89,8 +88,12 @@ public final class MeHatchUI {
         }
 
         // Label 7..85 fits "Кількість, мБ" (~69 px); the button only holds "ОК"/"Set", so it gives up the width.
-        root.addChild(label(7, 127, 78, Component.translatable(
-                fluid ? "menu.roll_mod.me_hatch.amount_mb" : "menu.roll_mod.me_hatch.amount")));
+        // In mB for a fluid slot (the selected one's kind on a mixed hatch).
+        Label amountLabel = label(7, 127, 78, Component.translatable(
+                hatch.slotIsFluid(0) ? "menu.roll_mod.me_hatch.amount_mb" : "menu.roll_mod.me_hatch.amount"));
+        amountLabel.addEventListener(UIEvents.TICK, e -> amountLabel.setText(Component.translatable(
+                hatch.slotIsFluid(Math.max(0, selected[0])) ? "menu.roll_mod.me_hatch.amount_mb" : "menu.roll_mod.me_hatch.amount")));
+        root.addChild(amountLabel);
         root.addChild(VendorUIHelper.abs(amount, 87, 123, 56, 14));
         Button set = new Button();
         set.setText(Component.translatable("menu.roll_mod.me_hatch.set"));
@@ -101,6 +104,9 @@ public final class MeHatchUI {
             PacketDistributor.sendToServer(MeHatchConfigPacket.setAmount(hatch.getBlockPos(), selected[0], value));
         });
         root.addChild(VendorUIHelper.abs(set, 145, 123, 24, 14));
+        // One line inside the window, scrolling when it is longer ("Click a set slot with an empty hand…" ran far
+        // past the right edge).
+        hint.textStyle(t -> t.textWrap(com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap.ROLL));
         root.addChild(VendorUIHelper.abs(hint, 7, 141, WIDTH - 14, 10));
         hint.addEventListener(UIEvents.TICK, e -> hint.setText(hintText(hatch, selected[0])));
 
@@ -244,10 +250,18 @@ public final class MeHatchUI {
 
     /* ---------------------------------------------------- shared ---------------------------------------------------- */
 
+    /** Marks an ME hatch's window, so the recipe browser lays out beside it ({@code LdlibScreenBounds}). */
+    public static final String ROOT_ID = "roll_mod_me_hatch";
+
+    public static boolean isMeHatch(@org.jetbrains.annotations.Nullable com.lowdragmc.lowdraglib2.gui.ui.ModularUI ui) {
+        return ui != null && ui.getElementById(ROOT_ID) != null;
+    }
+
     private static UIElement root(int height) {
         // The theme's panel surface; children are placed absolutely, so its padding is dropped.
         UIElement root = VendorUIHelper.styledPanel(WIDTH, height);
         root.layout(l -> l.paddingAll(0));
+        root.setId(ROOT_ID);
         return root;
     }
 

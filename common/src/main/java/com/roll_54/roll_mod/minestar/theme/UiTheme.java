@@ -141,9 +141,22 @@ public enum UiTheme {
      */
     public record Recolor(int outline, int shadow, int well, int surface, int highlight, int text) {}
 
+    /** Each theme's recolour, built once ({@link #recolor} is read for every GUI blit). */
+    private Recolor recolorCache;
+    private boolean recolorBuilt;
+
     /** {@code null} for the vanilla-looking themes, which leave vanilla's art alone. */
     @javax.annotation.Nullable
     public Recolor recolor() {
+        if (!recolorBuilt) {
+            recolorCache = buildRecolor();
+            recolorBuilt = true;
+        }
+        return recolorCache;
+    }
+
+    @javax.annotation.Nullable
+    private Recolor buildRecolor() {
         return switch (this) {
             case DUSK -> new Recolor(0xFF0B0D11, 0xFF0B0D11, 0xFF0F1116, 0xFF171A21, 0xFF2B3242, 0xFFE7EAF2);
             case CARBON -> new Recolor(0xFF0A0A0A, 0xFF0A0A0A, 0xFF101010, 0xFF181818, 0xFF2E2E2E, 0xFFEDEDED);
@@ -155,7 +168,9 @@ public enum UiTheme {
             // Sampled from LdLib's gdp_styles.png, so vanilla screens wear the same violet-grey as GDP's own panels and slots.
             case GDP -> new Recolor(0xFF0D0D11, 0xFF231C26, 0xFF2F2A34, 0xFF47434F, 0xFF85818D, 0xFFF3F2F2);
             case ORE -> new Recolor(0xFF1B2E12, 0xFF2E4A1E, 0xFF3F6A2A, 0xFF5A8A3C, 0xFF7AA85A, 0xFF404040);
-            case OREUI -> new Recolor(0xFF1E1E1F, 0xFF3A3A3B, 0xFF58595B, 0xFF7D7D7F, 0xFFA1A1A1, 0xFF404040);
+            // Plain OreUI leaves vanilla's (and other mods') screens as they are, like the Minecraft theme: its look is
+            // vanilla's own. Only the hub and LdLib's windows wear OreUI.
+            case OREUI -> null;
             case OREUI_DARK -> new Recolor(0xFF0C0C0C, 0xFF121212, 0xFF19191A, 0xFF252526, 0xFF3A3A3B, 0xFFFFFFFF);
             case AE2 -> new Recolor(0xFF413F54, 0xFF878FA5, 0xFFADB0C4, 0xFFCBCCD4, 0xFFF2F2F2, 0xFF413F54);
             case OREUI_GREEN -> ORE.recolor();

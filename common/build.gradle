@@ -84,7 +84,7 @@ dependencies {
     }
 
     // MI addons pinned to the live pack's versions (Modrinth maven), so dev runs what production runs.
-    implementation "maven.modrinth:tesseract-api:1.12.16-1.21.1"
+    implementation "maven.modrinth:tesseract-api:1.12.20-1.21.1"
     implementation "curse.maven:kubejs-238086:7143884"
     implementation "maven.modrinth:mi-tweaks:1.9.5-1.21.1"
     implementation "maven.modrinth:extended-industrialization:1.16.2-1.21.1"

@@ -70,24 +70,30 @@ public final class MeHatches {
      * @param englishName English name before "Input Hatch" / "Output Hatch"
      * @param fluid       fluid hatches, else item hatches
      */
-    public record Spec(String prefix, String englishName, boolean fluid) {
+    public record Spec(String prefix, String englishName, boolean fluid, boolean mixed) {
+        public Spec(String prefix, String englishName, boolean fluid) {
+            this(prefix, englishName, fluid, false);
+        }
+
         public List<String> ids() {
             return List.of(prefix + "_input_hatch", prefix + "_output_hatch");
         }
 
         /** Folder of the overlay textures: {@code overlay_front}, {@code overlay_side}, {@code output_<kind>}. */
         public ResourceLocation overlays() {
-            return RollMod.id("block/me_hatch/" + (fluid ? "fluid" : "item"));
+            return RollMod.id("block/me_hatch/" + (mixed ? "mixed" : fluid ? "fluid" : "item"));
         }
 
         public String outputOverlay() {
-            return fluid ? "output_fluid" : "output_item";
+            return mixed ? "output_mixed" : fluid ? "output_fluid" : "output_item";
         }
     }
 
     public static final Spec ITEM = new Spec("me_item", "ME Item", false);
     public static final Spec FLUID = new Spec("me_fluid", "ME Fluid", true);
-    public static final List<Spec> ALL = List.of(ITEM, FLUID);
+    /** Items and fluids in one hatch (MixedHatches' hatch type): the input's first row items, its second fluids. */
+    public static final Spec MIXED = new Spec("me_mixed", "ME Mixed", false, true);
+    public static final List<Spec> ALL = List.of(ITEM, FLUID, MIXED);
 
     private MeHatches() {}
 
@@ -97,14 +103,16 @@ public final class MeHatches {
                     .special((bep, input, id) -> create(spec, bep, input, id), true)
                     .creator(MeHatchBlock::new)
                     // MI's own capability, as on its hatches, so other mods see these as MI hatches.
-                    .registrator(spec.fluid() ? MachineBlockEntity::registerFluidApi : MachineBlockEntity::registerItemApi)
+                    .registrator(spec.mixed() || !spec.fluid() ? MachineBlockEntity::registerItemApi : MachineBlockEntity::registerFluidApi)
+                    .registrator(spec.mixed() ? MachineBlockEntity::registerFluidApi : type -> {})
                     .registrator(MeHatches::registerGridNodeHost)
                     .registerMachine();
         }
     }
 
     private static HatchBlockEntity create(Spec spec, BEP bep, boolean input, ResourceLocation id) {
-        if (input) return new MeInputHatchBlockEntity(bep, id, spec.fluid());
+        if (input) return new MeInputHatchBlockEntity(bep, id, spec.fluid(), spec.mixed());
+        if (spec.mixed()) return new MeItemOutputHatchBlockEntity(bep, id, true);
         return spec.fluid() ? new MeFluidOutputHatchBlockEntity(bep, id) : new MeItemOutputHatchBlockEntity(bep, id);
     }
 

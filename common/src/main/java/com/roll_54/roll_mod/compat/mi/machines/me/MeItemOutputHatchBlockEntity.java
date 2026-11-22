@@ -3,6 +3,7 @@ package com.roll_54.roll_mod.compat.mi.machines.me;
 import appeng.api.networking.IGrid;
 import appeng.api.stacks.AEKey;
 import appeng.api.stacks.GenericStack;
+import aztech.modern_industrialization.inventory.ConfigurableFluidStack;
 import aztech.modern_industrialization.inventory.ConfigurableItemStack;
 import aztech.modern_industrialization.inventory.MIInventory;
 import aztech.modern_industrialization.inventory.SlotPositions;
@@ -58,15 +59,30 @@ public class MeItemOutputHatchBlockEntity extends MeHatchBlockEntity {
     /** Game time the buffer was last copied onto a drop; that tick, breaking must not also flush it. */
     private long handedOutAt = Long.MIN_VALUE;
 
+    /** Mixed: also takes the multiblock's fluid output, into the same buffer (ME keys hold either). */
+    private final boolean mixed;
+
     public MeItemOutputHatchBlockEntity(BEP bep, ResourceLocation id) {
+        this(bep, id, false);
+    }
+
+    public MeItemOutputHatchBlockEntity(BEP bep, ResourceLocation id, boolean mixed) {
         super(bep, id);
+        this.mixed = mixed;
         List<ConfigurableItemStack> slots = new ArrayList<>(MeHatches.ITEM_RECEIVING_SLOTS);
         for (int i = 0; i < MeHatches.ITEM_RECEIVING_SLOTS; i++) {
             slots.add(ConfigurableItemStack.standardOutputSlot());
         }
+        List<ConfigurableFluidStack> tanks = new ArrayList<>();
+        if (mixed) {
+            for (int i = 0; i < MeHatches.OUTPUT_SLOTS; i++) {
+                tanks.add(ConfigurableFluidStack.standardOutputSlot(MeHatches.FLUID_OUTPUT_CAPACITY));
+            }
+        }
         // Slot positions only matter to MI's own screen, which these hatches do not use.
-        this.inventory = new MIInventory(slots, Collections.emptyList(),
-                new SlotPositions.Builder().addSlots(8, 18, 9, 3).build(), SlotPositions.empty());
+        this.inventory = new MIInventory(slots, tanks,
+                new SlotPositions.Builder().addSlots(8, 18, 9, 3).build(),
+                mixed ? new SlotPositions.Builder().addSlots(62, 76, MeHatches.OUTPUT_SLOTS, 1).build() : SlotPositions.empty());
         registerComponents(inventory);
     }
 
@@ -89,6 +105,18 @@ public class MeItemOutputHatchBlockEntity extends MeHatchBlockEntity {
 
     /** Moves whatever MI output into the buffer slot of the same item, else into an empty one. */
     private void drainReceivingSlots() {
+        // A mixed hatch's tanks first, into the same buffer: a fluid is a GenericStack like an item.
+        for (ConfigurableFluidStack tank : inventory.getFluidStacks()) {
+            long amount = tank.getAmount();
+            if (amount <= 0) continue;
+            AEKey key = MeKeys.of(tank.getResource());
+            if (key == null) continue;
+            int slot = bufferSlotFor(key);
+            if (slot < 0) continue;
+            bufferKeys[slot] = key;
+            bufferAmounts[slot] = saturatedAdd(bufferAmounts[slot], amount);
+            tank.setAmount(0);
+        }
         for (ConfigurableItemStack stack : inventory.getItemStacks()) {
             long amount = stack.getAmount();
             if (amount <= 0) continue;
@@ -193,7 +221,7 @@ public class MeItemOutputHatchBlockEntity extends MeHatchBlockEntity {
 
     @Override
     public HatchType getHatchType() {
-        return HatchTypes.ITEM_OUTPUT;
+        return mixed ? com.roll_54.roll_mod.compat.mi.machines.MixedHatches.OUTPUT : HatchTypes.ITEM_OUTPUT;
     }
 
     @Override
@@ -212,10 +240,15 @@ public class MeItemOutputHatchBlockEntity extends MeHatchBlockEntity {
     }
 
     @Override
-    public List<Component> getTooltips() {
+    public void appendFluidOutputs(List<ConfigurableFluidStack> list) {
+        list.addAll(inventory.getFluidStacks());
+    }
+
+    @Override
+    public List<Component> getTooltips(net.minecraft.world.item.Item.TooltipContext context) {
         return List.of(
-                Component.translatable("tooltip.roll_mod.me_hatch.output.item", MeHatches.OUTPUT_SLOTS)
-                        .withStyle(ChatFormatting.GRAY),
+                Component.translatable(mixed ? "tooltip.roll_mod.me_hatch.output.mixed" : "tooltip.roll_mod.me_hatch.output.item",
+                        MeHatches.OUTPUT_SLOTS).withStyle(ChatFormatting.GRAY),
                 Component.translatable("tooltip.roll_mod.me_hatch.output.flush").withStyle(ChatFormatting.GRAY),
                 Component.translatable("tooltip.roll_mod.me_hatch.channel").withStyle(ChatFormatting.GRAY));
     }

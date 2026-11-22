@@ -75,7 +75,8 @@ public final class LoadingWipe {
             RollMod.id("textures/item/tool/meteorite_pickaxe.png"),
             RollMod.id("textures/item/tool/meteorite_axe.png"),
             RollMod.id("textures/item/tool/meteorite_shovel.png")};
-    private static final int TOOL_FRAMES = 13;
+    // The meteorite tools' strips: 7 frames, as the meteorite ingot's.
+    private static final int TOOL_FRAMES = 7;
     private static final float TOOL_FRAME_SECONDS = 0.5f;
     /** A tool's size on screen, GUI pixels: two per texel. */
     private static final int TOOL_SIZE = 32;

@@ -193,9 +193,18 @@ public final class AuctionUI {
       boolean browsing = shown[0] == 0;
       if (toolbar.isDisplayed() != browsing) toolbar.setDisplay(browsing);
     });
-    root.addChild(HubSection.header(
-        Component.translatable("menu.roll_mod.ah.title"), section, toolbar, createBtn, collectionBtn,
-        historyBtn));
+    // Takes the slack the title no longer grows into, so the buttons and the I stay at the right end.
+    UIElement spacer = new UIElement();
+    spacer.layout(l -> l.flexGrow(1).flexShrink(1).height(HEAD_BTN_H));
+    UIElement header = HubSection.header(
+        Component.translatable("menu.roll_mod.ah.title"), section, toolbar, spacer, createBtn, collectionBtn,
+        historyBtn);
+    // The title keeps its own width: the search beside it is what gives way, or it covered "Аукціон".
+    if (header.getChildren().get(0) instanceof com.lowdragmc.lowdraglib2.gui.ui.elements.Label title) {
+      title.layout(l -> l.flexGrow(0).flexShrink(0));
+      title.textStyle(t -> t.adaptiveWidth(true));
+    }
+    root.addChild(header);
 
     UUID[] selected = {null};
     Runnable[] rebuildDetail = {() -> {}};
@@ -293,7 +302,10 @@ public final class AuctionUI {
         });
     // The same size and spacing as Create, Collection and History beside it.
     // As tall as the buttons beside it, and wide enough for its longest label ("Ending soon") with 3px either side.
-    sortBtn.layout(l -> l.width(SORT_W).height(HEAD_BTN_H).flexShrink(0));
+    // Measured from the longest of the three labels in the current language (and font), so none runs past the
+    // button's edges ("Скоро завершаться" did at a fixed width); the button keeps that width as it cycles.
+    int sortW = sortWidth(player);
+    sortBtn.layout(l -> l.width(sortW).height(HEAD_BTN_H).flexShrink(0));
     toolbar.addChildren(search, sortBtn);
 
     // Wraps plain slot-sized cells, so a wider window is simply more columns. Clipped, because a
@@ -1022,6 +1034,15 @@ public final class AuctionUI {
       default -> out.sort(Comparator.comparingLong((AuctionListing l) -> l.createdAtMs).reversed());
     }
     return out;
+  }
+
+  /** The sort button's width: its widest label plus 6px of padding on each side; {@link #SORT_W} off the client. */
+  private static int sortWidth(Player player) {
+    if (!player.level().isClientSide()) return SORT_W;
+    net.minecraft.client.gui.Font font = net.minecraft.client.Minecraft.getInstance().font;
+    int widest = 0;
+    for (int i = 0; i < 3; i++) widest = Math.max(widest, font.width(sortLabel(i)));
+    return Math.max(SORT_W, widest + 12);
   }
 
   private static Component sortLabel(int sort) {

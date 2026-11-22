@@ -23,6 +23,11 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
         super(output, lookupProvider, RollMod.MODID, existingFileHelper);
     }
 
+    /** c:storage_blocks/meteorite_metal. */
+    private static final net.minecraft.tags.TagKey<net.minecraft.world.level.block.Block> METEORITE_STORAGE =
+            net.minecraft.tags.TagKey.create(net.minecraft.core.registries.Registries.BLOCK,
+                    ResourceLocation.fromNamespaceAndPath("c", "storage_blocks/meteorite_metal"));
+
     @Override
     protected void addTags(HolderLookup.Provider provider) {
 
@@ -36,6 +41,13 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
                 BlockRegistry.HYDROPONIC_GARDEN_BED.get(),
                 BlockRegistry.GRINDING_WHEELS.get());
         needsStoneTag.add(BlockRegistry.HYDROPONIC_GARDEN_BED.get());
+
+        // Meteorite metal block: an iron pickaxe or better, a beacon base, and c:storage_blocks.
+        pickaxeTag.add(BlockRegistry.METEORITE_METAL_BLOCK.get());
+        tag(BlockTags.NEEDS_IRON_TOOL).add(BlockRegistry.METEORITE_METAL_BLOCK.get());
+        tag(BlockTags.BEACON_BASE_BLOCKS).add(BlockRegistry.METEORITE_METAL_BLOCK.get());
+        tag(net.neoforged.neoforge.common.Tags.Blocks.STORAGE_BLOCKS).addTag(METEORITE_STORAGE);
+        tag(METEORITE_STORAGE).add(BlockRegistry.METEORITE_METAL_BLOCK.get());
 
         // Blast- and wither-proof glass.
         pickaxeTag.add(BlockRegistry.BOROSILICATE_GLASS.get());

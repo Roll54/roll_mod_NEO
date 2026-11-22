@@ -16,6 +16,11 @@ public final class LdlibScreenBounds {
 
     private LdlibScreenBounds() {}
 
+    /** Ids of the windows that mark themselves: an ME hatch's, the service block's. */
+    private static final String[] WINDOW_IDS = {
+            com.roll_54.roll_mod.compat.mi.machines.me.MeHatchUI.ROOT_ID,
+            com.roll_54.roll_mod.economy.service.gui.ServiceUI.ROOT_ID};
+
     /**
      * {x, y, w, h} in GUI pixels: the UI root, or — when the root spans the whole screen — the union of its shown
      * children that do not. Null for anything that is not an LdLib screen (container or plain, like the creative
@@ -27,18 +32,39 @@ public final class LdlibScreenBounds {
         if (ui == null) return null;
         UIElement root = ui.ui.getRootElement();
         if (root == null) return null;
-        if (!coversScreen(root, screenW, screenH)) return rect(root);
-        float x0 = Float.MAX_VALUE, y0 = Float.MAX_VALUE, x1 = -Float.MAX_VALUE, y1 = -Float.MAX_VALUE;
-        for (UIElement child : root.getChildren()) {
-            if (!child.isDisplayed() || child.getSizeWidth() <= 0 || child.getSizeHeight() <= 0
-                    || coversScreen(child, screenW, screenH)) continue;
-            x0 = Math.min(x0, child.getPositionX());
-            y0 = Math.min(y0, child.getPositionY());
-            x1 = Math.max(x1, child.getPositionX() + child.getSizeWidth());
-            y1 = Math.max(y1, child.getPositionY() + child.getSizeHeight());
+        // A window that names itself is the window, whatever else sits on the root (the ME hatches' screens had a
+        // small element in a corner that stretched the union over the screen, so TEI drew over the window).
+        for (String id : WINDOW_IDS) {
+            UIElement window = ui.getElementById(id);
+            if (window != null && window.isDisplayed()) {
+                int[] r = rect(window);
+                if (r != null) return r;
+            }
         }
-        if (x0 == Float.MAX_VALUE) return null;
-        return new int[] {(int) x0, (int) y0, (int) Math.ceil(x1 - x0), (int) Math.ceil(y1 - y0)};
+        if (!coversScreen(root, screenW, screenH)) return rect(root);
+        float[] box = {Float.MAX_VALUE, Float.MAX_VALUE, -Float.MAX_VALUE, -Float.MAX_VALUE};
+        union(root, screenW, screenH, box, 0);
+        if (box[0] == Float.MAX_VALUE) return null;
+        return new int[] {(int) box[0], (int) box[1], (int) Math.ceil(box[2] - box[0]), (int) Math.ceil(box[3] - box[1])};
+    }
+
+    /**
+     * The union of {@code parent}'s shown children, looking through any that span the whole screen: an MBD2 machine
+     * (the Crop Manager) wraps its window in a screen-sized element of its own under the screen-sized root, so only
+     * looking one level down found nothing but the settings panel beside the window, and TEI laid its sidebar over it.
+     */
+    private static void union(UIElement parent, int screenW, int screenH, float[] box, int depth) {
+        for (UIElement child : parent.getChildren()) {
+            if (!child.isDisplayed() || child.getSizeWidth() <= 0 || child.getSizeHeight() <= 0) continue;
+            if (coversScreen(child, screenW, screenH)) {
+                if (depth < 6) union(child, screenW, screenH, box, depth + 1);
+                continue;
+            }
+            box[0] = Math.min(box[0], child.getPositionX());
+            box[1] = Math.min(box[1], child.getPositionY());
+            box[2] = Math.max(box[2], child.getPositionX() + child.getSizeWidth());
+            box[3] = Math.max(box[3], child.getPositionY() + child.getSizeHeight());
+        }
     }
 
     /** Whether {@code screen} is an LdLib screen, container or plain. */

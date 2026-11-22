@@ -332,10 +332,16 @@ final class SettingsTab {
                 .HoverTooltips(List.of(Component.translatable("gui.roll_mod.hub.settings.theme.picked")), null, null,
                 net.minecraft.world.item.ItemStack.EMPTY));
         state.textStyle(t -> t.textColor(PICKED).textAlignVertical(Vertical.CENTER).textAlignHorizontal(Horizontal.RIGHT));
-        state.addEventListener(UIEvents.TICK, e -> state.setDisplay(client && UiThemeState.get() == theme));
+        state.setDisplay(client && UiThemeState.get() == theme);
         footer.addChildren(name, state);
 
         card.addChildren(preview, footer);
+        // Ticked from the card, which is always shown: a hidden element gets no ticks, so the tick on the tick mark
+        // itself, once hidden, never showed it again until the menu was rebuilt.
+        card.addEventListener(UIEvents.TICK, e -> {
+            boolean picked = client && UiThemeState.get() == theme;
+            if (state.isDisplayed() != picked) state.setDisplay(picked);
+        });
         card.addEventListener(UIEvents.CLICK, e -> {
             if (client && UiThemeState.get() != theme) RollUi.set(theme, card.getModularUI());
         });

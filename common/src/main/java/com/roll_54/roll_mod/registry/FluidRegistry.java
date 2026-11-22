@@ -71,7 +71,7 @@ public final class FluidRegistry {
             FluidNameStyle.gradient(0x5555FF, 0x55FFFF));
     /** Liquid sculk: dark teal with cyan sparks, named in the sculk sensor's cyan. */
     public static final RollFluid SCULK = register("sculk", 0x0C1D24, MapColor.COLOR_CYAN,
-            "block/fluid/sculk_still", "block/fluid/sculk_flow", false, FluidNameStyle.solid(0x29DFEB));
+            "block/fluid/sculk_still", "block/fluid/sculk_flow", false, FluidNameStyle.solid(0x29DFEB), true);
 
     // Liquid herbicides for the Crop Managers, one per item tier: 1000 mB equals one item of that tier
     // (CropBreedingSettings). Each in its tier's lore colour.
@@ -133,14 +133,27 @@ public final class FluidRegistry {
 
     private static RollFluid register(String name, int color, MapColor mapColor, String stillTexture,
                                       String flowingTexture, boolean tinted, FluidNameStyle nameStyle) {
-        DeferredHolder<FluidType, FluidType> type = FLUID_TYPES.register(name, () -> new RollFluidType(
-                FluidType.Properties.create()
-                        .canSwim(true)
-                        .canDrown(true)
-                        .supportsBoating(true)
-                        .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
-                        .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY),
-                nameStyle));
+        return register(name, color, mapColor, stillTexture, flowingTexture, tinted, nameStyle, false);
+    }
+
+    /**
+     * {@code lavaLike}: flows at lava's (overworld) pace — spreads every 30 ticks, 3 blocks out — and is as thick
+     * to move through. Only the pace: it neither burns nor glows.
+     */
+    private static RollFluid register(String name, int color, MapColor mapColor, String stillTexture,
+                                      String flowingTexture, boolean tinted, FluidNameStyle nameStyle,
+                                      boolean lavaLike) {
+        DeferredHolder<FluidType, FluidType> type = FLUID_TYPES.register(name, () -> {
+            FluidType.Properties properties = FluidType.Properties.create()
+                    .canSwim(true)
+                    .canDrown(true)
+                    .supportsBoating(true)
+                    .sound(SoundActions.BUCKET_FILL, SoundEvents.BUCKET_FILL)
+                    .sound(SoundActions.BUCKET_EMPTY, SoundEvents.BUCKET_EMPTY);
+            // Lava's own values (NeoForgeMod's lava type).
+            if (lavaLike) properties.density(3000).viscosity(6000).motionScale(0.0023333333333333335D);
+            return new RollFluidType(properties, nameStyle);
+        });
 
         // The fluid properties need the source, flowing fluid, block and bucket before they exist,
         // so they point at holders by id; the real entries are registered under the same ids below.
@@ -154,6 +167,8 @@ public final class FluidRegistry {
         BaseFlowingFluid.Properties props = new BaseFlowingFluid.Properties(type, source, flowing)
                 .bucket(bucket)
                 .block(block);
+        // Lava's overworld flow (LavaFluid): every 30 ticks, 2 levels lost per block, slopes looked for 2 away.
+        if (lavaLike) props.tickRate(30).levelDecreasePerBlock(2).slopeFindDistance(2);
 
         FLUIDS.register(name, () -> new BaseFlowingFluid.Source(props));
         FLUIDS.register("flowing_" + name, () -> new BaseFlowingFluid.Flowing(props));

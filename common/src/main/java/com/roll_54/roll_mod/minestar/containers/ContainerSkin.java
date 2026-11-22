@@ -102,6 +102,9 @@ public final class ContainerSkin {
      */
     private static final String CURIOS_SCREEN = "top.theillusivec4.curios.client.gui.CuriosScreen";
 
+    /** The panel colour of vanilla's container textures (opaque, as NativeImage reads it). */
+    private static final int VANILLA_SURFACE = 0xFFC6C6C6;
+
     /** Vanilla's label grey, for themes without a palette (the vanilla-looking MC theme). */
     private static final int VANILLA_LABEL = 0xFF404040;
 
@@ -109,6 +112,18 @@ public final class ContainerSkin {
     private static final List<String> OVERLAY_PACKAGES = List.of("net.minecraft.", "aztech.modern_industrialization.");
 
     private static final Map<Screen, Skin> SKINS = new WeakHashMap<>();
+
+    /** The LdLib skin is retired in favour of the recolour alone ({@link #onInit}). */
+    private static final boolean SKIN_DEPRECATED = true;
+
+    /**
+     * Whether {@code screen} is one of the vanilla stations the theme covers (chests, furnaces, the anvil…): only with
+     * "Use the hub theme everywhere" on, which switches all of this off, and not under the Minecraft theme.
+     */
+    public static boolean themedByDefault(Screen screen) {
+        if (!UiThemeState.forceEverywhere() || UiThemeState.get().recolor() == null) return false;
+        return SKINNED.contains(screen.getClass()) || OVERLAY_SKINNED.contains(screen.getClass());
+    }
 
     private ContainerSkin() {}
 
@@ -138,6 +153,35 @@ public final class ContainerSkin {
                 && w == screen.getXSize() && h == screen.getYSize();
     }
 
+    /** Set while {@link #drawDecor} blits, so its own blit is not taken for the background again. */
+    private static boolean drawingDecor;
+
+    public static boolean drawingDecor() {
+        return drawingDecor;
+    }
+
+    /**
+     * An overlay-skinned screen's background texture, with what the skin already draws taken out: the panel's own
+     * colour, its frame (the outer 4px) and every slot's box. What is left are its pictures — arrows, plus signs,
+     * the anvil's hammer, the grindstone, wells and boxes — drawn in its place over the skin, recoloured to the
+     * theme like the rest of vanilla's drawing. Built once per screen, from the texture file.
+     */
+    public static void drawDecor(GuiGraphics graphics, ResourceLocation texture, int x, int y, int w, int h,
+                                 int texW, int texH) {
+        if (!(Minecraft.getInstance().screen instanceof AbstractContainerScreen<?> screen)) return;
+        Skin skin = SKINS.get(screen);
+        if (skin == null) return;
+        ResourceLocation decor = skin.decor(texture, w, h, texW, texH);
+        if (decor == null) return;
+        drawingDecor = true;
+        try {
+            // Already in the theme's colours: the recolour shader would shift them again.
+            com.roll_54.roll_mod.minestar.theme.GuiRecolor.withoutRecolor(() -> graphics.blit(decor, x, y, 0, 0, w, h, w, h));
+        } finally {
+            drawingDecor = false;
+        }
+    }
+
     /** Draws an overlay-skinned screen's skin; called just before its vanilla background pass. */
     public static void drawOverlaySkin(Screen screen, GuiGraphics graphics) {
         Skin skin = SKINS.get(screen);
@@ -154,6 +198,14 @@ public final class ContainerSkin {
     @SubscribeEvent
     public static void onInit(ScreenEvent.Init.Post event) {
         if (!(event.getScreen() instanceof AbstractContainerScreen<?> screen)) return;
+        // Deprecated: containers are no longer redrawn in LdLib (panel, slot frames, the background's pictures cut out
+        // and redrawn). Vanilla's own art is recoloured by GuiRecolor instead, on the screens listed here as on any
+        // other: one way for every screen, matching the player's inventory, with nothing per screen to keep up.
+        // Kept, as the project keeps what it deprecates; nothing is skinned while this returns.
+        if (SKIN_DEPRECATED) return;
+        // The Minecraft theme is vanilla's own look: no container is skinned under it, the "everywhere" overlay
+        // included.
+        if (UiThemeState.get() == UiTheme.MC) return;
         if (!SKINNED.contains(screen.getClass()) && !OVERLAY_SKINNED.contains(screen.getClass())
                 && !everywhere(screen)) return;
         Skin skin = new Skin(screen);
@@ -210,7 +262,8 @@ public final class ContainerSkin {
 
     @SubscribeEvent
     public static void onClosing(ScreenEvent.Closing event) {
-        SKINS.remove(event.getScreen());
+        Skin skin = SKINS.remove(event.getScreen());
+        if (skin != null) skin.releaseDecor();
     }
 
     /* ======================================================== one screen ======================================================== */
@@ -300,6 +353,177 @@ public final class ContainerSkin {
                 label(Component.translatable("container.inventory"), labels.roll_mod$inventoryLabelX(),
                         labels.roll_mod$inventoryLabelY());
             }
+        }
+
+        /** The background texture's pictures alone ({@link ContainerSkin#drawDecor}); null if it cannot be read. */
+        @Nullable ResourceLocation decorId;
+        @Nullable ResourceLocation decorSource;
+        @Nullable UiTheme decorTheme;
+        boolean decorFailed;
+
+        @Nullable
+        ResourceLocation decor(ResourceLocation texture, int w, int h, int texW, int texH) {
+            UiTheme theme = UiThemeState.get();
+            if (texture.equals(decorSource) && theme == decorTheme) return decorId;
+            if (decorFailed) return null;
+            releaseDecor();
+            decorSource = texture;
+            decorTheme = theme;
+            UiTheme.Recolor palette = theme.recolor();
+            try (java.io.InputStream in = Minecraft.getInstance().getResourceManager().open(texture);
+                 com.mojang.blaze3d.platform.NativeImage image = com.mojang.blaze3d.platform.NativeImage.read(in)) {
+                // A resource pack may draw the texture at a higher resolution: s image pixels per GUI pixel.
+                int s = Math.max(1, image.getWidth() / Math.max(1, texW));
+                int iw = Math.min(w * s, image.getWidth()), ih = Math.min(h * s, image.getHeight());
+                // The panel's colour: what fills the texture most, and what sits just inside its frame.
+                Map<Integer, Integer> counts = new java.util.HashMap<>();
+                for (int py = 0; py < ih; py++) {
+                    for (int px = 0; px < iw; px++) {
+                        int c = image.getPixelRGBA(px, py);
+                        if ((c >>> 24) != 0) counts.merge(c, 1, Integer::sum);
+                    }
+                }
+                int mode = counts.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(0);
+                com.mojang.blaze3d.platform.NativeImage out = new com.mojang.blaze3d.platform.NativeImage(iw, ih, true);
+                boolean[] keep = new boolean[iw * ih];
+                for (int py = 0; py < ih; py++) {
+                    for (int px = 0; px < iw; px++) {
+                        int c = image.getPixelRGBA(px, py);
+                        int gx = px / s, gy = py / s;
+                        keep[py * iw + px] = (c >>> 24) != 0 && c != mode && c != VANILLA_SURFACE
+                                && gx >= 4 && gy >= 4 && gx < w - 4 && gy < h - 4 && !inSlotBox(gx, gy);
+                    }
+                }
+                // Each picture (8-connected pixels) is kept whole or not at all. One that reaches a slot is that
+                // slot's own frame or bracket (the grindstone's wheel, the loom's, a result slot's big box) and
+                // would only show as broken lines around the skin's frame, so it goes. The rest are drawn flat, in
+                // the theme shade of their most common colour: an even "+" or arrow, not vanilla's bevelled one.
+                int[] stack = new int[iw * ih];
+                boolean[] seen = new boolean[iw * ih];
+                List<Integer> part = new ArrayList<>();
+                for (int start = 0; start < iw * ih; start++) {
+                    if (!keep[start] || seen[start]) continue;
+                    part.clear();
+                    int top = 0;
+                    stack[top++] = start;
+                    seen[start] = true;
+                    boolean touchesSlot = false;
+                    int minX = iw, minY = ih, maxX = -1, maxY = -1;
+                    Map<Integer, Integer> colours = new java.util.HashMap<>();
+                    while (top > 0) {
+                        int i = stack[--top];
+                        part.add(i);
+                        int px = i % iw, py = i / iw;
+                        minX = Math.min(minX, px);
+                        minY = Math.min(minY, py);
+                        maxX = Math.max(maxX, px);
+                        maxY = Math.max(maxY, py);
+                        if (nearSlot(px / s, py / s)) touchesSlot = true;
+                        colours.merge(image.getPixelRGBA(px, py), 1, Integer::sum);
+                        for (int dy = -1; dy <= 1; dy++) {
+                            for (int dx = -1; dx <= 1; dx++) {
+                                int nx = px + dx, ny = py + dy;
+                                if (nx < 0 || ny < 0 || nx >= iw || ny >= ih) continue;
+                                int n = ny * iw + nx;
+                                if (keep[n] && !seen[n]) {
+                                    seen[n] = true;
+                                    stack[top++] = n;
+                                }
+                            }
+                        }
+                    }
+                    // A small sign stays even beside a slot (the cartography table's "+"); frames and brackets are
+                    // far larger.
+                    boolean small = (maxX - minX + 1) <= 14 * s && (maxY - minY + 1) <= 14 * s;
+                    // Art that frames a slot (the grindstone, the loom's brackets, a result slot's big box) goes with
+                    // the slots, which are drawn as vanilla's recoloured: so it is too, pixel by pixel, as the recolour
+                    // shader would draw it. The signs on their own (arrows, "+", the hammer) stay flat, in one shade.
+                    boolean framing = touchesSlot && !small;
+                    int common = colours.entrySet().stream().max(Map.Entry.comparingByValue()).map(Map.Entry::getKey).orElse(0);
+                    for (int i : part) {
+                        int px = i % iw, py = i / iw;
+                        int src = image.getPixelRGBA(px, py);
+                        int c = palette == null ? src : framing ? shaded(src, palette) : themed(common, palette);
+                        out.setPixelRGBA(px, py, c);
+                    }
+                }
+                decorId = RollMod.id("container_decor/" + Integer.toHexString(System.identityHashCode(this)));
+                Minecraft.getInstance().getTextureManager().register(decorId,
+                        new net.minecraft.client.renderer.texture.DynamicTexture(out));
+                return decorId;
+            } catch (Exception e) {
+                decorFailed = true;
+                decorId = null;
+                return null;
+            }
+        }
+
+        /**
+         * A picture's pixel in the theme's own shades, by how light it is in vanilla's art: vanilla's outline, shadow,
+         * well and highlight greys become the theme's, so a brown well or the anvil's hammer reads as part of the panel
+         * instead of a recoloured photo. On themes that leave vanilla's art alone, the pixel as it was.
+         */
+        private static int themed(int abgr, @Nullable UiTheme.Recolor palette) {
+            if (palette == null) return abgr;
+            // One shade for every picture, the theme's well: the arrows and "+" read right in it, and the anvil's
+            // hammer or the brewing stand's bubbles no longer come out in the bright text colour.
+            int argb = palette.well();
+            // ARGB to NativeImage's ABGR, keeping the pixel's own alpha.
+            return (abgr & 0xFF000000) | ((argb & 0xFF) << 16) | (argb & 0xFF00) | ((argb >> 16) & 0xFF);
+        }
+
+
+        /**
+         * Within 4px of a slot's 18px box: where vanilla draws a slot's own larger frame or brackets (a result slot's
+         * 26px box, the grindstone's wheel, the loom's frame). The pictures between slots (the anvil's "+", arrows)
+         * keep further off.
+         */
+        private boolean nearSlot(int gx, int gy) {
+            for (Slot slot : screen.getMenu().slots) {
+                if (gx >= slot.x - 5 && gx < slot.x + 21 && gy >= slot.y - 5 && gy < slot.y + 21) return true;
+            }
+            return false;
+        }
+
+        /**
+         * A pixel as the GUI recolour shader ({@code gui_recolor.fsh}) draws it: a grey placed among the theme's five
+         * tones at vanilla's greys (black 0, #555555 a third, #8B8B8B 0.545, #C6C6C6 0.776, white 1); colour kept.
+         */
+        private static int shaded(int abgr, UiTheme.Recolor p) {
+            int r = abgr & 0xFF, g = (abgr >> 8) & 0xFF, b = (abgr >> 16) & 0xFF;
+            int hi = Math.max(r, Math.max(g, b)), lo = Math.min(r, Math.min(g, b));
+            if (hi - lo > 10) return abgr;
+            float v = hi / 255f;
+            int argb;
+            if (v < 0.333f) argb = mixArgb(p.outline(), p.shadow(), v / 0.333f);
+            else if (v < 0.545f) argb = mixArgb(p.shadow(), p.well(), (v - 0.333f) / 0.212f);
+            else if (v < 0.776f) argb = mixArgb(p.well(), p.surface(), (v - 0.545f) / 0.231f);
+            else argb = mixArgb(p.surface(), p.highlight(), (v - 0.776f) / 0.224f);
+            return (abgr & 0xFF000000) | ((argb & 0xFF) << 16) | (argb & 0xFF00) | ((argb >> 16) & 0xFF);
+        }
+
+        private static int mixArgb(int a, int b, float t) {
+            int r = Math.round(((a >> 16) & 0xFF) + (((b >> 16) & 0xFF) - ((a >> 16) & 0xFF)) * t);
+            int g = Math.round(((a >> 8) & 0xFF) + (((b >> 8) & 0xFF) - ((a >> 8) & 0xFF)) * t);
+            int bl = Math.round((a & 0xFF) + ((b & 0xFF) - (a & 0xFF)) * t);
+            return 0xFF000000 | (r << 16) | (g << 8) | bl;
+        }
+
+        /** Whether a GUI pixel lies in a slot's box: the 18px around it, or 26px around a result slot. */
+        private boolean inSlotBox(int gx, int gy) {
+            for (Slot slot : screen.getMenu().slots) {
+                boolean big = slot instanceof ResultSlot || slot instanceof FurnaceResultSlot;
+                int pad = big ? 5 : 1, size = big ? 26 : 18;
+                int sx = slot.x - pad, sy = slot.y - pad;
+                if (gx >= sx && gx < sx + size && gy >= sy && gy < sy + size) return true;
+            }
+            return false;
+        }
+
+        void releaseDecor() {
+            if (decorId != null) Minecraft.getInstance().getTextureManager().release(decorId);
+            decorId = null;
+            decorSource = null;
         }
 
         private void label(Component text, int x, int y) {
@@ -485,7 +709,44 @@ public final class ContainerSkin {
 
             SlotFrame(Slot slot) {
                 this.slot = slot;
-                addClass("item-slot_bg");
+                // On a recoloured theme the frame is only the vanilla-style slot drawn below; the theme's LdLib slot
+                // (rounded on the round themes) drew over it and is not given at all.
+                if (UiThemeState.get().recolor() == null) {
+                    addClass("item-slot_bg");
+                    slotBackground(this);
+                }
+            }
+
+            /**
+             * On a recoloured theme, the slot as the player's own inventory shows it (vanilla's slot through the
+             * recolour shader): a dark line top and left, the well inside, the light bevel right and bottom, in the
+             * shades the shader gives those greys. A block's slots then match the inventory under them on every
+             * theme, instead of wearing the theme's LdLib slot (AE2's came out unlike the inventory's).
+             */
+            @Override
+            public void drawBackgroundAdditional(GUIContext context) {
+                UiTheme.Recolor palette = UiThemeState.get().recolor();
+                if (palette == null) {
+                    super.drawBackgroundAdditional(context);
+                    return;
+                }
+                int x = Math.round(getPositionX()), y = Math.round(getPositionY());
+                int w = Math.round(getSizeWidth()), h = Math.round(getSizeHeight());
+                // Vanilla's #373737 sits two thirds of the way from the outline tone to the shadow tone.
+                int dark = mix(palette.outline(), palette.shadow(), 0.65f);
+                GuiGraphics g = context.graphics;
+                g.fill(x, y, x + w, y + h, palette.well());
+                g.fill(x, y, x + w - 1, y + 1, dark);
+                g.fill(x, y, x + 1, y + h - 1, dark);
+                g.fill(x + 1, y + h - 1, x + w, y + h, palette.highlight());
+                g.fill(x + w - 1, y + 1, x + w, y + h, palette.highlight());
+            }
+
+            private static int mix(int a, int b, float t) {
+                int r = Math.round(((a >> 16) & 0xFF) + (((b >> 16) & 0xFF) - ((a >> 16) & 0xFF)) * t);
+                int gg = Math.round(((a >> 8) & 0xFF) + (((b >> 8) & 0xFF) - ((a >> 8) & 0xFF)) * t);
+                int bb = Math.round((a & 0xFF) + ((b & 0xFF) - (a & 0xFF)) * t);
+                return 0xFF000000 | (r << 16) | (gg << 8) | bb;
             }
         }
 
@@ -503,8 +764,7 @@ public final class ContainerSkin {
                 int x = Math.round(getPositionX()), y = Math.round(getPositionY());
                 GuiGraphics g = context.graphics;
                 g.flush();
-                tint(0.3f);
-                g.blitSprite(sprite, x, y, 14, 14);
+                // Out of fuel: nothing (a faint flame read as a stray square on the panel). Burning: vanilla's fire.
                 tint(1f);
                 if (screen.getMenu() instanceof AbstractFurnaceMenu menu && menu.isLit()) {
                     int l = Mth.ceil(menu.getLitProgress() * 13f) + 1;
@@ -518,6 +778,7 @@ public final class ContainerSkin {
         private final class PlayerDoll extends UIElement {
             PlayerDoll() {
                 addClass("item-slot_bg");
+                slotBackground(this);
             }
 
             @Override
@@ -532,6 +793,15 @@ public final class ContainerSkin {
                         30, 0.0625f, context.mouseX, context.mouseY, mc.player);
                 context.graphics.flush();
             }
+        }
+
+        /**
+         * LdLib's own slot art as the frame's base look, as {@code ItemSlot} sets it on itself: a theme's
+         * {@code .item-slot_bg} rule still draws over it, and a theme without one (GDP's sheet has none) no longer
+         * leaves the frames blank — vanilla screens skinned on GDP showed no slots at all.
+         */
+        private static void slotBackground(UIElement element) {
+            element.getStyle().background(com.lowdragmc.lowdraglib2.gui.ui.elements.ItemSlot.ITEM_SLOT_TEXTURE);
         }
 
         private static void tint(float alpha) {

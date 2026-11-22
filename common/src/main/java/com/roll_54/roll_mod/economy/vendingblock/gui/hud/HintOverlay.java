@@ -20,9 +20,12 @@ public class HintOverlay {
   private static final int ColorTXT = 0xFFFFFFFF;
   private static final int ColorERR = 0xFFba3c3c;
 
+  /** Jade shows the hint itself; the mod list does not change once the game is up, so asked once. */
+  private static final boolean JADE = ModList.get().isLoaded("jade");
+
   @SubscribeEvent
   public static void onRenderGUI(RenderGuiEvent.Post event) {
-    if (ModList.get().isLoaded("jade")) return;
+    if (JADE) return;
 
     Minecraft mc = Minecraft.getInstance();
     if (mc.player == null || mc.level == null) return;

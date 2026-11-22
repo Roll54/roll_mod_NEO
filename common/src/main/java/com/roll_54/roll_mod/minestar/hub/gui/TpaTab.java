@@ -325,13 +325,22 @@ public final class TpaTab {
         UIElement row = new UIElement();
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(TRIP_H)
                 .gapColumn(3));
+        Button back = trip("gui.roll_mod.hub.trip.back", TeleportActionPacket.Action.BACK,
+                "textures/gui/hub/teleportation/back.png");
         row.addChildren(
                 trip("gui.roll_mod.hub.trip.rtp", TeleportActionPacket.Action.RTP,
                         "textures/gui/hub/teleportation/rtp.png"),
-                trip("gui.roll_mod.hub.trip.back", TeleportActionPacket.Action.BACK,
-                        "textures/gui/hub/teleportation/back.png"),
+                back,
                 trip("gui.roll_mod.hub.trip.spawn", TeleportActionPacket.Action.SPAWN,
                         "textures/gui/hub/teleportation/spawn.png"));
+        // Back only for Prime (and the groups inheriting it), as on the homes' side panel: the status packet says
+        // who may (ClientPlayerStatusCache.MAY_BACK); everyone else does not see it at all.
+        Runnable apply = () -> {
+            boolean may = com.roll_54.roll_mod.minestar.moderation.ClientPlayerStatusCache.MAY_BACK;
+            if (back.isDisplayed() != may) back.setDisplay(may);
+        };
+        apply.run();
+        row.addEventListener(com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents.TICK, e -> apply.run());
 
         column.addChildren(note("gui.roll_mod.hub.trip.title"), row);
         return column;

@@ -66,7 +66,26 @@ public final class RtpService {
      */
     private static final int BORDER_MARGIN = 16;
 
-    private record Search(ResourceKey<Level> level, int triesLeft) {}
+    /**
+     * {@code pending}: the column whose chunk has been asked for and is being generated off the server thread, or
+     * null; {@code waited}: ticks spent waiting on it.
+     */
+    private record Search(ResourceKey<Level> level, int triesLeft, Column pending, int waited) {
+        Search(ResourceKey<Level> level, int triesLeft) {
+            this(level, triesLeft, null, 0);
+        }
+    }
+
+    /**
+     * Holds a candidate's chunk while it generates and until the player has landed (the warm-up). Expires on its
+     * own, so a search dropped half-way (logout, reload) leaves nothing loaded behind.
+     */
+    private static final net.minecraft.server.level.TicketType<net.minecraft.world.level.ChunkPos> TICKET =
+            net.minecraft.server.level.TicketType.create("roll_mod_rtp",
+                    java.util.Comparator.comparingLong(net.minecraft.world.level.ChunkPos::toLong), 20 * 60);
+
+    /** How long a chunk may take to generate before the candidate is given up (ticks). */
+    private static final int MAX_WAIT = 20 * 15;
 
     private static final Map<UUID, Search> SEARCHING = new ConcurrentHashMap<>();
 
@@ -141,6 +160,8 @@ public final class RtpService {
         if (SEARCHING.isEmpty()) return;
 
         int perTick = MyConfig.INSTANCE.rtp.triesPerTick.get();
+        // The action-bar line fades on its own after a few seconds: every 10 ticks is plenty, not a packet a tick.
+        boolean remind = server.getTickCount() % 10 == 0;
 
         for (UUID id : new ArrayList<>(SEARCHING.keySet())) {
             Search search = SEARCHING.get(id);
@@ -153,8 +174,34 @@ public final class RtpService {
                 continue;
             }
 
-            player.displayClientMessage(Component.translatable("msg.roll_mod.rtp.searching")
-                    .withStyle(ChatFormatting.GREEN), true);
+            if (remind) {
+                player.displayClientMessage(Component.translatable("msg.roll_mod.rtp.searching")
+                        .withStyle(ChatFormatting.GREEN), true);
+            }
+
+            // A chunk asked for earlier: generated off the server thread under a ticket, never here. Until it is
+            // there the search just waits; the tick costs nothing.
+            Column pending = search.pending();
+            if (pending != null) {
+                net.minecraft.world.level.chunk.LevelChunk chunk =
+                        level.getChunkSource().getChunkNow(pending.x() >> 4, pending.z() >> 4);
+                if (chunk == null) {
+                    if (search.waited() < MAX_WAIT) {
+                        SEARCHING.replace(id, new Search(search.level(), search.triesLeft(), pending, search.waited() + 1));
+                        continue;
+                    }
+                } else {
+                    BlockPos found = SafeSpot.inColumnFrom(level, pending.x(), pending.z(),
+                            pending.surface() + 4, SURFACE_DEPTH);
+                    if (found != null) {
+                        SEARCHING.remove(id);
+                        arrive(player, level, found);
+                        continue;
+                    }
+                }
+                // Unsafe after all (or too slow): on to the next candidate, tries kept.
+                search = new Search(search.level(), search.triesLeft());
+            }
 
             int tries = Math.min(perTick, search.triesLeft());
             Column column = null;
@@ -164,21 +211,15 @@ public final class RtpService {
                 column = candidate(level);
             }
 
-            // The one chunk this search may cost this tick. Generating a chunk runs tens of
-            // milliseconds, so however many candidates look promising, only the first is loaded;
-            // if its column turns out unsafe, the search resumes next tick with its tries kept.
-            if (column != null) {
-                level.getChunk(column.x() >> 4, column.z() >> 4);
-                BlockPos found = SafeSpot.inColumnFrom(level, column.x(), column.z(),
-                        column.surface() + 4, SURFACE_DEPTH);
-                if (found != null) {
-                    SEARCHING.remove(id);
-                    arrive(player, level, found);
-                    continue;
-                }
-            }
-
             int left = search.triesLeft() - used;
+            if (column != null) {
+                // Ask for the chunk and come back for it: the chunk system generates it on its worker threads, so
+                // the server tick never waits on terrain generation (that wait was the whole cost of a /rtp).
+                net.minecraft.world.level.ChunkPos chunkPos = new net.minecraft.world.level.ChunkPos(column.x() >> 4, column.z() >> 4);
+                level.getChunkSource().addRegionTicket(TICKET, chunkPos, 0, chunkPos);
+                SEARCHING.replace(id, new Search(search.level(), left, column, 0));
+                continue;
+            }
             if (left <= 0) {
                 SEARCHING.remove(id);
                 player.sendSystemMessage(Component.translatable("msg.roll_mod.rtp.failed")
@@ -244,18 +285,21 @@ public final class RtpService {
         ChunkGenerator generator = level.getChunkSource().getGenerator();
         RandomState randomState = level.getChunkSource().randomState();
 
-        int surface = generator.getBaseHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, level, randomState);
-        if (surface <= level.getMinBuildHeight() + 8) return null;
-        // Nether has no meaningful sea level, and its surface reading is the roof, so skip the test.
-        if (level.dimension() != Level.NETHER && surface < level.getSeaLevel() + 2) return null;
-
+        // The biome first, at sea level: a few noise lookups, where the height below is a whole column of terrain
+        // noise — most rejected candidates (oceans, rivers) never pay for it.
+        int probeY = level.dimension() == Level.NETHER ? 64 : level.getSeaLevel();
         Holder<Biome> biome = generator.getBiomeSource().getNoiseBiome(
-                QuartPos.fromBlock(x), QuartPos.fromBlock(surface), QuartPos.fromBlock(z),
+                QuartPos.fromBlock(x), QuartPos.fromBlock(probeY), QuartPos.fromBlock(z),
                 randomState.sampler());
         if (biome.is(BiomeTags.IS_OCEAN) || biome.is(BiomeTags.IS_DEEP_OCEAN)
                 || biome.is(BiomeTags.IS_RIVER)) {
             return null;
         }
+
+        int surface = generator.getBaseHeight(x, z, Heightmap.Types.WORLD_SURFACE_WG, level, randomState);
+        if (surface <= level.getMinBuildHeight() + 8) return null;
+        // Nether has no meaningful sea level, and its surface reading is the roof, so skip the test.
+        if (level.dimension() != Level.NETHER && surface < level.getSeaLevel() + 2) return null;
 
         return new Column(x, z, surface);
     }

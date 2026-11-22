@@ -118,7 +118,7 @@ public final class StatusBars {
         int healthColor = player.hasEffect(MobEffects.WITHER) ? WITHER
                 : player.hasEffect(MobEffects.POISON) ? POISON
                 : player.isFullyFrozen() ? FROZEN : HEALTH;
-        int y = graphics.guiHeight() - gui.leftHeight + 1;
+        int y = graphics.guiHeight() - gui.leftHeight;
         int inner = WIDTH - 2;
         int healthW = Math.round(inner * health / scale);
         // Absorption lies over the health from the left, as diagonal gold strips the red shows between;
@@ -157,7 +157,7 @@ public final class StatusBars {
 
         int armor = player.getArmorValue();
         if (armor > 0) {
-            int ay = graphics.guiHeight() - gui.leftHeight + 1;
+            int ay = graphics.guiHeight() - gui.leftHeight;
             bar(graphics, left, ay, Math.min(armor, 20) / 20f, ARMOR);
             label(graphics, mc, left, ay, armor + "/20");
             double toughness = player.getAttributeValue(Attributes.ARMOR_TOUGHNESS);
@@ -169,7 +169,7 @@ public final class StatusBars {
         }
 
         // Right column: hunger, or the mount's health while riding one; air above.
-        int ry = graphics.guiHeight() - gui.rightHeight + 1;
+        int ry = graphics.guiHeight() - gui.rightHeight;
         if (player.getVehicle() instanceof LivingEntity mount && mount.showVehicleHealth()) {
             bar(graphics, right, ry, mount.getHealth() / Math.max(mount.getMaxHealth(), 1f), MOUNT);
             label(graphics, mc, right, ry, number(mount.getHealth()) + "/" + number(mount.getMaxHealth()));
@@ -188,7 +188,7 @@ public final class StatusBars {
         int maxAir = player.getMaxAirSupply();
         int air = Math.min(player.getAirSupply(), maxAir);
         if (player.isEyeInFluid(FluidTags.WATER) || air < maxAir) {
-            int airY = graphics.guiHeight() - gui.rightHeight + 1;
+            int airY = graphics.guiHeight() - gui.rightHeight;
             bar(graphics, right, airY, Math.max(air, 0) / (float) maxAir, AIR);
             label(graphics, mc, right, airY, number(Math.max(air, 0) / 20f) + "/" + number(maxAir / 20f));
             hovers.add(new Hover(right, airY, List.of(Component.translatable("gui.roll_mod.bar.air",

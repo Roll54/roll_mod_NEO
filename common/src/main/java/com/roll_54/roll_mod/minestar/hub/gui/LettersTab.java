@@ -299,9 +299,10 @@ public final class LettersTab {
         head.addChildren(caption, pageLabel);
 
         UIElement row = new UIElement();
-        // 2px up: the chips sat on the Accept button's top edge.
+        // 2px up: the chips sat on the Accept button's top edge. Inset like the caption above, so the first chip no
+        // longer sits on the box's left edge.
         row.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).height(LetterRewardChips.SLOT)
-                .gapColumn(CHIP_GAP).marginTop(-2).marginBottom(2));
+                .gapColumn(CHIP_GAP).marginTop(-2).marginBottom(2).paddingHorizontal(TEXT_INSET));
         Button prev = pageArrow("‹");
         Button next = pageArrow("›");
         UIElement chips = new UIElement();
@@ -315,7 +316,7 @@ public final class LettersTab {
         prev.setOnClick(e -> page[0]--);
         next.setOnClick(e -> page[0]++);
         row.addEventListener(UIEvents.TICK, e -> {
-            float width = row.getSizeWidth();
+            float width = row.getSizeWidth() - 2 * TEXT_INSET;
             int all = fit(width);
             boolean paged = rewards.size() > all;
             int perPage = paged ? fit(width - 2 * (ARROW_W + CHIP_GAP)) : Math.max(1, rewards.size());

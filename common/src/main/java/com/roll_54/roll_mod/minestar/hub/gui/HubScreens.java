@@ -14,7 +14,7 @@ public final class HubScreens {
         return screen instanceof ModularUIContainerScreen container && HubUI.isHub(container.getMenu().getModularUI());
     }
 
-    /** Screens the recipe browser stays off: the hub, and the service block's (nothing there to look up). */
+    /** Screens the recipe browser stays off: the hub and the service block's (nothing there to look up). */
     public static boolean hidesRecipeBrowser(Object screen) {
         return screen instanceof ModularUIContainerScreen container
                 && (HubUI.isHub(container.getMenu().getModularUI())

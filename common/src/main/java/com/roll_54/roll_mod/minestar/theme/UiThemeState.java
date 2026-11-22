@@ -32,7 +32,15 @@ public final class UiThemeState {
     /** The AE2 theme's moving lights ({@link MeLights}); on unless switched off. */
     private static boolean meLights = true;
 
+    /** Bumped whenever a setting here changes, so per-frame readers can cache what they derive from them. */
+    private static volatile int version;
+
     private UiThemeState() {}
+
+    /** Changes with every theme, corners or "everywhere" change; compare it to know a cached reading is stale. */
+    public static int version() {
+        return version;
+    }
 
     /** The theme, read from disk on first use and kept in memory for the rest of the session. */
     public static synchronized UiTheme get() {
@@ -49,6 +57,7 @@ public final class UiThemeState {
         load();
         if (forceEverywhere == force) return;
         forceEverywhere = force;
+        version++;
         save();
     }
 
@@ -63,6 +72,7 @@ public final class UiThemeState {
         load();
         if (squareCorners() == square) return;
         squareCorners.put(current, square);
+        version++;
         save();
     }
 
@@ -80,6 +90,7 @@ public final class UiThemeState {
         load();
         if (meLights == on) return;
         meLights = on;
+        version++;
         save();
     }
 
@@ -103,6 +114,7 @@ public final class UiThemeState {
             squareCorners.put(current, json.get("squareCorners").getAsBoolean());
         }
         meLights = !json.has("meLights") || !json.get("meLights").isJsonPrimitive() || json.get("meLights").getAsBoolean();
+        version++;
     }
 
     public static synchronized void set(UiTheme theme) {
@@ -111,6 +123,7 @@ public final class UiThemeState {
         // Picking a theme puts its corners back to that theme's own: square for the Ore themes and AE2, rounded
         // for the rest. Toggling the switch afterwards still holds until the theme is picked again.
         squareCorners.remove(theme);
+        version++;
         save();
     }
 

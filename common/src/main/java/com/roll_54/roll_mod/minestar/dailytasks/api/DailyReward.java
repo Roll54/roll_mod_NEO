@@ -82,6 +82,14 @@ public interface DailyReward {
     }
 
     /**
+     * Whether the daily roll may still draw this reward. A retired one answers false: it stays registered, so a
+     * group it was drawn for can still collect it, but it is never drawn again.
+     */
+    default boolean drawable() {
+        return true;
+    }
+
+    /**
      * Relative likelihood of being drawn in the daily roll. Must be positive; the default weights
      * every reward equally. Unlike the task draw, this one genuinely honours the weight — see
      * {@code DailyTaskManager.pickReward}.

@@ -14,6 +14,18 @@ subprojects {
 
     java.toolchain.languageVersion = JavaLanguageVersion.of(25)
 
+    // One Kotlin for Forge in the dev runs: fzzy_config pulls in 5.4.0, while Yet Another Industrialization (in
+    // client/run/mods) needs 5.6 or later. Two copies cannot load side by side (both export the same packages), so
+    // every Kotlin for Forge artifact resolves to the newer one.
+    configurations.configureEach {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == 'thedarkcolour' && details.requested.name.startsWith('k')) {
+                details.useVersion('5.13.0')
+                details.because('Yet Another Industrialization needs Kotlin for Forge 5.6+')
+            }
+        }
+    }
+
     // The SQL stack behind the economy's currency balances. :common compiles against it and bundles
     // it (see common/build.gradle), and the dev runs put it on their run classpaths — so the one
     // list lives here rather than being repeated across the build scripts.

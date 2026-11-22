@@ -457,13 +457,13 @@ public final class WarpTab {
     }
 
     private static final net.minecraft.resources.ResourceLocation PEARL =
-            net.minecraft.resources.ResourceLocation.withDefaultNamespace("textures/item/ender_pearl.png");
+            com.roll_54.roll_mod.RollMod.id("textures/gui/hub/icons/travel.png");
 
     /** The pearl on a warp's row: teleports at once (the server still checks price, lock and warm-up). */
     private static UIElement quickTeleport(Warp warp) {
         UIElement pearl = new UIElement();
-        // Vanilla's ender pearl at its own 16px, the same as on the homes' rows.
-        pearl.layout(l -> l.width(16).height(16).flexShrink(0).alignSelf(dev.vfyjxf.taffy.style.AlignItems.CENTER));
+        // The hub's pearl icon at its own 11px, the same as on the homes' rows.
+        pearl.layout(l -> l.width(11).height(11).flexShrink(0).alignSelf(dev.vfyjxf.taffy.style.AlignItems.CENTER));
         pearl.style(s -> s.background(HubIcons.snapped(com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture.of(PEARL))));
         pearl.addEventListener(UIEvents.CLICK, e -> {
             PacketDistributor.sendToServer(WarpActionPacket.teleport(warp.id()));
@@ -532,7 +532,8 @@ public final class WarpTab {
 
         Label description = new Label();
         description.setText(LegacyText.display(warp.description()));
-        description.layout(l -> l.widthPercent(100).marginTop(6).marginLeft(DESCRIPTION_INSET));
+        // Inset by padding, not a margin: 100% width plus a left margin ran 5px past the panel's right edge.
+        description.layout(l -> l.widthPercent(100).marginTop(6).paddingHorizontal(DESCRIPTION_INSET));
         description.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
 
         Button teleport = new Button();

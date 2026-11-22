@@ -79,13 +79,29 @@ public final class GuiRecolor {
         UiTheme.Recolor recolor = active();
         ShaderInstance shader = tinted ? texColor : tex;
         if (recolor == null || shader == null) return vanilla;
-        set(shader, "RecolorOutline", recolor.outline());
-        set(shader, "RecolorShadow", recolor.shadow());
-        set(shader, "RecolorWell", recolor.well());
-        set(shader, "RecolorSurface", recolor.surface());
-        set(shader, "RecolorHighlight", recolor.highlight());
-        return () -> shader;
+        // The palette goes to the shader only when it changed (or the shader was reloaded), not on every blit.
+        if (tinted ? recolor != texColorPalette || shader != texColorShader : recolor != texPalette || shader != texShader) {
+            set(shader, "RecolorOutline", recolor.outline());
+            set(shader, "RecolorShadow", recolor.shadow());
+            set(shader, "RecolorWell", recolor.well());
+            set(shader, "RecolorSurface", recolor.surface());
+            set(shader, "RecolorHighlight", recolor.highlight());
+            if (tinted) {
+                texColorPalette = recolor;
+                texColorShader = shader;
+            } else {
+                texPalette = recolor;
+                texShader = shader;
+            }
+        }
+        return tinted ? TEX_COLOR : TEX;
     }
+
+    /** The palette each shader last got, and which shader instance it went to. */
+    @Nullable private static UiTheme.Recolor texPalette, texColorPalette;
+    @Nullable private static ShaderInstance texShader, texColorShader;
+    private static final Supplier<ShaderInstance> TEX = () -> tex;
+    private static final Supplier<ShaderInstance> TEX_COLOR = () -> texColor;
 
     /** The colour for a label vanilla writes in its fixed dark grey: the theme's text while active. */
     public static int labelColor(int vanilla) {
@@ -134,12 +150,33 @@ public final class GuiRecolor {
         drawingHud = hud;
     }
 
+    /** Whether vanilla's GUI art is being recoloured right now. */
+    public static boolean on() {
+        return active() != null;
+    }
+
     /** The recolour to apply right now, or null when vanilla should draw as it always has. */
     @Nullable
     private static UiTheme.Recolor active() {
-        if (themeArtDepth > 0 || drawingHud || !UiThemeState.forceEverywhere()) return null;
+        if (themeArtDepth > 0 || drawingHud) return null;
         Screen screen = Minecraft.getInstance().screen;
+        // The rest depends only on the screen and the theme settings: worked out once for each, not per blit.
+        if (screen == cachedScreen && UiThemeState.version() == cachedVersion) return cachedRecolor;
+        cachedScreen = screen;
+        cachedVersion = UiThemeState.version();
+        cachedRecolor = forScreen(screen);
+        return cachedRecolor;
+    }
+
+    @Nullable private static Screen cachedScreen;
+    private static int cachedVersion = -1;
+    @Nullable private static UiTheme.Recolor cachedRecolor;
+
+    @Nullable
+    private static UiTheme.Recolor forScreen(@Nullable Screen screen) {
         if (screen == null || ThemeArt.isAe2(screen)) return null;
+        // Only with "Use the hub theme everywhere" on: off, every vanilla and mod screen stays as it is.
+        if (!UiThemeState.forceEverywhere()) return null;
         if (screen instanceof ModularUIContainerScreen || screen instanceof ModularUIScreen) return null;
         // A container the LdLib skin draws whole is themed already. On an overlay-skinned one only the background was
         // replaced: what the screen still draws itself (arrows, progress bars, the enchanting book, a mod's own

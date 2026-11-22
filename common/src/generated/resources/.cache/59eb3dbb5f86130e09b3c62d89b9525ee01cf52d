@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-18T19:08:41.839288448	Loot Tables
+// 1.21.1	2026-11-22T08:26:52.979008554	Loot Tables
 a70051ae82d1a20a3b40bbca8669d1edb15be009 data/roll_mod/loot_table/blocks/advanced_pyrolyse_oven.json
 7f6a7b11eae0145e62b073a1294837ad848ad4ac data/roll_mod/loot_table/blocks/andesite_bauxite.json
 9b9274fc67ddb132a577d9b2b0e787080ab66d67 data/roll_mod/loot_table/blocks/andesite_cassiterite.json
@@ -207,6 +207,10 @@ cf76c372711d77eedc509e6bd4163c01f2c1d5d7 data/roll_mod/loot_table/blocks/hv_mult
 d2f144201a5e893299812e9f738d3a7fa62633d1 data/roll_mod/loot_table/blocks/hv_multi_fluid_output_hatch.json
 459aae689824fd167c3be493ef3c0579f6773db5 data/roll_mod/loot_table/blocks/iv_fluid_input_hatch.json
 8a8789bc4153a19558ff15540009d71ef27a71fc data/roll_mod/loot_table/blocks/iv_fluid_output_hatch.json
+7421e913c52c129b5e6f946c980fbb47e300dfd5 data/roll_mod/loot_table/blocks/iv_item_input_hatch.json
+fbe3b8b904d28f6bb7678a7892286b3583510284 data/roll_mod/loot_table/blocks/iv_item_output_hatch.json
+7882c564b5d89e1d8a5611cb7271bc04a2444ac6 data/roll_mod/loot_table/blocks/iv_mixed_input_hatch.json
+c99ab09d6f0e612032289f9b7567f58bf3664580 data/roll_mod/loot_table/blocks/iv_mixed_output_hatch.json
 07481bae0006a2460d40ba1e24f2be3eedb268be data/roll_mod/loot_table/blocks/iv_multi_fluid_input_hatch.json
 ed23034fbb8b9f92f1320421076d7ed3416474ab data/roll_mod/loot_table/blocks/iv_multi_fluid_output_hatch.json
 5acedccca4514efab51e0c9657b373f9c834a053 data/roll_mod/loot_table/blocks/large_alloy_smelter.json
@@ -275,6 +279,8 @@ cf68cbdcf770c0df74829f88fc33466ede12f572 data/roll_mod/loot_table/blocks/mars_ye
 1842c2cd41492e7a6a4aee7e03119a7cf989f9f0 data/roll_mod/loot_table/blocks/me_fluid_output_hatch.json
 4d89093bf3c02c2434745451d0667c9ced66e6ac data/roll_mod/loot_table/blocks/me_item_input_hatch.json
 44de675dc35a98970e9e0c248df35f279f2895c9 data/roll_mod/loot_table/blocks/me_item_output_hatch.json
+58b8a356f824f6b9c8bcdc12d148a43267639d57 data/roll_mod/loot_table/blocks/me_mixed_input_hatch.json
+6f952d1c6632fedc541b14dd4e717e2c2b6647de data/roll_mod/loot_table/blocks/me_mixed_output_hatch.json
 5aff828db3876780989b5f442034f57cc0757112 data/roll_mod/loot_table/blocks/mercury_antimony.json
 0d2ca3215190b1504525d3062bd53ab4a30cb228 data/roll_mod/loot_table/blocks/mercury_antimony_ore_sample.json
 48b7a6215613636a639abf3b9f67cda9c435f205 data/roll_mod/loot_table/blocks/mercury_borax.json

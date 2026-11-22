@@ -39,9 +39,9 @@ public final class ItemSkinRegistry {
     /** The nanoaxe, the first {@link SkinCategory#AXE} skin. Converted from nanowaraxe.bbmodel. */
     public static final ResourceLocation NANOAXE = RollMod.id("nanoaxe");
 
-    /** Helmet skins, drawn by GeckoLib. Both reuse geo models the mod already ships. */
+    /** Helmet skins, drawn by GeckoLib. (The hazmat hood skin was removed.) */
     public static final ResourceLocation CLOWN_HAT = RollMod.id("clown_hat");
-    public static final ResourceLocation HAZMAT_HOOD = RollMod.id("hazmat_hood");
+    public static final ResourceLocation PICKELHAUBE = RollMod.id("pickelhaube");
 
     private static final Map<ResourceLocation, ItemSkinDefinition> BY_ID = new LinkedHashMap<>();
     private static volatile boolean bootstrapped;
@@ -88,16 +88,19 @@ public final class ItemSkinRegistry {
                 Optional.of(RollMod.id("textures/armor/clown_hat.png")),
                 Set.of()
         ));
+        // geo/pickelhaube.geo.json — converted from the Blockbench item model models/item/pickelhaube.json, placed on
+        // the head exactly as that model's own "head" display puts it; its texture is the model's own.
         register(new ItemSkinDefinition(
-                HAZMAT_HOOD,
+                PICKELHAUBE,
                 SkinCategory.HELMET,
                 SkinKind.GEO_ARMOR,
-                RollMod.id("geo/item/armor/hazmat_helmet.geo.json"),
-                Optional.of(RollMod.id("textures/item/armor/hazmat_helmet.png")),
+                RollMod.id("geo/pickelhaube.geo.json"),
+                Optional.of(RollMod.id("textures/armor/pickelhaube.png")),
                 Set.of()
         ));
 
         registerPride();
+        assignRarities();
 
         bootstrapped = true;
     }
@@ -138,6 +141,32 @@ public final class ItemSkinRegistry {
         register(new ItemSkinDefinition(RollMod.id("pride_" + flag + "_" + tool), category, SkinKind.ITEM_MODEL,
                 RollMod.id("skin/pride/" + flag + "/" + tool), Optional.empty(), Set.of(), Set.copyOf(onlyOn),
                 Set.copyOf(notOn)));
+    }
+
+    private static final Map<ResourceLocation, SkinRarity> RARITY = new java.util.HashMap<>();
+
+    /** A skin's rarity; one never given is common. */
+    public static SkinRarity rarity(ItemSkinDefinition skin) {
+        return RARITY.getOrDefault(skin.skinId(), SkinRarity.COMMON);
+    }
+
+    /**
+     * Who is how rare: the pride skins common, their IV saber and IV drill uncommon, and the rainbow ("pride") flag
+     * rare throughout; the pickelhaube rare; the nanoaxe epic; the clown hat and murasama legendary.
+     */
+    private static void assignRarities() {
+        for (ResourceLocation id : BY_ID.keySet()) {
+            String path = id.getPath();
+            SkinRarity rarity;
+            if (path.startsWith("pride_pride_")) rarity = SkinRarity.RARE;
+            else if (path.startsWith("pride_") && (path.endsWith("_iv_saber") || path.endsWith("_iv_drill"))) rarity = SkinRarity.UNCOMMON;
+            else if (path.startsWith("pride_")) rarity = SkinRarity.COMMON;
+            else if (id.equals(PICKELHAUBE)) rarity = SkinRarity.RARE;
+            else if (id.equals(NANOAXE)) rarity = SkinRarity.EPIC;
+            else if (id.equals(CLOWN_HAT) || id.equals(MURASAMA)) rarity = SkinRarity.LEGENDARY;
+            else rarity = SkinRarity.COMMON;
+            RARITY.put(id, rarity);
+        }
     }
 
     private static void register(ItemSkinDefinition definition) {

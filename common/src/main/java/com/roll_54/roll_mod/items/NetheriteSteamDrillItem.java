@@ -33,7 +33,7 @@ public class NetheriteSteamDrillItem extends SteamDrillItem {
      */
     @SuppressWarnings("unused")
     private static final MITooltips.TooltipAttachment HELP_TOOLTIP = MITooltips.TooltipAttachment.ofMultilines(
-            (stack, item) -> item instanceof NetheriteSteamDrillItem ? List.of(
+            (context, stack, item) -> item instanceof NetheriteSteamDrillItem ? List.of(
                     MITooltips.line(MIText.ToolConfiguration).build(),
                     MITooltips.line(MIText.SteamDrillWaterHelp).arg("use", MITooltips.KEYBIND_PARSER).build(),
                     MITooltips.line(MIText.SteamDrillFuelHelp).arg("use", MITooltips.KEYBIND_PARSER).build(),

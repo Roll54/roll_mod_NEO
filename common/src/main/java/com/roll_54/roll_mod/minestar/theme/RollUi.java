@@ -50,6 +50,7 @@ public final class RollUi {
         if (theme == UiTheme.AE2) out.add(ThemeSheets.ae2Widgets(square));
         if (theme.oreArt() && !square) out.add(ThemeSheets.oreRounded());
         if (theme == UiTheme.GDP && square) out.add(ThemeSheets.gdpSquare());
+        if (theme == UiTheme.GDP) out.add(ThemeSheets.gdpSlots(square));
         // The font from Settings, over the theme's own (UiFont); none for "as the theme".
         com.lowdragmc.lowdraglib2.gui.ui.style.Stylesheet font = UiFont.sheet();
         if (font != null) out.add(font);

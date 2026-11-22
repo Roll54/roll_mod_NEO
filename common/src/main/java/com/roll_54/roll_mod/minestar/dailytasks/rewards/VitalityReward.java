@@ -16,6 +16,9 @@ import net.minecraft.world.item.Items;
  * can be earned every single day must not stack into an unbounded health pool. The duration
  * outlasts a normal session but expires on its own, so nothing has to clean it up at the daily
  * roll.
+ *
+ * <p>Deprecated: no longer drawn as the daily bonus ({@link #drawable}); kept registered so a group it was already
+ * drawn for can still collect it.
  */
 @AutoDailyReward
 public final class VitalityReward implements DailyReward {
@@ -31,6 +34,11 @@ public final class VitalityReward implements DailyReward {
     @Override
     public String id() {
         return "vitality";
+    }
+
+    @Override
+    public boolean drawable() {
+        return false;
     }
 
     @Override

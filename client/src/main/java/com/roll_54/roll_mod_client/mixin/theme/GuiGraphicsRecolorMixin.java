@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod_client.mixin.theme;
 
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.roll_54.roll_mod.minestar.theme.GuiRecolor;
@@ -41,6 +42,29 @@ public abstract class GuiGraphicsRecolorMixin {
             require = 0)
     private void roll_mod$recolorTinted(Supplier<ShaderInstance> shader, Operation<Void> original) {
         original.call(GuiRecolor.pick(shader, true));
+    }
+
+    /**
+     * The furnace's fire (furnace, blast furnace, smoker: {@code …/lit_progress}) keeps vanilla's colours: its greys
+     * and whites are part of the flame, and recoloured they turned it into a smear of theme tones.
+     */
+    @WrapMethod(method = "blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V", require = 0)
+    private void roll_mod$fireAsIs(ResourceLocation sprite, int texW, int texH, int u, int v, int x, int y, int w, int h,
+                                   Operation<Void> original) {
+        if (sprite.getPath().endsWith("lit_progress")) {
+            GuiRecolor.withoutRecolor(() -> original.call(sprite, texW, texH, u, v, x, y, w, h));
+        } else {
+            original.call(sprite, texW, texH, u, v, x, y, w, h);
+        }
+    }
+
+    @WrapMethod(method = "blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", require = 0)
+    private void roll_mod$fireAsIsWhole(ResourceLocation sprite, int x, int y, int w, int h, Operation<Void> original) {
+        if (sprite.getPath().endsWith("lit_progress")) {
+            GuiRecolor.withoutRecolor(() -> original.call(sprite, x, y, w, h));
+        } else {
+            original.call(sprite, x, y, w, h);
+        }
     }
 
     /** The lists' blue hovered buttons in their grey form, so they take the theme's colours: {@link GuiRecolor#sprite}. */

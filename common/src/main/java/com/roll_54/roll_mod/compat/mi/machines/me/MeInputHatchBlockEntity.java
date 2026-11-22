@@ -50,44 +50,60 @@ public class MeInputHatchBlockEntity extends MeHatchBlockEntity {
     private static final String TAG_CONFIG = "me_config";
 
     private final boolean fluid;
+    /** Mixed: the first row's slots stock items, the second row's fluids. */
+    private final boolean mixed;
     private final MIInventory inventory;
     private final ConfigInventory config;
 
     public MeInputHatchBlockEntity(BEP bep, ResourceLocation id, boolean fluid) {
+        this(bep, id, fluid, false);
+    }
+
+    public MeInputHatchBlockEntity(BEP bep, ResourceLocation id, boolean fluid, boolean mixed) {
         super(bep, id);
-        this.fluid = fluid;
+        this.fluid = fluid && !mixed;
+        this.mixed = mixed;
+        int itemSlots = mixed ? MeHatches.INPUT_SLOTS / 2 : this.fluid ? 0 : MeHatches.INPUT_SLOTS;
+        int fluidSlots = MeHatches.INPUT_SLOTS - itemSlots;
         // Slot positions only matter to MI's own screen, which these hatches do not use.
-        SlotPositions positions = new SlotPositions.Builder().addSlots(8, 18, 8, 2).build();
-        if (fluid) {
-            List<ConfigurableFluidStack> tanks = new ArrayList<>(MeHatches.INPUT_SLOTS);
-            for (int i = 0; i < MeHatches.INPUT_SLOTS; i++) {
-                // No insert or extract flags: pipes and players cannot touch the stock.
-                tanks.add(new ConfigurableFluidStack(MeHatches.FLUID_INPUT_CAPACITY));
-            }
-            this.inventory = new MIInventory(Collections.emptyList(), tanks, SlotPositions.empty(), positions);
-        } else {
-            List<ConfigurableItemStack> slots = new ArrayList<>(MeHatches.INPUT_SLOTS);
-            for (int i = 0; i < MeHatches.INPUT_SLOTS; i++) {
-                slots.add(new ConfigurableItemStack());
-            }
-            this.inventory = new MIInventory(slots, Collections.emptyList(), positions, SlotPositions.empty());
+        List<ConfigurableItemStack> slots = new ArrayList<>(itemSlots);
+        for (int i = 0; i < itemSlots; i++) slots.add(new ConfigurableItemStack());
+        List<ConfigurableFluidStack> tanks = new ArrayList<>(fluidSlots);
+        for (int i = 0; i < fluidSlots; i++) {
+            // No insert or extract flags: pipes and players cannot touch the stock.
+            tanks.add(new ConfigurableFluidStack(MeHatches.FLUID_INPUT_CAPACITY));
         }
-        this.config = ConfigInventory.configStacks(MeHatches.INPUT_SLOTS)
-                .supportedType(fluid ? AEKeyType.fluids() : AEKeyType.items())
+        this.inventory = new MIInventory(slots, tanks,
+                itemSlots == 0 ? SlotPositions.empty() : new SlotPositions.Builder().addSlots(8, 18, 8, itemSlots / 8).build(),
+                fluidSlots == 0 ? SlotPositions.empty() : new SlotPositions.Builder().addSlots(8, 18 + (itemSlots / 8) * 18, 8, fluidSlots / 8).build());
+        ConfigInventory.Builder builder = ConfigInventory.configStacks(MeHatches.INPUT_SLOTS)
                 .changeListener(this::onConfigChanged)
                 // Without it AE2 clamps an item to its stack size, ignoring the capacity below.
-                .allowOverstacking(true)
-                .build();
-        if (fluid) {
-            config.setCapacity(AEKeyType.fluids(), MeHatches.FLUID_INPUT_CAPACITY);
+                .allowOverstacking(true);
+        if (mixed) {
+            builder.supportedTypes(AEKeyType.items(), AEKeyType.fluids())
+                    // Each slot takes only its own row's kind.
+                    .slotFilter((slot, key) -> key instanceof AEFluidKey == slotIsFluid(slot));
         } else {
-            config.setCapacity(AEKeyType.items(), MeHatches.ITEM_INPUT_CAPACITY);
+            builder.supportedType(this.fluid ? AEKeyType.fluids() : AEKeyType.items());
         }
+        this.config = builder.build();
+        if (this.fluid || mixed) config.setCapacity(AEKeyType.fluids(), MeHatches.FLUID_INPUT_CAPACITY);
+        if (!this.fluid || mixed) config.setCapacity(AEKeyType.items(), MeHatches.ITEM_INPUT_CAPACITY);
         registerComponents(inventory);
     }
 
     public boolean isFluid() {
         return fluid;
+    }
+
+    public boolean isMixed() {
+        return mixed;
+    }
+
+    /** Whether config slot {@code slot} stocks a fluid: all of a fluid hatch's, the second row of a mixed one. */
+    public boolean slotIsFluid(int slot) {
+        return mixed ? slot >= MeHatches.INPUT_SLOTS / 2 : fluid;
     }
 
     /** What each slot keeps stocked; set through {@link MeHatchConfigPacket}. */
@@ -110,6 +126,10 @@ public class MeInputHatchBlockEntity extends MeHatchBlockEntity {
 
     // Always read the live list: MI swaps the stack objects when it loads NBT.
     private AbstractConfigurableStack<?, ?> stack(int slot) {
+        if (mixed) {
+            int half = MeHatches.INPUT_SLOTS / 2;
+            return slot < half ? inventory.getItemStacks().get(slot) : inventory.getFluidStacks().get(slot - half);
+        }
         return fluid ? inventory.getFluidStacks().get(slot) : inventory.getItemStacks().get(slot);
     }
 
@@ -155,10 +175,11 @@ public class MeInputHatchBlockEntity extends MeHatchBlockEntity {
     }
 
     private void setKey(int slot, AEKey key) {
-        if (key instanceof AEFluidKey fluidKey) {
-            inventory.getFluidStacks().get(slot).setKey(MeKeys.fluid(fluidKey));
-        } else if (key instanceof AEItemKey itemKey) {
-            inventory.getItemStacks().get(slot).setKey(MeKeys.item(itemKey));
+        AbstractConfigurableStack<?, ?> stack = stack(slot);
+        if (key instanceof AEFluidKey fluidKey && stack instanceof ConfigurableFluidStack tank) {
+            tank.setKey(MeKeys.fluid(fluidKey));
+        } else if (key instanceof AEItemKey itemKey && stack instanceof ConfigurableItemStack item) {
+            item.setKey(MeKeys.item(itemKey));
         }
     }
 
@@ -196,6 +217,7 @@ public class MeInputHatchBlockEntity extends MeHatchBlockEntity {
 
     @Override
     public HatchType getHatchType() {
+        if (mixed) return com.roll_54.roll_mod.compat.mi.machines.MixedHatches.INPUT;
         return fluid ? HatchTypes.FLUID_INPUT : HatchTypes.ITEM_INPUT;
     }
 
@@ -220,10 +242,12 @@ public class MeInputHatchBlockEntity extends MeHatchBlockEntity {
     }
 
     @Override
-    public List<Component> getTooltips() {
+    public List<Component> getTooltips(net.minecraft.world.item.Item.TooltipContext context) {
         return List.of(
-                Component.translatable(fluid ? "tooltip.roll_mod.me_hatch.input.fluid" : "tooltip.roll_mod.me_hatch.input.item",
-                        MeHatches.INPUT_SLOTS).withStyle(ChatFormatting.GRAY),
+                (mixed ? Component.translatable("tooltip.roll_mod.me_hatch.input.mixed", MeHatches.INPUT_SLOTS / 2,
+                        MeHatches.INPUT_SLOTS / 2)
+                        : Component.translatable(fluid ? "tooltip.roll_mod.me_hatch.input.fluid" : "tooltip.roll_mod.me_hatch.input.item",
+                        MeHatches.INPUT_SLOTS)).withStyle(ChatFormatting.GRAY),
                 Component.translatable("tooltip.roll_mod.me_hatch.channel").withStyle(ChatFormatting.GRAY));
     }
 

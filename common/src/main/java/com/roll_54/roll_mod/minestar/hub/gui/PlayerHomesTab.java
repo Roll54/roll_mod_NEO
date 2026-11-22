@@ -127,11 +127,12 @@ public final class PlayerHomesTab {
      * painting its pearl over the list's edge.
      */
     private static final ResourceLocation PEARL =
-            ResourceLocation.withDefaultNamespace("textures/item/ender_pearl.png");
+            com.roll_54.roll_mod.RollMod.id("textures/gui/hub/icons/travel.png");
 
     /** The pearl's drawn size. Deliberately larger than the {@link #ROW_H} row it sits in. */
-    // Vanilla's ender pearl beside the star, at its own 16px (a pixel-art icon is drawn at its own size).
-    private static final int PEARL_SIZE = 16;
+    // The hub's own pearl icon (icons/travel) beside the star, at its own 11px (a pixel-art icon is drawn at its own
+    // size), not vanilla's ender-pearl item.
+    private static final int PEARL_SIZE = 11;
 
     /**
      * Centres the pearl on the row's content box. Negative by however much {@link #PEARL_SIZE}
@@ -393,7 +394,14 @@ public final class PlayerHomesTab {
                 home -> changeable(home) ? home.id() : null);
         if (!pinned.isEmpty()) {
             addHeader(list, "gui.roll_mod.hub.pinned");
-            for (HomeView home : pinned) list.addScrollViewChild(homeRow(home, selected, creating, inviteDraft));
+            // Ordered, with ▲▼ and dragging, in a list of their own: as the pinned warps are.
+            pinned = HubOrder.sorted("homes_pinned", pinned, home -> home.id().toString());
+            List<String> pinnedIds = pinned.stream().map(home -> home.id().toString()).toList();
+            for (HomeView home : pinned) {
+                UIElement row = homeRow(home, selected, creating, inviteDraft, "homes_pinned", pinnedIds);
+                HubOrder.draggable(row, "homes_pinned", home.id().toString(), () -> pinnedIds);
+                list.addScrollViewChild(row);
+            }
         }
         homes = rest;
 
@@ -415,7 +423,7 @@ public final class PlayerHomesTab {
             if (headed) addHeader(list, "gui.roll_mod.hub.homes.section.all");
             List<String> ids = mine.stream().map(home -> home.id().toString()).toList();
             for (HomeView home : mine) {
-                UIElement row = homeRow(home, selected, creating, inviteDraft, ids);
+                UIElement row = homeRow(home, selected, creating, inviteDraft, "homes", ids);
                 HubOrder.draggable(row, "homes", home.id().toString(), () -> ids);
                 list.addScrollViewChild(row);
             }
@@ -464,12 +472,12 @@ public final class PlayerHomesTab {
      */
     private static UIElement homeRow(HomeView home, UUID[] selected, boolean[] creating,
                                      String[] inviteDraft) {
-        return homeRow(home, selected, creating, inviteDraft, null);
+        return homeRow(home, selected, creating, inviteDraft, "homes", null);
     }
 
     /** {@code ids}: the player's own list as shown, for the ▲▼ that reorder it; null where a row has none. */
     private static UIElement homeRow(HomeView home, UUID[] selected, boolean[] creating,
-                                     String[] inviteDraft, @Nullable List<String> ids) {
+                                     String[] inviteDraft, String list, @Nullable List<String> ids) {
         boolean isSelected = home.id().equals(selected[0]);
 
         UIElement row = new UIElement();
@@ -501,8 +509,8 @@ public final class PlayerHomesTab {
             String id = home.id().toString();
             int at = ids.indexOf(id);
             row.addChildren(
-                    HubIcons.rowArrow(true, at > 0, 11, () -> HubOrder.move("homes", id, ids, -1)),
-                    HubIcons.rowArrow(false, at >= 0 && at < ids.size() - 1, 11, () -> HubOrder.move("homes", id, ids, 1)));
+                    HubIcons.rowArrow(true, at > 0, 11, () -> HubOrder.move(list, id, ids, -1)),
+                    HubIcons.rowArrow(false, at >= 0 && at < ids.size() - 1, 11, () -> HubOrder.move(list, id, ids, 1)));
         }
         // The star pins it to the top (Eden_LD's waystone favourites); the pearl travels.
         row.addChild(HubPins.star(HubWindowState.PinKind.HOMES, home.id(), 11));
@@ -951,8 +959,8 @@ public final class PlayerHomesTab {
         sendRow.layout(l -> l.flexDirection(FlexDirection.ROW).widthPercent(100).minHeight(ROW_H).gapColumn(3)
                 .alignItems(dev.vfyjxf.taffy.style.AlignItems.CENTER));
         Label chosen = new Label();
-        // Wraps instead of being cut off ("Choose a…") beside the Invite button.
-        chosen.layout(l -> l.flexBasis(0).flexGrow(1));
+        // Wraps instead of being cut off ("Choose a…") beside the Invite button; 3px off the window's edge.
+        chosen.layout(l -> l.flexBasis(0).flexGrow(1).paddingLeft(3));
         chosen.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.WRAP).adaptiveHeight(true));
         Button send = new Button();
         send.setText(Component.translatable("gui.roll_mod.hub.homes.invite"));
@@ -963,7 +971,8 @@ public final class PlayerHomesTab {
         Runnable showChosen = () -> {
             String target = inviteTarget(inviteDraft, search);
             chosen.setText(target.isEmpty()
-                    ? Component.translatable("gui.roll_mod.hub.homes.invite.choose").withStyle(ChatFormatting.DARK_GRAY)
+                    // Light grey: dark grey on the grey window could hardly be read.
+                    ? Component.translatable("gui.roll_mod.hub.homes.invite.choose").withStyle(ChatFormatting.GRAY)
                     : Component.literal(target).withStyle(ChatFormatting.YELLOW));
         };
 
@@ -976,7 +985,7 @@ public final class PlayerHomesTab {
                 Label none = new Label();
                 none.setText(Component.translatable(search.query.isEmpty() && search.source == InviteSource.ALL
                         ? "gui.roll_mod.hub.homes.invite.nobody" : "gui.roll_mod.hub.homes.invite.noMatch")
-                        .withStyle(ChatFormatting.DARK_GRAY));
+                        .withStyle(ChatFormatting.GRAY));
                 none.layout(l -> l.widthPercent(100).paddingAll(2));
                 none.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
                 names.addScrollViewChild(none);

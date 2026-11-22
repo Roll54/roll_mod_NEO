@@ -104,14 +104,18 @@ public final class TravelTab {
     /** {@code detail} in a vertical scroller filling the centre, the panel as tall as its content. */
     private static UIElement scrolling(UIElement detail) {
         com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView scroll = new com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView();
-        scroll.viewPort(v -> v.layout(l -> l.paddingAll(0)));
+        // Inside the themed frame (up to 4px), so scrolled content is clipped at the frame's inner edge instead of
+        // running under it; the panel's own 3px below makes the 7px text clearance.
+        scroll.viewPort(v -> v.layout(l -> l.paddingAll(4)));
         scroll.layout(l -> l.widthPercent(100).heightPercent(100));
         scroll.scrollerStyle(st -> st.mode(com.lowdragmc.lowdraglib2.gui.ui.data.ScrollerMode.VERTICAL)
                 .verticalScrollDisplay(com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(com.lowdragmc.lowdraglib2.gui.ui.data.ScrollDisplay.NEVER));
         scroll.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100)));
         // 4px under the last button, so scrolled to the end it shows whole (AE2 and Ore draw a pixel below it too).
-        detail.layout(l -> l.widthPercent(100).heightAuto().minHeight(0).paddingBottom(4));
+        detail.layout(l -> l.widthPercent(100).heightAuto().minHeight(0).paddingAll(3).paddingBottom(4));
+        // Buttons at the panel's edges: AE2 and Ore draw their face a pixel past the box.
+        detail.setOverflowVisible(true);
         scroll.addScrollViewChild(detail);
         return scroll;
     }

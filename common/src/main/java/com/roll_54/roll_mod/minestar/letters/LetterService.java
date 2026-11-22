@@ -316,10 +316,8 @@ public final class LetterService {
         long from = lastCheck;
         lastCheck = now;
         if (from == 0L) return;
-        for (Letter letter : LetterStore.all(server)) {
-            if (letter.sendAt() > from && letter.sendAt() <= now && !letter.expired(now)) {
-                deliver(server, letter);
-            }
+        for (Letter letter : LetterStore.due(server, from, now)) {
+            if (!letter.expired(now)) deliver(server, letter);
         }
     }
 

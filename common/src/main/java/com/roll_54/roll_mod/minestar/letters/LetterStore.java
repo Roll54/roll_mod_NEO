@@ -78,7 +78,33 @@ public final class LetterStore {
     public static synchronized void put(MinecraftServer server, Letter letter) {
         load(server.registryAccess());
         LETTERS.put(letter.id(), letter);
+        // A new or changed letter may be scheduled sooner than the one known.
+        nextDue = UNKNOWN;
         save(server.registryAccess());
+    }
+
+    /** Not worked out yet: the next {@link #due} looks through the letters. */
+    private static final long UNKNOWN = Long.MIN_VALUE;
+    /** The earliest send time still to come (as of the last look), {@link Long#MAX_VALUE} for none. */
+    private static long nextDue = UNKNOWN;
+
+    /**
+     * The letters scheduled for {@code (from, now]}, for the delivery tick. Until the earliest letter still to come is
+     * due, nothing is looked through at all: the once-a-second check costs nothing with no letter waiting, instead of
+     * copying and sorting every letter ever sent.
+     */
+    public static synchronized List<Letter> due(MinecraftServer server, long from, long now) {
+        load(server.registryAccess());
+        if (nextDue != UNKNOWN && nextDue > now) return List.of();
+        List<Letter> out = new ArrayList<>();
+        long next = Long.MAX_VALUE;
+        for (Letter letter : LETTERS.values()) {
+            long at = letter.sendAt();
+            if (at > now) next = Math.min(next, at);
+            else if (at > from) out.add(letter);
+        }
+        nextDue = next;
+        return out;
     }
 
     public static synchronized boolean remove(MinecraftServer server, UUID id) {
@@ -136,6 +162,7 @@ public final class LetterStore {
     private static void load(RegistryAccess registries) {
         if (loaded) return;
         loaded = true;
+        nextDue = UNKNOWN;
         LETTERS.clear();
 
         JsonObject root = MinestarFiles.readObject(path());

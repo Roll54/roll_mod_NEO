@@ -77,6 +77,20 @@ public final class DailyTaskManager {
         return Math.max(0, Duration.between(now, next).toSeconds());
     }
 
+    /**
+     * Seconds until the battle pass deals its next batch of weekly tasks: the next Monday or Thursday at
+     * {@link #RESET_HOUR}, for the Weekly page's "new tasks in" readout.
+     */
+    public static long secondsUntilNextWeeklyBatch() {
+        ZonedDateTime now = ZonedDateTime.now(zone());
+        ZonedDateTime next = now.toLocalDate().atTime(RESET_HOUR, 0).atZone(now.getZone());
+        for (int i = 0; i < 8; i++, next = next.plusDays(1)) {
+            java.time.DayOfWeek dow = next.getDayOfWeek();
+            if (next.isAfter(now) && (dow == java.time.DayOfWeek.MONDAY || dow == java.time.DayOfWeek.THURSDAY)) break;
+        }
+        return Math.max(0, Duration.between(now, next).toSeconds());
+    }
+
     /* -------------------------------------------------- roll -------------------------------------------------- */
 
     /**
@@ -134,6 +148,13 @@ public final class DailyTaskManager {
         // A set already drawn for today stands even if a member's quota has since changed:
         // redrawing mid-period would wipe progress the whole party shares.
         if (gs.periodDay == period && !gs.taskIds.isEmpty()) {
+            // A bonus retired since it was drawn today (DailyReward.drawable) gives way to one still in the pool.
+            DailyReward drawn = gs.rewardId.isEmpty() ? null : DailyRewardRegistry.byId(gs.rewardId);
+            if (drawn != null && !drawn.drawable()) {
+                gs.rewardId = pickReward(new Random(seedFor(server, group.id(), period)));
+                state.setDirty();
+                DailyTaskStatus.markDirty();
+            }
             return gs;
         }
 
@@ -261,7 +282,8 @@ public final class DailyTaskManager {
      * when no reward is registered, which the GUI shows as an empty panel.
      */
     private static String pickReward(Random rng) {
-        List<DailyReward> rewards = DailyRewardRegistry.all();
+        // Retired rewards (DailyReward.drawable) stay registered but are never drawn.
+        List<DailyReward> rewards = DailyRewardRegistry.all().stream().filter(DailyReward::drawable).toList();
         if (rewards.isEmpty()) return "";
 
         int total = 0;

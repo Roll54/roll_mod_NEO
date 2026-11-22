@@ -37,6 +37,22 @@ public class TooltipManager {
         }
     }
 
+    // ---------------- BLOCK ----------------
+    /** A block's item with a coloured name and lore, like {@link TooltipItem}. */
+    public static class TooltipBlockItem extends BlockItem {
+        private final TooltipOptions opts;
+
+        public TooltipBlockItem(net.minecraft.world.level.block.Block block, Properties props, TooltipOptions opts) {
+            super(block, props);
+            this.opts = (opts == null) ? TooltipOptions.NONE : opts;
+        }
+
+        @Override public Component getName(ItemStack stack) { return colorName(super.getName(stack), opts); }
+        @Override public void appendHoverText(ItemStack stack, TooltipContext ctx, List<Component> tooltip, TooltipFlag flag) {
+            addLore(stack, opts, tooltip, flag);
+        }
+    }
+
     // ---------------- SWORD ----------------
     public static class TooltipSwordItem extends SwordItem {
         private final TooltipOptions opts;

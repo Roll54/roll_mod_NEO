@@ -115,7 +115,7 @@ public class MeFluidOutputHatchBlockEntity extends MeHatchBlockEntity {
     }
 
     @Override
-    public List<Component> getTooltips() {
+    public List<Component> getTooltips(net.minecraft.world.item.Item.TooltipContext context) {
         return List.of(
                 Component.translatable("tooltip.roll_mod.me_hatch.output.fluid", MeHatches.OUTPUT_SLOTS)
                         .withStyle(ChatFormatting.GRAY),

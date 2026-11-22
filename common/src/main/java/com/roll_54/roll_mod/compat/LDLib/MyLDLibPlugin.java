@@ -53,7 +53,11 @@ public class MyLDLibPlugin implements ILDLibPlugin {
      * Register this class to the NeoForge event bus
      * This ensures the @SubscribeEvent methods are called
      */
-    @EventBusSubscriber(modid = RollMod.MODID)
+    /**
+     * Deprecated: LdLib's tutorial example, which hung a "burn time: …" debug strip over every furnace. No longer
+     * registered (the container skin shows the time left in the arrow's tooltip); kept as the example it was.
+     */
+    @Deprecated
     public static class ModEvents {
         @SubscribeEvent
         public static void onContainerMenuCreateEvent(ContainerMenuEvent.Create event) throws Exception {
