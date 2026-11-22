@@ -1,0 +1,17 @@
+{
+  "lines": [
+    { "text": "&fThe battle pass: 128 free rewards and 64 Prime ones for this season." },
+    { "type": "space" },
+    { "text": "&e&lPoints" },
+    { "text": "&7Every claimed daily task, every battle pass task and some events give points. 100 points open a free level, 200 a Prime level.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lQuest blocks" },
+    { "text": "&7Levels come in 8 blocks (16 free, 8 Prime), one per stage of the quest book: stone age, bronze, steel, LV, MV, HV, EV, IV. A block's rewards can only be taken once its quest is done. Points keep coming meanwhile, so nothing is lost.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lBattle pass tasks" },
+    { "text": "&7Every Monday and Thursday 4 new tasks appear: 3 easy and 1 hard. Prime players get one more. They stay until the season ends.", "indent": 6 },
+    { "type": "space" },
+    { "text": "&e&lClaiming" },
+    { "text": "&7A box framed in gold is ready: click it. Red with a lock: reached, but its block's quest is not done yet. The button at the top puts the Prime row above or below.", "indent": 6 }
+  ]
+}

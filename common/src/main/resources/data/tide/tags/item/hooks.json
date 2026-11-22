@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "roll_mod:meteorite_hook",
+      "required": false
+    }
+  ]
+}

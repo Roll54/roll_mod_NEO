@@ -1,0 +1,282 @@
+package com.roll_54.roll_mod.minestar.hub.gui;
+
+import com.lowdragmc.lowdraglib2.gui.texture.IGuiTexture;
+import com.lowdragmc.lowdraglib2.gui.texture.ItemStackTexture;
+import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
+import com.lowdragmc.lowdraglib2.gui.ui.data.Vertical;
+import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
+import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
+import com.lowdragmc.lowdraglib2.gui.ui.elements.ScrollerView;
+import com.lowdragmc.lowdraglib2.gui.ui.elements.TextField;
+import com.roll_54.roll_mod.minestar.battlepass.BattlePassReward;
+import com.roll_54.roll_mod.minestar.battlepass.ClientBattlePassCache;
+import com.roll_54.roll_mod.minestar.dailytasks.DailyRewardConfig;
+import com.roll_54.roll_mod.network.packet.BattlePassPackets;
+import dev.vfyjxf.taffy.style.FlexDirection;
+import net.minecraft.ChatFormatting;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.StringTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
+import net.neoforged.neoforge.network.PacketDistributor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * The Moderation tab's Dailies editor: the weighted pool the daily tasks draw their two rewards from, and the ingot
+ * that stands in for iron at each quest stage (the battle pass's ingots by default). Items are picked with the same
+ * editor as the battle pass's rewards. Save sends it all; the server checks the ban permission, writes
+ * {@code daily_rewards.json} and sends the new pool to everyone.
+ */
+final class DailyRewardsAdminPanel {
+
+    private static final String[] STAGES = {"bronze", "steel", "LV", "MV", "HV", "EV", "IV"};
+
+    private final boolean client;
+    private final ScrollerView body = StaffUi.scroller();
+    /** {@code id, item*count, weight}. */
+    private final List<String[]> rows = new ArrayList<>();
+    private int shownVersion = -1;
+    private boolean rebuild;
+    private boolean dirty;
+    /** The pool row whose card is open ({@code -1}: the list). */
+    private int entry = -1;
+    /** In that card, what the item picker is open on: {@code -1} the base item, {@code 0..6} a stage; null for none. */
+    private Integer editing;
+
+    DailyRewardsAdminPanel(UIElement pane, boolean client) {
+        this.client = client;
+        pane.addChild(body);
+    }
+
+    void enter() {
+        if (!client) return;
+        dirty = false;
+        editing = null;
+        entry = -1;
+        PacketDistributor.sendToServer(new BattlePassPackets.Act("daily/get", new CompoundTag()));
+    }
+
+    void tick() {
+        if (!client) return;
+        if (ClientBattlePassCache.DAILY_VERSION != shownVersion) {
+            shownVersion = ClientBattlePassCache.DAILY_VERSION;
+            if (!dirty) load(ClientBattlePassCache.DAILY);
+            rebuild = true;
+        }
+        if (!rebuild) return;
+        rebuild = false;
+        build();
+    }
+
+    private void load(CompoundTag tag) {
+        rows.clear();
+        for (String[] row : DailyRewardConfig.rows(tag)) rows.add(row.clone());
+        if (entry >= rows.size()) entry = -1;
+    }
+
+    private void build() {
+        body.clearAllScrollViewChildren();
+        if (entry >= 0 && editing != null) {
+            itemPicker();
+            return;
+        }
+        if (entry >= 0) {
+            card();
+            return;
+        }
+
+        body.addScrollViewChild(StaffUi.header("gui.roll_mod.dailies.admin.title"));
+        body.addScrollViewChild(StaffUi.dim("gui.roll_mod.dailies.admin.hint"));
+        body.addScrollViewChild(StaffUi.header("gui.roll_mod.dailies.admin.pool"));
+        for (int i = 0; i < rows.size(); i++) {
+            int index = i;
+            String[] row = rows.get(i);
+            UIElement line = StaffUi.row();
+            line.setOverflowVisible(true);
+            line.addChild(preview(row[1]));
+            // The reward, and how many stages change it; a click opens its card.
+            int changes = 0;
+            for (String st : stages(row)) if (!st.isBlank()) changes++;
+            Button item = StaffUi.button(BattlePassReward.describe(row[1]), 0, () -> {
+                entry = index;
+                rebuild = true;
+            });
+            item.layout(l -> l.flexBasis(0).flexGrow(1));
+            // A long name reads from the left and is cut at the button's edge, not spilled over the icon and the weight.
+            StaffUi.leftCaption(item);
+            // How many stages change it: a short tag of its own, the full sentence on hover.
+            Label stagesTag = StaffUi.text(changes > 0
+                    ? Component.translatable("gui.roll_mod.dailies.admin.changes_short", changes).withStyle(ChatFormatting.AQUA)
+                    : Component.empty());
+            stagesTag.layout(l -> l.width(28).height(StaffUi.ROW_H).flexShrink(0));
+            stagesTag.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+            int shownChanges = changes;
+            if (changes > 0) stagesTag.addEventListener(com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents.HOVER_TOOLTIPS,
+                    e -> e.hoverTooltips = new com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips(java.util.List.of(
+                            Component.translatable("gui.roll_mod.dailies.admin.changes", shownChanges)), null, null, ItemStack.EMPTY));
+            Label weightLabel = StaffUi.text(Component.translatable("gui.roll_mod.dailies.admin.weight"));
+            weightLabel.layout(l -> l.width(44).height(StaffUi.ROW_H).flexShrink(0));
+            weightLabel.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+            TextField weight = new TextField();
+            weight.setText(row[2]);
+            weight.layout(l -> l.width(36).height(StaffUi.ROW_H).flexShrink(0));
+            weight.setTextResponder(t -> {
+                row[2] = t.strip();
+                dirty = true;
+            });
+            Button remove = StaffUi.button(Component.literal("✕"), 16, () -> {
+                rows.remove(index);
+                dirty = true;
+                rebuild = true;
+            });
+            line.addChildren(item, stagesTag, weightLabel, weight, remove);
+            body.addScrollViewChild(line);
+        }
+        Button add = StaffUi.button("gui.roll_mod.dailies.admin.add", 120, () -> {
+            rows.add(new String[]{"custom_" + System.currentTimeMillis() % 100000, "minecraft:diamond*1", "1", ""});
+            dirty = true;
+            entry = rows.size() - 1;
+            editing = -1;
+            rebuild = true;
+        });
+        add.layout(l -> l.marginTop(3));
+        body.addScrollViewChild(add);
+        body.addScrollViewChild(saveRow());
+    }
+
+    /** One reward's card: its base item, then what it becomes from each quest stage on. */
+    private void card() {
+        String[] row = rows.get(entry);
+        UIElement top = StaffUi.row();
+        top.setOverflowVisible(true);
+        Label title = StaffUi.text(Component.translatable("gui.roll_mod.dailies.admin.card").withStyle(ChatFormatting.YELLOW));
+        title.layout(l -> l.flexBasis(0).flexGrow(1).height(StaffUi.ROW_H));
+        title.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        top.addChildren(title, StaffUi.button("gui.roll_mod.dailies.admin.back", 60, () -> {
+            entry = -1;
+            rebuild = true;
+        }));
+        body.addScrollViewChild(top);
+
+        UIElement base = StaffUi.row();
+        base.setOverflowVisible(true);
+        Label baseLabel = StaffUi.text(Component.translatable("gui.roll_mod.dailies.admin.base").withStyle(ChatFormatting.GRAY));
+        baseLabel.layout(l -> l.width(60).height(StaffUi.ROW_H).flexShrink(0));
+        baseLabel.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        Button baseItem = StaffUi.button(BattlePassReward.describe(row[1]), 0, () -> {
+            editing = -1;
+            rebuild = true;
+        });
+        baseItem.layout(l -> l.flexBasis(0).flexGrow(1));
+        StaffUi.leftCaption(baseItem);
+        base.addChildren(baseLabel, preview(row[1]), baseItem);
+        body.addScrollViewChild(base);
+
+        body.addScrollViewChild(StaffUi.header("gui.roll_mod.dailies.admin.stages"));
+        body.addScrollViewChild(StaffUi.dim("gui.roll_mod.dailies.admin.stages_hint"));
+        List<String> stages = stages(row);
+        String shown = row[1];
+        for (int st = 0; st < com.roll_54.roll_mod.minestar.dailytasks.TaskRewardPool.STAGES; st++) {
+            int index = st;
+            String own = st < stages.size() ? stages.get(st) : "";
+            if (!own.isBlank()) shown = own;
+            UIElement line = StaffUi.row();
+            line.setOverflowVisible(true);
+            Label stage = StaffUi.text(Component.literal(STAGES[st]).withStyle(ChatFormatting.GRAY));
+            stage.layout(l -> l.width(60).height(StaffUi.ROW_H).flexShrink(0));
+            stage.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+            // Its own change, or what it carries over from the stage before (dimmed).
+            Component text = own.isBlank()
+                    ? Component.translatable("gui.roll_mod.dailies.admin.same", BattlePassReward.describe(shown)).withStyle(ChatFormatting.DARK_GRAY)
+                    : BattlePassReward.describe(own);
+            Button pick = StaffUi.button(text, 0, () -> {
+                editing = index;
+                rebuild = true;
+            });
+            pick.layout(l -> l.flexBasis(0).flexGrow(1));
+            StaffUi.leftCaption(pick);
+            line.addChildren(stage, preview(shown), pick);
+            if (!own.isBlank()) {
+                line.addChild(StaffUi.button(Component.literal("✕"), 16, () -> {
+                    setStage(row, index, "");
+                    rebuild = true;
+                }));
+            }
+            body.addScrollViewChild(line);
+        }
+        body.addScrollViewChild(saveRow());
+    }
+
+    /** The item picker, for the card's base item or one of its stages. */
+    private void itemPicker() {
+        String[] row = rows.get(entry);
+        int target = editing;
+        List<String> stages = stages(row);
+        String spec = target < 0 ? row[1] : target < stages.size() && !stages.get(target).isBlank() ? stages.get(target) : row[1];
+        UIElement holder = new UIElement();
+        holder.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100));
+        holder.setOverflowVisible(true);
+        body.addScrollViewChild(holder);
+        Component heading = target < 0 ? Component.translatable("gui.roll_mod.dailies.admin.base")
+                : Component.translatable("gui.roll_mod.dailies.admin.from_stage", STAGES[target]);
+        new BattlePassRewardEditor(holder, heading, spec, false, picked -> {
+            // The daily pool pays items only.
+            if (BattlePassReward.kind(picked) == BattlePassReward.Kind.ITEM && !BattlePassReward.stack(picked).isEmpty()) {
+                if (target < 0) row[1] = picked;
+                else setStage(row, target, picked);
+                dirty = true;
+            }
+            editing = null;
+            rebuild = true;
+        }, () -> {
+            editing = null;
+            rebuild = true;
+        }).show();
+    }
+
+    private static List<String> stages(String[] row) {
+        return row.length > 3 && !row[3].isBlank() ? new ArrayList<>(List.of(row[3].split(",", -1))) : new ArrayList<>();
+    }
+
+    private void setStage(String[] row, int stage, String spec) {
+        List<String> stages = stages(row);
+        while (stages.size() <= stage) stages.add("");
+        stages.set(stage, spec);
+        while (!stages.isEmpty() && stages.get(stages.size() - 1).isBlank()) stages.remove(stages.size() - 1);
+        row[3] = String.join(",", stages);
+        dirty = true;
+    }
+
+    private UIElement saveRow() {
+        UIElement saveRow = StaffUi.row();
+        saveRow.layout(l -> l.marginTop(6).marginBottom(2));
+        saveRow.setOverflowVisible(true);
+        saveRow.addChildren(
+                StaffUi.button("gui.roll_mod.staff.commands.revert", 70, () -> {
+                    dirty = false;
+                    entry = -1;
+                    load(ClientBattlePassCache.DAILY);
+                    rebuild = true;
+                }),
+                StaffUi.button("gui.roll_mod.hub.moderation.save", 70, () -> {
+                    CompoundTag args = new CompoundTag();
+                    ListTag list = new ListTag();
+                    for (String[] row : rows) list.add(StringTag.valueOf(String.join("|", row)));
+                    args.put("rows", list);
+                    dirty = false;
+                    PacketDistributor.sendToServer(new BattlePassPackets.Act("daily/set", args));
+                }));
+        return saveRow;
+    }
+
+    private static UIElement preview(String spec) {
+        UIElement preview = new UIElement();
+        preview.layout(l -> l.width(16).height(16).flexShrink(0));
+        ItemStack stack = BattlePassReward.stack(spec);
+        preview.style(s -> s.background(stack.isEmpty() ? IGuiTexture.EMPTY : new ItemStackTexture(stack)));
+        return preview;
+    }
+}

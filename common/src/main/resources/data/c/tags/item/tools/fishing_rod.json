@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "roll_mod:bamboo_rod",
+      "required": false
+    },
+    {
+      "id": "roll_mod:carbon_fiber_rod",
+      "required": false
+    },
+    {
+      "id": "roll_mod:meteorite_metal_fishing_rod",
+      "required": false
+    },
+    {
+      "id": "roll_mod:electric_fishing_rod",
+      "required": false
+    }
+  ]
+}

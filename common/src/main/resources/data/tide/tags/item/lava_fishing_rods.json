@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "roll_mod:meteorite_metal_fishing_rod", "required": false}
+  ]
+}
