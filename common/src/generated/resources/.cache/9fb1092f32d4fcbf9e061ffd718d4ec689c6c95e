@@ -1,4 +1,8 @@
-// 1.21.1	2026-11-18T19:08:41.846555282	Recipes
+// 1.21.1	2026-11-21T01:08:04.596714941	Recipes
+829d0608872f569b5a845f4452204da2f1a64f40 data/modern_industrialization/recipe/materials/sodium_chlorate/craft/dust_from_tiny_dust.json
+346863a2f8ad8c613ff4fa1641d69c7bdc8ac050 data/modern_industrialization/recipe/materials/sodium_chlorate/craft/tiny_dust_from_dust.json
+201cd69d075e329a247400b7a21fa3d931bb32b5 data/modern_industrialization/recipe/materials/sodium_chlorate/packer/dust.json
+fcc51463c3f47157f6f25474b17315f9e78db947 data/modern_industrialization/recipe/materials/sodium_chlorate/unpacker/tiny_dust.json
 cc6c177dc94f64958e28ed25e6399e5a8f664b14 data/roll_mod/advancement/recipes/building_blocks/raw_antimony_block.json
 00c34f0dbb72bc91c754f5e66c5ceac454ebcff1 data/roll_mod/advancement/recipes/building_blocks/raw_apatite_block.json
 a7ab8afebf2984c94dfbaa0ba00b2325dd338045 data/roll_mod/advancement/recipes/building_blocks/raw_azure_silver_block.json

@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-19T22:36:14.973851772	Tags for minecraft:item mod id roll_mod
+// 1.21.1	2026-11-18T19:08:41.827892532	Tags for minecraft:item mod id roll_mod
 86c027ee359f63ead5663d6ec9769fc4251b4cab data/c/tags/item/antimony.json
 1510cca7a87081ff56ab1224106ebe72251f0764 data/c/tags/item/apatite.json
 49cace2bd2dea4c0c2706f98316f49ef41ebeea3 data/c/tags/item/armors.json
@@ -20,10 +20,6 @@ af883f41d4d897cea9a715a32475265d2e07e371 data/c/tags/item/chromite.json
 1f5010082f3c85df89f2d8ec0e6941379a15fc16 data/c/tags/item/cinnabar.json
 1dae1abef2d93c7d2b8e04275f1e07c724ff25b8 data/c/tags/item/coal.json
 f9f23421a69df5e0111a66feeeb47ea37ec2f151 data/c/tags/item/crimson_iron.json
-09d4fc07244d29858016b54fdeaae59526ee648b data/c/tags/item/crops.json
-b803c5e065e40a142756f4d79f63d3c7c2bd2834 data/c/tags/item/crops/fluorite_pineapple.json
-0f44c977ebc99f305a4351cf21d38f05b9236804 data/c/tags/item/crops/rutile_bell_pepper.json
-eff60f64acfae07a94e8789aeb5bd6b7b39f1247 data/c/tags/item/crops/sulfur_berry.json
 6ce9d5abad3216285e678eeb0cca6f543e579b2f data/c/tags/item/diamond.json
 0467f3a60208f0273f687dfd3c19583425988f4f data/c/tags/item/drinks.json
 3a5fa679781f6ec51debbcceb71568a53398d158 data/c/tags/item/dusts.json
@@ -159,16 +155,13 @@ de426f36f28b91aa49c8fdec26ecf7313593ea6d data/c/tags/item/dusts/yellow_limonite.
 c463f80d10346529e2950c47fe7165bdbe63a565 data/c/tags/item/emerald.json
 f5db5585049ab4f78fa6d41445843a9c2f858231 data/c/tags/item/fluorite.json
 3dca6886edd7bd60fb120b8d91806eb265e9882c data/c/tags/item/fluosunnarite.json
-2df58f9b55d76b40546527a8ebe41550f680c42b data/c/tags/item/foods.json
-eff60f64acfae07a94e8789aeb5bd6b7b39f1247 data/c/tags/item/foods/berry.json
+a2d2c54ee1bb9897c0aad4c586786b5f6c071ce8 data/c/tags/item/foods.json
 0907054d2b19fdcb50fcf329af978b1fd91f885f data/c/tags/item/foods/candy.json
-3bc1902da2f56c224fdfcd563af20061a360b371 data/c/tags/item/foods/cooked_meat.json
 9aae02e1584de7b6c520a17998e84f82de0d52c5 data/c/tags/item/foods/food_poisoning.json
-5f2bc10338df3325964addbbaf81d0181c9a90f8 data/c/tags/item/foods/fruit.json
+0d54f3692c6da60962bf60685fa21400a35893b3 data/c/tags/item/foods/fruit.json
 a6c06696af7569c39b766aece6429cc9d3313854 data/c/tags/item/foods/golden.json
 56c9df5e3bb76fa3b2fd87410d6b4574908a2c72 data/c/tags/item/foods/pie.json
-87af5e3afa02259ef20abe53e5d912ce523c7521 data/c/tags/item/foods/soup.json
-8d932008d18019b6dc51dfbbed8576f427e067b2 data/c/tags/item/foods/vegetable.json
+cd44eed3ad53ad1dbe429102255e53d83a1b6a4f data/c/tags/item/foods/vegetable.json
 1091fe5c6cdfe8d0e58c5fc0ff3f0b079e65bc94 data/c/tags/item/galena.json
 058dc0142f45482d74ab0d9b2c4402d4e6c5fc7d data/c/tags/item/garnierite.json
 de1800c18802eeb507a57df0b25b14f799fb46c5 data/c/tags/item/goethite.json
@@ -495,7 +488,7 @@ a7c942912b5b8d714cb0973898f89ab1e5a94829 data/roll_mod/tags/item/silver_amalgam_
 35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/roll_mod/tags/item/skin_blacklist.json
 8359de310c3321a5789b050af63867571bed8f62 data/roll_mod/tags/item/skin_slot/axe.json
 9f0d0ae84dccc944749962d652984b2a9c018f7d data/roll_mod/tags/item/skin_slot/helmet.json
-ce5828ebcbd7d664dadb854bd8d5beff8ef863ca data/roll_mod/tags/item/skin_slot/pickaxe.json
+5c08bfeb0193ff0a118188d96ae3389b0d8f777d data/roll_mod/tags/item/skin_slot/pickaxe.json
 2f4c10194cd507857aff1e5ecb156931f655155e data/roll_mod/tags/item/skin_slot/sword.json
 c0554cde32b4fbe9915afebfc26d647bdf16d0e6 data/roll_mod/tags/item/sodalite_ore_in_end.json
 689c07f3719a4dee9e6bb31b5f64dc915bf0fddc data/roll_mod/tags/item/sodalite_ore_in_moon.json

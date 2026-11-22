@@ -88,7 +88,14 @@ subprojects {
         maven {
             name = "Modrinth"
             url = "https://api.modrinth.com/maven"
-            content { includeGroup "maven.modrinth" } // Advanced AE
+            // Advanced AE, Tide, AE2, Ad Astra, Curios, OPAC, Xaero, Multiblocked2, ... — any mod with no maven of its own.
+            // maven.modrinth:<slug>:<version number or version id>; it serves the version's primary file, no transitives.
+            content { includeGroup "maven.modrinth" }
+        }
+        maven {
+            name = "Team Resourceful"
+            url = "https://maven.teamresourceful.com/repository/maven-public/"
+            content { includeGroup "earth.terrarium.common_storage_lib" } // Common Storage Lib + its API modules
         }
         maven {
             name = "FzzyMaven"

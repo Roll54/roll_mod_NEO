@@ -56,5 +56,11 @@ public class RollDataGenerators {
         generator.addProvider(event.includeClient(), new OreLangProvider(packOutput, RollMod.MODID, "en_us", existingFileHelper));
         generator.addProvider(event.includeClient(), new OreLangProvider(packOutput, RollMod.MODID, "uk_ua", existingFileHelper));
 
+        // MI materials added by this mod (RollMIMaterials): textures before models, models track the textures as generated.
+        generator.addProvider(event.includeClient(), new RollMIMaterialDatagen.Textures(packOutput));
+        generator.addProvider(event.includeClient(), new RollMIMaterialDatagen.Models(packOutput, existingFileHelper));
+        generator.addProvider(event.includeClient(), new RollMIMaterialDatagen.Lang(packOutput, "en_us"));
+        generator.addProvider(event.includeClient(), new RollMIMaterialDatagen.Lang(packOutput, "uk_ua"));
+
     }
 }

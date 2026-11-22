@@ -56,6 +56,8 @@ public final class RollMod {
         //need to work with energy
 
         ItemRegistry.register(eventBus);
+        // MI materials (sodium chlorate, ...) go into MI's registries, which accept entries until RegisterEvent.
+        com.roll_54.roll_mod.compat.mi.RollMIMaterials.init();
         com.roll_54.roll_mod.compat.aae.AaeOxygenCard.register(eventBus);
         BlockRegistry.register(eventBus);
         FluidRegistry.register(eventBus);
