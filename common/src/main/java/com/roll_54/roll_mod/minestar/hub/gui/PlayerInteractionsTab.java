@@ -138,6 +138,8 @@ public final class PlayerInteractionsTab {
         TextField search = new TextField();
         search.setText("");
         search.layout(l -> l.widthPercent(100).height(ROW_H).flexShrink(0).marginBottom(3));
+        // LdLib's own placeholder reads "Empty".
+        search.textFieldStyle(t -> t.placeholder(Component.translatable("gui.roll_mod.hub.interactions.search")));
         search.setTextResponder(text -> filter[0] = text == null ? "" : text.strip().toLowerCase(Locale.ROOT));
 
         ScrollerView list = FriendsTab.scroller();

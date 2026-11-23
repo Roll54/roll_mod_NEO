@@ -76,4 +76,21 @@ public abstract class GuiGraphicsRecolorMixin {
     private ResourceLocation roll_mod$plainSprite(ResourceLocation sprite) {
         return GuiRecolor.sprite(sprite);
     }
+
+    /**
+     * TEI's "bookmarked" recipe button is outlined in green, which the recolour (greys only) left as it was on every
+     * theme. While the recolour is on, TEI's button sheet is drawn from roll_mod's copy, the same art with an amber
+     * outline there instead ({@link GuiRecolor#swapTexture}).
+     */
+    @ModifyVariable(method = "innerBlit(Lnet/minecraft/resources/ResourceLocation;IIIIIFFFF)V",
+            at = @At("HEAD"), argsOnly = true, require = 0)
+    private ResourceLocation roll_mod$themedSheet(ResourceLocation texture) {
+        return GuiRecolor.swapTexture(texture);
+    }
+
+    @ModifyVariable(method = "innerBlit(Lnet/minecraft/resources/ResourceLocation;IIIIIFFFFFFFF)V",
+            at = @At("HEAD"), argsOnly = true, require = 0)
+    private ResourceLocation roll_mod$themedSheetTinted(ResourceLocation texture) {
+        return GuiRecolor.swapTexture(texture);
+    }
 }

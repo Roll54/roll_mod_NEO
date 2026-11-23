@@ -136,6 +136,19 @@ public final class GuiRecolor {
         return sprite.withPath(path.substring(0, path.length() - "_highlighted".length()));
     }
 
+    private static final net.minecraft.resources.ResourceLocation TEI_BUTTONS =
+            net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("tei", "textures/gui/buttons.png");
+    private static final net.minecraft.resources.ResourceLocation TEI_BUTTONS_THEMED =
+            RollMod.id("textures/gui/tei/buttons.png");
+
+    /**
+     * A texture to draw in place of {@code texture} while the recolour is on: TEI's button sheet, whose green
+     * "bookmarked" outline the recolour cannot touch, from roll_mod's copy with an amber one.
+     */
+    public static net.minecraft.resources.ResourceLocation swapTexture(net.minecraft.resources.ResourceLocation texture) {
+        return TEI_BUTTONS.equals(texture) && active() != null ? TEI_BUTTONS_THEMED : texture;
+    }
+
     /** How deep we are in drawing the theme's own art (its panel, buttons, fields), which must not be recoloured. */
     private static int themeArtDepth;
 

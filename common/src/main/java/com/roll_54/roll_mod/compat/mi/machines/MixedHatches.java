@@ -36,8 +36,12 @@ public final class MixedHatches {
             Component.translatable("hatch_type.roll_mod.mixed_output"));
 
     /** The overlays, from Yet Another Industrialization. */
-    public static final ResourceLocation OVERLAYS = RollMod.id("block/machines/mixed_hatch");
-    public static final ResourceLocation OUTPUT_OVERLAY = RollMod.id("block/overlays/output_mixed");
+    // The newer Yet Another Industrialization art, which roll_mod ships under YAI's own namespace; the older
+    // copies under roll_mod:block/machines/mixed_hatch stay in the jar, unused.
+    public static final ResourceLocation OVERLAYS =
+            ResourceLocation.fromNamespaceAndPath("yet_another_industrialization", "block/machines/mixed_hatch");
+    public static final ResourceLocation OUTPUT_OVERLAY =
+            ResourceLocation.fromNamespaceAndPath("yet_another_industrialization", "block/overlays/output_mixed");
 
     /**
      * @param tier             id prefix

@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-22T22:53:19.457370913	Machine Models: roll_mod
+// 1.21.1	2026-11-23T19:26:44.11758235	Machine Models: roll_mod
 ab571aa35059a840dedfb2d0d0048913b450501a assets/roll_mod/blockstates/advanced_pyrolyse_oven.json
 270420e1ce312cdd7113bad319395edc4950d9da assets/roll_mod/blockstates/assembly_line.json
 81af6005a11f53b4084d53e74437ce253671d7fa assets/roll_mod/blockstates/circuit_assembly_line.json
@@ -63,8 +63,8 @@ fa1b412a0e03b138e1e239a62dcf3726475c5ec3 assets/roll_mod/models/block/hv_multi_f
 3da90cdefe3125b98f1a31f531ca86ade8254542 assets/roll_mod/models/block/iv_fluid_output_hatch.json
 118bbb2d7f4293ae94ec9f7d593d2b93eb41c451 assets/roll_mod/models/block/iv_item_input_hatch.json
 118bbb2d7f4293ae94ec9f7d593d2b93eb41c451 assets/roll_mod/models/block/iv_item_output_hatch.json
-144329b7eb4acbeb3f04aec3e33ac118e5fe8b57 assets/roll_mod/models/block/iv_mixed_input_hatch.json
-144329b7eb4acbeb3f04aec3e33ac118e5fe8b57 assets/roll_mod/models/block/iv_mixed_output_hatch.json
+b75494f2993862e48645e8b50d4caefcdd2e22d5 assets/roll_mod/models/block/iv_mixed_input_hatch.json
+b75494f2993862e48645e8b50d4caefcdd2e22d5 assets/roll_mod/models/block/iv_mixed_output_hatch.json
 3da90cdefe3125b98f1a31f531ca86ade8254542 assets/roll_mod/models/block/iv_multi_fluid_input_hatch.json
 3da90cdefe3125b98f1a31f531ca86ade8254542 assets/roll_mod/models/block/iv_multi_fluid_output_hatch.json
 bfb13b1f3bcfe1fbd2d19e4286d379475202e810 assets/roll_mod/models/block/large_alloy_smelter.json

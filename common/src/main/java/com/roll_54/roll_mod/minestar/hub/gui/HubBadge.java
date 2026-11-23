@@ -60,6 +60,12 @@ public final class HubBadge {
      * hub button): the body tinted to the notification colour, then the mark. Replaces the old red exclamation mark.
      */
     public static void draw(net.minecraft.client.gui.GuiGraphics graphics, int x, int y, int size) {
+        // In its own colours: the theme's recolour turned its white mark and tinted body into the theme's dark greys
+        // (the chat channel buttons' badge read as a dark blot).
+        com.roll_54.roll_mod.minestar.theme.GuiRecolor.withoutRecolor(() -> drawRaw(graphics, x, y, size));
+    }
+
+    private static void drawRaw(net.minecraft.client.gui.GuiGraphics graphics, int x, int y, int size) {
         int argb = HubNotifications.color().argb();
         graphics.setColor(((argb >> 16) & 0xFF) / 255f, ((argb >> 8) & 0xFF) / 255f, (argb & 0xFF) / 255f, 1f);
         graphics.blit(BADGE_BODY, x, y, 0, 0, size, size, size, size);

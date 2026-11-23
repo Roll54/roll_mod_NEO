@@ -130,11 +130,11 @@ final class DailyRewardsAdminPanel {
             String[] row = rows.get(i);
             UIElement line = StaffUi.row();
             line.setOverflowVisible(true);
-            line.addChild(preview(row[1]));
+            line.addChild(preview(previewSpec(row[1])));
             // The reward, and how many stages change it; a click opens its card.
             int changes = 0;
             for (String st : stages(row)) if (!st.isBlank()) changes++;
-            Button item = StaffUi.button(BattlePassReward.describe(row[1]), 0, () -> {
+            Button item = StaffUi.button(describeLine(row[1]), 0, () -> {
                 entry = index;
                 rebuild = true;
             });
@@ -406,19 +406,10 @@ final class DailyRewardsAdminPanel {
         }));
         body.addScrollViewChild(top);
 
-        UIElement base = StaffUi.row();
-        base.setOverflowVisible(true);
-        Label baseLabel = StaffUi.text(Component.translatable("gui.roll_mod.dailies.admin.base").withStyle(ChatFormatting.GRAY));
-        baseLabel.layout(l -> l.width(60).height(StaffUi.ROW_H).flexShrink(0));
-        baseLabel.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
-        Button baseItem = StaffUi.button(BattlePassReward.describe(row[1]), 0, () -> {
-            editing = -1;
-            rebuild = true;
-        });
-        baseItem.layout(l -> l.flexBasis(0).flexGrow(1));
-        StaffUi.leftCaption(baseItem);
-        base.addChildren(baseLabel, preview(row[1]), baseItem);
-        body.addScrollViewChild(base);
+        // As the bonus card: each line an item button and its amount from–to (rolled anew each time).
+        body.addScrollViewChild(StaffUi.dim("gui.roll_mod.dailies.admin.range_hint"));
+        body.addScrollViewChild(rangeLine(Component.translatable("gui.roll_mod.dailies.admin.base"), row[1],
+                -1, spec -> row[1] = spec, null));
 
         body.addScrollViewChild(StaffUi.header("gui.roll_mod.dailies.admin.stages"));
         body.addScrollViewChild(StaffUi.dim("gui.roll_mod.dailies.admin.stages_hint"));
@@ -428,31 +419,82 @@ final class DailyRewardsAdminPanel {
             int index = st;
             String own = st < stages.size() ? stages.get(st) : "";
             if (!own.isBlank()) shown = own;
-            UIElement line = StaffUi.row();
-            line.setOverflowVisible(true);
-            Label stage = StaffUi.text(Component.literal(STAGES[st]).withStyle(ChatFormatting.GRAY));
-            stage.layout(l -> l.width(60).height(StaffUi.ROW_H).flexShrink(0));
-            stage.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
-            // Its own change, or what it carries over from the stage before (dimmed).
-            Component text = own.isBlank()
-                    ? Component.translatable("gui.roll_mod.dailies.admin.same", BattlePassReward.describe(shown)).withStyle(ChatFormatting.DARK_GRAY)
-                    : BattlePassReward.describe(own);
-            Button pick = StaffUi.button(text, 0, () -> {
-                editing = index;
-                rebuild = true;
-            });
-            pick.layout(l -> l.flexBasis(0).flexGrow(1));
-            StaffUi.leftCaption(pick);
-            line.addChildren(stage, preview(shown), pick);
-            if (!own.isBlank()) {
-                line.addChild(StaffUi.button(Component.literal("✕"), 16, () -> {
-                    setStage(row, index, "");
+            if (own.isBlank()) {
+                // What it carries over from the stage before (dimmed); a click gives this stage its own.
+                UIElement line = StaffUi.row();
+                line.setOverflowVisible(true);
+                line.addChild(stageLabel(STAGES[st]));
+                line.addChild(preview(previewSpec(shown)));
+                Button pick = StaffUi.button(Component.translatable("gui.roll_mod.dailies.admin.same", describeLine(shown))
+                        .withStyle(ChatFormatting.DARK_GRAY), 0, () -> {
+                    editing = index;
                     rebuild = true;
-                }));
+                });
+                pick.layout(l -> l.flexBasis(0).flexGrow(1));
+                StaffUi.leftCaption(pick);
+                line.addChild(pick);
+                body.addScrollViewChild(line);
+            } else {
+                body.addScrollViewChild(rangeLine(Component.literal(STAGES[st]), own, index,
+                        spec -> setStage(row, index, spec), () -> {
+                            setStage(row, index, "");
+                            rebuild = true;
+                        }));
             }
-            body.addScrollViewChild(line);
         }
         body.addScrollViewChild(saveRow());
+    }
+
+    private static Label stageLabel(String text) {
+        Label label = StaffUi.text(Component.literal(text).withStyle(ChatFormatting.GRAY));
+        label.layout(l -> l.width(60).height(StaffUi.ROW_H).flexShrink(0));
+        label.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        return label;
+    }
+
+    /**
+     * One card line as on the bonus card: its label, the item (a click opens the picker on {@code target}), the
+     * amount from–to, and ✕ when {@code remove} is given.
+     */
+    private UIElement rangeLine(Component labelText, String spec, int target,
+                                java.util.function.Consumer<String> set, @javax.annotation.Nullable Runnable remove) {
+        UIElement line = StaffUi.row();
+        line.setOverflowVisible(true);
+        Label label = StaffUi.text(labelText.copy().withStyle(ChatFormatting.GRAY));
+        label.layout(l -> l.width(60).height(StaffUi.ROW_H).flexShrink(0));
+        label.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        line.addChildren(label, preview(previewSpec(spec)));
+        Button pick = StaffUi.button(describeLine(spec), 0, () -> {
+            editing = target;
+            rebuild = true;
+        });
+        pick.layout(l -> l.flexBasis(0).flexGrow(1));
+        StaffUi.leftCaption(pick);
+        line.addChild(pick);
+        int[] current = range(spec).clone();
+        String item = itemId(spec);
+        TextField min = new TextField();
+        min.setText(String.valueOf(current[0]));
+        min.layout(l -> l.width(28).height(StaffUi.ROW_H).flexShrink(0));
+        Label dash = StaffUi.text(Component.literal("–"));
+        dash.layout(l -> l.width(8).height(StaffUi.ROW_H).flexShrink(0));
+        dash.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        TextField max = new TextField();
+        max.setText(String.valueOf(current[1]));
+        max.layout(l -> l.width(28).height(StaffUi.ROW_H).flexShrink(0));
+        min.setTextResponder(t -> {
+            current[0] = parse(t, current[0]);
+            set.accept(line(item, current[0], current[1]));
+            dirty = true;
+        });
+        max.setTextResponder(t -> {
+            current[1] = parse(t, current[1]);
+            set.accept(line(item, current[0], current[1]));
+            dirty = true;
+        });
+        line.addChildren(min, dash, max);
+        if (remove != null) line.addChild(StaffUi.button(Component.literal("✕"), 16, remove));
+        return line;
     }
 
     /** The item picker, for the card's base item or one of its stages. */
@@ -467,11 +509,13 @@ final class DailyRewardsAdminPanel {
         body.addScrollViewChild(holder);
         Component heading = target < 0 ? Component.translatable("gui.roll_mod.dailies.admin.base")
                 : Component.translatable("gui.roll_mod.dailies.admin.from_stage", STAGES[target]);
-        new BattlePassRewardEditor(holder, heading, spec, false, picked -> {
-            // The daily pool pays items only.
+        new BattlePassRewardEditor(holder, heading, previewSpec(spec), false, picked -> {
+            // The daily pool pays items only. A new item keeps the line's from–to.
             if (BattlePassReward.kind(picked) == BattlePassReward.Kind.ITEM && !BattlePassReward.stack(picked).isEmpty()) {
-                if (target < 0) row[1] = picked;
-                else setStage(row, target, picked);
+                int[] range = range(spec);
+                String line = line(itemId(picked), range[0], range[1]);
+                if (target < 0) row[1] = line;
+                else setStage(row, target, line);
                 dirty = true;
             }
             editing = null;

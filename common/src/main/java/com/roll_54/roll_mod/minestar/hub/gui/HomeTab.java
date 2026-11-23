@@ -353,7 +353,9 @@ public final class HomeTab {
                         value(rank, Component.empty())));
             }
             setIfChanged(coinsRow, Component.translatable("gui.roll_mod.hub.home.starcoins",
-                    Component.literal(EnergyFormatUtils.formatEnergy(ClientCurrencyHolder.get(CurrencyType.MAIN)))
+                    // The whole number, grouped by thousands ("43 625"), not an energy unit ("43,625K").
+                    Component.literal(String.format(java.util.Locale.ROOT, "%,d",
+                                    (long) ClientCurrencyHolder.get(CurrencyType.MAIN)).replace(',', ' '))
                             .withColor(COLOR_STARCOINS)));
             setIfChanged(questsRow, Component.translatable("gui.roll_mod.hub.home.quests",
                     value(questsDone, 0), value(questsTotal, 0)));

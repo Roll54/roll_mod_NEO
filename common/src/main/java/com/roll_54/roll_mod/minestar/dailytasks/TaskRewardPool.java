@@ -126,7 +126,7 @@ public final class TaskRewardPool {
                 String spec = current;
                 String id = spec.equals(row[1].strip()) ? row[0] : row[0] + "@" + spec;
                 int w = weight;
-                levels.get(st).add(everything.computeIfAbsent(id, k -> new TaskReward.Stack(k, parse(spec), w)));
+                levels.get(st).add(everything.computeIfAbsent(id, k -> reward(k, spec, w)));
             }
         }
         byStage = new ArrayList<>();
@@ -152,18 +152,40 @@ public final class TaskRewardPool {
         if (all == null) apply(defaultRows());
     }
 
-    /** {@code namespace:item*count}, or empty for an unknown item. */
+    /** A row's payout: a stack, or a range rolled at claim time for {@code item*min-max}. */
+    private static TaskReward reward(String id, String spec, int weight) {
+        ItemStack stack = parse(spec);
+        int[] range = range(spec);
+        if (range[0] == range[1]) return new TaskReward.Stack(id, stack.copyWithCount(range[0]), weight);
+        return new TaskReward.Range(id, com.roll_54.roll_mod.minestar.dailytasks.api.RewardRange.of(
+                stack.getItemHolder(), range[0], range[1]), weight);
+    }
+
+    /** {@code {min, max}} of {@code item*count} or {@code item*min-max}; no count is one. */
+    static int[] range(String spec) {
+        int star = spec == null ? -1 : spec.lastIndexOf('*');
+        if (star < 0) return new int[]{1, 1};
+        String amount = spec.substring(star + 1).strip();
+        int dash = amount.indexOf('-');
+        int min = count(dash < 0 ? amount : amount.substring(0, dash));
+        int max = dash < 0 ? min : Math.max(min, count(amount.substring(dash + 1)));
+        return new int[]{min, max};
+    }
+
+    private static int count(String text) {
+        try {
+            return Math.max(1, Integer.parseInt(text.strip()));
+        } catch (NumberFormatException e) {
+            return 1;
+        }
+    }
+
+    /** {@code namespace:item*count} ({@code *min-max} reads as its lower end), or empty for an unknown item. */
     static ItemStack parse(String spec) {
         if (spec == null) return ItemStack.EMPTY;
         int star = spec.lastIndexOf('*');
         String id = (star < 0 ? spec : spec.substring(0, star)).strip();
-        int count = 1;
-        if (star >= 0) {
-            try {
-                count = Math.max(1, Integer.parseInt(spec.substring(star + 1).strip()));
-            } catch (NumberFormatException ignored) {
-            }
-        }
+        int count = range(spec)[0];
         var rl = net.minecraft.resources.ResourceLocation.tryParse(id);
         if (rl == null || !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(rl)) return ItemStack.EMPTY;
         return new ItemStack(net.minecraft.core.registries.BuiltInRegistries.ITEM.get(rl), count);

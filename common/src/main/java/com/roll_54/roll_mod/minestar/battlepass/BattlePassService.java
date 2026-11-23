@@ -372,10 +372,15 @@ public final class BattlePassService {
 
     /** The furthest quest stage {@code player} has opened in a row: 0 before the bronze quest, up to 7 (IV). */
     public static int stage(ServerPlayer player) {
+        // Read from the stage table itself (bottom up), not from the pass's blocks: the blocks are one stage ahead
+        // of the ingots now (block 1 opens with the bottom stage), and the ingots keep following the quests.
+        List<com.roll_54.roll_mod.minestar.leaderboard.LeaderboardChapters.Stage> stages =
+                com.roll_54.roll_mod.minestar.leaderboard.LeaderboardChapters.configured();
         int stage = 0;
-        for (int b = 1; b < BattlePassConfig.BLOCKS; b++) {
-            if (!blockOpen(player, b)) break;
-            stage = b;
+        for (int i = 1; i <= Math.min(stages.size(), BattlePassConfig.BLOCKS - 1); i++) {
+            long quest = stages.get(stages.size() - i).chapter();
+            if (quest != 0 && !QuestGate.isCompleted(player, quest)) break;
+            stage = i;
         }
         return stage;
     }

@@ -59,6 +59,29 @@ public sealed interface TaskReward {
     }
 
     /**
+     * Between {@code min} and {@code max} of an item, rolled at claim time — a pool reward set to a range in the
+     * Dailies editor ({@code item*4-8}). The strip shows the range.
+     */
+    record Range(String id, RewardRange range, int weight) implements TaskReward {
+
+        @Override
+        public DailyTaskIcon icon() {
+            return range.icon();
+        }
+
+        @Override
+        public Component name() {
+            return Component.literal(range.min() + "-" + range.max() + " × ")
+                    .append(new ItemStack(range.item()).getHoverName());
+        }
+
+        @Override
+        public void grant(ServerPlayer player) {
+            range.grant(player);
+        }
+    }
+
+    /**
      * A payout in this mod's own currency, straight through {@link CurrencyService}.
      *
      * <p>The deposit is asynchronous — it goes to the currency database — so the claim returns
