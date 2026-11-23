@@ -605,8 +605,15 @@ public final class BattlePassTab {
             list.addScrollViewChild(none);
             return;
         }
-        for (int i = 0; i < tasks.size(); i++) {
-            CompoundTag t = tasks.getCompound(i);
+        // Easy ones first, then the hard ones, the Prime ones at the very bottom (each batch's own order within a kind).
+        List<CompoundTag> sorted = new java.util.ArrayList<>();
+        for (int i = 0; i < tasks.size(); i++) sorted.add(tasks.getCompound(i));
+        sorted.sort(java.util.Comparator.comparingInt(c -> switch (c.getString("kind")) {
+            case "HARD" -> 1;
+            case "PRIME" -> 2;
+            default -> 0;
+        }));
+        for (CompoundTag t : sorted) {
             int taskIndex = t.getInt("task");
             DailyTask task = taskIndex >= 0 ? DailyTaskRegistry.byIndex(taskIndex) : null;
             long quest = parseQuest(t.getString("quest"));

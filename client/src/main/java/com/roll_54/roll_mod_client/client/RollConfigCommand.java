@@ -16,7 +16,9 @@ import net.neoforged.neoforge.client.event.RegisterClientCommandsEvent;
  * <p>Client-side, because it opens a screen; for operators only. Fzzy still checks on the server that the player
  * may change a server config before it applies anything.
  */
-@EventBusSubscriber(modid = RollModClient.MODID, value = Dist.CLIENT)
+@Deprecated
+// No longer registered: a client root "roll_mod" showed only itself in place of the server's commands. The command is
+// the server's {@code /rollmod admin config} now ({@code RollModRootCommands}), {@code /roll_mod} its alias.
 public final class RollConfigCommand {
 
     /** Operators (level 2), as for the other admin commands. */
@@ -24,7 +26,6 @@ public final class RollConfigCommand {
 
     private RollConfigCommand() {}
 
-    @SubscribeEvent
     public static void onRegisterClientCommands(RegisterClientCommandsEvent event) {
         event.getDispatcher().register(Commands.literal(RollMod.MODID)
                 .then(Commands.literal("admin")

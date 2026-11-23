@@ -21,7 +21,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
  * {@code /rollmod admin skin …} — grants skins and picks which one renders in which slot.
  *
  * <p>Operator-only in full, gated once on the {@code admin} literal at permission level 2, the same
- * way {@code CurrencyCommand} and {@code AutoGiveCommands} gate theirs. Players reach the same
+ * way {@code CurrencyCommand} gates its own. Players reach the same
  * {@link ItemSkinService} methods through {@code SkinActionPacket} when the hub tab is built; this
  * command exists so the rendering can be driven and tested before then, which is administrative
  * work rather than a second way for a player to dress up.

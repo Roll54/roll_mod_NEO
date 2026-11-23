@@ -154,6 +154,27 @@ final class BattlePassAdminPanel {
             label.layout(l -> l.flexBasis(0).flexGrow(1).height(StaffUi.ROW_H));
             label.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
             row.addChild(label);
+            if (b == 0) {
+                // The first block is before the table's first stage: its quest is set here.
+                row.setOverflowVisible(true);
+                row.addChild(StaffUi.button("gui.roll_mod.battlepass.admin.pick_quest", 70, () -> {
+                    picker.setOnPick(id -> {
+                        gates.set(0, String.format("%016X", id));
+                        tableGates.set(0, String.format("%016X", id));
+                        dirty = true;
+                        rebuild = true;
+                    });
+                    picker.open();
+                }));
+                if (quest != 0) {
+                    row.addChild(StaffUi.button(Component.literal("✕"), 16, () -> {
+                        gates.set(0, "");
+                        tableGates.set(0, "");
+                        dirty = true;
+                        rebuild = true;
+                    }));
+                }
+            }
             body.addScrollViewChild(row);
         }
 

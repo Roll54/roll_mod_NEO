@@ -26,6 +26,8 @@ public class RMMAttachment {
             "storm_protected", () -> AttachmentType.builder(() -> false).serialize(Codec.BOOL).copyOnDeath().build()
     );
 
+    /** @deprecated the book auto-give was removed; still registered so saved player data loads without errors. */
+    @Deprecated
     public static final Supplier<AttachmentType<Boolean>> AUTO_GIVE = ATTACHMENT_TYPES.register(
             "auto_give", () -> AttachmentType.builder(() -> true).serialize(Codec.BOOL).copyOnDeath().build()
     );

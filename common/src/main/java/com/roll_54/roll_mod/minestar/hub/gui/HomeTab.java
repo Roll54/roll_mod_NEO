@@ -241,7 +241,9 @@ public final class HomeTab {
             }
             setIfChanged(header.group(), text);
         }
-        float progress = own.levelXpNeeded() > 0 ? Math.min(1f, (float) own.levelXp() / own.levelXpNeeded()) : 0f;
+        // The level's size, or what is in it plus what is left when the profile gives no size.
+        long needed = own.levelXpNeeded() > 0 ? own.levelXpNeeded() : own.levelXp() + own.xpToNext();
+        float progress = needed > 0 ? Math.min(1f, (float) own.levelXp() / needed) : 0f;
         if (progress != header.shown()[0]) {
             header.shown()[0] = progress;
             header.fill().layout(l -> l.widthPercent(progress * 100f));

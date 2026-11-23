@@ -245,9 +245,16 @@ public final class KitsPanel {
                 .alignItems(AlignItems.CENTER).paddingHorizontal(6).paddingVertical(5).gapColumn(6).marginBottom(3));
         card.style(s -> s.background(new ColorRectTexture(ready ? COLOR_ROW : 0x20FFFFFF)));
 
+        // The item at its own 16px, on whole pixels, in the middle of the 20px space: drawn stretched to 20 (1.25x)
+        // it doubled some pixels and dropped others.
         UIElement icon = new UIElement();
-        icon.layout(l -> l.width(CARD_ICON).height(CARD_ICON).flexShrink(0));
-        if (!kit.icon().isEmpty()) icon.style(s -> s.background(new ItemStackTexture(kit.icon())));
+        icon.layout(l -> l.width(CARD_ICON).height(CARD_ICON).flexShrink(0).paddingAll((CARD_ICON - 16) / 2f));
+        if (!kit.icon().isEmpty()) {
+            UIElement item = new UIElement();
+            item.layout(l -> l.width(16).height(16));
+            item.style(s -> s.background(HubIcons.snapped(new ItemStackTexture(kit.icon()))));
+            icon.addChild(item);
+        }
 
         UIElement text = new UIElement();
         text.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexBasis(0).flexGrow(1).gapRow(2));
@@ -346,7 +353,7 @@ public final class KitsPanel {
         if (!kit.icon().isEmpty()) {
             UIElement icon = new UIElement();
             icon.layout(l -> l.width(ICON).height(ICON).flexShrink(0));
-            icon.style(s -> s.background(new ItemStackTexture(kit.icon())));
+            icon.style(s -> s.background(HubIcons.snapped(new ItemStackTexture(kit.icon()))));
             head.addChild(icon);
         }
         Label name = new Label();

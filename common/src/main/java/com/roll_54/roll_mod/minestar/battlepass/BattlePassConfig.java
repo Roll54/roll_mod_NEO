@@ -256,14 +256,17 @@ public final class BattlePassConfig {
 
     /**
      * The quest that opens {@code block}, or 0 for none. Only the quest stage table (Moderation → Settings →
-     * Leaderboards) decides it: block 0 is open from the start, block N (N ≥ 1) opens with the N-th stage from the
-     * bottom, so the pass, the daily ingots and the stage board all follow the same quests. A block past the table's
-     * end has no stage and is open.
+     * Leaderboards) decides it: block N (N ≥ 1) opens with the N-th stage from the
+     * bottom, so the pass, the daily ingots and the stage board all follow the same quests. The first block opens
+     * with the pass's own quest for it ({@code gates[0]}), set in the pass editor; blank, it is open from the start. A
+     * block past the table's end has no stage and is open.
      */
     public long gate(int block) {
         List<com.roll_54.roll_mod.minestar.leaderboard.LeaderboardChapters.Stage> stages =
                 com.roll_54.roll_mod.minestar.leaderboard.LeaderboardChapters.configured();
         if (block >= 1 && block <= stages.size()) return stages.get(stages.size() - block).chapter();
+        // The first block comes before the table's first stage: its quest is the pass's own (Moderation → the pass).
+        if (block == 0) return ownGate(0);
         return 0;
     }
 

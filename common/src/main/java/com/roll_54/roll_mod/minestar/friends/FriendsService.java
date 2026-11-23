@@ -166,7 +166,7 @@ public final class FriendsService {
 
         Fetched<FriendDetail> cached = DETAILS.get(friend);
         if (cached != null && System.currentTimeMillis() - cached.at() < DETAIL_TTL_MILLIS) {
-            PacketDistributor.sendToPlayer(player, SyncFriendDetailPacket.of(cached.value()));
+            PacketDistributor.sendToPlayer(player, new SyncFriendDetailPacket(friend, cached.value()));
             return;
         }
 
@@ -180,7 +180,7 @@ public final class FriendsService {
                 return;
             }
             DETAILS.put(friend, new Fetched<>(detail, System.currentTimeMillis()));
-            if (online != null) PacketDistributor.sendToPlayer(online, SyncFriendDetailPacket.of(detail));
+            if (online != null) PacketDistributor.sendToPlayer(online, new SyncFriendDetailPacket(friend, detail));
         }));
     }
 

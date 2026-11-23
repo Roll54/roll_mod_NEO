@@ -109,6 +109,42 @@ public final class DailyTaskEvents {
         if (player == null) return;
 
         DailyTaskManager.progress(player, DailyTaskHook.MINE, event.getState(), 1);
+        if (ripe(event.getState())) DailyTaskManager.progress(player, DailyTaskHook.HARVEST, event.getState(), 1);
+    }
+
+    /** A crop at its last growth stage: a block with an "age" property at its maximum. */
+    private static boolean ripe(BlockState state) {
+        for (net.minecraft.world.level.block.state.properties.Property<?> property : state.getProperties()) {
+            if (property instanceof net.minecraft.world.level.block.state.properties.IntegerProperty age
+                    && property.getName().equals("age")) {
+                int max = age.getPossibleValues().stream().mapToInt(Integer::intValue).max().orElse(0);
+                return max > 0 && state.getValue(age) == max;
+            }
+        }
+        return false;
+    }
+
+    @SubscribeEvent
+    public static void onInteractBlock(PlayerInteractEvent.RightClickBlock event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
+        if (player == null || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND) return;
+        DailyTaskManager.progress(player, DailyTaskHook.INTERACT_BLOCK, event.getLevel().getBlockState(event.getPos()), 1);
+    }
+
+    @SubscribeEvent
+    public static void onInteractEntity(PlayerInteractEvent.EntityInteract event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
+        if (player == null || event.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND) return;
+        if (event.getTarget() instanceof LivingEntity target) {
+            DailyTaskManager.progress(player, DailyTaskHook.INTERACT_ENTITY, target, 1);
+        }
+    }
+
+    @SubscribeEvent
+    public static void onRightClickItem(PlayerInteractEvent.RightClickItem event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
+        if (player == null || event.getItemStack().isEmpty()) return;
+        DailyTaskManager.progress(player, DailyTaskHook.RIGHT_CLICK_ITEM, event.getItemStack(), 1);
     }
 
     /* ---------------------------------------------------- KILL ------------------------------------------------ */
@@ -308,6 +344,7 @@ public final class DailyTaskEvents {
         int lastDistanceCm = -1;
         int lastRaidWins;
         int lastJumps;
+        int lastSleeps;
         int carryTicks;
         int carryCm;
     }
@@ -328,6 +365,7 @@ public final class DailyTaskEvents {
             // the village -- so the delta is "raids this player helped win since the last sample".
             int raidWins = player.getStats().getValue(Stats.CUSTOM, Stats.RAID_WIN);
             int jumps = player.getStats().getValue(Stats.CUSTOM, Stats.JUMP);
+            int sleeps = player.getStats().getValue(Stats.CUSTOM, Stats.SLEEP_IN_BED);
 
             // The first sample after login only establishes a baseline. Math.max guards the case
             // where a statistic is reset underneath us.
@@ -357,12 +395,18 @@ public final class DailyTaskEvents {
                 if (jumped > 0) {
                     DailyTaskManager.progress(player, DailyTaskHook.JUMP, player, jumped);
                 }
+
+                int slept = Math.max(0, sleeps - sample.lastSleeps);
+                if (slept > 0) {
+                    DailyTaskManager.progress(player, DailyTaskHook.SLEEP, player, slept);
+                }
             }
 
             sample.lastPlayTicks = playTicks;
             sample.lastDistanceCm = distanceCm;
             sample.lastRaidWins = raidWins;
             sample.lastJumps = jumps;
+            sample.lastSleeps = sleeps;
         }
     }
 

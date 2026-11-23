@@ -83,8 +83,10 @@ public final class ProfileLevels {
                     // The hub's header (level and its XP bar) reads the viewer's own profile: send it with every
                     // refresh, not only from the one request the hub makes when it opens, which can be skipped.
                     ServerPlayer online = server.getPlayerList().getPlayer(id);
+                    // Under the game UUID asked for: the profile's own may be Minestar's, and the header looks
+                    // the viewer up by their game UUID.
                     if (online != null) PacketDistributor.sendToPlayer(online,
-                            com.roll_54.roll_mod.network.packet.SyncFriendDetailPacket.of(detail));
+                            new com.roll_54.roll_mod.network.packet.SyncFriendDetailPacket(id, detail));
                 });
             });
         } catch (RuntimeException e) {

@@ -111,5 +111,15 @@ public enum DailyTaskHook {
      * {@code minecraft:bell_ring}…), named in the task's target. Subject: the statistic id as a {@link String}.
      * Distances count in blocks, times in minutes, the rest as they are.
      */
-    STAT
+    STAT,
+    /** A block was right-clicked (a bell rung, a lever pulled, a crafting table opened…). Subject: its {@link net.minecraft.world.level.block.state.BlockState}. */
+    INTERACT_BLOCK,
+    /** A creature was right-clicked (milked, fed, named, ridden…). Subject: the {@link net.minecraft.world.entity.LivingEntity}. */
+    INTERACT_ENTITY,
+    /** An item was right-clicked in the air or on a block (a pearl thrown, a firework launched…). Subject: the {@link net.minecraft.world.item.ItemStack}. */
+    RIGHT_CLICK_ITEM,
+    /** A night slept through in a bed. Subject: the {@link net.minecraft.server.level.ServerPlayer}. Sampled from {@code minecraft:sleep_in_bed}. */
+    SLEEP,
+    /** A ripe crop was broken (any block whose "age" is at its maximum). Subject: its {@link net.minecraft.world.level.block.state.BlockState}. */
+    HARVEST
 }

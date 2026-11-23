@@ -97,6 +97,17 @@ public final class GuiRecolor {
         return tinted ? TEX_COLOR : TEX;
     }
 
+    /**
+     * Mods whose GUI art is drawn as it is, never recoloured: their icons are mostly grey, and mapped into the theme's
+     * dark tones they vanished into the panel (Extreme Sound Muffler's speaker button in the inventory, the play and
+     * mute buttons on its screen).
+     */
+    private static final java.util.Set<String> OWN_COLOURS = java.util.Set.of("extremesoundmuffler");
+
+    public static boolean keepsOwnColours(@Nullable net.minecraft.resources.ResourceLocation texture) {
+        return texture != null && OWN_COLOURS.contains(texture.getNamespace());
+    }
+
     /** The palette each shader last got, and which shader instance it went to. */
     @Nullable private static UiTheme.Recolor texPalette, texColorPalette;
     @Nullable private static ShaderInstance texShader, texColorShader;

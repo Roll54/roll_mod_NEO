@@ -142,6 +142,11 @@ public class NetworkHandler {
                 LevelRewardsPacket::handle
         );
         registrar.playToClient(
+                com.roll_54.roll_mod.network.packet.OpenConfigPacket.TYPE,
+                com.roll_54.roll_mod.network.packet.OpenConfigPacket.STREAM_CODEC,
+                com.roll_54.roll_mod.network.packet.OpenConfigPacket::handle
+        );
+        registrar.playToClient(
                 MentionPingPacket.TYPE,
                 MentionPingPacket.STREAM_CODEC,
                 MentionPingPacket::handle

@@ -165,6 +165,17 @@ final class KitNamesPanel {
                     });
         });
 
+        // Everyone's wait on this kit gone at once (asks first): all may take it again now.
+        Button resetTimers = button("gui.roll_mod.hub.moderation.kits.resetTimers", -1, () -> {
+            String kit = selected[0];
+            if (kit == null) return;
+            confirmer.ask(Component.translatable("gui.roll_mod.hub.moderation.kits.resetTimersAsk", kit),
+                    Component.translatable("gui.roll_mod.hub.moderation.kits.resetTimers"),
+                    () -> PacketDistributor.sendToServer(new KitNamePackets.Edit(KitNamePackets.Edit.Action.RESET_TIMERS, kit, 0L)));
+        });
+        UIElement resetRow = row();
+        resetRow.addChild(resetTimers);
+
         // The description players read on the kit's card; & colour codes work.
         UIElement descriptionRow = row();
         description.setText("");
@@ -184,7 +195,7 @@ final class KitNamesPanel {
             PacketDistributor.sendToServer(new KitNamePackets.Edit(KitNamePackets.Edit.Action.COOLDOWN, selected[0], Kit.ONCE));
         }));
 
-        editor.addChildren(id, row, preview, info, descriptionRow, itemsRow, cooldownRow, presetRow, deleteRow);
+        editor.addChildren(id, row, preview, info, descriptionRow, itemsRow, cooldownRow, presetRow, resetRow, deleteRow);
 
         // A new kit: an id, a cooldown, then its (empty) chest to fill.
         UIElement create = new UIElement();

@@ -41,7 +41,24 @@ final class TasksAdminPanel {
 
     private static final String[] HOOKS = {"MINE", "KILL", "CRAFT", "SMELT", "FISH", "EAT", "EAT_SPEFIC", "COOK", "BREED",
             "SHEAR", "CLIP", "JUMP", "PLAYTIME", "DISTANCE", "RAID", "PLACE", "TAME", "TRADE", "ENCHANT", "BREW", "ANVIL",
-            "ADVANCEMENT", "LEVEL_UP", "USE", "DAMAGE", "VISIT", "STAT"};
+            "ADVANCEMENT", "LEVEL_UP", "USE", "DAMAGE", "VISIT", "STAT", "INTERACT_BLOCK", "INTERACT_ENTITY",
+            "RIGHT_CLICK_ITEM", "SLEEP", "HARVEST"};
+
+    /** What a hook's target names, so the card offers the right list to pick it from. */
+    private enum TargetKind { ITEM, ENTITY, BLOCK, DIMENSION, STAT, ADVANCEMENT, TEXT, NONE }
+
+    private static TargetKind targetKind(String hook) {
+        return switch (hook) {
+            case "KILL", "BREED", "SHEAR", "TAME", "DAMAGE", "INTERACT_ENTITY" -> TargetKind.ENTITY;
+            case "MINE", "PLACE", "INTERACT_BLOCK", "HARVEST" -> TargetKind.BLOCK;
+            case "VISIT" -> TargetKind.DIMENSION;
+            case "STAT" -> TargetKind.STAT;
+            case "ADVANCEMENT" -> TargetKind.ADVANCEMENT;
+            case "CLIP" -> TargetKind.TEXT;
+            case "JUMP", "PLAYTIME", "DISTANCE", "RAID", "LEVEL_UP", "SLEEP" -> TargetKind.NONE;
+            default -> TargetKind.ITEM;
+        };
+    }
     private static final String[] TIMES = {"", "day", "night"};
     private static final String[] WEATHERS = {"", "clear", "rain", "thunder"};
 
@@ -68,7 +85,7 @@ final class TasksAdminPanel {
     private boolean dirty;
     /** The made task whose card is open ({@code -1}: the list). */
     private int card = -1;
-    /** In that card, what the item picker is open for: 0 none, 1 the icon, 2 a target to add, 3 a held item to add. */
+    /** In that card, what a picker is open for: 0 none, 1 the icon, 2 an item target, 3 a held item, 4 a target from a list, 5 a biome, 6 a dimension. */
     private int picking;
 
     private String dailyCount = "";
@@ -342,32 +359,45 @@ final class TasksAdminPanel {
         body.addScrollViewChild(StaffUi.dim("gui.roll_mod.tasks.admin.card_hint"));
         body.addScrollViewChild(textRow("gui.roll_mod.tasks.admin.f.title", m.title, v -> m.title = v));
         body.addScrollViewChild(textRow("gui.roll_mod.tasks.admin.f.desc", m.desc, v -> m.desc = v));
+        body.addScrollViewChild(StaffUi.dim("gui.roll_mod.tasks.admin.f.desc_hint"));
+        body.addScrollViewChild(iconRow(m));
 
+        // What it counts: a drop-down of every hook.
         UIElement hookRow = StaffUi.row();
         hookRow.setOverflowVisible(true);
         Label hookLabel = StaffUi.text(Component.translatable("gui.roll_mod.tasks.admin.f.hook"));
         hookLabel.layout(l -> l.width(LABEL_W).height(StaffUi.ROW_H).flexShrink(0));
         hookLabel.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
-        Button hook = StaffUi.button(hookName(m.hook), 0, () -> {});
-        hook.layout(l -> l.flexBasis(0).flexGrow(1));
-        hook.setOnClick(e -> {
-            int at = List.of(HOOKS).indexOf(m.hook);
-            m.hook = HOOKS[(at + 1) % HOOKS.length];
-            hook.setText(hookName(m.hook));
+        com.lowdragmc.lowdraglib2.gui.ui.elements.Selector<String> hook = new com.lowdragmc.lowdraglib2.gui.ui.elements.Selector<>();
+        hook.setCandidateUIProvider(com.lowdragmc.lowdraglib2.gui.ui.utils.UIElementProvider.text(
+                h -> h == null ? Component.empty() : hookName(h)));
+        hook.setCandidates(List.of(HOOKS));
+        hook.setSelected(m.hook, false);
+        hook.layout(l -> l.flexBasis(0).flexGrow(1).height(StaffUi.ROW_H));
+        hook.selectorStyle(st -> st.maxItemCount(12));
+        hook.setOnValueChanged(h -> {
+            if (h == null || h.equals(m.hook)) return;
+            m.hook = h;
             dirty = true;
+            rebuild = true; // the target row changes with it
         });
         hookRow.addChildren(hookLabel, hook);
         body.addScrollViewChild(hookRow);
 
-        UIElement targetRow = textRow("gui.roll_mod.tasks.admin.f.target", m.target, v -> m.target = v);
-        targetRow.setOverflowVisible(true);
-        targetRow.addChild(StaffUi.button("gui.roll_mod.tasks.admin.f.add_item", 60, () -> {
-            picking = 2;
-            rebuild = true;
-        }));
-        body.addScrollViewChild(targetRow);
-        body.addScrollViewChild(StaffUi.dim("gui.roll_mod.tasks.admin.f.target_hint"));
-        body.addScrollViewChild(switchRow("gui.roll_mod.tasks.admin.f.one_a_day", m.oneADay, v -> m.oneADay = v));
+        TargetKind kind = targetKind(m.hook);
+        if (kind != TargetKind.NONE) {
+            UIElement targetRow = textRow("gui.roll_mod.tasks.admin.f.target", m.target, v -> m.target = v);
+            targetRow.setOverflowVisible(true);
+            if (kind != TargetKind.TEXT) {
+                targetRow.addChild(StaffUi.button("gui.roll_mod.tasks.admin.f.pick", 60, () -> {
+                    picking = kind == TargetKind.ITEM ? 2 : 4;
+                    rebuild = true;
+                }));
+            }
+            body.addScrollViewChild(targetRow);
+            body.addScrollViewChild(StaffUi.dim("gui.roll_mod.tasks.admin.f.target_hint"));
+            body.addScrollViewChild(switchRow("gui.roll_mod.tasks.admin.f.one_a_day", m.oneADay, v -> m.oneADay = v));
+        }
         body.addScrollViewChild(textRow("gui.roll_mod.tasks.admin.f.amount", edit.amount, v -> edit.amount = v));
         body.addScrollViewChild(textRow("gui.roll_mod.tasks.admin.f.weight", edit.weight, v -> edit.weight = v));
         body.addScrollViewChild(switchRow("gui.roll_mod.tasks.admin.f.scales", m.scales, v -> m.scales = v));
@@ -377,11 +407,23 @@ final class TasksAdminPanel {
 
         body.addScrollViewChild(StaffUi.header("gui.roll_mod.tasks.admin.cond"));
         body.addScrollViewChild(StaffUi.dim("gui.roll_mod.tasks.admin.cond_hint"));
-        body.addScrollViewChild(textRow("gui.roll_mod.tasks.admin.cond.dimension", m.dimension, v -> m.dimension = v));
-        body.addScrollViewChild(textRow("gui.roll_mod.tasks.admin.cond.biome", m.biome, v -> m.biome = v));
+        UIElement dimRow = textRow("gui.roll_mod.tasks.admin.cond.dimension", m.dimension, v -> m.dimension = v);
+        dimRow.setOverflowVisible(true);
+        dimRow.addChild(StaffUi.button("gui.roll_mod.tasks.admin.f.pick", 60, () -> {
+            picking = 6;
+            rebuild = true;
+        }));
+        body.addScrollViewChild(dimRow);
+        UIElement biomeRow = textRow("gui.roll_mod.tasks.admin.cond.biome", m.biome, v -> m.biome = v);
+        biomeRow.setOverflowVisible(true);
+        biomeRow.addChild(StaffUi.button("gui.roll_mod.tasks.admin.f.pick", 60, () -> {
+            picking = 5;
+            rebuild = true;
+        }));
+        body.addScrollViewChild(biomeRow);
         UIElement heldRow = textRow("gui.roll_mod.tasks.admin.cond.held", m.held, v -> m.held = v);
         heldRow.setOverflowVisible(true);
-        heldRow.addChild(StaffUi.button("gui.roll_mod.tasks.admin.f.add_item", 60, () -> {
+        heldRow.addChild(StaffUi.button("gui.roll_mod.tasks.admin.f.pick", 60, () -> {
             picking = 3;
             rebuild = true;
         }));
@@ -393,7 +435,6 @@ final class TasksAdminPanel {
         body.addScrollViewChild(switchRow("gui.roll_mod.tasks.admin.cond.sneaking", m.sneaking, v -> m.sneaking = v));
         body.addScrollViewChild(StaffUi.header("gui.roll_mod.tasks.admin.look"));
         body.addScrollViewChild(modRow(m));
-        body.addScrollViewChild(iconRow(m));
 
         UIElement buttons = StaffUi.row();
         buttons.layout(l -> l.marginTop(6));
@@ -493,6 +534,10 @@ final class TasksAdminPanel {
     private void picker() {
         TaskSettings.Made m = made.get(card).m;
         int what = picking;
+        if (what >= 4) {
+            listPicker(m, what);
+            return;
+        }
         UIElement holder = new UIElement();
         holder.layout(l -> l.flexDirection(dev.vfyjxf.taffy.style.FlexDirection.COLUMN).widthPercent(100));
         holder.setOverflowVisible(true);
@@ -518,6 +563,136 @@ final class TasksAdminPanel {
             picking = 0;
             rebuild = true;
         }).show();
+    }
+
+
+    /** One choice in the searchable list: what goes into the field, how it reads, and an item to show by it. */
+    private record Choice(String id, Component name, ItemStack icon) {}
+
+    /**
+     * A searchable list to pick from, in place of the card: creatures, blocks, dimensions, statistics or advancements
+     * for the target (4), biomes (5) or dimensions (6) for the conditions. Tags come first with a #. Clicking one adds it
+     * to the field (comma-separated) and goes back to the card.
+     */
+    private void listPicker(TaskSettings.Made m, int what) {
+        TargetKind kind = what == 5 ? null : what == 6 ? TargetKind.DIMENSION : targetKind(m.hook);
+        List<Choice> all = choices(kind);
+        body.addScrollViewChild(StaffUi.header(what == 5 ? "gui.roll_mod.tasks.admin.cond.biome"
+                : what == 6 ? "gui.roll_mod.tasks.admin.cond.dimension" : "gui.roll_mod.tasks.admin.f.target"));
+        TextField query = new TextField();
+        query.setText("", false);
+        query.layout(l -> l.widthPercent(100).height(StaffUi.ROW_H).flexShrink(0));
+        query.textFieldStyle(t -> t.placeholder(Component.translatable("gui.roll_mod.tasks.admin.search")));
+        UIElement results = new UIElement();
+        results.layout(l -> l.flexDirection(dev.vfyjxf.taffy.style.FlexDirection.COLUMN).widthPercent(100));
+        results.setOverflowVisible(true);
+        java.util.function.Consumer<String> fill = q -> {
+            results.clearAllChildren();
+            String needle = q.strip().toLowerCase(Locale.ROOT);
+            int shown = 0;
+            for (Choice c : all) {
+                if (!needle.isEmpty() && !c.id().toLowerCase(Locale.ROOT).contains(needle)
+                        && !c.name().getString().toLowerCase(Locale.ROOT).contains(needle)) continue;
+                if (++shown > 150) break;
+                UIElement row = StaffUi.row();
+                row.setOverflowVisible(true);
+                UIElement icon = new UIElement();
+                icon.layout(l -> l.width(16).height(16).flexShrink(0).marginRight(3));
+                if (!c.icon().isEmpty()) {
+                    icon.style(st -> st.background(new com.lowdragmc.lowdraglib2.gui.texture.ItemStackTexture(c.icon())));
+                }
+                Button pick = StaffUi.button(c.name().copy().append(Component.literal("  " + c.id()).withStyle(ChatFormatting.GRAY)), 0, () -> {
+                    switch (what) {
+                        case 5 -> m.biome = add(m.biome, c.id());
+                        case 6 -> m.dimension = c.id(); // one dimension: the player is in only one
+                        default -> m.target = add(m.target, c.id());
+                    }
+                    dirty = true;
+                    picking = 0;
+                    rebuild = true;
+                });
+                pick.layout(l -> l.flexBasis(0).flexGrow(1));
+                StaffUi.leftCaption(pick);
+                row.addChildren(icon, pick);
+                results.addChild(row);
+            }
+            if (shown == 0) results.addChild(StaffUi.dim("gui.roll_mod.tasks.admin.pick_none"));
+        };
+        query.setTextResponder(fill::accept);
+        fill.accept("");
+        Button back = StaffUi.button("gui.roll_mod.tasks.admin.back", 70, () -> {
+            picking = 0;
+            rebuild = true;
+        });
+        body.addScrollViewChild(query);
+        body.addScrollViewChild(back);
+        body.addScrollViewChild(results);
+    }
+
+    private static String add(String field, String id) {
+        return field == null || field.isBlank() ? id : field.strip() + ", " + id;
+    }
+
+    /** What may be picked for {@code kind} (null: biomes), tags first. */
+    private static List<Choice> choices(TargetKind kind) {
+        List<Choice> out = new ArrayList<>();
+        var mc = net.minecraft.client.Minecraft.getInstance();
+        var connection = mc.getConnection();
+        if (kind == null) {
+            if (connection == null) return out;
+            var biomes = connection.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.BIOME);
+            biomes.getTagNames().map(t -> t.location()).sorted().forEach(rl ->
+                    out.add(new Choice("#" + rl, Component.literal("#" + rl.getPath()).withStyle(ChatFormatting.AQUA), ItemStack.EMPTY)));
+            biomes.keySet().stream().sorted().forEach(rl -> out.add(new Choice(rl.toString(),
+                    Component.translatable("biome." + rl.getNamespace() + "." + rl.getPath()), ItemStack.EMPTY)));
+            return out;
+        }
+        switch (kind) {
+            case ENTITY -> {
+                var reg = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE;
+                reg.getTagNames().map(t -> t.location()).sorted().forEach(rl ->
+                        out.add(new Choice("#" + rl, Component.literal("#" + rl.getPath()).withStyle(ChatFormatting.AQUA), ItemStack.EMPTY)));
+                for (var type : reg) {
+                    net.minecraft.world.item.SpawnEggItem egg = net.minecraft.world.item.SpawnEggItem.byId(type);
+                    if (egg == null && type.getCategory() == net.minecraft.world.entity.MobCategory.MISC) continue;
+                    out.add(new Choice(reg.getKey(type).toString(), type.getDescription(),
+                            egg == null ? ItemStack.EMPTY : new ItemStack(egg)));
+                }
+            }
+            case BLOCK -> {
+                var reg = net.minecraft.core.registries.BuiltInRegistries.BLOCK;
+                reg.getTagNames().map(t -> t.location()).sorted().forEach(rl ->
+                        out.add(new Choice("#" + rl, Component.literal("#" + rl.getPath()).withStyle(ChatFormatting.AQUA), ItemStack.EMPTY)));
+                for (var block : reg) {
+                    if (block == net.minecraft.world.level.block.Blocks.AIR) continue;
+                    out.add(new Choice(reg.getKey(block).toString(), block.getName(), new ItemStack(block.asItem())));
+                }
+            }
+            case DIMENSION -> {
+                if (connection != null) {
+                    connection.levels().stream().map(k -> k.location()).sorted().forEach(rl -> out.add(new Choice(rl.toString(),
+                            Component.literal(rl.getPath()), ItemStack.EMPTY)));
+                }
+            }
+            case STAT -> net.minecraft.core.registries.BuiltInRegistries.CUSTOM_STAT.keySet().stream().sorted().forEach(rl ->
+                    out.add(new Choice(rl.toString(), Component.translatable("stat." + rl.toString().replace(':', '.')), ItemStack.EMPTY)));
+            case ADVANCEMENT -> {
+                if (connection != null) {
+                    for (var node : connection.getAdvancements().getTree().nodes()) {
+                        var holder = node.holder();
+                        if (holder.id().getPath().startsWith("recipes/")) continue;
+                        var display = holder.value().display().orElse(null);
+                        out.add(new Choice(holder.id().toString(),
+                                display == null ? Component.literal(holder.id().getPath()) : display.getTitle(),
+                                display == null ? ItemStack.EMPTY : display.getIcon()));
+                    }
+                    out.sort(java.util.Comparator.comparing(Choice::id));
+                }
+            }
+            default -> {
+            }
+        }
+        return out;
     }
 
     /** A label and an on/off button ("Так" / "Ні"). */

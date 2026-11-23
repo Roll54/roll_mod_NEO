@@ -316,6 +316,20 @@ public final class KitService {
         return true;
     }
 
+    /** Forgets every player's last claim of a kit, from the moderation tab: everyone may take it again now. */
+    public static boolean resetTimers(ServerPlayer player, String rawName) {
+        if (!mayRename(player)) return false;
+        Kit kit = KitStore.byName(player.server, rawName);
+        if (kit == null) {
+            refuse(player, "msg.roll_mod.kit.unknown", rawName);
+            return false;
+        }
+        KitCooldowns.forget(kit.name());
+        player.sendSystemMessage(Component.translatable("msg.roll_mod.kit.timersReset", kit.name()));
+        KitViewers.resync(player.server);
+        return true;
+    }
+
     /** Moves a kit one place up (-1) or down (+1) in the list every player sees. */
     public static boolean move(ServerPlayer player, String rawName, int delta) {
         if (!mayRename(player)) return false;

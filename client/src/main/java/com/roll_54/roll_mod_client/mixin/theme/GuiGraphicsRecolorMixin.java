@@ -10,6 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import com.llamalad7.mixinextras.sugar.Local;
 
 import java.util.function.Supplier;
 
@@ -31,8 +32,9 @@ public abstract class GuiGraphicsRecolorMixin {
             at = @At(value = "INVOKE",
                     target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShader(Ljava/util/function/Supplier;)V"),
             require = 0)
-    private void roll_mod$recolor(Supplier<ShaderInstance> shader, Operation<Void> original) {
-        original.call(GuiRecolor.pick(shader, false));
+    private void roll_mod$recolor(Supplier<ShaderInstance> shader, Operation<Void> original,
+                                  @Local(argsOnly = true) ResourceLocation texture) {
+        original.call(GuiRecolor.keepsOwnColours(texture) ? shader : GuiRecolor.pick(shader, false));
     }
 
     @WrapOperation(
@@ -40,8 +42,9 @@ public abstract class GuiGraphicsRecolorMixin {
             at = @At(value = "INVOKE",
                     target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShader(Ljava/util/function/Supplier;)V"),
             require = 0)
-    private void roll_mod$recolorTinted(Supplier<ShaderInstance> shader, Operation<Void> original) {
-        original.call(GuiRecolor.pick(shader, true));
+    private void roll_mod$recolorTinted(Supplier<ShaderInstance> shader, Operation<Void> original,
+                                        @Local(argsOnly = true) ResourceLocation texture) {
+        original.call(GuiRecolor.keepsOwnColours(texture) ? shader : GuiRecolor.pick(shader, true));
     }
 
     /**
