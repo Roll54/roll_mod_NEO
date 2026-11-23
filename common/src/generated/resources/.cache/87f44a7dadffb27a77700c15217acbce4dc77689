@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-22T08:26:52.974298633	Tags for minecraft:item mod id roll_mod
+// 1.21.1	2026-11-22T23:04:19.445274882	Tags for minecraft:item mod id roll_mod
 86c027ee359f63ead5663d6ec9769fc4251b4cab data/c/tags/item/antimony.json
 1510cca7a87081ff56ab1224106ebe72251f0764 data/c/tags/item/apatite.json
 49cace2bd2dea4c0c2706f98316f49ef41ebeea3 data/c/tags/item/armors.json
@@ -340,6 +340,7 @@ c8f117606a7a0acff1bbcf4a4000752ca57cc38d data/minecraft/tags/item/pickaxes.json
 2f4c10194cd507857aff1e5ecb156931f655155e data/minecraft/tags/item/swords.json
 aba018eaac77a699795eb7854bd76202c4d83ec3 data/minecraft/tags/item/trimmable_armor.json
 172184474eabfdac38e60377f627f8535f3e5f2d data/roll_mod/tags/item/antimony_ore_in_mercury.json
+4b70b2e085f05373a770789a9ed1c0bcddfab18e data/roll_mod/tags/item/antimony_ore_in_venus.json
 5356d1a5a5d05ef669c7d7b94599cc8988e67934 data/roll_mod/tags/item/apatite_ore_in_moon.json
 b711ea92b85a53bad16df38ae6b9b43e3bb10bb1 data/roll_mod/tags/item/apatite_ore_in_venus.json
 50ca54de4d687aec0dbb149a9fdab054a5a4c9c3 data/roll_mod/tags/item/azure_silver_ore_in_end.json

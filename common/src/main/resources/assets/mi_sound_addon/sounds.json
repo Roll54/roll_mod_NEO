@@ -1,0 +1,32 @@
+{
+    "photolithographer": {
+        "category": "block",
+        "sounds": [
+            "mi_sound_addon:laser_engraver"
+        ]
+    },
+    "rocket_assembler": {
+        "category": "block",
+        "sounds": [
+            "mi_sound_addon:assembler"
+        ]
+    },
+    "large_chemical_reactor": {
+        "category": "block",
+        "sounds": [
+            "mi_sound_addon:chemical_reactor"
+        ]
+    },
+    "srs": {
+        "category": "block",
+        "sounds": [
+            "mi_sound_addon:srs"
+        ]
+    },
+    "pyrolyse_oven": {
+        "category": "block",
+        "sounds": [
+            "mi_sound_addon:pyrolyse_oven"
+        ]
+    }
+}

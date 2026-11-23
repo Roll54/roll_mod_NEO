@@ -1,0 +1,22 @@
+{
+  "item.sophisticatedbackpacks.copper_backpack": "Ранець рангу «Бронза»",
+  "item.sophisticatedbackpacks.iron_backpack": "Ранець рангу «Сталь»",
+  "item.sophisticatedbackpacks.gold_backpack": "Ранець рангу «Алюміній»",
+  "item.sophisticatedbackpacks.diamond_backpack": "Ранець рангу «Нержавіюча сталь»",
+  "item.sophisticatedbackpacks.netherite_backpack": "Ранець рангу «Титан»",
+  "block.sophisticatedbackpacks.copper_backpack": "Ранець рангу «Бронза»",
+  "block.sophisticatedbackpacks.iron_backpack": "Ранець рангу «Сталь»",
+  "block.sophisticatedbackpacks.gold_backpack": "Ранець рангу «Алюміній»",
+  "block.sophisticatedbackpacks.diamond_backpack": "Ранець рангу «Нержавіюча сталь»",
+  "block.sophisticatedbackpacks.netherite_backpack": "Ранець рангу «Титан»",
+  "sophisticatedbackpacks.configuration.copperBackpack": "Ранець рангу «Бронза»",
+  "sophisticatedbackpacks.configuration.ironBackpack": "Ранець рангу «Сталь»",
+  "sophisticatedbackpacks.configuration.goldBackpack": "Ранець рангу «Алюміній»",
+  "sophisticatedbackpacks.configuration.diamondBackpack": "Ранець рангу «Нержавіюча сталь»",
+  "sophisticatedbackpacks.configuration.netheriteBackpack": "Ранець рангу «Титан»",
+  "sophisticatedbackpacks.configuration.copperWeight": "Вага бронзи",
+  "sophisticatedbackpacks.configuration.ironWeight": "Вага сталі",
+  "sophisticatedbackpacks.configuration.goldWeight": "Вага алюмінію",
+  "sophisticatedbackpacks.configuration.diamondWeight": "Вага нержавійної сталі",
+  "sophisticatedbackpacks.configuration.netheriteWeight": "Вага титану"
+}

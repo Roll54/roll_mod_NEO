@@ -45,6 +45,14 @@ import org.jetbrains.annotations.Nullable;
  */
 public final class CropManagerUI {
 
+    /** The id on every Crop Manager tier's root element. */
+    public static final String ROOT_ID = "roll_mod_crop_manager";
+
+    /** Whether {@code ui} is a Crop Manager's screen. */
+    public static boolean isCropManager(@Nullable com.lowdragmc.lowdraglib2.gui.ui.ModularUI ui) {
+        return ui != null && ui.getElementById(ROOT_ID) != null;
+    }
+
     /** The narrowest the window gets; tiers with more tanks are wider. */
     public static final int MIN_PANEL_WIDTH = 176;
     public static final int PANEL_HEIGHT = 184;
@@ -65,7 +73,8 @@ public final class CropManagerUI {
     private static final int TANK_HEIGHT = GRID_ROWS * SLOT;
     private static final int ENERGY_X = 8;
     private static final int ENERGY_Y = 82;
-    private static final int ENERGY_WIDTH = 160;
+    /** As wide as the inventory under it (9 slots), so their edges line up. */
+    private static final int ENERGY_WIDTH = 9 * SLOT;
     private static final int ENERGY_HEIGHT = 14;
     private static final int INVENTORY_X = 8;
     private static final int INVENTORY_Y = 102;
@@ -102,6 +111,8 @@ public final class CropManagerUI {
         // plate would never be seen. paddingAll(0) because .panel_bg carries padding-all: 5, and
         // every child below is placed at an absolute pixel coordinate measured without it.
         UIElement root = VendorUIHelper.styledPanel(panelWidth, PANEL_HEIGHT);
+        // Marks the screen as a Crop Manager's, so the recipe browser stays off it (HubScreens.hidesRecipeBrowser).
+        root.setId(ROOT_ID);
         root.layout(l -> l.paddingAll(0));
         // The settings window hangs off the right edge of the panel; without this it is clipped away.
         root.style(style -> style.overflowVisible(true));

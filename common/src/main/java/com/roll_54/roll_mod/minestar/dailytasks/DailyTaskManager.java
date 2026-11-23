@@ -258,6 +258,7 @@ public final class DailyTaskManager {
     private static List<String> pick(Random rng, int count) {
         List<DailyTask> shuffled = new ArrayList<>(DailyTaskRegistry.all());
         shuffled.removeIf(DailyTask::battlePassOnly); // the battle pass's own challenges never land on the board
+        shuffled.removeIf(t -> TaskSettings.dailyDisabled(t.id())); // switched off in the Moderation tab's task editor
         Collections.shuffle(shuffled, rng);
         onePerFish(shuffled);
 
@@ -282,6 +283,7 @@ public final class DailyTaskManager {
      * when no reward is registered, which the GUI shows as an empty panel.
      */
     private static String pickReward(Random rng) {
+        DailyRewardConfig.get(); // the configured bonuses, laid over the registry the first time
         // Retired rewards (DailyReward.drawable) stay registered but are never drawn.
         List<DailyReward> rewards = DailyRewardRegistry.all().stream().filter(DailyReward::drawable).toList();
         if (rewards.isEmpty()) return "";
@@ -599,6 +601,7 @@ public final class DailyTaskManager {
     private static String pickReplacement(DailyTasksState.GroupState gs, int index, Random rng) {
         List<DailyTask> shuffled = new ArrayList<>(DailyTaskRegistry.all());
         shuffled.removeIf(DailyTask::battlePassOnly); // the battle pass's own challenges never land on the board
+        shuffled.removeIf(t -> TaskSettings.dailyDisabled(t.id())); // switched off in the Moderation tab's task editor
         Collections.shuffle(shuffled, rng);
         onePerFish(shuffled);
 
@@ -665,7 +668,7 @@ public final class DailyTaskManager {
 
         for (int i = 0; i < gs.taskCount(); i++) {
             DailyTask task = DailyTaskRegistry.byId(gs.taskIds.get(i));
-            if (task == null || task.hook() != hook || gs.completed[i] || !task.matches(subject)) {
+            if (task == null || task.hook() != hook || gs.completed[i] || !task.matches(subject) || !task.allowedFor(player)) {
                 continue;
             }
 

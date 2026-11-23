@@ -88,6 +88,7 @@ public final class ThemeSheets {
         AE2_WIDGETS.clear();
         gdpSquare = null;
         GDP_SLOTS[0] = GDP_SLOTS[1] = null;
+        VANILLA_SLOTS.clear();
         oreRounded = null;
         generation++;
     }
@@ -287,13 +288,59 @@ public final class ThemeSheets {
         return oreRounded;
     }
 
+    private static final Map<UiTheme, Stylesheet> VANILLA_SLOTS = new HashMap<>();
+
+    /** The fill of the {@code roll_energy_bar} progress bars: MI's energy red, a lighter band along the top. */
+    private static final String ENERGY_FILL = "group(rect(#b0362a), rect(#d4533f) scale(1, 0.25) translate(0, -4.5))";
+
+    /**
+     * Slots drawn as the player's own inventory draws them: vanilla's bevelled slot in the theme's recolour
+     * ({@link VanillaSlotTexture}), nine-sliced so tanks of any size get the same 1px bevel. The energy bars marked
+     * {@code roll_energy_bar} (MI energy on MBD2 machines) sit in the same well, filled in a flat energy red.
+     * Null for a theme without a recolour.
+     */
+    public static synchronized Stylesheet vanillaSlots(UiTheme theme) {
+        UiTheme.Recolor recolor = theme.recolor();
+        if (recolor == null) return null;
+        return VANILLA_SLOTS.computeIfAbsent(theme, t -> {
+            String well = "sprite(" + VanillaSlotTexture.of(t, recolor) + ", 0, 0, 3, 3, 1, 1, 1, 1)";
+            String text = String.format("#%06x", recolor.text() & 0xFFFFFF);
+            return Stylesheet.parse("""
+                    item-slot,
+                    .item-slot_bg,
+                    fluid-slot,
+                    .fluid-slot_bg {
+                      background: %1$s;
+                    }
+                    .roll_energy_bar .__progress-bar_bar-container__ {
+                      background: %1$s;
+                      padding-all: 1;
+                    }
+                    .roll_energy_bar .__progress-bar_bar-background__ {
+                      background: empty;
+                    }
+                    .roll_energy_bar .__progress-bar_bar__ {
+                      background: %2$s;
+                    }
+                    .roll_energy_bar label {
+                      text-color: %3$s;
+                      text-shadow: true;
+                    }
+                    """.formatted(well, ENERGY_FILL, text));
+        });
+    }
+
     private static final Stylesheet[] GDP_SLOTS = new Stylesheet[2];
 
     /**
      * GDP's slots. Its sheet styles none, so they fell through to the MC sheet's light vanilla square, which sat on
      * GDP's dark panel like a hole punched through it (the Crop Manager, every machine screen). GDP's own dark inset
      * instead, square or rounded as the corners are.
+     *
+     * @deprecated replaced by {@link #vanillaSlots}: the rounded insets read as custom slots, unlike the player's
+     *             inventory. Kept, not deleted, per the project's rule on deprecated code.
      */
+    @Deprecated
     public static synchronized Stylesheet gdpSlots(boolean square) {
         int i = square ? 1 : 0;
         if (GDP_SLOTS[i] == null) {

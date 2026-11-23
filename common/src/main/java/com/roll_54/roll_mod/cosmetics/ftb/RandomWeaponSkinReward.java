@@ -31,9 +31,10 @@ public class RandomWeaponSkinReward extends Reward {
     }
 
     @Override
-    public void claim(ServerPlayer player, boolean notify) {
+    public boolean claim(ServerPlayer player, boolean notify) {
         // Opened like a case: the client spins a strip of skins and stops on the one unlocked.
         com.roll_54.roll_mod.cosmetics.SkinRoll.roll(player, SkinCategory.SWORD);
+        return true;
     }
 
     @Override

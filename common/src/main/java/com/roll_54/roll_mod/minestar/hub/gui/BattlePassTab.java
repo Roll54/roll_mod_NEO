@@ -434,6 +434,27 @@ public final class BattlePassTab {
         return line;
     }
 
+    /** How long a choice reward shows each of its options before the next. */
+    private static final long CHOICE_CYCLE_MS = 1500;
+
+    /** The option a choice of {@code count} options shows right now; all boxes turn together. */
+    private static int choiceIndex(int count) {
+        return (int) ((System.currentTimeMillis() / CHOICE_CYCLE_MS) % count);
+    }
+
+    /** One reward's icon: its item, or the starcoin for money; faded once claimed. */
+    private static IGuiTexture optionTexture(String spec, boolean claimed) {
+        ItemStack stack = BattlePassReward.stack(spec);
+        IGuiTexture texture = stack.isEmpty() ? MONEY.texture : new ItemStackTexture(stack.copyWithCount(1));
+        return claimed ? texture.copy().setColor(0x80FFFFFF) : texture;
+    }
+
+    /** The number under a reward: its item count above one, or its money in short form. */
+    private static String countText(String spec) {
+        ItemStack stack = BattlePassReward.stack(spec);
+        return stack.isEmpty() ? compact(money(spec)) : stack.getCount() > 1 ? String.valueOf(stack.getCount()) : "";
+    }
+
     /** One level's box, centred on ({@code cx}, {@code cy}): opaque, framed by state, clicked to claim when ready. */
     private static UIElement node(int level, boolean prime, String spec, int cx, int cy, boolean claimed,
                                   boolean reached, boolean gated, boolean allowed, int size, ChoicePicker picker) {
@@ -470,29 +491,50 @@ public final class BattlePassTab {
                     .width(iconSize).height(iconSize));
             picture.setAllowHitTest(false);
             box.addChild(picture);
+        } else if (choice && options.size() > 1) {
+            // A choice cycles through its options, one at a time ({@link #CHOICE_CYCLE_MS} each).
+            List<IGuiTexture> textures = new ArrayList<>();
+            for (String option : options) textures.add(optionTexture(option, claimed));
+            icon.style(s -> s.background(IGuiTexture.dynamic(() -> textures.get(choiceIndex(options.size())))));
+            icon.setAllowHitTest(false);
+            box.addChild(icon);
         } else {
-            IGuiTexture texture = stack.isEmpty() ? MONEY.texture : new ItemStackTexture(stack.copyWithCount(1));
-            icon.style(s -> s.background(claimed ? texture.copy().setColor(0x80FFFFFF) : texture));
+            IGuiTexture texture = optionTexture(shown, claimed);
+            icon.style(s -> s.background(texture));
             icon.setAllowHitTest(false);
             box.addChild(icon);
         }
-        String countText = skin ? "" : stack.isEmpty() ? compact(money(shown)) : stack.getCount() > 1 ? String.valueOf(stack.getCount()) : "";
-        if (choice) {
-            // A choice: "1/3" in the corner — this is one of several, picked when claiming.
+        if (choice && !options.isEmpty()) {
+            // A choice: "2/3" in the corner — which of its options is showing; one is picked when claiming.
             Label mark = new Label();
             mark.setText(Component.literal("1/" + options.size()).withStyle(ChatFormatting.AQUA));
             mark.layout(l -> l.positionType(TaffyPosition.ABSOLUTE).left(3).top(3).width(size - 6).height(8));
             mark.textStyle(t -> t.textAlignHorizontal(Horizontal.RIGHT));
             mark.setAllowHitTest(false);
             box.addChild(mark);
-        }
-        if (!countText.isEmpty()) {
             Label count = new Label();
-            count.setText(Component.literal(countText));
+            count.setText(Component.literal(countText(options.get(0))));
             count.layout(l -> l.positionType(TaffyPosition.ABSOLUTE).left(0).top(size - 10).width(size - 3).height(8));
             count.textStyle(t -> t.textAlignHorizontal(Horizontal.RIGHT));
             count.setAllowHitTest(false);
             box.addChild(count);
+            box.addEventListener(UIEvents.TICK, e -> {
+                int i = choiceIndex(options.size());
+                Component markText = Component.literal((i + 1) + "/" + options.size()).withStyle(ChatFormatting.AQUA);
+                if (!markText.equals(mark.getText())) mark.setText(markText);
+                Component countValue = Component.literal(countText(options.get(i)));
+                if (!countValue.equals(count.getText())) count.setText(countValue);
+            });
+        } else {
+            String countText = skin ? "" : countText(shown);
+            if (!countText.isEmpty()) {
+                Label count = new Label();
+                count.setText(Component.literal(countText));
+                count.layout(l -> l.positionType(TaffyPosition.ABSOLUTE).left(0).top(size - 10).width(size - 3).height(8));
+                count.textStyle(t -> t.textAlignHorizontal(Horizontal.RIGHT));
+                count.setAllowHitTest(false);
+                box.addChild(count);
+            }
         }
         if (claimed) {
             Label mark = new Label();

@@ -46,6 +46,25 @@ final class DailyRewardsAdminPanel {
     /** In that card, what the item picker is open on: {@code -1} the base item, {@code 0..6} a stage; null for none. */
     private Integer editing;
 
+    /** One all-tasks-done bonus as the editor holds it. */
+    private static final class Bonus {
+        String id;
+        String weight;
+        final List<String> payout;
+
+        Bonus(String id, String weight, List<String> payout) {
+            this.id = id;
+            this.weight = weight;
+            this.payout = new ArrayList<>(payout);
+        }
+    }
+
+    private final List<Bonus> bonuses = new ArrayList<>();
+    /** The bonus whose card is open ({@code -1}: none). */
+    private int bonusEntry = -1;
+    /** In that card, the payout line the picker is open on ({@code -1}: a new line); null for none. */
+    private Integer bonusEditing;
+
     DailyRewardsAdminPanel(UIElement pane, boolean client) {
         this.client = client;
         pane.addChild(body);
@@ -56,6 +75,8 @@ final class DailyRewardsAdminPanel {
         dirty = false;
         editing = null;
         entry = -1;
+        bonusEntry = -1;
+        bonusEditing = null;
         PacketDistributor.sendToServer(new BattlePassPackets.Act("daily/get", new CompoundTag()));
     }
 
@@ -75,10 +96,23 @@ final class DailyRewardsAdminPanel {
         rows.clear();
         for (String[] row : DailyRewardConfig.rows(tag)) rows.add(row.clone());
         if (entry >= rows.size()) entry = -1;
+        bonuses.clear();
+        for (DailyRewardConfig.BonusEntry b : DailyRewardConfig.bonusRows(tag)) {
+            bonuses.add(new Bonus(b.id, String.valueOf(b.weight), b.payout));
+        }
+        if (bonusEntry >= bonuses.size()) bonusEntry = -1;
     }
 
     private void build() {
         body.clearAllScrollViewChildren();
+        if (bonusEntry >= 0 && bonusEditing != null) {
+            bonusPicker();
+            return;
+        }
+        if (bonusEntry >= 0) {
+            bonusCard();
+            return;
+        }
         if (entry >= 0 && editing != null) {
             itemPicker();
             return;
@@ -144,7 +178,218 @@ final class DailyRewardsAdminPanel {
         });
         add.layout(l -> l.marginTop(3));
         body.addScrollViewChild(add);
+        bonusList();
         body.addScrollViewChild(saveRow());
+    }
+
+    /* ---------------------------------------------- the daily bonus ---------------------------------------------- */
+
+    /** The all-tasks-done bonus draw: one row per bonus, its payout as icons, its weight. */
+    private void bonusList() {
+        UIElement header = StaffUi.header("gui.roll_mod.dailies.admin.bonus");
+        header.layout(l -> l.marginTop(6));
+        body.addScrollViewChild(header);
+        body.addScrollViewChild(StaffUi.dim("gui.roll_mod.dailies.admin.bonus_hint"));
+        for (int i = 0; i < bonuses.size(); i++) {
+            int index = i;
+            Bonus bonus = bonuses.get(i);
+            UIElement line = StaffUi.row();
+            line.setOverflowVisible(true);
+            line.addChild(preview(bonus.payout.isEmpty() ? "" : previewSpec(bonus.payout.getFirst())));
+            Button open = StaffUi.button(summary(bonus), 0, () -> {
+                bonusEntry = index;
+                rebuild = true;
+            });
+            open.layout(l -> l.flexBasis(0).flexGrow(1));
+            StaffUi.leftCaption(open);
+            Label weightLabel = StaffUi.text(Component.translatable("gui.roll_mod.dailies.admin.weight"));
+            weightLabel.layout(l -> l.width(44).height(StaffUi.ROW_H).flexShrink(0));
+            weightLabel.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+            TextField weight = new TextField();
+            weight.setText(bonus.weight);
+            weight.layout(l -> l.width(36).height(StaffUi.ROW_H).flexShrink(0));
+            weight.setTextResponder(t -> {
+                bonus.weight = t.strip();
+                dirty = true;
+            });
+            Button remove = StaffUi.button(Component.literal("✕"), 16, () -> {
+                bonuses.remove(index);
+                dirty = true;
+                rebuild = true;
+            });
+            line.addChildren(open, weightLabel, weight, remove);
+            body.addScrollViewChild(line);
+        }
+        Button add = StaffUi.button("gui.roll_mod.dailies.admin.bonus_add", 120, () -> {
+            bonuses.add(new Bonus("bonus_" + System.currentTimeMillis() % 100000, "1", List.of()));
+            dirty = true;
+            bonusEntry = bonuses.size() - 1;
+            bonusEditing = -1;
+            rebuild = true;
+        });
+        add.layout(l -> l.marginTop(3));
+        body.addScrollViewChild(add);
+    }
+
+    /** "8-16 × Iron Ingot, 2500 starcoins…": the bonus's payout in one line. */
+    private static Component summary(Bonus bonus) {
+        if (bonus.payout.isEmpty()) {
+            return Component.translatable("gui.roll_mod.dailies.admin.bonus_empty").withStyle(ChatFormatting.GRAY);
+        }
+        net.minecraft.network.chat.MutableComponent out = Component.empty();
+        for (int i = 0; i < bonus.payout.size(); i++) {
+            if (i > 0) out.append(", ");
+            out.append(describeLine(bonus.payout.get(i)));
+        }
+        return out;
+    }
+
+    /** One bonus's card: each payout line with its amount range, and a way to add one. */
+    private void bonusCard() {
+        Bonus bonus = bonuses.get(bonusEntry);
+        UIElement top = StaffUi.row();
+        top.setOverflowVisible(true);
+        Label title = StaffUi.text(Component.translatable("gui.roll_mod.dailies.admin.bonus_card").withStyle(ChatFormatting.YELLOW));
+        title.layout(l -> l.flexBasis(0).flexGrow(1).height(StaffUi.ROW_H));
+        title.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+        top.addChildren(title, StaffUi.button("gui.roll_mod.dailies.admin.back", 60, () -> {
+            bonusEntry = -1;
+            rebuild = true;
+        }));
+        body.addScrollViewChild(top);
+        body.addScrollViewChild(StaffUi.dim("gui.roll_mod.dailies.admin.bonus_card_hint"));
+
+        for (int i = 0; i < bonus.payout.size(); i++) {
+            int index = i;
+            String spec = bonus.payout.get(i);
+            UIElement line = StaffUi.row();
+            line.setOverflowVisible(true);
+            line.addChild(preview(previewSpec(spec)));
+            Button pick = StaffUi.button(describeLine(spec), 0, () -> {
+                bonusEditing = index;
+                rebuild = true;
+            });
+            pick.layout(l -> l.flexBasis(0).flexGrow(1));
+            StaffUi.leftCaption(pick);
+            line.addChild(pick);
+            if (BattlePassReward.kind(spec) == BattlePassReward.Kind.ITEM) {
+                int[] range = range(spec);
+                String item = itemId(spec);
+                TextField min = new TextField();
+                min.setText(String.valueOf(range[0]));
+                min.layout(l -> l.width(28).height(StaffUi.ROW_H).flexShrink(0));
+                Label dash = StaffUi.text(Component.literal("–"));
+                dash.layout(l -> l.width(8).height(StaffUi.ROW_H).flexShrink(0));
+                dash.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
+                TextField max = new TextField();
+                max.setText(String.valueOf(range[1]));
+                max.layout(l -> l.width(28).height(StaffUi.ROW_H).flexShrink(0));
+                int[] current = range.clone();
+                min.setTextResponder(t -> {
+                    current[0] = parse(t, current[0]);
+                    bonus.payout.set(index, line(item, current[0], current[1]));
+                    dirty = true;
+                });
+                max.setTextResponder(t -> {
+                    current[1] = parse(t, current[1]);
+                    bonus.payout.set(index, line(item, current[0], current[1]));
+                    dirty = true;
+                });
+                line.addChildren(min, dash, max);
+            }
+            line.addChild(StaffUi.button(Component.literal("✕"), 16, () -> {
+                bonus.payout.remove(index);
+                dirty = true;
+                rebuild = true;
+            }));
+            body.addScrollViewChild(line);
+        }
+        Button add = StaffUi.button("gui.roll_mod.dailies.admin.bonus_add_line", 120, () -> {
+            bonusEditing = -1;
+            rebuild = true;
+        });
+        add.layout(l -> l.marginTop(3));
+        body.addScrollViewChild(add);
+        body.addScrollViewChild(saveRow());
+    }
+
+    /** The picker for one payout line: an item (its range kept) or starcoins. */
+    private void bonusPicker() {
+        Bonus bonus = bonuses.get(bonusEntry);
+        int target = bonusEditing;
+        String current = target >= 0 && target < bonus.payout.size() ? bonus.payout.get(target) : "minecraft:diamond*1";
+        UIElement holder = new UIElement();
+        holder.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100));
+        holder.setOverflowVisible(true);
+        body.addScrollViewChild(holder);
+        new BattlePassRewardEditor(holder, Component.translatable("gui.roll_mod.dailies.admin.bonus_card"),
+                previewSpec(current), false, picked -> {
+            String line = null;
+            if (BattlePassReward.kind(picked) == BattlePassReward.Kind.MONEY && BattlePassReward.money(picked) > 0) {
+                line = picked.strip();
+            } else if (BattlePassReward.kind(picked) == BattlePassReward.Kind.ITEM && !BattlePassReward.stack(picked).isEmpty()) {
+                // A new item keeps the line's range; a fresh line takes the picked count.
+                int[] range = target >= 0 && BattlePassReward.kind(current) == BattlePassReward.Kind.ITEM
+                        ? range(current) : new int[]{BattlePassReward.stack(picked).getCount(), BattlePassReward.stack(picked).getCount()};
+                line = line(itemId(picked), range[0], range[1]);
+            }
+            if (line != null) {
+                if (target >= 0 && target < bonus.payout.size()) bonus.payout.set(target, line);
+                else bonus.payout.add(line);
+                dirty = true;
+            }
+            bonusEditing = null;
+            rebuild = true;
+        }, () -> {
+            bonusEditing = null;
+            rebuild = true;
+        }).show();
+    }
+
+    /** {@code namespace:item} of an item line. */
+    private static String itemId(String spec) {
+        int star = spec.lastIndexOf('*');
+        return (star < 0 ? spec : spec.substring(0, star)).strip();
+    }
+
+    /** {@code {min, max}} of an item line; {@code *8} is {@code 8-8}, no count is one. */
+    private static int[] range(String spec) {
+        int star = spec.lastIndexOf('*');
+        if (star < 0) return new int[]{1, 1};
+        String amount = spec.substring(star + 1).strip();
+        int dash = amount.indexOf('-');
+        int min = parse(dash < 0 ? amount : amount.substring(0, dash), 1);
+        int max = dash < 0 ? min : parse(amount.substring(dash + 1), min);
+        return new int[]{min, Math.max(min, max)};
+    }
+
+    private static int parse(String text, int fallback) {
+        try {
+            return Math.max(1, Integer.parseInt(text.strip()));
+        } catch (NumberFormatException e) {
+            return fallback;
+        }
+    }
+
+    private static String line(String item, int min, int max) {
+        int lo = Math.max(1, Math.min(min, max));
+        int hi = Math.max(lo, max);
+        return lo == hi ? item + "*" + lo : item + "*" + lo + "-" + hi;
+    }
+
+    /** A spec the battle pass's helpers read: a range collapses to its lower end. */
+    private static String previewSpec(String spec) {
+        if (BattlePassReward.kind(spec) != BattlePassReward.Kind.ITEM) return spec;
+        return itemId(spec) + "*" + range(spec)[0];
+    }
+
+    private static Component describeLine(String spec) {
+        if (BattlePassReward.kind(spec) != BattlePassReward.Kind.ITEM) return BattlePassReward.describe(spec);
+        ItemStack stack = BattlePassReward.stack(previewSpec(spec));
+        if (stack.isEmpty()) return Component.literal(spec).withStyle(ChatFormatting.RED);
+        int[] range = range(spec);
+        String amount = range[0] == range[1] ? String.valueOf(range[0]) : range[0] + "-" + range[1];
+        return Component.literal(amount + " × ").append(stack.getHoverName());
     }
 
     /** One reward's card: its base item, then what it becomes from each quest stage on. */
@@ -258,6 +503,7 @@ final class DailyRewardsAdminPanel {
                 StaffUi.button("gui.roll_mod.staff.commands.revert", 70, () -> {
                     dirty = false;
                     entry = -1;
+                    bonusEntry = -1;
                     load(ClientBattlePassCache.DAILY);
                     rebuild = true;
                 }),
@@ -266,6 +512,17 @@ final class DailyRewardsAdminPanel {
                     ListTag list = new ListTag();
                     for (String[] row : rows) list.add(StringTag.valueOf(String.join("|", row)));
                     args.put("rows", list);
+                    ListTag bonusList = new ListTag();
+                    for (Bonus b : bonuses) {
+                        int w;
+                        try {
+                            w = Math.max(0, Integer.parseInt(b.weight.strip()));
+                        } catch (NumberFormatException e) {
+                            w = 1;
+                        }
+                        bonusList.add(StringTag.valueOf(DailyRewardConfig.bonusRow(b.id, w, b.payout)));
+                    }
+                    args.put("bonus", bonusList);
                     dirty = false;
                     PacketDistributor.sendToServer(new BattlePassPackets.Act("daily/set", args));
                 }));
@@ -276,7 +533,12 @@ final class DailyRewardsAdminPanel {
         UIElement preview = new UIElement();
         preview.layout(l -> l.width(16).height(16).flexShrink(0));
         ItemStack stack = BattlePassReward.stack(spec);
-        preview.style(s -> s.background(stack.isEmpty() ? IGuiTexture.EMPTY : new ItemStackTexture(stack)));
+        // Money has no item: the starcoin, as on the battle pass.
+        IGuiTexture icon = !stack.isEmpty() ? new ItemStackTexture(stack)
+                : BattlePassReward.kind(spec) == BattlePassReward.Kind.MONEY
+                ? com.lowdragmc.lowdraglib2.gui.texture.SpriteTexture.of(com.roll_54.roll_mod.RollMod.id("textures/item/lp.png"))
+                : IGuiTexture.EMPTY;
+        preview.style(s -> s.background(icon));
         return preview;
     }
 }

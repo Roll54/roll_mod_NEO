@@ -76,7 +76,7 @@ public class JEIRollModPlugin implements IModPlugin {
                 engineeringTableRecipes
         );
 
-        // generated from OreDefinitions, same as the cauldron interactions themselves
+        // roll_mod:cauldron_washing recipes, as the client received them
         if (!emiShowsWashing()) registration.addRecipes(CauldronWashingCategory.TYPE, CauldronWashingRecipe.collect());
 
         // Built from the synced data maps, so datapack reagents appear after a /reload too.

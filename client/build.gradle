@@ -168,8 +168,9 @@ neoForge.ideSyncTask generateModMetadata
     dependencies.add(runCfg.name, "maven.modrinth:xaeros-world-map:neoforge-1.21.1-${xaero_worldmap_version}")
 }
 // Sophisticated Core supplies the liquid XP (sophisticatedcore:xp_still) the service block's XP
-// services trade in. Test runs only; nothing compiles against it.
-['client', 'client2'].each { runName ->
+// services trade in. Test runs only; nothing compiles against it. Not for `client`: its run/mods has its own
+// Sophisticated Core (newer, with Sophisticated Storage), and two copies on one run fail module resolution.
+['client2'].each { runName ->
     def runCfg = neoForge.runs.getByName(runName).additionalRuntimeClasspathConfiguration
     dependencies.add(runCfg.name, "maven.modrinth:sophisticated-core:1.21.1-${sophisticated_core_version}")
 }

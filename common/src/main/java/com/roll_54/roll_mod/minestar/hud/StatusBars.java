@@ -127,14 +127,14 @@ public final class StatusBars {
         frame(graphics, left, y);
         if (scale > TieredHearts.PER_ROW && healthColor == HEALTH) {
             // Past 20 health the bar works as the hearts do (TieredHearts): it holds one row of 20, the row filling now
-            // in its colour over the full row below, and the row count beside it.
+            // in its colour over the full row below.
             int row = TieredHearts.row(health);
             float rest = health - TieredHearts.PER_ROW * row;
             if (row > 0) graphics.fill(left + 1, y + 1, left + 1 + inner, y + HEIGHT - 1,
                     row == 1 ? HEALTH : TieredHearts.color(row - 1));
             int restW = Math.round(inner * Math.min(1f, rest / TieredHearts.PER_ROW));
             graphics.fill(left + 1, y + 1, left + 1 + restW, y + HEIGHT - 1, row == 0 ? HEALTH : TieredHearts.color(row));
-            TieredHearts.rowLabel(graphics, left, y, health, max);
+            // No "2x" here: the bar's colours already show the row; the number is for the hearts only.
         } else {
             graphics.fill(left + 1, y + 1, left + 1 + healthW, y + HEIGHT - 1, healthColor);
         }

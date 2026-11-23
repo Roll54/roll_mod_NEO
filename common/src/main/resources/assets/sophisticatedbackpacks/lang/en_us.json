@@ -1,0 +1,22 @@
+{
+  "item.sophisticatedbackpacks.copper_backpack": "Bronze Backpack",
+  "item.sophisticatedbackpacks.iron_backpack": "Steel Backpack",
+  "item.sophisticatedbackpacks.gold_backpack": "Aluminum Backpack",
+  "item.sophisticatedbackpacks.diamond_backpack": "Stainless Steel Backpack",
+  "item.sophisticatedbackpacks.netherite_backpack": "Titanium Backpack",
+  "block.sophisticatedbackpacks.copper_backpack": "Bronze Backpack",
+  "block.sophisticatedbackpacks.iron_backpack": "Steel Backpack",
+  "block.sophisticatedbackpacks.gold_backpack": "Aluminum Backpack",
+  "block.sophisticatedbackpacks.diamond_backpack": "Stainless Steel Backpack",
+  "block.sophisticatedbackpacks.netherite_backpack": "Titanium Backpack",
+  "sophisticatedbackpacks.configuration.copperBackpack": "Bronze Backpack",
+  "sophisticatedbackpacks.configuration.ironBackpack": "Steel Backpack",
+  "sophisticatedbackpacks.configuration.goldBackpack": "Aluminum Backpack",
+  "sophisticatedbackpacks.configuration.diamondBackpack": "Stainless Steel Backpack",
+  "sophisticatedbackpacks.configuration.netheriteBackpack": "Titanium Backpack",
+  "sophisticatedbackpacks.configuration.copperWeight": "Bronze Weight",
+  "sophisticatedbackpacks.configuration.ironWeight": "Steel Weight",
+  "sophisticatedbackpacks.configuration.goldWeight": "Aluminum Weight",
+  "sophisticatedbackpacks.configuration.diamondWeight": "Stainless Steel Weight",
+  "sophisticatedbackpacks.configuration.netheriteWeight": "Titanium Weight"
+}

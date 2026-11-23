@@ -10,7 +10,16 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredHolder;
 
+import com.roll_54.roll_mod.RollMod;
+import com.roll_54.roll_mod.recipe.CauldronWashingRecipe;
+import com.roll_54.roll_mod.util.RollCauldronInteractions;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -62,5 +71,29 @@ public class OreRecipeProvider extends RecipeProvider {
                     unpackedName, null
             );
         }
+        cauldronWashing(recipeOutput);
+    }
+
+    /**
+     * Cauldron washing for every ore that has both sides: {@code impure_<ore>_dust -> <ore>_dust} and
+     * {@code crushed_<ore>_ore -> purified_<ore>_ore}, each dropping stone or clay dust half the time. These were
+     * hard-coded in {@code RollCauldronInteractions}; as recipes, datapacks and KubeJS can change them.
+     */
+    private static void cauldronWashing(RecipeOutput out) {
+        List<Item> byproducts = List.of(RollCauldronInteractions.getDustItems());
+        for (OreDefinition def : OreDefinitions.ORE_DEFINITIONS) {
+            washing(out, "impure_" + def.id() + "_dust", def.id() + "_dust", byproducts);
+            washing(out, "crushed_" + def.id() + "_ore", "purified_" + def.id() + "_ore", byproducts);
+        }
+    }
+
+    private static void washing(RecipeOutput out, String inputPath, String outputPath, List<Item> byproducts) {
+        Optional<Item> input = BuiltInRegistries.ITEM.getOptional(RollMod.id(inputPath));
+        Optional<Item> output = BuiltInRegistries.ITEM.getOptional(RollMod.id(outputPath));
+        if (input.isEmpty() || output.isEmpty()) return;
+        out.accept(RollMod.id("cauldron_washing/" + inputPath),
+                new CauldronWashingRecipe(Ingredient.of(input.get()), new ItemStack(output.get()), byproducts,
+                        CauldronWashingRecipe.DEFAULT_BYPRODUCT_CHANCE, true),
+                null);
     }
 }

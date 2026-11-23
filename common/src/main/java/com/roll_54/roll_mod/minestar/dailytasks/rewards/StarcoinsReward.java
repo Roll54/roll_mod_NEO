@@ -53,8 +53,13 @@ public final class StarcoinsReward implements DailyReward {
 
     @Override
     public void grant(ServerPlayer player) {
-        CurrencyLedger.logged(CurrencyService.deposit(player, TYPE, AMOUNT, player.server,
-                CurrencyCause.player(player, LedgerReason.DAILY).withDetail("daily reward " + id())),
-                player.getUUID(), TYPE, AMOUNT, LedgerReason.DAILY);
+        deposit(player, AMOUNT, id());
+    }
+
+    /** Pays {@code amount} starcoins as the daily bonus {@code rewardId}; also used by the configured bonuses. */
+    static void deposit(ServerPlayer player, long amount, String rewardId) {
+        CurrencyLedger.logged(CurrencyService.deposit(player, TYPE, amount, player.server,
+                CurrencyCause.player(player, LedgerReason.DAILY).withDetail("daily reward " + rewardId)),
+                player.getUUID(), TYPE, amount, LedgerReason.DAILY);
     }
 }

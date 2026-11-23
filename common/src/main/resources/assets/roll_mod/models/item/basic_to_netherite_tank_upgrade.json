@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "roll_mod:item/tank_upgrade/basic_to_netherite_tank_upgrade"
+  }
+}

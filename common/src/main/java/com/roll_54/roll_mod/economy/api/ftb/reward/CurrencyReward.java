@@ -32,8 +32,8 @@ public class CurrencyReward extends Reward {
 
   // ===== CORE LOGIC =====
   @Override
-  public void claim(ServerPlayer player, boolean notify) {
-    if (amount <= 0) return;
+  public boolean claim(ServerPlayer player, boolean notify) {
+    if (amount <= 0) return true;
 
     // Team reward is handled by FTB internally — claim() is called
     // for the correct player(s)
@@ -41,6 +41,7 @@ public class CurrencyReward extends Reward {
             CurrencyCause.player(player, LedgerReason.QUEST)
                 .withDetail("quest reward " + getCodeString() + " of quest " + getQuest().getCodeString())),
         player.getUUID(), CurrencyType.MAIN, amount, LedgerReason.QUEST);
+    return true;
   }
 
   @Override

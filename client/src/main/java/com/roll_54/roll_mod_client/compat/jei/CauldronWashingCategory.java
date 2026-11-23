@@ -1,7 +1,6 @@
 package com.roll_54.roll_mod_client.compat.jei;
 
 import com.roll_54.roll_mod.RollMod;
-import com.roll_54.roll_mod.util.RollCauldronInteractions;
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -18,6 +17,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import java.util.List;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -72,7 +72,7 @@ public class CauldronWashingCategory implements IRecipeCategory<CauldronWashingR
         // In a water cauldron; how much water it takes goes in the tooltip.
         builder.addSlot(RecipeIngredientRole.INPUT, 1, 1)
                 .setStandardSlotBackground()
-                .addItemStack(recipe.getInput())
+                .addItemStacks(recipe.getInputs())
                 .addRichTooltipCallback((view, tooltip) ->
                         tooltip.add(Component.translatable("jei.roll_mod.cauldron_washing.water").withStyle(ChatFormatting.GRAY)));
 
@@ -80,12 +80,12 @@ public class CauldronWashingCategory implements IRecipeCategory<CauldronWashingR
                 .setStandardSlotBackground()
                 .addItemStack(recipe.getOutput());
 
-        Item[] dusts = RollCauldronInteractions.getDustItems();
+        List<Item> dusts = recipe.getByproducts();
         float chance = dustChance(recipe);
-        for (int i = 0; i < dusts.length; i++) {
+        for (int i = 0; i < dusts.size(); i++) {
             builder.addSlot(RecipeIngredientRole.OUTPUT, OUT_X + 1 + (1 + i) * SLOT, 1)
                     .setStandardSlotBackground()
-                    .addItemStack(new ItemStack(dusts[i]))
+                    .addItemStack(new ItemStack(dusts.get(i)))
                     .addRichTooltipCallback((view, tooltip) -> tooltip.add(Component.translatable(
                             "jei.roll_mod.cauldron_washing.chance", percent(chance)).withStyle(ChatFormatting.GOLD)));
         }
@@ -99,7 +99,7 @@ public class CauldronWashingCategory implements IRecipeCategory<CauldronWashingR
 
     /** Each dust's own chance per washed item: one dust drops at most, picked evenly. */
     static float dustChance(CauldronWashingRecipe recipe) {
-        return recipe.getDustDropChance() / RollCauldronInteractions.getDustItems().length;
+        return recipe.getByproducts().isEmpty() ? 0f : recipe.getDustDropChance() / recipe.getByproducts().size();
     }
 
     static String percent(float chance) {

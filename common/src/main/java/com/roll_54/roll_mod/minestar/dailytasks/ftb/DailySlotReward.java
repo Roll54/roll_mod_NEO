@@ -24,12 +24,13 @@ public class DailySlotReward extends Reward {
     }
 
     @Override
-    public void claim(ServerPlayer player, boolean notify) {
+    public boolean claim(ServerPlayer player, boolean notify) {
         DailyTaskManager.grantExtraSlot(player);
         if (notify) {
             player.sendSystemMessage(Component.translatable("ftbquests.reward.roll_mod.daily_slot.claimed")
                     .withStyle(ChatFormatting.AQUA));
         }
+        return true;
     }
 
     @Override

@@ -97,6 +97,8 @@ public final class DailyTaskEvents {
     @SubscribeEvent
     public static void onLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
         SAMPLES.remove(event.getEntity().getUUID());
+        STAT_SAMPLES.remove(event.getEntity().getUUID());
+        DAMAGE_CARRY.remove(event.getEntity().getUUID());
     }
 
     /* ---------------------------------------------------- MINE ------------------------------------------------ */
@@ -149,6 +151,7 @@ public final class DailyTaskEvents {
     public static void onBlockPlaced(BlockEvent.EntityPlaceEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             claimStation(event.getLevel().getBlockEntity(event.getPos()), player);
+            DailyTaskManager.progress(player, DailyTaskHook.PLACE, event.getPlacedBlock(), 1);
         }
     }
 
@@ -212,6 +215,7 @@ public final class DailyTaskEvents {
         if (player == null) return;
 
         ItemStack stack = event.getItem();
+        DailyTaskManager.progress(player, DailyTaskHook.USE, stack, 1);
         if (stack.get(DataComponents.FOOD) == null) return; // drinking a potion is not a meal
         DailyTaskManager.progress(player, DailyTaskHook.EAT, stack, 1);
     }
@@ -311,7 +315,9 @@ public final class DailyTaskEvents {
     private static final Map<UUID, Sample> SAMPLES = new HashMap<>();
 
     private static void sampleStats(MinecraftServer server) {
+        java.util.Set<String> wanted = DailyTaskRegistry.statTargets();
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            if (!wanted.isEmpty()) sampleCustomStats(player, wanted);
             Sample sample = SAMPLES.computeIfAbsent(player.getUUID(), id -> new Sample());
 
             int playTicks = player.getStats().getValue(Stats.CUSTOM, Stats.PLAY_TIME);
@@ -357,6 +363,106 @@ public final class DailyTaskEvents {
             sample.lastDistanceCm = distanceCm;
             sample.lastRaidWins = raidWins;
             sample.lastJumps = jumps;
+        }
+    }
+
+
+    /* ------------------------------- the editor's own hooks (no code task uses them) ------------------------------- */
+
+    @SubscribeEvent
+    public static void onTame(net.neoforged.neoforge.event.entity.living.AnimalTameEvent event) {
+        ServerPlayer player = serverPlayer(event.getTamer());
+        if (player != null) DailyTaskManager.progress(player, DailyTaskHook.TAME, event.getAnimal(), 1);
+    }
+
+    @SubscribeEvent
+    public static void onTrade(net.neoforged.neoforge.event.entity.player.TradeWithVillagerEvent event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
+        if (player != null) DailyTaskManager.progress(player, DailyTaskHook.TRADE, event.getMerchantOffer().getResult(), 1);
+    }
+
+    @SubscribeEvent
+    public static void onEnchant(net.neoforged.neoforge.event.entity.player.PlayerEnchantItemEvent event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
+        if (player != null) DailyTaskManager.progress(player, DailyTaskHook.ENCHANT, event.getEnchantedItem(), 1);
+    }
+
+    @SubscribeEvent
+    public static void onBrew(net.neoforged.neoforge.event.brewing.PlayerBrewedPotionEvent event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
+        if (player != null) DailyTaskManager.progress(player, DailyTaskHook.BREW, event.getStack(), Math.max(1, event.getStack().getCount()));
+    }
+
+    @SubscribeEvent
+    public static void onAnvil(net.neoforged.neoforge.event.entity.player.AnvilRepairEvent event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
+        if (player != null) DailyTaskManager.progress(player, DailyTaskHook.ANVIL, event.getOutput(), 1);
+    }
+
+    @SubscribeEvent
+    public static void onAdvancement(net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
+        if (player == null) return;
+        ResourceLocation id = event.getAdvancement().id();
+        if (id.getPath().startsWith("recipes/")) return; // recipe unlocks are advancements too
+        DailyTaskManager.progress(player, DailyTaskHook.ADVANCEMENT, id.toString(), 1);
+    }
+
+    @SubscribeEvent
+    public static void onLevelChange(net.neoforged.neoforge.event.entity.player.PlayerXpEvent.LevelChange event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
+        if (player != null && event.getLevels() > 0) {
+            DailyTaskManager.progress(player, DailyTaskHook.LEVEL_UP, player, event.getLevels());
+        }
+    }
+
+    @SubscribeEvent
+    public static void onVisit(PlayerEvent.PlayerChangedDimensionEvent event) {
+        ServerPlayer player = serverPlayer(event.getEntity());
+        if (player != null) DailyTaskManager.progress(player, DailyTaskHook.VISIT, event.getTo().location().toString(), 1);
+    }
+
+    /** Damage below a whole point waits here until it adds up. */
+    private static final Map<UUID, Float> DAMAGE_CARRY = new HashMap<>();
+
+    @SubscribeEvent
+    public static void onDamage(net.neoforged.neoforge.event.entity.living.LivingDamageEvent.Post event) {
+        ServerPlayer player = serverPlayer(event.getSource().getEntity() instanceof Player p ? p : null);
+        if (player == null || event.getEntity() == player || event.getNewDamage() <= 0) return;
+        // No more than the victim can hold: one-shotting a chicken with 40 counts 4.
+        float dealt = Math.min(event.getNewDamage(), event.getEntity().getMaxHealth());
+        float total = DAMAGE_CARRY.getOrDefault(player.getUUID(), 0f) + dealt;
+        int whole = (int) total;
+        DAMAGE_CARRY.put(player.getUUID(), total - whole);
+        if (whole > 0) DailyTaskManager.progress(player, DailyTaskHook.DAMAGE, event.getEntity(), whole);
+    }
+
+    /* ---------------------------------------------- STAT (any statistic) ---------------------------------------------- */
+
+    /** Per player, the last value of each statistic a STAT task names, and what is left below a whole unit. */
+    private static final Map<UUID, Map<String, int[]>> STAT_SAMPLES = new HashMap<>();
+
+    private static void sampleCustomStats(ServerPlayer player, java.util.Set<String> wanted) {
+        Map<String, int[]> mine = STAT_SAMPLES.computeIfAbsent(player.getUUID(), id -> new HashMap<>());
+        for (String name : wanted) {
+            ResourceLocation rl = ResourceLocation.tryParse(name);
+            if (rl == null || !BuiltInRegistries.CUSTOM_STAT.containsKey(rl)) continue;
+            ResourceLocation key = BuiltInRegistries.CUSTOM_STAT.get(rl);
+            int value = player.getStats().getValue(Stats.CUSTOM.get(key));
+            int[] last = mine.get(name);
+            if (last == null) {
+                mine.put(name, new int[]{value, 0}); // a baseline, as for the other statistics
+                continue;
+            }
+            last[1] += Math.max(0, value - last[0]);
+            last[0] = value;
+            int unit = rl.getPath().endsWith("_one_cm") ? CM_PER_BLOCK
+                    : rl.getPath().contains("time") ? TICKS_PER_MINUTE : 1;
+            int whole = last[1] / unit;
+            if (whole > 0) {
+                last[1] -= whole * unit;
+                DailyTaskManager.progress(player, DailyTaskHook.STAT, name, whole);
+            }
         }
     }
 

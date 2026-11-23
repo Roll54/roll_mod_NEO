@@ -22,88 +22,115 @@ public class OreLangProvider extends LanguageProvider {
             // The bare material name, for screens that list materials rather than items (the ore scanner).
             add("material.roll_mod." + def.id(), oreName);
 
-            String rawSuffix;
-            String crushedSuffix;
-            String refinedSuffix;
-            String purifiedSuffix;
-            String dustSuffix = isEnglish ? " (Dust)" : " (Пил)";
-            String dustPureSuffix = isEnglish ? " (Pure Dust)" : " (Очищений пил)";
-            String rawBlockSuffix = isEnglish ? " (Raw Block)" : " (Необроблений блок)";
-            String dustImpureSuffix;
-
-            if (isEnglish) {
-                rawSuffix = " (Raw)";
-                crushedSuffix = " (Crushed Ore)";
-                refinedSuffix = " (Refined Ore)";
-                purifiedSuffix = " (Purified Ore)";
-                dustImpureSuffix = " (Impure Dust)";
-            } else {
-                rawSuffix = " (Необроблений)";
-                crushedSuffix = " (Дроблений)";
-                refinedSuffix = " (Рафінований)";
-                purifiedSuffix = " (Очищений)";
-                dustImpureSuffix =  " (Неочищений)";
-            }
-
-            add("item.roll_mod.raw_" + def.id(), oreName + rawSuffix);
-            add("item.roll_mod.crushed_" + def.id() + "_ore", oreName + crushedSuffix);
-            add("item.roll_mod.refined_" + def.id() + "_ore", oreName + refinedSuffix);
-            add("item.roll_mod.purified_" + def.id() + "_ore", oreName + purifiedSuffix);
-            add("item.roll_mod." + def.id() + "_dust", oreName + dustSuffix);
-            add("item.roll_mod.pure_" + def.id() + "_dust", oreName + dustPureSuffix);
-            add("item.roll_mod.impure_" + def.id() + "_dust", oreName + dustImpureSuffix);
-
-            add("block.roll_mod.raw_" + def.id() + "_block", oreName + rawBlockSuffix);
-
-            for (var base : def.bases()) {
-
-                String baseId = switch (base) {
-                    case STONE -> "stone";
-                    case DEEPSLATE -> "deepslate";
-                    case NETHERRACK -> "netherrack";
-                    case END -> "end";
-                    case MOON -> "moon";
-                    case MARS -> "mars";
-                    case VENUS -> "venus";
-                    case MERCURY -> "mercury";
-                };
-
-                String baseName = switch (base) {
-                    case STONE -> isEnglish ? "Stone" : "Кам'яна руда";
-                    case DEEPSLATE -> isEnglish ? "Deepslate" : "Глибосланецева руда";
-                    case NETHERRACK -> isEnglish ? "Netherrack" : "Незеракова руда";
-                    case END -> isEnglish ? "End Stone" : "Ендер руда";
-                    case MOON -> isEnglish ? "Moon Stone" : "Місячна руда";
-                    case MARS -> isEnglish ? "Mars Stone" : "Марсіанська руда";
-                    case VENUS -> isEnglish ? "Venus Stone" : "Венеріанська руда";
-                    case MERCURY -> isEnglish ? "Mercury Stone" : "Меркуріанська руда";
-                };
-
-                String blockKey = "block.roll_mod." + baseId + "_" + def.id();
-
-                add(blockKey, String.format("%s (%s)", oreName, baseName));
-
-                String sampleKey = "block.roll_mod." + baseId + "_" + def.id() + "_ore_sample";
-
-                add(sampleKey, isEnglish
-                        ? String.format("%s (Ore sample)", oreName)
-                        : String.format("%s (Зразок)", oreName));
-            }
-
-            for (var variant : def.variants()) {
-                String variantName = switch (variant) {
-                    case GRANITE -> isEnglish ? "Granite" : "Гранітна руда";
-                    case DIORITE -> isEnglish ? "Diorite" : "Діоритова руда";
-                    case ANDESITE -> isEnglish ? "Andesite" : "Андезитова руда";
-                    case TUFF -> isEnglish ? "Tuff" : "Туфова руда";
-                    case BLACKSTONE -> isEnglish ? "Blackstone" : "Чорнокам'яна руда";
-                    case BASALT -> isEnglish ? "Basalt" : "Базальтова руда";
-                };
-                add("block.roll_mod." + def.variantBlockId(variant), String.format("%s (%s)", oreName, variantName));
-            }
+            if (isEnglish) english(def, oreName);
+            else ukrainian(def, oreName);
         }
 
         addMBD2EnergyTrait();
+    }
+
+    /**
+     * English, after vanilla's pattern: "Hematite Dust", "Raw Hematite", "Block of Raw Hematite", "Hematite Ore"
+     * (stone), "Deepslate Hematite Ore", "Hematite Ore Sample".
+     */
+    private void english(OreDefinition def, String name) {
+        String id = def.id();
+        add("item.roll_mod.raw_" + id, "Raw " + name);
+        add("item.roll_mod.crushed_" + id + "_ore", "Crushed " + name + " Ore");
+        add("item.roll_mod.refined_" + id + "_ore", "Refined " + name + " Ore");
+        add("item.roll_mod.purified_" + id + "_ore", "Purified " + name + " Ore");
+        add("item.roll_mod." + id + "_dust", name + " Dust");
+        add("item.roll_mod.pure_" + id + "_dust", "Pure " + name + " Dust");
+        add("item.roll_mod.impure_" + id + "_dust", "Impure " + name + " Dust");
+        add("block.roll_mod.raw_" + id + "_block", "Block of Raw " + name);
+
+        for (var base : def.bases()) {
+            String rock = switch (base) {
+                case STONE -> "";
+                case DEEPSLATE -> "Deepslate ";
+                case NETHERRACK -> "Netherrack ";
+                case END -> "End Stone ";
+                case MOON -> "Moon ";
+                case MARS -> "Mars ";
+                case VENUS -> "Venus ";
+                case MERCURY -> "Mercury ";
+            };
+            add("block.roll_mod." + base.id() + "_" + id, rock + name + " Ore");
+            // Named by its rock too, so the samples of one ore can be told apart.
+            String sampleRock = base == OreTextureTemplates.BlockSubLayer.STONE ? "Stone " : rock;
+            add("block.roll_mod." + base.id() + "_" + id + "_ore_sample", sampleRock + name + " Ore Sample");
+        }
+        for (var variant : def.variants()) {
+            String rock = switch (variant) {
+                case GRANITE -> "Granite";
+                case DIORITE -> "Diorite";
+                case ANDESITE -> "Andesite";
+                case TUFF -> "Tuff";
+                case BLACKSTONE -> "Blackstone";
+                case BASALT -> "Basalt";
+            };
+            add("block.roll_mod." + def.variantBlockId(variant), rock + " " + name + " Ore");
+        }
+    }
+
+    /**
+     * Ukrainian, "what + of what" ({@link UkOreGrammar}): "Пил гематиту" (or "Сірчаний пил" where the language has
+     * the adjective), "Необроблений гематит", "Блок необробленого гематиту", "Дроблена руда гематиту",
+     * "Глибинносланцева руда гематиту", "Глибинносланцевий зразок гематиту".
+     */
+    private void ukrainian(OreDefinition def, String name) {
+        String id = def.id();
+        UkOreGrammar.Forms forms = UkOreGrammar.of(id);
+        String gen = forms.genitive();
+        String lower = name.toLowerCase(java.util.Locale.ROOT);
+
+        add("item.roll_mod.raw_" + id, UkOreGrammar.capitalize(UkOreGrammar.agree("необроблений", forms.gender())) + " " + lower);
+        add("item.roll_mod.crushed_" + id + "_ore", "Дроблена руда " + gen);
+        add("item.roll_mod.refined_" + id + "_ore", "Рафінована руда " + gen);
+        add("item.roll_mod.purified_" + id + "_ore", "Очищена руда " + gen);
+        String dust = forms.dustAdj() != null ? forms.dustAdj() + " пил" : "пил " + gen;
+        add("item.roll_mod." + id + "_dust", UkOreGrammar.capitalize(dust));
+        add("item.roll_mod.pure_" + id + "_dust", "Очищений " + dust);
+        add("item.roll_mod.impure_" + id + "_dust", "Неочищений " + dust);
+        add("block.roll_mod.raw_" + id + "_block",
+                "Блок " + UkOreGrammar.agreeGenitive("необроблений", forms.gender()) + " " + gen);
+
+        for (var base : def.bases()) {
+            String ore = switch (base) {
+                case STONE -> "Кам'яна руда " + gen;
+                case DEEPSLATE -> "Глибинносланцева руда " + gen;
+                case NETHERRACK -> "Незеракова руда " + gen;
+                case END -> "Руда " + gen + " з каменю Енду";
+                case MOON -> "Місячна руда " + gen;
+                case MARS -> "Марсіанська руда " + gen;
+                case VENUS -> "Венеріанська руда " + gen;
+                case MERCURY -> "Меркуріанська руда " + gen;
+            };
+            add("block.roll_mod." + base.id() + "_" + id, ore);
+            // Named by its rock too, so the samples of one ore can be told apart.
+            String sample = switch (base) {
+                case STONE -> "Кам'яний зразок " + gen;
+                case DEEPSLATE -> "Глибинносланцевий зразок " + gen;
+                case NETHERRACK -> "Незераковий зразок " + gen;
+                case END -> "Зразок " + gen + " з каменю Енду";
+                case MOON -> "Місячний зразок " + gen;
+                case MARS -> "Марсіанський зразок " + gen;
+                case VENUS -> "Венеріанський зразок " + gen;
+                case MERCURY -> "Меркуріанський зразок " + gen;
+            };
+            add("block.roll_mod." + base.id() + "_" + id + "_ore_sample", sample);
+        }
+        for (var variant : def.variants()) {
+            String rock = switch (variant) {
+                case GRANITE -> "Гранітна";
+                case DIORITE -> "Діоритова";
+                case ANDESITE -> "Андезитова";
+                case TUFF -> "Туфова";
+                case BLACKSTONE -> "Чорнокам'яна";
+                case BASALT -> "Базальтова";
+            };
+            add("block.roll_mod." + def.variantBlockId(variant), rock + " руда " + gen);
+        }
     }
 
     /** Config labels for the Modern Industrialization EU trait added to Multiblocked2 machines. */

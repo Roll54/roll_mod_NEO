@@ -48,11 +48,12 @@ public class WarpUnlockReward extends Reward {
 
     /** The claim itself is what opens the warp; this only tells the player. */
     @Override
-    public void claim(ServerPlayer player, boolean notify) {
+    public boolean claim(ServerPlayer player, boolean notify) {
         if (notify && !warp.isBlank()) {
             player.sendSystemMessage(Component.translatable("ftbquests.reward.roll_mod.warp_unlock.claimed", serverName(player))
                     .withStyle(ChatFormatting.GOLD));
         }
+        return true;
     }
 
     @Override

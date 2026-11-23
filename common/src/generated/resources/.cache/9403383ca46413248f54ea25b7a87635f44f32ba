@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-22T08:26:52.982491039	Machine Models: roll_mod
+// 1.21.1	2026-11-22T22:53:19.457370913	Machine Models: roll_mod
 ab571aa35059a840dedfb2d0d0048913b450501a assets/roll_mod/blockstates/advanced_pyrolyse_oven.json
 270420e1ce312cdd7113bad319395edc4950d9da assets/roll_mod/blockstates/assembly_line.json
 81af6005a11f53b4084d53e74437ce253671d7fa assets/roll_mod/blockstates/circuit_assembly_line.json
@@ -81,8 +81,8 @@ d3ba3bd90f993ed2258b81c927684cbc4bb9ce5e assets/roll_mod/models/block/maceration
 2dea863382530dcb60e86fa355ec83c785e12dbb assets/roll_mod/models/block/me_fluid_output_hatch.json
 6d6351cd1f04cb3a871a3523c3f3a2747da3bf13 assets/roll_mod/models/block/me_item_input_hatch.json
 6d6351cd1f04cb3a871a3523c3f3a2747da3bf13 assets/roll_mod/models/block/me_item_output_hatch.json
-15557f5bc94cd706355d9b2d1c39f21ddb11f7ff assets/roll_mod/models/block/me_mixed_input_hatch.json
-15557f5bc94cd706355d9b2d1c39f21ddb11f7ff assets/roll_mod/models/block/me_mixed_output_hatch.json
+a991534c25f83fad056385f50ad640e2e80fc7d6 assets/roll_mod/models/block/me_mixed_input_hatch.json
+a991534c25f83fad056385f50ad640e2e80fc7d6 assets/roll_mod/models/block/me_mixed_output_hatch.json
 48a1db3a943b3daabfed6f65a0c2c38686c44edd assets/roll_mod/models/block/mv_multi_fluid_input_hatch.json
 48a1db3a943b3daabfed6f65a0c2c38686c44edd assets/roll_mod/models/block/mv_multi_fluid_output_hatch.json
 586cc1f30e68c7b6c1d15c28c7c46d65b0bffbb3 assets/roll_mod/models/block/netherstorm_thermal_centrifuge.json

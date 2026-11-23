@@ -113,4 +113,12 @@ public interface DailyTask {
     default ItemStack toastIcon() {
         return icon().toastStack();
     }
+
+    /**
+     * Whether {@code player} may count this task where and how they are now (a dimension, a biome, a held item, the
+     * time of day…). Checked with every event, after {@link #matches}. Server side.
+     */
+    default boolean allowedFor(net.minecraft.server.level.ServerPlayer player) {
+        return true;
+    }
 }

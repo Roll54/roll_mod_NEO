@@ -7,7 +7,6 @@
     "AnvilTooExpensiveLabelMixin",
     "GuiGraphicsOxygenBarMixin",
     "MIKeybindsToggle3x3Mixin",
-    "MoneyShovingMixin",
     "ModifyEnergyHudRendererMixin",
     "OverlayScreenNanoMixin",
     "crops.CropRequirementCategoryRecipeMixin",

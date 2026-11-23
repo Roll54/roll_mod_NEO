@@ -18,6 +18,15 @@ public final class ClientBattlePassCache {
 
     private ClientBattlePassCache() {}
 
+    /** The task settings, for the Moderation tab's task editor. */
+    public static volatile CompoundTag TASKS = new CompoundTag();
+    public static volatile int TASKS_VERSION;
+
+    public static void putTasks(CompoundTag data) {
+        TASKS = data;
+        TASKS_VERSION++;
+    }
+
     public static void putDaily(CompoundTag data) {
         DAILY = data;
         DAILY_VERSION++;

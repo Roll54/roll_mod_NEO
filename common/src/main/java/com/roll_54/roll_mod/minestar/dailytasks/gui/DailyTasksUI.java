@@ -761,7 +761,8 @@ public final class DailyTasksUI {
 
     private static Component rerollCaption(int cost) {
         return cost == 0
-                ? Component.translatable("gui.roll_mod.daily_tasks.reroll.free")
+                // A short word on the button ("Безкоштовно" ran over the rewards beside it); the tooltip says it in full.
+                ? Component.translatable("gui.roll_mod.daily_tasks.reroll.free_short")
                         .withStyle(ChatFormatting.GREEN)
                 // A light orchid, from the reroll icon's own pink-to-violet, rather than gold, which clashed with it.
                 : Component.literal(String.valueOf(cost)).withColor(0xD7A1F9);

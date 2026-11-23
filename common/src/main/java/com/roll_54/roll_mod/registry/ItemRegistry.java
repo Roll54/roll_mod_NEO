@@ -1539,8 +1539,9 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, StormScannerItem> LV_STORM_SCANNER = ITEMS.register("lv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 1, 0xff1500, 1_000_000));
     public static final DeferredHolder<Item, StormScannerItem> HV_STORM_SCANNER = ITEMS.register("hv_storm_scanner", () -> new StormScannerItem(new Item.Properties().stacksTo(1), 2, 0xff1500, 10_000_000));
 
-    // Ore scanners: roll_mod ore materials in 3x3 / 5x5 / 9x9 chunks around the player (radius 1 / 2 / 4).
+    // Ore scanners: roll_mod ore materials in 3x3 / 5x5 / 5x5 / 9x9 chunks around the player (radius 1 / 2 / 2 / 4).
     public static final DeferredHolder<Item, OreScannerItem> LV_ORE_SCANNER = ITEMS.register("lv_ore_scanner", () -> new OreScannerItem(new Item.Properties().stacksTo(1), 1, 1_000_000L, 10_000L, 0x30e996));
+    public static final DeferredHolder<Item, OreScannerItem> MV_ORE_SCANNER = ITEMS.register("mv_ore_scanner", () -> new OreScannerItem(new Item.Properties().stacksTo(1), 2, 3_000_000L, 30_000L, 0x30e996));
     public static final DeferredHolder<Item, OreScannerItem> HV_ORE_SCANNER = ITEMS.register("hv_ore_scanner", () -> new OreScannerItem(new Item.Properties().stacksTo(1), 2, 10_000_000L, 100_000L, 0x30e996));
     public static final DeferredHolder<Item, OreScannerItem> EV_ORE_SCANNER = ITEMS.register("ev_ore_scanner", () -> new OreScannerItem(new Item.Properties().stacksTo(1), 4, 100_000_000L, 1_000_000L, 0x30e996));
 
@@ -2461,6 +2462,10 @@ public class ItemRegistry {
         }
         // Our fishing rods are Tide rods, so they exist only with Tide.
         if (net.neoforged.fml.ModList.get().isLoaded("tide")) com.roll_54.roll_mod.compat.tide.TideRods.register(ITEMS);
+        // Tank-only tier upgrades extend Sophisticated Storage's, so they exist only with it.
+        if (net.neoforged.fml.ModList.get().isLoaded("sophisticatedstorage")) {
+            com.roll_54.roll_mod.compat.sophisticated.TankUpgrades.register(ITEMS);
+        }
         ITEMS.register(modBus);
         CROPS.register(modBus);
     }

@@ -82,5 +82,34 @@ public enum DailyTaskHook {
      * fought the raiders. A bystander who watched the village defend itself gets nothing, which is
      * the wanted behaviour.
      */
-    RAID
+    RAID,
+    /* ---- Made in the task editor only (no code task uses these). ---- */
+    /** A block was placed by a player. Subject: the placed {@link net.minecraft.world.level.block.state.BlockState}. */
+    PLACE,
+    /** An animal was tamed. Subject: the tamed {@link net.minecraft.world.entity.LivingEntity}. */
+    TAME,
+    /** A trade with a villager or wandering trader. Subject: the bought {@link net.minecraft.world.item.ItemStack}. */
+    TRADE,
+    /** An item was enchanted at an enchanting table. Subject: the enchanted {@link net.minecraft.world.item.ItemStack}. */
+    ENCHANT,
+    /** A potion was taken out of a brewing stand. Subject: the potion {@link net.minecraft.world.item.ItemStack}. */
+    BREW,
+    /** An anvil result was taken. Subject: the output {@link net.minecraft.world.item.ItemStack}. */
+    ANVIL,
+    /** An advancement was earned (recipe unlocks excluded). Subject: its id as a {@link String}. */
+    ADVANCEMENT,
+    /** Experience levels gained, counted per level. Subject: the {@link net.minecraft.server.level.ServerPlayer}. */
+    LEVEL_UP,
+    /** Using an item finished (eating, drinking, a spyglass…). Subject: the used {@link net.minecraft.world.item.ItemStack}. */
+    USE,
+    /** Damage dealt by the player, in whole points (2 = a heart). Subject: the hurt {@link net.minecraft.world.entity.LivingEntity}. */
+    DAMAGE,
+    /** The player entered a dimension. Subject: the dimension id as a {@link String}. */
+    VISIT,
+    /**
+     * Any vanilla statistic of the "custom" kind ({@code minecraft:fly_one_cm}, {@code minecraft:swim_one_cm},
+     * {@code minecraft:bell_ring}…), named in the task's target. Subject: the statistic id as a {@link String}.
+     * Distances count in blocks, times in minutes, the rest as they are.
+     */
+    STAT
 }

@@ -69,7 +69,7 @@
             "tag": "c:mercury_stones"
           },
           "state": {
-            "Name": "roll_mod:mercury_antimony"
+            "Name": "roll_mod:venus_antimony"
           }
         }
       ]
@@ -94,7 +94,7 @@
       "blocks": [
         "roll_mod:venus_livingstonite_ore_sample",
         "roll_mod:venus_cinnabar_ore_sample",
-        "roll_mod:mercury_antimony_ore_sample"
+        "roll_mod:venus_antimony_ore_sample"
       ],
       "tries": 370,
       "xz_spread": 39

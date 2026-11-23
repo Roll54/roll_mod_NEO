@@ -78,7 +78,14 @@ public final class ProfileLevels {
         try {
             FriendsService.detail(id).whenComplete((detail, error) -> {
                 if (error != null || detail == null) return;
-                server.execute(() -> update(server, id, Math.max(0, detail.level())));
+                server.execute(() -> {
+                    update(server, id, Math.max(0, detail.level()));
+                    // The hub's header (level and its XP bar) reads the viewer's own profile: send it with every
+                    // refresh, not only from the one request the hub makes when it opens, which can be skipped.
+                    ServerPlayer online = server.getPlayerList().getPlayer(id);
+                    if (online != null) PacketDistributor.sendToPlayer(online,
+                            com.roll_54.roll_mod.network.packet.SyncFriendDetailPacket.of(detail));
+                });
             });
         } catch (RuntimeException e) {
             RollMod.LOGGER.debug("[Levels] no Minestar profile for {}", id, e);

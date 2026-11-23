@@ -143,12 +143,16 @@ public class MIEnergyTraitDefinition extends SimpleCapabilityTraitDefinition<MIE
         return TraitUILayoutType.BAR;
     }
 
+    /** The class the themes style MI energy bars by. */
+    public static final String ENERGY_BAR_CLASS = "roll_energy_bar";
+
     @Override
     public void createTraitUITemplate(UIElement container) {
         ProgressBar progress = new ProgressBar();
-        progress.barContainer.getLayout().paddingAll(0.0F);
-        progress.barContainer.getStyle().background(MBDSprites.ENERGY_BG);
-        progress.bar.getStyle().background(MBDSprites.ENERGY_BAR);
+        // No inline look (MBD2's striped red sprites used to be set here): an inline background outranks every
+        // stylesheet, so the bar ignored the player's theme. The theme styles it through this class instead
+        // (ThemeSheets.vanillaSlots: a well like the slots, a flat energy-red fill).
+        progress.addClass(ENERGY_BAR_CLASS);
         progress.setProgress(1.0F);
         progress.label.setText("0/0 EU");
         progress.setId(this.uiId());

@@ -36,7 +36,8 @@ final class KitItemsEditor {
     private static final int GRID_W = SLOT + GAP + 9 * SLOT + GAP + SLOT;
     private static final int GRID_H = 4 * SLOT + GAP;
     private static final int W = GRID_W + 24;
-    private static final int H = GRID_H + 70;
+    /** Room for the hint on two lines (it wraps in Ukrainian), so Save stays inside the window. */
+    private static final int H = GRID_H + 86;
     /** Head to feet, top row down, in the kit's slot numbering ({@link KitSlots}). */
     private static final int[] ARMOUR = {39, 38, 37, 36};
 
@@ -66,7 +67,7 @@ final class KitItemsEditor {
 
             Label hint = new Label();
             hint.setText(Component.translatable("gui.roll_mod.kit.window.editing").withStyle(ChatFormatting.GOLD));
-            hint.layout(l -> l.widthPercent(100).flexShrink(0));
+            hint.layout(l -> l.widthPercent(100).flexShrink(0).paddingHorizontal(3));
             hint.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
 
             Button save = new Button();

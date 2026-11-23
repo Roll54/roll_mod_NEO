@@ -92,14 +92,15 @@ public final class TieredHearts {
         }
     }
 
-    /** "3x", small, white with a black outline, right-aligned 3px left of {@code left}. */
+    /** "3x", at 3/4 size, white with a black outline, right-aligned 3px left of {@code left}. */
     public static void rowLabel(GuiGraphics graphics, int left, int y, float health, float max) {
         Minecraft mc = Minecraft.getInstance();
         String text = (row(health) + 1) + "x";
-        // Full size: the digits' 7px plus the 1px outline above and below are the heart's 9px, on whole pixels.
-        float scale = 1f;
+        // Three quarters of full size (asked for: full size read as too heavy beside the hearts). The label with its
+        // outline is then ~7px tall, set 2px down so it sits on the 9px heart row's middle.
+        float scale = 0.75f;
         graphics.pose().pushPose();
-        graphics.pose().translate(left - 3 - mc.font.width(text), y + 1, 0);
+        graphics.pose().translate(left - 3 - mc.font.width(text) * scale, y + 2, 0);
         graphics.pose().scale(scale, scale, 1f);
         // The outline: the text in black one pixel off in every direction, then white on top.
         for (int dx = -1; dx <= 1; dx++) {

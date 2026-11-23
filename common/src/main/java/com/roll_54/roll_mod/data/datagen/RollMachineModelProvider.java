@@ -124,9 +124,9 @@ public class RollMachineModelProvider implements DataProvider {
         for (MeHatches.Spec spec : MeHatches.ALL) {
             // Their own overlays; no auto-extract ones, since ME hatches do not auto-extract.
             JsonObject overlays = new JsonObject();
-            overlays.addProperty("front", spec.overlays() + "/overlay_front");
-            overlays.addProperty("output", spec.overlays() + "/" + spec.outputOverlay());
-            overlays.addProperty("side", spec.overlays() + "/overlay_side");
+            overlays.addProperty("front", spec.frontOverlay());
+            overlays.addProperty("output", spec.outputOverlayTexture());
+            overlays.addProperty("side", spec.sideOverlay());
             for (String id : spec.ids()) {
                 machine(cache, writes, id, MeHatches.CASING, overlays);
             }

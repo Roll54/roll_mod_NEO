@@ -1,13 +1,14 @@
-// 1.21.1	2026-11-22T08:26:52.981418381	Tags for minecraft:block mod id roll_mod
-bfb533e9cecfe838cc9352a0e9df832655abf48c data/c/tags/block/ores.json
+// 1.21.1	2026-11-22T23:04:19.452606972	Tags for minecraft:block mod id roll_mod
+093929a215bb66b0fac556c6ba10fbf4addc0c1f data/c/tags/block/ores.json
 26f4e95f349237ac89ddcd813de66bea747b8c50 data/c/tags/block/storage_blocks.json
 b6c82e782af773c9bf55bf765167db9f2bf571ef data/c/tags/block/storage_blocks/meteorite_metal.json
 b6c82e782af773c9bf55bf765167db9f2bf571ef data/minecraft/tags/block/beacon_base_blocks.json
-6803fcbe96c5388c11b89f676a9eaf294e086d8d data/minecraft/tags/block/mineable/pickaxe.json
+e4e1adfe0cb7859330360a79eca641705382c578 data/minecraft/tags/block/mineable/pickaxe.json
 b6c82e782af773c9bf55bf765167db9f2bf571ef data/minecraft/tags/block/needs_iron_tool.json
-03085248d36c13c2114a99f8e9233321125efd7b data/minecraft/tags/block/needs_stone_tool.json
+a95726456c721bd7134ed5ff141813b54e0ba9a3 data/minecraft/tags/block/needs_stone_tool.json
 bab2820bf781b283b836f314756891b3f17309f4 data/minecraft/tags/block/wither_immune.json
 172184474eabfdac38e60377f627f8535f3e5f2d data/roll_mod/tags/block/antimony_ore_in_mercury.json
+4b70b2e085f05373a770789a9ed1c0bcddfab18e data/roll_mod/tags/block/antimony_ore_in_venus.json
 5356d1a5a5d05ef669c7d7b94599cc8988e67934 data/roll_mod/tags/block/apatite_ore_in_moon.json
 b711ea92b85a53bad16df38ae6b9b43e3bb10bb1 data/roll_mod/tags/block/apatite_ore_in_venus.json
 50ca54de4d687aec0dbb149a9fdab054a5a4c9c3 data/roll_mod/tags/block/azure_silver_ore_in_end.json

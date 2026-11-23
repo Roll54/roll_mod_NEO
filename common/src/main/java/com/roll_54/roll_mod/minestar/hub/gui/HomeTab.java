@@ -142,7 +142,7 @@ public final class HomeTab {
     private static final int COLOR_FRAME = 0xFFB45CFF;
     private static final int COLOR_TRACK = 0x40FFFFFF;
 
-    private record ProfileHeader(UIElement root, Label badge, Label group, UIElement fill, Label xp, float[] shown) {}
+    private record ProfileHeader(UIElement root, Label badge, Label group, Label level, UIElement fill, Label xp, float[] shown) {}
 
     private static ProfileHeader profileHeader(Player player) {
         UIElement root = new UIElement();
@@ -189,7 +189,12 @@ public final class HomeTab {
         group.layout(l -> l.height(12).paddingHorizontal(3));
         group.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
         group.setDisplay(false);
-        nameLine.addChildren(name, group);
+        // The level beside the name, in the level pink; its progress is the bar below.
+        Label level = new Label();
+        level.layout(l -> l.height(14).flexGrow(1).flexShrink(1));
+        level.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap.HIDE));
+        level.setDisplay(false);
+        nameLine.addChildren(name, group, level);
 
         // The level's progress, filled in the level pink.
         UIElement track = new UIElement();
@@ -205,18 +210,26 @@ public final class HomeTab {
         names.addChildren(nameLine, track, xp);
 
         root.addChildren(avatar, names);
-        return new ProfileHeader(root, badge, group, fill, xp, new float[] {-1f});
+        return new ProfileHeader(root, badge, group, level, fill, xp, new float[] {-1f});
     }
 
     /** Fills the header from the viewer's Minestar profile; nothing level-related without one (a dev world). */
     private static void fillHeader(ProfileHeader header, @Nullable FriendDetail own) {
-        boolean has = own != null;
-        if (header.badge().isDisplayed() != has) header.badge().setDisplay(has);
-        if (!has) {
+        // Without the profile yet (or no Minestar), the level the server last saw still shows; the bar waits.
+        int levelNow = own != null ? own.level() : com.roll_54.roll_mod.minestar.level.ClientLevelRewards.LEVEL;
+        boolean known = own != null || levelNow > 0;
+        if (header.badge().isDisplayed() != known) header.badge().setDisplay(known);
+        if (known) {
+            setIfChanged(header.badge(), Component.translatable("gui.roll_mod.hub.home.lvl_badge", levelNow));
+            setIfChanged(header.level(), Component.translatable("gui.roll_mod.hub.home.header_level",
+                    Component.literal(String.valueOf(levelNow)).withColor(COLOR_LEVEL)));
+        } else {
+            setIfChanged(header.level(), Component.empty());
+        }
+        if (own == null) {
             setIfChanged(header.xp(), Component.empty());
             return;
         }
-        setIfChanged(header.badge(), Component.translatable("gui.roll_mod.hub.home.lvl_badge", own.level()));
         boolean grouped = !own.groupName().isEmpty();
         if (header.group().isDisplayed() != grouped) header.group().setDisplay(grouped);
         if (grouped) {
@@ -242,10 +255,22 @@ public final class HomeTab {
      * second, for nothing.
      */
     private static void setIfChanged(Label label, Component text) {
+        text = baseColored(label, text);
         if (!text.equals(label.getText())) label.setText(text);
         // An empty line takes no room (no Minestar profile, no unread letters), so the rest fits the column.
         boolean shown = !text.getString().isEmpty();
         if (label.isDisplayed() != shown) label.setDisplay(shown);
+    }
+
+    /**
+     * The line in the label's own text colour, so no part of it is left without a colour: when a wrapped line is
+     * split, Text Animator (in the pack) carries a coloured number's colour on to the words after it ("1 онлайн"
+     * all aqua). With every run coloured, only the number keeps its colour.
+     */
+    private static Component baseColored(Label label, Component text) {
+        if (text.getString().isEmpty()) return text;
+        int color = label.getTextStyle().textColor() & 0xFFFFFF;
+        return Component.empty().withStyle(s -> s.withColor(color)).append(text);
     }
 
     private static UIElement info(Player player, @Nullable ServerPlayer server) {
@@ -374,7 +399,8 @@ public final class HomeTab {
                 Component.literal(String.valueOf(warns)).withStyle(warns == 0 ? ChatFormatting.GREEN
                         : warns >= ModerationService.WARNS_BEFORE_BAN - 1 ? ChatFormatting.RED
                         : ChatFormatting.GOLD),
-                Component.literal(String.valueOf(ModerationService.WARNS_BEFORE_BAN)).withStyle(ChatFormatting.RED)));
+                // Only the warning count in colour; the ban threshold reads like the rest of the line.
+                Component.literal(String.valueOf(ModerationService.WARNS_BEFORE_BAN))));
         if (ClientPlayerStatusCache.muted()) {
             long left = ClientPlayerStatusCache.muteRemaining();
             parts.add((left < 0L

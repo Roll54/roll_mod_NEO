@@ -39,6 +39,8 @@ public final class BattlePassPackets {
                     case "admin/get" -> BattlePassService.sendAdmin(player);
                     case "daily/get" -> com.roll_54.roll_mod.minestar.dailytasks.DailyRewardConfig.sync(player);
                     case "daily/set" -> com.roll_54.roll_mod.minestar.dailytasks.DailyRewardConfig.applyAdmin(player, payload.args);
+                    case "tasks/get" -> com.roll_54.roll_mod.minestar.dailytasks.TaskSettings.sync(player);
+                    case "tasks/set" -> com.roll_54.roll_mod.minestar.dailytasks.TaskSettings.applyAdmin(player, payload.args);
                     case "admin/set" -> BattlePassService.applyAdmin(player, payload.args);
                     default -> { }
                 }
@@ -63,6 +65,11 @@ public final class BattlePassPackets {
                 else if (payload.data.getBoolean("dailyPool")) {
                     com.roll_54.roll_mod.minestar.dailytasks.DailyRewardConfig.applyTag(payload.data);
                     ClientBattlePassCache.putDaily(payload.data);
+                }
+                // The task settings: the registry's amounts and made tasks, and the editor's copy.
+                else if (payload.data.getBoolean("taskSettings")) {
+                    com.roll_54.roll_mod.minestar.dailytasks.TaskSettings.applyTag(payload.data);
+                    ClientBattlePassCache.putTasks(payload.data);
                 }
                 else if (payload.data.getBoolean("admin")) ClientBattlePassCache.putAdmin(payload.data);
                 else ClientBattlePassCache.put(payload.data);

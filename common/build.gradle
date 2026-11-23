@@ -107,6 +107,10 @@ dependencies {
     // Local: HOTFIX2 is not published on Modrinth or any maven (Modrinth stops at 0.5.3-HOTFIX).
     implementation files("jars/${createcybernetics_jar}")
 
+    // Sophisticated Storage: compile only, for the tank-only tier upgrades (compat/sophisticated). The same jars as
+    // the pack and the dev client's run/mods carry; only classes behind ModList.isLoaded("sophisticatedstorage") name it.
+    compileOnly files("jars/sophisticatedstorage-1.21.1-1.6.20.2239.jar", "jars/sophisticatedcore-1.21.1-1.5.39.2489.jar")
+
     // Curios: the death log snapshots and restores worn curios. Soft like Farmer's Delight below —
     // only compat/curios/CuriosAccess names its classes, and only after ModList says it is loaded —
     // but implementation so the dev runs have curio slots to test against.

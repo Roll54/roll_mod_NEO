@@ -41,6 +41,7 @@ public class CapabilityRegistry {
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.HV_STORM_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.LV_STORM_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.LV_ORE_SCANNER.get());
+        ISimpleEnergyItem.registerStorage(event, ItemRegistry.MV_ORE_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.HV_ORE_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.EV_ORE_SCANNER.get());
         ISimpleEnergyItem.registerStorage(event, ItemRegistry.MULTI_PROTECTING_GRAVI_CHESTPLATE.get());

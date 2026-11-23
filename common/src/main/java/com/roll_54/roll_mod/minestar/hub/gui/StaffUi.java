@@ -71,7 +71,11 @@ final class StaffUi {
      */
     static Button leftCaption(Button button) {
         button.layout(l -> l.paddingHorizontal(3));
-        button.text.textStyle(t -> t.textAlignHorizontal(com.lowdragmc.lowdraglib2.gui.ui.data.Horizontal.LEFT)
+        // The caption fills the button instead of sizing to its text: a text-sized caption is centred by the button
+        // and runs out of it when too long. Filling, it starts 3px in from the left and is cut at the right.
+        button.text.layout(l -> l.flexGrow(1).flexShrink(1).flexBasis(0).minWidth(0));
+        button.text.textStyle(t -> t.adaptiveWidth(false)
+                .textAlignHorizontal(com.lowdragmc.lowdraglib2.gui.ui.data.Horizontal.LEFT)
                 .textWrap(com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap.HIDE));
         button.setOverflowVisible(false);
         return button;

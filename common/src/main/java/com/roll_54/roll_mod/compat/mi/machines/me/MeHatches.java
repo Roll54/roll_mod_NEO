@@ -87,7 +87,25 @@ public final class MeHatches {
         public String outputOverlay() {
             return mixed ? "output_mixed" : fluid ? "output_fluid" : "output_item";
         }
+
+        /** Front overlay. The mixed hatch uses YAI's own mixed-hatch texture, read straight from YAI's jar. */
+        public String frontOverlay() {
+            return mixed ? YAI_MIXED + "/overlay_front" : overlays() + "/overlay_front";
+        }
+
+        /** Side overlay; YAI's for the mixed hatch, as {@link #frontOverlay()}. */
+        public String sideOverlay() {
+            return mixed ? YAI_MIXED + "/overlay_side" : overlays() + "/overlay_side";
+        }
+
+        /** Output-side overlay; YAI's {@code output_mixed} for the mixed hatch. */
+        public String outputOverlayTexture() {
+            return mixed ? "yet_another_industrialization:block/overlays/output_mixed" : overlays() + "/" + outputOverlay();
+        }
     }
+
+    /** YAI's mixed (item + fluid) hatch overlays, which the ME mixed hatch shows instead of a copy of ours. */
+    private static final String YAI_MIXED = "yet_another_industrialization:block/machines/mixed_hatch";
 
     public static final Spec ITEM = new Spec("me_item", "ME Item", false);
     public static final Spec FLUID = new Spec("me_fluid", "ME Fluid", true);

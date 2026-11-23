@@ -1,19 +1,21 @@
 package com.roll_54.roll_mod_client.compat.emi;
 
-import com.roll_54.roll_mod.util.RollCauldronInteractions;
 import com.roll_54.roll_mod_client.compat.jei.CauldronWashingRecipe;
 import dev.emi.emi.api.recipe.BasicEmiRecipe;
 import dev.emi.emi.api.render.EmiTexture;
+import dev.emi.emi.api.stack.EmiIngredient;
 import dev.emi.emi.api.stack.EmiStack;
 import dev.emi.emi.api.widget.WidgetHolder;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.Item;
 
+import java.util.List;
+
 /**
  * Cauldron washing, in one row of plain slots the way Fruits Delight lays out its cauldron recipes:
  * [dirty stack] → [washed stack], plus the stone and clay dust each washed item may
- * drop (chanced outputs, split evenly like {@link RollCauldronInteractions} picks them). The whole stack is
+ * drop (chanced outputs, split evenly, as the wash picks them). The whole stack is
  * washed at once for one water level.
  */
 public class EmiCauldronWashingRecipe extends BasicEmiRecipe {
@@ -23,13 +25,14 @@ public class EmiCauldronWashingRecipe extends BasicEmiRecipe {
 
     public EmiCauldronWashingRecipe(CauldronWashingRecipe recipe) {
         super(EMIRollModPlugin.CAULDRON_WASHING,
-                EMIRollModPlugin.syntheticId("cauldron_washing", EMIRollModPlugin.itemId(recipe.getInput())), OUT_X + 3 * SLOT, SLOT);
-        inputs.add(EmiStack.of(recipe.getInput()));
+                EMIRollModPlugin.syntheticId("cauldron_washing", recipe.getId()),
+                OUT_X + (1 + recipe.getByproducts().size()) * SLOT, SLOT);
+        inputs.add(EmiIngredient.of(recipe.getIngredient()));
         outputs.add(EmiStack.of(recipe.getOutput()));
 
-        Item[] dusts = RollCauldronInteractions.getDustItems();
+        List<Item> dusts = recipe.getByproducts();
         for (Item dust : dusts) {
-            outputs.add(EmiStack.of(dust).setChance(recipe.getDustDropChance() / dusts.length));
+            outputs.add(EmiStack.of(dust).setChance(recipe.getDustDropChance() / dusts.size()));
         }
     }
 

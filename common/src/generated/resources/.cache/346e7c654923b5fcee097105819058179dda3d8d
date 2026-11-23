@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-18T18:25:23.014895355	PY Ore Texture Generator
+// 1.21.1	2026-11-22T23:04:19.459497118	PY Ore Texture Generator
 04d493ac32dae38142895bb89c0d0f698031731d assets/roll_mod/textures/block/andesite_bauxite.png
 077f1074ddff861448677eb4ef04710010bd8abd assets/roll_mod/textures/block/andesite_cassiterite.png
 20333eb720b57d9eda9ce014c4aa79cdca99579c assets/roll_mod/textures/block/andesite_cassiterite_sand.png
@@ -378,6 +378,7 @@ dac6ff9807be1b3cd5197527846c3d04f3d1d97c assets/roll_mod/textures/block/tuff_mal
 bbaaae6d11b640a06e10bf687172f433640d6680 assets/roll_mod/textures/block/tuff_redstone.png
 e8f5a54e68870f43f4d39c6dfc2112543948e4d4 assets/roll_mod/textures/block/tuff_ruby.png
 5df4dceee13af462fadc8c3b90434bffa6ff22e1 assets/roll_mod/textures/block/tuff_yellow_limonite.png
+e7868283a73bb9dc3377d5ecca1e0cd03b20e481 assets/roll_mod/textures/block/venus_antimony.png
 be4e35b855ac53381d6474e6d8c7f2defcf03d26 assets/roll_mod/textures/block/venus_apatite.png
 4433c6047e2c88df1401fd4473135a2aa6d3a1e8 assets/roll_mod/textures/block/venus_blue_topaz.png
 392aad6df504e33c3c67beddedd02b57246163eb assets/roll_mod/textures/block/venus_chalcopyrite.png

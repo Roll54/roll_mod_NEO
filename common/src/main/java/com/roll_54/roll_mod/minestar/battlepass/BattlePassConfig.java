@@ -44,9 +44,11 @@ public final class BattlePassConfig {
     public int easyMultiplier = 5;
     public int hardMultiplier = 12;
     /**
-     * Per block, the FTB quest (hex id) that must be done to claim that block's rewards; empty for none. Points keep
-     * coming either way — only claiming waits. Defaults: the first quest of each main chapter (bronze, steel, LV …).
+     * Per block, the FTB quest (hex id) that must be done to claim that block's rewards; empty for none.
+     * @deprecated the blocks now open by the quest stage table only ({@link #gate}); read and saved so an old file
+     * keeps its values, but no longer used. Kept, not deleted.
      */
+    @Deprecated
     public List<String> gates = new ArrayList<>(List.of("", "7E429723D4077654", "30C00BE8D6E26A61",
             "22C9182A74642D38", "4B1CFC64CB262C44", "1A0F200E4BD286C3", "04F0701F424CEAD7", "345992D36C79E220"));
     /**
@@ -68,6 +70,10 @@ public final class BattlePassConfig {
             "bp_season_angler", "bp_season_monsters", "bp_season_explorer", "bp_season_rancher", "bp_season_chef",
             "bp_season_raids", "bp_season_epic_fish", "bp_season_breezes", "bp_season_mace"));
     public int seasonalCount = 5;
+    /** Each Monday/Thursday batch: this many easy tasks, hard ones and Prime ones. */
+    public int weeklyEasyCount = 3;
+    public int weeklyHardCount = 1;
+    public int weeklyPrimeCount = 1;
     /** The seasonals for Tide's seven legendary fish, one each. */
     private static final String[] LEGENDS = {"bp_season_legend_coelacanth", "bp_season_legend_shooting_starfish", "bp_season_legend_devils_hole_pupfish", "bp_season_legend_midas_fish", "bp_season_legend_alpha_fish", "bp_season_legend_dragon_fish", "bp_season_legend_voidseeker"};
     public int pointsSeasonal = 1000;
@@ -122,6 +128,12 @@ public final class BattlePassConfig {
         if (config.weeklyChallenges == null) config.weeklyChallenges = defaults.weeklyChallenges;
         if (config.seasonalChallenges == null) config.seasonalChallenges = defaults.seasonalChallenges;
         if (config.seasonalCount <= 0) config.seasonalCount = 5;
+        // A config from before these fields reads them as 0: the old 3 + 1 + 1.
+        if (config.weeklyEasyCount + config.weeklyHardCount + config.weeklyPrimeCount <= 0) {
+            config.weeklyEasyCount = 3;
+            config.weeklyHardCount = 1;
+            config.weeklyPrimeCount = 1;
+        }
         if (config.gates == null) config.gates = new ArrayList<>();
         while (config.gates.size() < BLOCKS) config.gates.add("");
         if (config.free == null || config.free.size() < FREE_LEVELS) config.free = new ArrayList<>(BattlePassRewards.defaultFree());
@@ -243,19 +255,23 @@ public final class BattlePassConfig {
     }
 
     /**
-     * The quest that opens {@code block}, or 0 for none. The quest stage table (Moderation → Settings → Leaderboards)
-     * decides it when it has a stage for the block: block N (N ≥ 1) opens with the N-th stage from the bottom, so the
-     * pass, the daily ingots and the stage board all follow the same quests. Past the table's end, and for block 0,
-     * the pass's own {@link #gates} still count.
+     * The quest that opens {@code block}, or 0 for none. Only the quest stage table (Moderation → Settings →
+     * Leaderboards) decides it: block 0 is open from the start, block N (N ≥ 1) opens with the N-th stage from the
+     * bottom, so the pass, the daily ingots and the stage board all follow the same quests. A block past the table's
+     * end has no stage and is open.
      */
     public long gate(int block) {
         List<com.roll_54.roll_mod.minestar.leaderboard.LeaderboardChapters.Stage> stages =
                 com.roll_54.roll_mod.minestar.leaderboard.LeaderboardChapters.configured();
         if (block >= 1 && block <= stages.size()) return stages.get(stages.size() - block).chapter();
-        return ownGate(block);
+        return 0;
     }
 
-    /** The pass's own setting for {@code block}, ignoring the stage table. */
+    /**
+     * The pass's own setting for {@code block}.
+     * @deprecated the blocks follow the quest stage table only ({@link #gate}); kept, not deleted.
+     */
+    @Deprecated
     public long ownGate(int block) {
         if (block < 0 || block >= gates.size()) return 0;
         String hex = gates.get(block);

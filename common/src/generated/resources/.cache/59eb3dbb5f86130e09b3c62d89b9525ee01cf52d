@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-22T08:26:52.979008554	Loot Tables
+// 1.21.1	2026-11-22T23:04:19.450053054	Loot Tables
 a70051ae82d1a20a3b40bbca8669d1edb15be009 data/roll_mod/loot_table/blocks/advanced_pyrolyse_oven.json
 7f6a7b11eae0145e62b073a1294837ad848ad4ac data/roll_mod/loot_table/blocks/andesite_bauxite.json
 9b9274fc67ddb132a577d9b2b0e787080ab66d67 data/roll_mod/loot_table/blocks/andesite_cassiterite.json
@@ -586,6 +586,8 @@ dc0a21cb38e6b77d8a15ffc10a712e9edcefca57 data/roll_mod/loot_table/blocks/stone_s
 604b3a68d6ed0da870742adcd4611a7bd6e3caf6 data/roll_mod/loot_table/blocks/tuff_redstone.json
 63b2cc75179c990773c16dbbd851270b82712e28 data/roll_mod/loot_table/blocks/tuff_ruby.json
 b6cbeca219589422b64ddd342447f915ac9a20a0 data/roll_mod/loot_table/blocks/tuff_yellow_limonite.json
+44a9d04f4c7857608ab186d1398d775d9c08915e data/roll_mod/loot_table/blocks/venus_antimony.json
+89ebe683737e7a1010c74c1afb5a566fa1e7924d data/roll_mod/loot_table/blocks/venus_antimony_ore_sample.json
 e09f206e5dd34260055a4012e9b7bafcd7f0ad8e data/roll_mod/loot_table/blocks/venus_apatite.json
 f28b34dbaa455374e37747401838dac4e114f8ad data/roll_mod/loot_table/blocks/venus_apatite_ore_sample.json
 f81add3f6e2d9b6a19a0ff206562026c55952674 data/roll_mod/loot_table/blocks/venus_blue_topaz.json

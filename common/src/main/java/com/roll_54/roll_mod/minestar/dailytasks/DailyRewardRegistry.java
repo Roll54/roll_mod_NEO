@@ -27,6 +27,8 @@ import java.util.Map;
 public final class DailyRewardRegistry {
 
     private static List<DailyReward> rewards = List.of();
+    /** The code-defined rewards found by {@link #bootstrap}, before any configured ones are laid over them. */
+    private static List<DailyReward> scanned = List.of();
     private static Map<String, DailyReward> byId = Map.of();
     private static Map<String, Integer> indexById = Map.of();
 
@@ -60,6 +62,7 @@ public final class DailyRewardRegistry {
             accepted.add(reward);
         }
 
+        scanned = List.copyOf(accepted);
         rewards = List.copyOf(accepted);
         byId = Map.copyOf(ids);
         indexById = Map.copyOf(indices);
@@ -68,6 +71,51 @@ public final class DailyRewardRegistry {
         // Map.copyOf does not keep insertion order.
         RollMod.LOGGER.info("[DailyTasks] Registered {} reward(s) in index order: {}",
                 rewards.size(), rewards.stream().map(DailyReward::id).toList());
+    }
+
+    /**
+     * Lays the configured bonuses ({@code daily_rewards.json}, the Moderation tab) over the code-defined ones: the
+     * configured come first, in the config's order, then every code-defined reward whose id none of them took. Run on
+     * the server when the config loads or is saved, and on a client from the server's synced copy, so the index the
+     * screen syncs means the same reward on both sides.
+     *
+     * <p>A code-defined reward that is not configured stays registered (a group it was drawn for can still collect
+     * it) but is no longer drawn: once a bonus list is configured, it is the whole draw.
+     */
+    public static synchronized void applyConfigured(List<? extends DailyReward> configured) {
+        List<DailyReward> all = new ArrayList<>();
+        Map<String, DailyReward> ids = new LinkedHashMap<>();
+        Map<String, Integer> indices = new LinkedHashMap<>();
+        for (DailyReward reward : configured) {
+            if (ids.putIfAbsent(reward.id(), reward) != null) continue;
+            indices.put(reward.id(), all.size());
+            all.add(reward);
+        }
+        boolean replaced = !configured.isEmpty();
+        for (DailyReward reward : scanned) {
+            if (ids.containsKey(reward.id())) continue;
+            DailyReward kept = replaced ? retired(reward) : reward;
+            ids.put(reward.id(), kept);
+            indices.put(reward.id(), all.size());
+            all.add(kept);
+        }
+        rewards = List.copyOf(all);
+        byId = Map.copyOf(ids);
+        indexById = Map.copyOf(indices);
+    }
+
+    /** {@code reward}, still payable but never drawn. */
+    private static DailyReward retired(DailyReward reward) {
+        return new DailyReward() {
+            @Override public String id() { return reward.id(); }
+            @Override public com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon icon() { return reward.icon(); }
+            @Override public List<com.roll_54.roll_mod.minestar.dailytasks.api.DailyTaskIcon> icons() { return reward.icons(); }
+            @Override public void grant(net.minecraft.server.level.ServerPlayer player) { reward.grant(player); }
+            @Override public net.minecraft.network.chat.Component name() { return reward.name(); }
+            @Override public net.minecraft.network.chat.Component tooltip() { return reward.tooltip(); }
+            @Override public boolean drawable() { return false; }
+            @Override public int weight() { return reward.weight(); }
+        };
     }
 
     /** Every registered reward, in a stable order shared by client and server. */

@@ -110,6 +110,12 @@ public final class ModerationTab {
     private static final int MODE_BATTLEPASS = 9;
     /** What the daily tasks pay: the reward pool and the stage ingots. */
     private static final int MODE_DAILIES = 10;
+    /**
+     * The task editor's own mode, before it became the second page of {@link #MODE_DAILIES}.
+     * @deprecated not offered any more; kept, not deleted.
+     */
+    @Deprecated
+    private static final int MODE_TASKS = 11;
     private static final String[] MODE_KEYS = {
             "gui.roll_mod.hub.moderation.mode.players",
             "gui.roll_mod.hub.moderation.mode.warps",
@@ -121,7 +127,8 @@ public final class ModerationTab {
             "gui.roll_mod.hub.moderation.mode.polls",
             "gui.roll_mod.hub.moderation.mode.tickets",
             "gui.roll_mod.hub.moderation.mode.battlepass",
-            "gui.roll_mod.hub.moderation.mode.dailies"};
+            "gui.roll_mod.hub.moderation.mode.dailies",
+            "gui.roll_mod.hub.moderation.mode.tasks"};
     private static final int MODE_W = 110;
 
     /** The player list's presence filter, cycled by its button. */
@@ -266,7 +273,18 @@ public final class ModerationTab {
                 .textAlignVertical(Vertical.CENTER).textShadow(com.roll_54.roll_mod.minestar.theme.RollUi.textShadow()));
         hint(tpsLabel, "gui.roll_mod.hub.moderation.tps.tip");
 
-        modeRow.addChildren(modeSelector, tpsLabel);
+        // The tasks mode has two pages — what the dailies pay, and the tasks themselves — switched here, right of the TPS.
+        int[] dailiesPage = {0};
+        UIElement dailiesSwitch = new UIElement();
+        dailiesSwitch.layout(l -> l.flexDirection(FlexDirection.ROW).gapColumn(3).height(ROW_H).flexShrink(0));
+        dailiesSwitch.setOverflowVisible(true);
+        com.lowdragmc.lowdraglib2.gui.ui.elements.Button rewardsPage = StaffUi.button(
+                "gui.roll_mod.hub.moderation.tasks_page.rewards", 70, () -> dailiesPage[0] = 0);
+        com.lowdragmc.lowdraglib2.gui.ui.elements.Button tasksPage = StaffUi.button(
+                "gui.roll_mod.hub.moderation.tasks_page.tasks", 70, () -> dailiesPage[0] = 1);
+        dailiesSwitch.addChildren(rewardsPage, tasksPage);
+        dailiesSwitch.setDisplay(false);
+        modeRow.addChildren(modeSelector, tpsLabel, dailiesSwitch);
 
         // Both panes live in one box and are stacked on top of each other; the inactive one is
         // squashed to nothing. See the class javadoc for why not setDisplay.
@@ -304,8 +322,10 @@ public final class ModerationTab {
                 player.level().isClientSide());
         UIElement dailiesPane = pane();
         DailyRewardsAdminPanel dailies = new DailyRewardsAdminPanel(dailiesPane, player.level().isClientSide());
+        UIElement tasksPane = pane();
+        TasksAdminPanel tasks = new TasksAdminPanel(tasksPane, player.level().isClientSide());
         stack.addChildren(playerPane, warpPane, composer.pane, kitPane, deathPane, settingsPane,
-                commandsPane, pollsPane, ticketsPane, battlePassPane, dailiesPane);
+                commandsPane, pollsPane, ticketsPane, battlePassPane, dailiesPane, tasksPane);
 
         right.addChildren(modeRow, stack);
 
@@ -402,6 +422,7 @@ public final class ModerationTab {
         String[] warpSig = {null};
         int[] leftMode = {-1};
         int[] shownMode = {-1};
+        int[] shownPage = {-1};
         boolean[] lettersOffered = {ClientModerationCache.MAY_WRITE_LETTERS};
         boolean[] kitsOffered = {ClientKitNamesCache.ALLOWED};
         boolean[] deathsOffered = {ClientModerationCache.MAY_DEATHLOG};
@@ -465,8 +486,7 @@ public final class ModerationTab {
                 show(ticketsPane, mode[0] == MODE_TICKETS);
                 show(battlePassPane, mode[0] == MODE_BATTLEPASS);
                 if (mode[0] == MODE_BATTLEPASS) battlePass.enter();
-                show(dailiesPane, mode[0] == MODE_DAILIES);
-                if (mode[0] == MODE_DAILIES) dailies.enter();
+                shownPage[0] = -1; // the tasks mode's page is (re)shown below
                 staffPanels.enter(mode[0] == MODE_COMMANDS, mode[0] == MODE_POLLS, mode[0] == MODE_TICKETS);
                 if (mode[0] == MODE_DEATHS) deaths.enter();
                 if (!Integer.valueOf(mode[0]).equals(modeSelector.getValue())) {
@@ -477,7 +497,23 @@ public final class ModerationTab {
             if (mode[0] == MODE_KITS) kits.tick();
             staffPanels.tick(mode[0] == MODE_COMMANDS, mode[0] == MODE_POLLS, mode[0] == MODE_TICKETS);
             if (mode[0] == MODE_BATTLEPASS) battlePass.tick();
-            if (mode[0] == MODE_DAILIES) dailies.tick();
+            // The tasks mode: its page switch, and whichever page is shown.
+            boolean tasksMode = mode[0] == MODE_DAILIES;
+            if (dailiesSwitch.isDisplayed() != tasksMode) dailiesSwitch.setDisplay(tasksMode);
+            int page = tasksMode ? dailiesPage[0] : -2;
+            if (page != shownPage[0]) {
+                shownPage[0] = page;
+                show(dailiesPane, page == 0);
+                show(tasksPane, page == 1);
+                if (page == 0) dailies.enter();
+                if (page == 1) tasks.enter();
+                rewardsPage.setText(net.minecraft.network.chat.Component.translatable("gui.roll_mod.hub.moderation.tasks_page.rewards")
+                        .withStyle(page == 0 ? net.minecraft.ChatFormatting.YELLOW : net.minecraft.ChatFormatting.WHITE));
+                tasksPage.setText(net.minecraft.network.chat.Component.translatable("gui.roll_mod.hub.moderation.tasks_page.tasks")
+                        .withStyle(page == 1 ? net.minecraft.ChatFormatting.YELLOW : net.minecraft.ChatFormatting.WHITE));
+            }
+            if (page == 0) dailies.tick();
+            if (page == 1) tasks.tick();
             if (mode[0] == MODE_DEATHS) deaths.tick();
 
             // Left list: whatever the mode is about.

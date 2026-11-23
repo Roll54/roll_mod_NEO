@@ -179,7 +179,9 @@ public final class BattlePassService {
         List<String> pool = new ArrayList<>();
         for (String id : config.weeklyDailies) if (DailyTaskRegistry.byId(id) != null) pool.add(id);
         for (String id : config.weeklyChallenges) if (DailyTaskRegistry.byId(id) != null) pool.add(id);
-        if (pool.size() < 5) return null;
+        int easy = Math.max(0, config.weeklyEasyCount), hard = Math.max(0, config.weeklyHardCount);
+        int total = easy + hard + Math.max(0, config.weeklyPrimeCount);
+        if (total <= 0 || pool.size() < total) return null;
         Collections.shuffle(pool, new Random(config.season * 0x9E3779B97F4A7C15L ^ day * 0xBF58476D1CE4E5B9L ^ salt));
         // The per-fish epic weeklies count as one entry: at most one of them per batch.
         boolean[] epic = {false};
@@ -190,9 +192,9 @@ public final class BattlePassService {
             return false;
         });
         List<BattlePassState.Task> tasks = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < Math.min(total, pool.size()); i++) {
             String id = pool.get(i);
-            BattlePassState.Kind kind = i < 3 ? BattlePassState.Kind.EASY : i == 3 ? BattlePassState.Kind.HARD
+            BattlePassState.Kind kind = i < easy ? BattlePassState.Kind.EASY : i < easy + hard ? BattlePassState.Kind.HARD
                     : BattlePassState.Kind.PRIME;
             int required = required(config, DailyTaskRegistry.byId(id), kind);
             tasks.add(new BattlePassState.Task(id, kind, required));
@@ -265,12 +267,18 @@ public final class BattlePassService {
 
     /* ---------------------------------------------------- points --------------------------------------------------- */
 
+    /** Starcoins paid for each point (cup) earned past the pass's last level. */
+    /** @deprecated the rate is a task setting now ({@code TaskSettings.starcoinsPerCup}); kept, not deleted. */
+    @Deprecated
+    public static final long STARCOINS_PER_POINT = 10;
+
     /** Adds {@code amount} points (an event, a task, a daily) and tells the player. */
     public static void addPoints(ServerPlayer player, long amount, Component why) {
         if (amount <= 0) return;
         BattlePassState state = BattlePassState.get(player.server);
         BattlePassState.Player data = state.player(player.getUUID());
-        // Past the pass's last level the points are worth nothing more, so they pay out as starcoins, 1 to 1. The cap
+        // Past the pass's last level the points are worth nothing more, so they pay out as starcoins,
+        // TaskSettings.starcoinsPerCup each. The cap
         // is the longer of the two tracks, so a free player who buys Prime later still has its levels to open.
         BattlePassConfig config = BattlePassConfig.get();
         long cap = Math.max((long) BattlePassConfig.FREE_LEVELS * Math.max(1, config.pointsPerLevel),
@@ -279,13 +287,14 @@ public final class BattlePassService {
         long excess = Math.max(0, total - Math.max(cap, data.points));
         data.points = Math.min(total, Math.max(cap, data.points));
         state.setDirty();
-        if (excess > 0) {
-            CurrencyLedger.logged(CurrencyService.deposit(player, CurrencyType.MAIN, excess, player.server,
+        long coins = excess * com.roll_54.roll_mod.minestar.dailytasks.TaskSettings.get().starcoinsPerCup;
+        if (coins > 0) {
+            CurrencyLedger.logged(CurrencyService.deposit(player, CurrencyType.MAIN, coins, player.server,
                             CurrencyCause.player(player, LedgerReason.BATTLE_PASS).withDetail("battle pass points past the last level")),
-                    player.getUUID(), CurrencyType.MAIN, excess, LedgerReason.BATTLE_PASS);
+                    player.getUUID(), CurrencyType.MAIN, coins, LedgerReason.BATTLE_PASS);
         }
         player.displayClientMessage((excess >= amount
-                ? Component.translatable("msg.roll_mod.battlepass.points.coins", excess, why)
+                ? Component.translatable("msg.roll_mod.battlepass.points.coins", coins, why)
                 : Component.translatable("msg.roll_mod.battlepass.points", amount, why))
                 .withStyle(ChatFormatting.GOLD), true);
         sync(player);
@@ -337,7 +346,7 @@ public final class BattlePassService {
                                  BattlePassState.Task task, DailyTaskHook hook, Object subject, int amount) {
         if (data.done.contains(key)) return false;
         DailyTask def = DailyTaskRegistry.byId(task.taskId());
-        if (def == null || def.hook() != hook || !def.matches(subject)) return false;
+        if (def == null || def.hook() != hook || !def.matches(subject) || !def.allowedFor(player)) return false;
         int now = Math.min(task.required(), data.progress.getOrDefault(key, 0) + amount);
         data.progress.put(key, now);
         if (now >= task.required()) {

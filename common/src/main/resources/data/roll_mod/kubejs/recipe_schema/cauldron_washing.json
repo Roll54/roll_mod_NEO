@@ -1,0 +1,33 @@
+{
+	"keys": [
+		{
+			"name": "result",
+			"role": "output",
+			"type": "item_stack"
+		},
+		{
+			"name": "ingredient",
+			"role": "input",
+			"type": "ingredient"
+		},
+		{
+			"name": "byproduct_chance",
+			"role": "output",
+			"type": {
+				"type": "float",
+				"min": 0.0,
+				"max": 1.0
+			},
+			"function_names": ["byproductChance", "chance"],
+			"optional": 0.5
+		},
+		{
+			"name": "uses_water",
+			"role": "other",
+			"type": "boolean",
+			"function_names": ["usesWater"],
+			"optional": true
+		}
+	],
+	"unique": ["ingredient"]
+}

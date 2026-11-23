@@ -2,6 +2,7 @@ package com.roll_54.roll_mod.minestar.hub.gui;
 
 import com.lowdragmc.lowdraglib2.gui.texture.ItemStackTexture;
 import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
+import com.lowdragmc.lowdraglib2.gui.ui.data.TextWrap;
 import com.lowdragmc.lowdraglib2.gui.ui.data.Vertical;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Button;
 import com.lowdragmc.lowdraglib2.gui.ui.elements.Label;
@@ -140,43 +141,19 @@ final class BattlePassAdminPanel {
             body.addScrollViewChild(row);
         }
 
-        // Block quests.
+        // Block quests: read-only, from the quest stage table (Moderation → Settings → Leaderboards).
         body.addScrollViewChild(StaffUi.header("gui.roll_mod.battlepass.admin.gates"));
-        if (tableGates.stream().anyMatch(g -> !g.isBlank())) body.addScrollViewChild(StaffUi.dim("gui.roll_mod.battlepass.admin.from_table"));
+        body.addScrollViewChild(StaffUi.dim("gui.roll_mod.battlepass.admin.from_table"));
         for (int b = 0; b < BattlePassConfig.BLOCKS; b++) {
-            int index = b;
             UIElement row = StaffUi.row();
-            boolean fromTable = b < tableGates.size() && !tableGates.get(b).isBlank();
-            long quest = parse(fromTable ? tableGates.get(b) : gates.get(b));
+            long quest = b < tableGates.size() ? parse(tableGates.get(b)) : 0;
             Component name = quest == 0 ? Component.translatable("gui.roll_mod.battlepass.admin.no_quest").withStyle(ChatFormatting.GRAY)
                     : QuestGate.title(true, quest).copy().withStyle(ChatFormatting.YELLOW);
             Label label = StaffUi.text(Component.translatable("gui.roll_mod.battlepass.admin.block", b + 1,
                     b * BattlePassConfig.FREE_PER_BLOCK + 1, (b + 1) * BattlePassConfig.FREE_PER_BLOCK).append(": ").append(name));
             label.layout(l -> l.flexBasis(0).flexGrow(1).height(StaffUi.ROW_H));
-            label.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
-            Button pick = StaffUi.button("gui.roll_mod.battlepass.admin.pick_quest", 60, () -> {
-                picker.setOnPick(id -> {
-                    gates.set(index, Long.toHexString(id).toUpperCase(java.util.Locale.ROOT));
-                    dirty = true;
-                    rebuild = true;
-                });
-                picker.open();
-            });
-            Button clear = StaffUi.button(Component.literal("✕"), 16, () -> {
-                gates.set(index, "");
-                dirty = true;
-                rebuild = true;
-            });
-            if (fromTable) {
-                // Set by the quest stage table (Settings → Leaderboards): shown, not changed from here.
-                Label table = StaffUi.text(Component.translatable("gui.roll_mod.battlepass.admin.table_tag").withStyle(ChatFormatting.AQUA));
-                table.layout(l -> l.width(80).height(StaffUi.ROW_H).flexShrink(0));
-                table.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
-                row.addChildren(label, table);
-            } else {
-                row.addChildren(label, pick, clear);
-            }
-            row.setOverflowVisible(true);
+            label.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
+            row.addChild(label);
             body.addScrollViewChild(row);
         }
 

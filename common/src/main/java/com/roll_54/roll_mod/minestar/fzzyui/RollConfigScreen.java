@@ -56,6 +56,8 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
     private static final int BAR_H = 16;
     private static final int SIDEBAR_W = 112;
     private static final int ROW_GAP = 3;
+    /** Scroller viewport padding: up to 4px frame + the 3px text margin. */
+    private static final int VIEW_PAD = 7;
     private static final int GREY = 0xFFA0A0A0;
 
     private static boolean listening;
@@ -168,6 +170,7 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
         UIElement main = new UIElement();
         main.layout(l -> l.flexDirection(FlexDirection.COLUMN).flexGrow(1).heightPercent(100).gapRow(3));
         search.setText("", false);
+        search.textFieldStyle(t -> t.placeholder(Component.translatable("gui.roll_mod.config.search.placeholder")));
         search.layout(l -> l.height(ConfigEditors.CONTROL_H).widthPercent(100).flexShrink(0));
         search.setTextResponder(s -> showEntries());
         search.style(s -> s.tooltips(Component.translatable("gui.roll_mod.config.search.tip")));
@@ -199,6 +202,9 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
                 .verticalScrollDisplay(ScrollDisplay.AUTO)
                 .horizontalScrollDisplay(ScrollDisplay.NEVER));
         view.viewContainer(c -> c.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100).gapRow(ROW_GAP)));
+        // In a themed frame the viewport pads 7px (frame + 3px), so names never sit on the frame's inner edge and
+        // the scrollbar never covers a row's last button.
+        view.viewPort(v -> v.layout(l -> l.paddingAll(VIEW_PAD)));
         return view;
     }
 

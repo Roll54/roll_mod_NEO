@@ -14,10 +14,15 @@ public final class HubScreens {
         return screen instanceof ModularUIContainerScreen container && HubUI.isHub(container.getMenu().getModularUI());
     }
 
-    /** Screens the recipe browser stays off: the hub and the service block's (nothing there to look up). */
+    /**
+     * Screens the recipe browser stays off: the hub, the service block's (nothing there to look up) and every Crop
+     * Manager tier's (its sidebars kept landing over the window).
+     */
     public static boolean hidesRecipeBrowser(Object screen) {
-        return screen instanceof ModularUIContainerScreen container
-                && (HubUI.isHub(container.getMenu().getModularUI())
-                || com.roll_54.roll_mod.economy.service.gui.ServiceUI.isService(container.getMenu().getModularUI()));
+        if (!(screen instanceof ModularUIContainerScreen container)) return false;
+        var ui = container.getMenu().getModularUI();
+        return HubUI.isHub(ui)
+                || com.roll_54.roll_mod.economy.service.gui.ServiceUI.isService(ui)
+                || com.roll_54.roll_mod.compat.MBD2.machine.CropManagerUI.isCropManager(ui);
     }
 }

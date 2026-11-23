@@ -46,6 +46,17 @@ public class RecipeRegistry {
                 }
             });
 
+    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<com.roll_54.roll_mod.recipe.CauldronWashingRecipe>> CAULDRON_WASHING_SERIALIZER =
+            RECIPE_SERIALIZERS.register("cauldron_washing", com.roll_54.roll_mod.recipe.CauldronWashingRecipe.Serializer::new);
+
+    public static final DeferredHolder<RecipeType<?>, RecipeType<com.roll_54.roll_mod.recipe.CauldronWashingRecipe>> CAULDRON_WASHING_TYPE =
+            RECIPE_TYPES.register("cauldron_washing", () -> new RecipeType<com.roll_54.roll_mod.recipe.CauldronWashingRecipe>() {
+                @Override
+                public String toString() {
+                    return "cauldron_washing";
+                }
+            });
+
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<TelescopeRecipe>> TELESCOPE_RECIPE_SERIALIZER =
             RECIPE_SERIALIZERS.register("telescope", TelescopeRecipeSerializer::new);
 

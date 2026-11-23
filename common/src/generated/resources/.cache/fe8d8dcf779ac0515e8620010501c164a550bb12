@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-18T19:08:41.842201576	Block States: roll_mod
+// 1.21.1	2026-11-22T23:04:19.453583158	Block States: roll_mod
 70ba93c39729d11923d9973b443ce51138a6f09f assets/roll_mod/blockstates/andesite_bauxite.json
 8a0753f21c02b084059f31641ac8ab78d53994d8 assets/roll_mod/blockstates/andesite_cassiterite.json
 b15d7162960ae65830db3efb6fe84976dce10186 assets/roll_mod/blockstates/andesite_cassiterite_sand.json
@@ -537,6 +537,8 @@ ec9114bf51c71f3692ffe5941dda7987d0540b97 assets/roll_mod/blockstates/tuff_magnet
 35a9330656994d4f1ecaaf058e9aa44345280cbe assets/roll_mod/blockstates/tuff_redstone.json
 dd8eb128fcd61dfe8d9e2a95448b4608af65c119 assets/roll_mod/blockstates/tuff_ruby.json
 637cfb7fcd787c2b4ac059ebb2f19ff5d40945c0 assets/roll_mod/blockstates/tuff_yellow_limonite.json
+d411b8ce2d743170c28f3908fb69913af2a8a17a assets/roll_mod/blockstates/venus_antimony.json
+b1ac3aaacfbf5e4effd607e3888bc209474bf2b3 assets/roll_mod/blockstates/venus_antimony_ore_sample.json
 0f600e238ad24bedd36f79a91e3c43413c962cb8 assets/roll_mod/blockstates/venus_apatite.json
 7fe8cfe49c00dae68d21558fbadf5b0948795e69 assets/roll_mod/blockstates/venus_apatite_ore_sample.json
 31481616d052b4fe81bbdec4c77da9c42de9745b assets/roll_mod/blockstates/venus_blue_topaz.json
@@ -1111,6 +1113,8 @@ d1a33f2fca6ed93c70799fe950ea6d176e9c1e3b assets/roll_mod/models/block/tuff_magne
 244d8003fc66f9fd3a043c0a90a5a9a321e3c427 assets/roll_mod/models/block/tuff_redstone.json
 451fce07e48e5c0eec498858481d69482fcde753 assets/roll_mod/models/block/tuff_ruby.json
 fd6bcecd5daf5994d3ae72c298cdddc465ac11a6 assets/roll_mod/models/block/tuff_yellow_limonite.json
+637901d0524f0533cfcd299ccd59e476f6690a4c assets/roll_mod/models/block/venus_antimony.json
+20add29c3f1f0b4edc159b555c2b88ad988ac3cc assets/roll_mod/models/block/venus_antimony_ore_sample.json
 314e05b1a0ce96670f37a2d2d3642cbae19f1bcd assets/roll_mod/models/block/venus_apatite.json
 816178d3f7ae1d2897ee23a52848471e4ca7f64d assets/roll_mod/models/block/venus_apatite_ore_sample.json
 e7691e6998f692049b8d22b43e36ee326e89f74b assets/roll_mod/models/block/venus_blue_topaz.json
@@ -1685,6 +1689,8 @@ c42cee3c5884f76f28593e1920ea3050725918c4 assets/roll_mod/models/item/tuff_magnet
 1e24c4d964a25d863b54c39d6b1aefda14677794 assets/roll_mod/models/item/tuff_redstone.json
 19ee872d6fdcaa864e7c7d17a81dcd7f87cec31e assets/roll_mod/models/item/tuff_ruby.json
 abc188e8099aeba5925d354f3c7735a86d2bc99e assets/roll_mod/models/item/tuff_yellow_limonite.json
+aec021900f016cd8f273069e922a71dc3d16f4de assets/roll_mod/models/item/venus_antimony.json
+a1ccf68e497e1163884fceab95e0439187845bd5 assets/roll_mod/models/item/venus_antimony_ore_sample.json
 13748f7857c928200f1fbc3eb543a0a6de4f2d2e assets/roll_mod/models/item/venus_apatite.json
 aa8f7eee4e625000535b910c31b0aa4a7ffcd3df assets/roll_mod/models/item/venus_apatite_ore_sample.json
 33011f7d0db0dee8486212f40ccc9645ebe2405d assets/roll_mod/models/item/venus_blue_topaz.json

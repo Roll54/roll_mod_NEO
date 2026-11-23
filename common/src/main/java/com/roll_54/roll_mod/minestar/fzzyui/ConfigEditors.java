@@ -142,7 +142,11 @@ final class ConfigEditors {
         toggle.setOnSwitchChanged(on -> {
             if (!binding.set(on)) toggle.setOn(Boolean.TRUE.equals(binding.get()), false);
         });
-        return toggle;
+        // The row stretches its editor; the switch keeps its own width inside a holder that takes the stretch.
+        UIElement holder = new UIElement();
+        holder.layout(l -> l.flexDirection(FlexDirection.ROW).alignItems(AlignItems.CENTER).height(CONTROL_H));
+        holder.addChild(toggle);
+        return holder;
     }
 
     private static UIElement numberEditor(ValidatedNumber<?> template, Binding binding) {
