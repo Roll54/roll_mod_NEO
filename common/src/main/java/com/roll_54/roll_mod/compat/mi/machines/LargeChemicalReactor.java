@@ -84,13 +84,15 @@ public final class LargeChemicalReactor {
                 .build();
         hook.builder(ID, ENGLISH_NAME, BlockEntity::new)
                 // The category of its own type; the chemical reactor's are joined in registerWorkstations.
+                // Six of each, two columns by three rows: items in, fluids in, the chemical reactor's triple arrow, items
+                // out, fluids out — across the whole width of MI's 176px recipe panel.
                 .gui(true, SteamMode.ELECTRIC_ONLY, own, gui -> gui
-                        .progressBar(77, 35, "arrow")
+                        .progressBar(81, 34, "triple_arrow")
                         .slots(slots -> slots.append(
-                                in -> in.addSlots(36, 17, 1, 3),
-                                out -> out.addSlots(102, 17, 1, 3),
-                                fluidIn -> fluidIn.addSlots(16, 17, 1, 3),
-                                fluidOut -> fluidOut.addSlots(122, 17, 1, 3))))
+                                in -> in.addSlots(7, 17, 2, 3),
+                                out -> out.addSlots(104, 17, 2, 3),
+                                fluidIn -> fluidIn.addSlots(43, 17, 2, 3),
+                                fluidOut -> fluidOut.addSlots(140, 17, 2, 3))))
                 .registerMachine()
                 .registerMultiblockShape(shape)
                 .registerRecipeCategory();

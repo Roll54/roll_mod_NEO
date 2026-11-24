@@ -48,14 +48,16 @@ public abstract class GuiGraphicsRecolorMixin {
     }
 
     /**
-     * The furnace's fire (furnace, blast furnace, smoker: {@code …/lit_progress}) keeps vanilla's colours: its greys
-     * and whites are part of the flame, and recoloured they turned it into a smear of theme tones.
+     * The furnace's fire (furnace, blast furnace, smoker: {@code …/lit_progress}): its grey background takes the theme,
+     * the flame keeps vanilla's colours ({@link com.roll_54.roll_mod.minestar.theme.FurnaceFlame}).
      */
     @WrapMethod(method = "blitSprite(Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V", require = 0)
     private void roll_mod$fireAsIs(ResourceLocation sprite, int texW, int texH, int u, int v, int x, int y, int w, int h,
                                    Operation<Void> original) {
-        if (sprite.getPath().endsWith("lit_progress")) {
-            GuiRecolor.withoutRecolor(() -> original.call(sprite, texW, texH, u, v, x, y, w, h));
+        if (sprite.getPath().endsWith("lit_progress") && GuiRecolor.on()) {
+            // Recoloured, so its grey background takes the theme; then the flame alone over it, as it is.
+            original.call(sprite, texW, texH, u, v, x, y, w, h);
+            com.roll_54.roll_mod.minestar.theme.FurnaceFlame.drawFlame((GuiGraphics) (Object) this, sprite, texW, texH, u, v, x, y, w, h);
         } else {
             original.call(sprite, texW, texH, u, v, x, y, w, h);
         }
@@ -63,8 +65,9 @@ public abstract class GuiGraphicsRecolorMixin {
 
     @WrapMethod(method = "blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", require = 0)
     private void roll_mod$fireAsIsWhole(ResourceLocation sprite, int x, int y, int w, int h, Operation<Void> original) {
-        if (sprite.getPath().endsWith("lit_progress")) {
-            GuiRecolor.withoutRecolor(() -> original.call(sprite, x, y, w, h));
+        if (sprite.getPath().endsWith("lit_progress") && GuiRecolor.on()) {
+            original.call(sprite, x, y, w, h);
+            com.roll_54.roll_mod.minestar.theme.FurnaceFlame.drawFlame((GuiGraphics) (Object) this, sprite, w, h, 0, 0, x, y, w, h);
         } else {
             original.call(sprite, x, y, w, h);
         }

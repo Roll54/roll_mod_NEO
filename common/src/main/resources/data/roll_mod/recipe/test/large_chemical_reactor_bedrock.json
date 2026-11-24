@@ -1,0 +1,109 @@
+{
+  "type": "modern_industrialization:large_chemical_reactor",
+  "eu": 32,
+  "duration": 200,
+  "item_inputs": [
+    {
+      "item": "minecraft:bedrock",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:barrier",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:command_block",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:structure_void",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:light",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:jigsaw",
+      "amount": 1
+    }
+  ],
+  "fluid_inputs": [
+    {
+      "fluid": "minecraft:water",
+      "amount": 1000
+    },
+    {
+      "fluid": "minecraft:lava",
+      "amount": 1000
+    },
+    {
+      "fluid": "modern_industrialization:uu_matter",
+      "amount": 100
+    },
+    {
+      "fluid": "modern_industrialization:helium_3",
+      "amount": 1000
+    },
+    {
+      "fluid": "modern_industrialization:deuterium",
+      "amount": 1000
+    },
+    {
+      "fluid": "modern_industrialization:tritium",
+      "amount": 1000
+    }
+  ],
+  "item_outputs": [
+    {
+      "item": "minecraft:reinforced_deepslate",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:end_portal_frame",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:budding_amethyst",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:spawner",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:knowledge_book",
+      "amount": 1
+    },
+    {
+      "item": "minecraft:debug_stick",
+      "amount": 1
+    }
+  ],
+  "fluid_outputs": [
+    {
+      "fluid": "modern_industrialization:hydrogen",
+      "amount": 1000
+    },
+    {
+      "fluid": "modern_industrialization:oxygen",
+      "amount": 1000
+    },
+    {
+      "fluid": "modern_industrialization:chlorine",
+      "amount": 1000
+    },
+    {
+      "fluid": "modern_industrialization:argon",
+      "amount": 1000
+    },
+    {
+      "fluid": "modern_industrialization:helium",
+      "amount": 1000
+    },
+    {
+      "fluid": "modern_industrialization:uu_matter",
+      "amount": 100
+    }
+  ]
+}

@@ -143,10 +143,10 @@ public final class GuiRecolor {
 
     /**
      * A texture to draw in place of {@code texture} while the recolour is on: TEI's button sheet, whose green
-     * "bookmarked" outline the recolour cannot touch, from roll_mod's copy with an amber one.
+     * green "on" states the recolour cannot touch, in the player's notification colour ({@link TeiButtonSheet}).
      */
     public static net.minecraft.resources.ResourceLocation swapTexture(net.minecraft.resources.ResourceLocation texture) {
-        return TEI_BUTTONS.equals(texture) && active() != null ? TEI_BUTTONS_THEMED : texture;
+        return TEI_BUTTONS.equals(texture) && active() != null ? TeiButtonSheet.texture() : texture;
     }
 
     /** How deep we are in drawing the theme's own art (its panel, buttons, fields), which must not be recoloured. */
