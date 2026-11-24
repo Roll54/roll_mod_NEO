@@ -863,7 +863,8 @@ public final class HubUI {
                 .width(BACK_BTN).height(BACK_BTN));
         // Read through a supplier every frame: LdLib swaps its Icons fields at resource load. White icons vanish on the
         // light themes, so there they are drawn in the theme's text colour (LightText.icon).
-        button.style(s -> s.background(IGuiTexture.dynamic(() -> com.roll_54.roll_mod.minestar.theme.LightText.icon(texture.get())))
+        button.style(s -> s.background(HubIcons.blended(IGuiTexture.dynamic(
+                        () -> com.roll_54.roll_mod.minestar.theme.LightText.icon(texture.get()))))
                 .zIndex(BACK_Z));
         button.addEventListener(UIEvents.HOVER_TOOLTIPS, e -> {
             String key = tip != null ? tip

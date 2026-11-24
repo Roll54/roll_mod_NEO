@@ -811,6 +811,7 @@ public class ItemRegistry {
     public static final DeferredHolder<Item, Item> BLUE_WAFER_AND = registerTooltip("blue_wafer_and", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_NAND = registerTooltip("blue_wafer_nand", TooltipOptions.name(BLUE));
     public static final DeferredHolder<Item, Item> BLUE_WAFER_PMIC = registerTooltip("blue_wafer_pmic", TooltipOptions.name(BLUE));
+    public static final DeferredHolder<Item, Item> BLUE_CHIP_PMIC = registerTooltip("blue_chip_pmic", TooltipOptions.name(BLUE));
 
     //T1
     public static final DeferredHolder<Item, Item> STANDARD_WAFER_NOT = ITEMS.register("standard_wafer_not", () -> new Item(new Item.Properties()));

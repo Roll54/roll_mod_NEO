@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-18T19:08:41.832649803	Item Models: roll_mod
+// 1.21.1	2026-11-24T10:33:44.816379635	Item Models: roll_mod
 e4d54a03c2036668fc6d270ded79da4653dd9368 assets/roll_mod/models/crop/black_bell_pepper_stage0.json
 e78f602c620ba4d51c97645f919c263e0552cc7d assets/roll_mod/models/crop/black_bell_pepper_stage1.json
 23ba5e6ad602a042edd531e678c168dcd9e9a862 assets/roll_mod/models/crop/black_bell_pepper_stage2.json
@@ -252,6 +252,7 @@ c430ed554b852d039ecab2cf2e0bf8868e1071b4 assets/roll_mod/models/item/black_bronz
 264e33a7dcd5edc6bc16dd440caa7fdf6128a8e9 assets/roll_mod/models/item/blue_boule.json
 f4beb1ec91de020809c90645ace7a7d1c1428d75 assets/roll_mod/models/item/blue_chip_concurrent.json
 db3e26dbc1be25bda92839eeac835d026959b7bb assets/roll_mod/models/item/blue_chip_cpu.json
+337516e93d8471a54135a31234b91722e6c8ee12 assets/roll_mod/models/item/blue_chip_pmic.json
 56ab3ce3ae3a74783cc2cfdfe428a6d4b705e5d6 assets/roll_mod/models/item/blue_chip_ram.json
 5fccc71eed86c292f28eaf905fda2f4ca976e498 assets/roll_mod/models/item/blue_wafer.json
 e5320a25c7bfd5db5a080d5045afd8894fd4ee6b assets/roll_mod/models/item/blue_wafer_and.json

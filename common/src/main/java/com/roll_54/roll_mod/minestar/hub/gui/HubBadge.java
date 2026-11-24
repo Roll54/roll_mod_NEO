@@ -66,6 +66,9 @@ public final class HubBadge {
     }
 
     private static void drawRaw(net.minecraft.client.gui.GuiGraphics graphics, int x, int y, int size) {
+        // Its round body's transparent corners must stay transparent, whatever the caller left blending at.
+        com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+        com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
         int argb = HubNotifications.color().argb();
         graphics.setColor(((argb >> 16) & 0xFF) / 255f, ((argb >> 8) & 0xFF) / 255f, (argb & 0xFF) / 255f, 1f);
         graphics.blit(BADGE_BODY, x, y, 0, 0, size, size, size, size);

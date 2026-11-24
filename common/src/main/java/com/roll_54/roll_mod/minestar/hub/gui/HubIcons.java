@@ -145,6 +145,22 @@ public final class HubIcons {
         };
     }
 
+    /**
+     * {@code texture} drawn with alpha blending switched on (vanilla's default blend), whatever was drawn before it.
+     * In the maximized hub something left blending off, and the window buttons' transparent pixels came out black.
+     */
+    public static IGuiTexture blended(IGuiTexture texture) {
+        return new IGuiTexture() {
+            @Override
+            public void draw(net.minecraft.client.gui.GuiGraphics g, float mx, float my, float x, float y, float w, float h,
+                             float pt) {
+                com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+                com.mojang.blaze3d.systems.RenderSystem.defaultBlendFunc();
+                texture.draw(g, mx, my, x, y, w, h, pt);
+            }
+        };
+    }
+
     private HubIcons() {}
 
     private static IGuiTexture icon(String name) {

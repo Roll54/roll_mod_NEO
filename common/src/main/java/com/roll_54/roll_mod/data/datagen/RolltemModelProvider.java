@@ -75,6 +75,7 @@ public class RolltemModelProvider extends ItemModelProvider {
         basicItem(ItemRegistry.BLUE_WAFER_AND.get());
         basicItem(ItemRegistry.BLUE_WAFER_NAND.get());
         basicItem(ItemRegistry.BLUE_WAFER_PMIC.get());
+        basicItem(ItemRegistry.BLUE_CHIP_PMIC.get());
         basicItem(ItemRegistry.BLUE_WAFER_CPU.get());
 
 

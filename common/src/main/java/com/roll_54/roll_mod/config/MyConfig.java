@@ -198,14 +198,6 @@ public class MyConfig extends Config {
                 );
     }
 
-    @Comment("Item that gives every next field")
-    /** @deprecated the book auto-give was removed; kept so existing config files still read. */
-    @Deprecated
-    public String autogiveItem = "minecraft:stone";
-
-    @Comment("Period of time that need to give a book, or whatever")
-    public int TIME_TO_GIVE = 12000;
-
     public PvPSettings pvp = new PvPSettings();
 
     public static class PvPSettings extends ConfigSection {
