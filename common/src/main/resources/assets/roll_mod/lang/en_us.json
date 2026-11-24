@@ -3619,6 +3619,8 @@
   "gui.roll_mod.dailies.admin.bonus_add": "+ Add bonus",
   "gui.roll_mod.dailies.admin.bonus_empty": "gives nothing",
   "gui.roll_mod.dailies.admin.bonus_card": "What the bonus gives",
+  "gui.roll_mod.dailies.admin.bonus_stages_hint": "Once a player's team has passed a quest stage (from the stage table), the bonus pays what is set for that stage. Click a stage to set its items; an empty one keeps what the stage before paid.",
+  "gui.roll_mod.dailies.admin.bonus_stage_hint": "What the bonus pays from this stage on. Each line is paid separately; an item can take a from–to.",
   "gui.roll_mod.dailies.admin.bonus_card_hint": "Each line is paid on its own. An item can have a from–to range: the amount is rolled every time.",
   "gui.roll_mod.dailies.admin.bonus_add_line": "+ Add item",
   "dailyreward.roll_mod.custom.title": "Daily bonus",

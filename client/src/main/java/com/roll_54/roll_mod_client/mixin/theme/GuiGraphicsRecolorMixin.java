@@ -78,7 +78,7 @@ public abstract class GuiGraphicsRecolorMixin {
     }
 
     /**
-     * TEI's "bookmarked" recipe button is outlined in green, which the recolour (greys only) left as it was on every
+     * TEI's recipe buttons show their "on" states (bookmarked, default recipe, tree goal) in green, which the recolour (greys only) left as it was on every
      * theme. While the recolour is on, TEI's button sheet is drawn from roll_mod's copy, the same art with an amber
      * outline there instead ({@link GuiRecolor#swapTexture}).
      */

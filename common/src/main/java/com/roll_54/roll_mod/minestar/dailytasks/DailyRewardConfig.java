@@ -56,18 +56,43 @@ public final class DailyRewardConfig {
         public String id = "";
         public int weight = 1;
         public List<String> payout = new ArrayList<>();
+        /**
+         * Per quest stage past the first (bronze … IV), what the bonus pays from that stage on instead; an empty list
+         * keeps what the stage before paid.
+         */
+        public List<List<String>> stages = new ArrayList<>();
 
         public BonusEntry() {}
 
         BonusEntry(String id, int weight, List<String> payout) {
+            this(id, weight, payout, List.of());
+        }
+
+        public BonusEntry(String id, int weight, List<String> payout, List<List<String>> stages) {
             this.id = id;
             this.weight = weight;
             this.payout = new ArrayList<>(payout);
+            this.stages = new ArrayList<>();
+            for (List<String> st : stages) this.stages.add(new ArrayList<>(st));
         }
 
+        /** {@code id|weight|line;line|stage~stage}, each stage's lines {@code ;}-joined. */
         String row() {
-            return id + "|" + weight + "|" + String.join(";", payout == null ? List.of() : payout);
+            List<String> st = new ArrayList<>();
+            if (stages != null) for (List<String> lines : stages) st.add(String.join(";", lines == null ? List.of() : lines));
+            while (!st.isEmpty() && st.get(st.size() - 1).isBlank()) st.remove(st.size() - 1);
+            return id + "|" + weight + "|" + String.join(";", payout == null ? List.of() : payout) + "|" + String.join("~", st);
         }
+    }
+
+    /** Per configured bonus id, the reward id it pays at each quest stage 0 … {@link TaskRewardPool#STAGES}. */
+    private static volatile java.util.Map<String, String[]> bonusByStage = java.util.Map.of();
+
+    /** The reward the bonus drawn as {@code id} pays at {@code stage}: its stage variant, or {@code id} itself. */
+    public static String bonusAt(String id, int stage) {
+        String[] ids = bonusByStage.get(id);
+        if (ids == null) return id;
+        return ids[Math.max(0, Math.min(ids.length - 1, stage))];
     }
 
     /** The daily bonus draw; {@code null} in an older file, which gets the code-defined bonuses written out. */
@@ -113,7 +138,10 @@ public final class DailyRewardConfig {
         }
         for (Entry e : config.pool) if (e.stages == null) e.stages = new ArrayList<>();
         if (config.bonus == null) config.bonus = defaultBonus();
-        for (BonusEntry b : config.bonus) if (b.payout == null) b.payout = new ArrayList<>();
+        for (BonusEntry b : config.bonus) {
+            if (b.payout == null) b.payout = new ArrayList<>();
+            if (b.stages == null) b.stages = new ArrayList<>();
+        }
         // An older file's one ingot list becomes the iron entry's own stages.
         if (config.stageIngots != null && !config.stageIngots.isEmpty()) {
             for (Entry e : config.pool) {
@@ -137,23 +165,45 @@ public final class DailyRewardConfig {
         applyBonus(bonus == null ? List.of() : bonus);
     }
 
+    /**
+     * The bonuses into the registry: each one as drawn, plus a variant ({@code id@sN}, never drawn itself) from every
+     * stage that changes what it pays. The draw picks the bonus; {@link #bonusAt} turns it into what the group's stage
+     * pays, for the panel and the claim alike.
+     */
     private static void applyBonus(List<BonusEntry> entries) {
         List<com.roll_54.roll_mod.minestar.dailytasks.rewards.ConfiguredBonusReward> rewards = new ArrayList<>();
+        java.util.Map<String, String[]> byStage = new java.util.HashMap<>();
         for (BonusEntry b : entries) {
             if (b.id == null || b.id.isBlank()) continue;
+            String id = b.id.strip();
+            List<String> payout = b.payout == null ? List.of() : b.payout;
             rewards.add(new com.roll_54.roll_mod.minestar.dailytasks.rewards.ConfiguredBonusReward(
-                    b.id.strip(), Math.max(0, b.weight), b.payout == null ? List.of() : b.payout));
+                    id, Math.max(0, b.weight), payout));
+            String[] ids = new String[TaskRewardPool.STAGES + 1];
+            ids[0] = id;
+            for (int st = 1; st <= TaskRewardPool.STAGES; st++) {
+                List<String> own = b.stages != null && st - 1 < b.stages.size() ? b.stages.get(st - 1) : null;
+                if (own != null && own.stream().anyMatch(l -> l != null && !l.isBlank())) {
+                    String variant = id + "@s" + st;
+                    rewards.add(com.roll_54.roll_mod.minestar.dailytasks.rewards.ConfiguredBonusReward.variant(variant, own));
+                    ids[st] = variant;
+                } else {
+                    ids[st] = ids[st - 1];
+                }
+            }
+            byStage.put(id, ids);
         }
+        bonusByStage = java.util.Map.copyOf(byStage);
         DailyRewardRegistry.applyConfigured(rewards);
     }
 
-    /** The bonus rows of a synced tag: {@code id|weight|line;line}. */
+    /** The bonus rows of a synced tag: {@code id|weight|line;line} and, after another {@code |}, the stages. */
     public static List<BonusEntry> bonusRows(CompoundTag tag) {
         List<BonusEntry> out = new ArrayList<>();
         ListTag list = tag.getList("bonus", Tag.TAG_STRING);
         for (int i = 0; i < list.size(); i++) {
             String[] parts = list.getString(i).split("\\|", -1);
-            if (parts.length != 3 || parts[0].isBlank()) continue;
+            if ((parts.length != 3 && parts.length != 4) || parts[0].isBlank()) continue;
             int weight;
             try {
                 weight = Math.max(0, Integer.parseInt(parts[1].strip()));
@@ -162,7 +212,15 @@ public final class DailyRewardConfig {
             }
             List<String> payout = new ArrayList<>();
             for (String line : parts[2].split(";", -1)) if (!line.isBlank()) payout.add(line.strip());
-            out.add(new BonusEntry(parts[0].strip(), weight, payout));
+            List<List<String>> stages = new ArrayList<>();
+            if (parts.length == 4 && !parts[3].isBlank()) {
+                for (String st : parts[3].split("~", -1)) {
+                    List<String> lines = new ArrayList<>();
+                    for (String line : st.split(";", -1)) if (!line.isBlank()) lines.add(line.strip());
+                    stages.add(lines);
+                }
+            }
+            out.add(new BonusEntry(parts[0].strip(), weight, payout, stages));
         }
         return out;
     }
@@ -170,6 +228,10 @@ public final class DailyRewardConfig {
     /** One bonus as a tag row, for the editor. */
     public static String bonusRow(String id, int weight, List<String> payout) {
         return new BonusEntry(id, weight, payout).row();
+    }
+
+    public static String bonusRow(String id, int weight, List<String> payout, List<List<String>> stages) {
+        return new BonusEntry(id, weight, payout, stages).row();
     }
 
     /* ----------------------------------------------------- sync ------------------------------------------------------ */

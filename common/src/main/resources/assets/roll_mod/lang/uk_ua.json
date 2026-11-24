@@ -3615,6 +3615,8 @@
   "gui.roll_mod.dailies.admin.bonus_add": "+ Додати бонус",
   "gui.roll_mod.dailies.admin.bonus_empty": "нічого не видає",
   "gui.roll_mod.dailies.admin.bonus_card": "Що видає бонус",
+  "gui.roll_mod.dailies.admin.bonus_stages_hint": "Коли команда гравця пройшла етап квестів (з таблиці етапів), бонус видає те, що задано для етапу. Клацни на етап, щоб задати його предмети; порожній лишає те, що було на попередньому.",
+  "gui.roll_mod.dailies.admin.bonus_stage_hint": "Що видає бонус з цього етапу. Кожен рядок видається окремо; для предмета можна задати від–до.",
   "gui.roll_mod.dailies.admin.bonus_card_hint": "Кожен рядок видається окремо. Для предмета можна задати від–до: кількість випадає щоразу нова.",
   "gui.roll_mod.dailies.admin.bonus_add_line": "+ Додати предмет",
   "dailyreward.roll_mod.custom.title": "Бонус дня",

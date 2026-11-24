@@ -752,10 +752,12 @@ public final class DailyTaskManager {
         if (server == null) return ClaimResult.UNAVAILABLE;
 
         DailyTasksState state = state(server);
-        DailyTasksState.GroupState gs = current(server, state, DailyTaskGroups.of(player));
+        DailyTaskGroups.TaskGroup bonusGroup = DailyTaskGroups.of(player);
+        DailyTasksState.GroupState gs = current(server, state, bonusGroup);
         if (gs == null) return ClaimResult.UNAVAILABLE;
 
-        DailyReward reward = DailyRewardRegistry.byId(gs.rewardId);
+        // What the drawn bonus pays at the group's quest stage.
+        DailyReward reward = DailyRewardRegistry.byId(DailyRewardConfig.bonusAt(gs.rewardId, stage(server, bonusGroup)));
         if (reward == null) return ClaimResult.UNAVAILABLE;
 
         if (gs.completedCount() < gs.baseCount()) return ClaimResult.NOT_COMPLETED;
@@ -846,10 +848,11 @@ public final class DailyTaskManager {
         if (server == null) return null;
 
         DailyTasksState state = state(server);
-        DailyTasksState.GroupState gs = current(server, state, DailyTaskGroups.of(player));
+        DailyTaskGroups.TaskGroup viewGroup = DailyTaskGroups.of(player);
+        DailyTasksState.GroupState gs = current(server, state, viewGroup);
         if (gs == null) return null;
 
-        DailyReward reward = DailyRewardRegistry.byId(gs.rewardId);
+        DailyReward reward = DailyRewardRegistry.byId(DailyRewardConfig.bonusAt(gs.rewardId, stage(server, viewGroup)));
         if (reward == null) return null;
 
         return new BonusView(reward, gs.completedCount(), gs.baseCount(),

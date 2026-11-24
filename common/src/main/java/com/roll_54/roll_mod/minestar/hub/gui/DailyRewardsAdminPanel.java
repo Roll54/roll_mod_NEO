@@ -51,11 +51,25 @@ final class DailyRewardsAdminPanel {
         String id;
         String weight;
         final List<String> payout;
+        /** Per quest stage (bronze … IV), what it pays from then on; empty: as the stage before. */
+        final List<List<String>> stages = new ArrayList<>();
 
         Bonus(String id, String weight, List<String> payout) {
+            this(id, weight, payout, List.of());
+        }
+
+        Bonus(String id, String weight, List<String> payout, List<List<String>> stages) {
             this.id = id;
             this.weight = weight;
             this.payout = new ArrayList<>(payout);
+            for (int st = 0; st < com.roll_54.roll_mod.minestar.dailytasks.TaskRewardPool.STAGES; st++) {
+                this.stages.add(st < stages.size() ? new ArrayList<>(stages.get(st)) : new ArrayList<>());
+            }
+        }
+
+        /** The lines being edited: the base payout ({@code -1}) or a stage's. */
+        List<String> lines(int stage) {
+            return stage < 0 ? payout : stages.get(stage);
         }
     }
 
@@ -64,6 +78,8 @@ final class DailyRewardsAdminPanel {
     private int bonusEntry = -1;
     /** In that card, the payout line the picker is open on ({@code -1}: a new line); null for none. */
     private Integer bonusEditing;
+    /** Which of that bonus's payouts the card edits: {@code -1} the base one, {@code 0..6} a stage's. */
+    private int bonusStage = -1;
 
     DailyRewardsAdminPanel(UIElement pane, boolean client) {
         this.client = client;
@@ -77,6 +93,7 @@ final class DailyRewardsAdminPanel {
         entry = -1;
         bonusEntry = -1;
         bonusEditing = null;
+        bonusStage = -1;
         PacketDistributor.sendToServer(new BattlePassPackets.Act("daily/get", new CompoundTag()));
     }
 
@@ -98,7 +115,7 @@ final class DailyRewardsAdminPanel {
         if (entry >= rows.size()) entry = -1;
         bonuses.clear();
         for (DailyRewardConfig.BonusEntry b : DailyRewardConfig.bonusRows(tag)) {
-            bonuses.add(new Bonus(b.id, String.valueOf(b.weight), b.payout));
+            bonuses.add(new Bonus(b.id, String.valueOf(b.weight), b.payout, b.stages == null ? List.of() : b.stages));
         }
         if (bonusEntry >= bonuses.size()) bonusEntry = -1;
     }
@@ -196,8 +213,9 @@ final class DailyRewardsAdminPanel {
             UIElement line = StaffUi.row();
             line.setOverflowVisible(true);
             line.addChild(preview(bonus.payout.isEmpty() ? "" : previewSpec(bonus.payout.getFirst())));
-            Button open = StaffUi.button(summary(bonus), 0, () -> {
+            Button open = StaffUi.button(summary(bonus.payout), 0, () -> {
                 bonusEntry = index;
+                bonusStage = -1;
                 rebuild = true;
             });
             open.layout(l -> l.flexBasis(0).flexGrow(1));
@@ -224,6 +242,7 @@ final class DailyRewardsAdminPanel {
             bonuses.add(new Bonus("bonus_" + System.currentTimeMillis() % 100000, "1", List.of()));
             dirty = true;
             bonusEntry = bonuses.size() - 1;
+            bonusStage = -1;
             bonusEditing = -1;
             rebuild = true;
         });
@@ -232,36 +251,45 @@ final class DailyRewardsAdminPanel {
     }
 
     /** "8-16 × Iron Ingot, 2500 starcoins…": the bonus's payout in one line. */
-    private static Component summary(Bonus bonus) {
-        if (bonus.payout.isEmpty()) {
+    private static Component summary(List<String> payout) {
+        if (payout.isEmpty()) {
             return Component.translatable("gui.roll_mod.dailies.admin.bonus_empty").withStyle(ChatFormatting.GRAY);
         }
         net.minecraft.network.chat.MutableComponent out = Component.empty();
-        for (int i = 0; i < bonus.payout.size(); i++) {
+        for (int i = 0; i < payout.size(); i++) {
             if (i > 0) out.append(", ");
-            out.append(describeLine(bonus.payout.get(i)));
+            out.append(describeLine(payout.get(i)));
         }
         return out;
     }
 
-    /** One bonus's card: each payout line with its amount range, and a way to add one. */
+    /**
+     * One bonus's card: each payout line with its amount range, and a way to add one; on the base payout, under it,
+     * what it turns into at each quest stage (a click opens that stage's lines, edited the same way).
+     */
     private void bonusCard() {
         Bonus bonus = bonuses.get(bonusEntry);
+        List<String> payout = bonus.lines(bonusStage);
         UIElement top = StaffUi.row();
         top.setOverflowVisible(true);
-        Label title = StaffUi.text(Component.translatable("gui.roll_mod.dailies.admin.bonus_card").withStyle(ChatFormatting.YELLOW));
+        Component heading = bonusStage < 0 ? Component.translatable("gui.roll_mod.dailies.admin.bonus_card")
+                : Component.translatable("gui.roll_mod.dailies.admin.from_stage", STAGES[bonusStage]);
+        Label title = StaffUi.text(heading.copy().withStyle(ChatFormatting.YELLOW));
         title.layout(l -> l.flexBasis(0).flexGrow(1).height(StaffUi.ROW_H));
         title.textStyle(t -> t.textAlignVertical(Vertical.CENTER));
         top.addChildren(title, StaffUi.button("gui.roll_mod.dailies.admin.back", 60, () -> {
-            bonusEntry = -1;
+            // From a stage, back to the bonus; from the bonus, back to the list.
+            if (bonusStage >= 0) bonusStage = -1;
+            else bonusEntry = -1;
             rebuild = true;
         }));
         body.addScrollViewChild(top);
-        body.addScrollViewChild(StaffUi.dim("gui.roll_mod.dailies.admin.bonus_card_hint"));
+        body.addScrollViewChild(StaffUi.dim(bonusStage < 0 ? "gui.roll_mod.dailies.admin.bonus_card_hint"
+                : "gui.roll_mod.dailies.admin.bonus_stage_hint"));
 
-        for (int i = 0; i < bonus.payout.size(); i++) {
+        for (int i = 0; i < payout.size(); i++) {
             int index = i;
-            String spec = bonus.payout.get(i);
+            String spec = payout.get(i);
             UIElement line = StaffUi.row();
             line.setOverflowVisible(true);
             line.addChild(preview(previewSpec(spec)));
@@ -287,18 +315,18 @@ final class DailyRewardsAdminPanel {
                 int[] current = range.clone();
                 min.setTextResponder(t -> {
                     current[0] = parse(t, current[0]);
-                    bonus.payout.set(index, line(item, current[0], current[1]));
+                    payout.set(index, line(item, current[0], current[1]));
                     dirty = true;
                 });
                 max.setTextResponder(t -> {
                     current[1] = parse(t, current[1]);
-                    bonus.payout.set(index, line(item, current[0], current[1]));
+                    payout.set(index, line(item, current[0], current[1]));
                     dirty = true;
                 });
                 line.addChildren(min, dash, max);
             }
             line.addChild(StaffUi.button(Component.literal("✕"), 16, () -> {
-                bonus.payout.remove(index);
+                payout.remove(index);
                 dirty = true;
                 rebuild = true;
             }));
@@ -310,14 +338,56 @@ final class DailyRewardsAdminPanel {
         });
         add.layout(l -> l.marginTop(3));
         body.addScrollViewChild(add);
+
+        if (bonusStage < 0) {
+            // What it turns into at each quest stage, as the pool's rewards do.
+            body.addScrollViewChild(StaffUi.header("gui.roll_mod.dailies.admin.stages"));
+            body.addScrollViewChild(StaffUi.dim("gui.roll_mod.dailies.admin.bonus_stages_hint"));
+            List<String> shown = bonus.payout;
+            for (int st = 0; st < bonus.stages.size(); st++) {
+                int index = st;
+                List<String> own = bonus.stages.get(st);
+                if (!own.isEmpty()) shown = own;
+                UIElement line = StaffUi.row();
+                line.setOverflowVisible(true);
+                line.addChild(stageLabel(STAGES[st]));
+                line.addChild(preview(shown.isEmpty() ? "" : previewSpec(shown.getFirst())));
+                Component text = own.isEmpty()
+                        ? Component.translatable("gui.roll_mod.dailies.admin.same", summary(shown)).withStyle(ChatFormatting.DARK_GRAY)
+                        : summary(own);
+                Button open = StaffUi.button(text, 0, () -> {
+                    bonusStage = index;
+                    // A stage of its own starts from what it carried over, to change from there.
+                    if (bonus.stages.get(index).isEmpty()) {
+                        List<String> carried = bonus.payout;
+                        for (int k = 0; k < index; k++) if (!bonus.stages.get(k).isEmpty()) carried = bonus.stages.get(k);
+                        bonus.stages.get(index).addAll(carried);
+                        dirty = true;
+                    }
+                    rebuild = true;
+                });
+                open.layout(l -> l.flexBasis(0).flexGrow(1));
+                StaffUi.leftCaption(open);
+                line.addChild(open);
+                if (!own.isEmpty()) {
+                    line.addChild(StaffUi.button(Component.literal("✕"), 16, () -> {
+                        bonus.stages.get(index).clear();
+                        dirty = true;
+                        rebuild = true;
+                    }));
+                }
+                body.addScrollViewChild(line);
+            }
+        }
         body.addScrollViewChild(saveRow());
     }
 
     /** The picker for one payout line: an item (its range kept) or starcoins. */
     private void bonusPicker() {
         Bonus bonus = bonuses.get(bonusEntry);
+        List<String> payout = bonus.lines(bonusStage);
         int target = bonusEditing;
-        String current = target >= 0 && target < bonus.payout.size() ? bonus.payout.get(target) : "minecraft:diamond*1";
+        String current = target >= 0 && target < payout.size() ? payout.get(target) : "minecraft:diamond*1";
         UIElement holder = new UIElement();
         holder.layout(l -> l.flexDirection(FlexDirection.COLUMN).widthPercent(100));
         holder.setOverflowVisible(true);
@@ -334,8 +404,8 @@ final class DailyRewardsAdminPanel {
                 line = line(itemId(picked), range[0], range[1]);
             }
             if (line != null) {
-                if (target >= 0 && target < bonus.payout.size()) bonus.payout.set(target, line);
-                else bonus.payout.add(line);
+                if (target >= 0 && target < payout.size()) payout.set(target, line);
+                else payout.add(line);
                 dirty = true;
             }
             bonusEditing = null;
@@ -564,7 +634,7 @@ final class DailyRewardsAdminPanel {
                         } catch (NumberFormatException e) {
                             w = 1;
                         }
-                        bonusList.add(StringTag.valueOf(DailyRewardConfig.bonusRow(b.id, w, b.payout)));
+                        bonusList.add(StringTag.valueOf(DailyRewardConfig.bonusRow(b.id, w, b.payout, b.stages)));
                     }
                     args.put("bonus", bonusList);
                     dirty = false;

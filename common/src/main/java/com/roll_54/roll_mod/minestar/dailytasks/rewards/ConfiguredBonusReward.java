@@ -39,10 +39,22 @@ public final class ConfiguredBonusReward implements DailyReward {
     private final String id;
     private final int weight;
     private final List<Part> parts;
+    /** A stage's version of a bonus ({@code id@sN}): paid in its place, never drawn on its own. */
+    private final boolean variant;
 
     public ConfiguredBonusReward(String id, int weight, List<String> payout) {
+        this(id, weight, payout, false);
+    }
+
+    /** What a bonus pays from a quest stage on; see {@code DailyRewardConfig.bonusAt}. */
+    public static ConfiguredBonusReward variant(String id, List<String> payout) {
+        return new ConfiguredBonusReward(id, 1, payout, true);
+    }
+
+    private ConfiguredBonusReward(String id, int weight, List<String> payout, boolean variant) {
         this.id = id;
         this.weight = weight;
+        this.variant = variant;
         List<Part> parsed = new ArrayList<>();
         for (String line : payout) {
             Part part = parse(line);
@@ -95,7 +107,7 @@ public final class ConfiguredBonusReward implements DailyReward {
     /** A weight of 0 (or a payout with nothing in it) keeps the bonus configured but out of the draw. */
     @Override
     public boolean drawable() {
-        return weight > 0 && !parts.isEmpty();
+        return !variant && weight > 0 && !parts.isEmpty();
     }
 
     @Override
@@ -117,7 +129,8 @@ public final class ConfiguredBonusReward implements DailyReward {
     /** The built-in reward's title when the id is one of theirs (or has a lang key), otherwise a generic one. */
     @Override
     public Component name() {
-        String key = titleKey();
+        // A stage's version reads as the bonus it stands for.
+        String key = variant ? "dailyreward." + RollMod.MODID + "." + id.substring(0, id.indexOf("@s")) + ".title" : titleKey();
         return Component.translatable(Language.getInstance().has(key) ? key : "dailyreward.roll_mod.custom.title");
     }
 
