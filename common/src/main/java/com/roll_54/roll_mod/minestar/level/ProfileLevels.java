@@ -77,7 +77,12 @@ public final class ProfileLevels {
         send(player, level(id));
         try {
             FriendsService.detail(id).whenComplete((detail, error) -> {
-                if (error != null || detail == null) return;
+                if (error != null || detail == null) {
+                    // Without it the hub's level bar stays empty: say why in the server log.
+                    RollMod.LOGGER.warn("[Levels] could not load the Minestar profile of {}: {}", id,
+                            error != null ? error.toString() : "no profile");
+                    return;
+                }
                 server.execute(() -> {
                     update(server, id, Math.max(0, detail.level()));
                     // The hub's header (level and its XP bar) reads the viewer's own profile: send it with every

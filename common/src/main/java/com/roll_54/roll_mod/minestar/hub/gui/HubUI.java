@@ -20,7 +20,6 @@ import com.lowdragmc.lowdraglib2.gui.ui.event.HoverTooltips;
 import com.lowdragmc.lowdraglib2.gui.ui.event.UIEvents;
 import com.roll_54.roll_mod.RollMod;
 import com.roll_54.roll_mod.minestar.moderation.ClientModerationCache;
-import com.roll_54.roll_mod.config.MyConfig;
 import com.roll_54.roll_mod.minestar.radio.ClientRadioCache;
 import com.roll_54.roll_mod.minestar.moderation.ClientPlayerStatusCache;
 import com.roll_54.roll_mod.economy.plot.gui.PlotPurchaseUI;
@@ -271,10 +270,10 @@ public final class HubUI {
             new HubTab("radio", icon("radio_implant_tab"),
                     (player, inventory) -> RadioTab.build(player),
                     () -> ClientRadioCache.INSTALLED, () -> false),
-            // Off by config (hub.skinsTab) until the tab is finished.
+            // Always shown. Its switch (hub.skinsTab) is deprecated and no longer read.
             new HubTab("skins", icon("skins_tab"),
                     (player, inventory) -> SkinsTab.build(player),
-                    () -> MyConfig.INSTANCE.hub.skinsTab.get(), () -> false),
+                    () -> true, () -> false),
             // Settings, laid out like Eden's. No bookmark: the gear among the window controls opens it.
             new HubTab("settings", HubIcons.SETTINGS,
                     (player, inventory) -> SettingsTab.build(player), () -> false, () -> false),

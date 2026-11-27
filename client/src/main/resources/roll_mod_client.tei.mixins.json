@@ -9,7 +9,8 @@
     "TeiDefaultRecipePickMixin",
     "TeiJeiFluidMinPriceMixin",
     "TeiHideOnHubMixin",
-    "TeiExclusionCacheMixin"
+    "TeiExclusionCacheMixin",
+    "TeiCategoryIconColoursMixin"
   ],
   "injectors": {
     "defaultRequire": 0

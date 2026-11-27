@@ -3750,5 +3750,13 @@
   "gui.roll_mod.tasks.admin.look": "Other",
   "gui.roll_mod.tasks.admin.f.mod_none": "— none —",
   "gui.roll_mod.hub.moderation.tasks_page.rewards": "Rewards",
-  "gui.roll_mod.hub.moderation.tasks_page.tasks": "Tasks"
+  "gui.roll_mod.hub.moderation.tasks_page.tasks": "Tasks",
+  "command.roll_mod.forceloads.no_opac": "Open Parties and Claims is not installed.",
+  "command.roll_mod.forceloads.failed": "Could not add force-loaded chunks to %s (see the server log).",
+  "command.roll_mod.forceloads.added": "Added %s force-loaded chunk(s) to %s; their bonus is now %s.",
+  "command.roll_mod.forceloads.received": "You received +%s force-loaded chunk(s). Your bonus is now %s.",
+  "command.roll_mod.forceloads.removed": "Took %s force-loaded chunk(s) from %s; their bonus is now %s.",
+  "command.roll_mod.forceloads.lost": "%s force-loaded chunk(s) were taken from you. Your bonus is now %s.",
+  "gui.roll_mod.config.commands": "Commands",
+  "gui.roll_mod.config.commands.tip": "Settings of the commands: /back, /rtp, /fly, /heal."
 }

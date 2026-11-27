@@ -54,7 +54,9 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
 
     private static final int PADDING = 6;
     private static final int BAR_H = 16;
-    private static final int SIDEBAR_W = 112;
+    private static final int SIDEBAR_W = 132;
+    /** Muted text on the hub's dark panels (CLAUDE.md: 0xD8D8D8, never vanilla grey). */
+    private static final int MUTED = 0xD8D8D8;
     private static final int ROW_GAP = 3;
     /** Scroller viewport padding: up to 4px frame + the 3px text margin. */
     private static final int VIEW_PAD = 7;
@@ -259,9 +261,14 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
     private void addPageButton(ConfigModel.Page target, int depth) {
         Button button = new Button();
         MutableComponent name = target.name.copy();
-        button.setText(target == page ? Component.literal("› ").append(name).withStyle(ChatFormatting.YELLOW) : name);
-        button.layout(l -> l.height(ConfigEditors.CONTROL_H).widthPercent(100).marginLeft(depth * 8f));
-        button.textStyle(t -> t.textWrap(TextWrap.HIDE));
+        // Every button the same size, so no indent: a section's name is muted instead, a config's white, the
+        // current page's yellow.
+        if (target == page) name = Component.literal("› ").append(name).withStyle(ChatFormatting.YELLOW);
+        else if (depth > 0) name = name.withStyle(s -> s.withColor(MUTED));
+        button.setText(name);
+        button.layout(l -> l.height(ConfigEditors.CONTROL_H).widthPercent(100).flexShrink(0).paddingHorizontal(3));
+        // A name longer than the button scrolls inside it rather than running past its edge.
+        button.textStyle(t -> t.textWrap(TextWrap.ROLL));
         if (target.desc != null) button.style(s -> s.tooltips(target.desc));
         button.setOnClick(e -> showPage(target));
         pageList.addScrollViewChild(button);
@@ -311,7 +318,9 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
     private UIElement sectionRow(ConfigModel.Page section, int depth) {
         Button button = new Button();
         button.setText(section.name.copy().append(" ›"));
-        button.layout(l -> l.height(ConfigEditors.CONTROL_H + 2).widthPercent(100).marginLeft(depth * 8f));
+        button.layout(l -> l.height(ConfigEditors.CONTROL_H + 2).widthPercent(100).marginLeft(depth * 8f)
+                .flexShrink(0).paddingHorizontal(3));
+        button.textStyle(t -> t.textWrap(TextWrap.ROLL));
         if (section.desc != null) button.style(s -> s.tooltips(section.desc));
         button.setOnClick(e -> showPage(section));
         return button;
@@ -322,7 +331,9 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
                 || (group.collapsedByDefault() && !collapsedGroups.contains("!" + group.id()));
         Button header = new Button();
         header.setText(Component.literal(collapsed ? "▸ " : "▾ ").append(group.name().copy()));
-        header.layout(l -> l.height(ConfigEditors.CONTROL_H).widthPercent(100).marginLeft(depth * 8f));
+        header.layout(l -> l.height(ConfigEditors.CONTROL_H).widthPercent(100).marginLeft(depth * 8f)
+                .flexShrink(0).paddingHorizontal(3));
+        header.textStyle(t -> t.textWrap(TextWrap.ROLL));
         if (group.desc() != null) header.style(s -> s.tooltips(group.desc()));
         header.setOnClick(e -> {
             if (collapsed) {
@@ -387,7 +398,9 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
         Button button = new Button();
         Component label = FzzyBridge.actionTitle(node.action());
         button.setText(label != null ? label : node.name());
-        button.layout(l -> l.height(ConfigEditors.CONTROL_H + 2).widthPercent(100).marginLeft(depth * 8f));
+        button.layout(l -> l.height(ConfigEditors.CONTROL_H + 2).widthPercent(100).marginLeft(depth * 8f)
+                .flexShrink(0).paddingHorizontal(3));
+        button.textStyle(t -> t.textWrap(TextWrap.ROLL));
         if (node.desc() != null) button.style(s -> s.tooltips(node.desc()));
         button.setActive(FzzyBridge.actionActive(node.action()));
         button.setOnClick(e -> FzzyBridge.runAction(node.action()));
@@ -411,8 +424,10 @@ public final class RollConfigScreen extends ModularUIScreen implements ConfigEdi
 
     private static UIElement note(Component text) {
         Label label = new Label();
-        label.setText(text.copy().withStyle(ChatFormatting.GRAY));
-        label.layout(l -> l.widthPercent(100).height(ConfigEditors.CONTROL_H));
+        label.setText(text.copy().withStyle(s -> s.withColor(MUTED)));
+        // The rows' inset (HubSection.ROW_INSET) on top of the viewport padding, centred in its line.
+        label.layout(l -> l.widthPercent(100).height(ConfigEditors.CONTROL_H).paddingLeft(5));
+        label.textStyle(t -> t.textAlignVertical(Vertical.CENTER).textWrap(TextWrap.HIDE));
         return label;
     }
 

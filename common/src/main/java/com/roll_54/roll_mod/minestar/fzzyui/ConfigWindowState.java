@@ -24,14 +24,16 @@ final class ConfigWindowState implements WindowGeometry {
     static final int MIN_W = 320;
     static final int MIN_H = 180;
 
-    private static final int VERSION = 1;
+    /** 2: the window opens maximized by default; a file from version 1 is moved to that once. */
+    private static final int VERSION = 2;
 
     /** GUI-scaled pixels. {@code x < 0} means "never placed": centre it. */
     private int x = -1;
     private int y = -1;
     private int w = DEFAULT_W;
     private int h = DEFAULT_H;
-    private boolean maximized;
+    /** The whole screen by default: the config has many columns and long names. */
+    private boolean maximized = true;
     private boolean dirty;
 
     private static ConfigWindowState instance;
@@ -73,7 +75,7 @@ final class ConfigWindowState implements WindowGeometry {
     @Override
     public void reset() {
         setRect(-1, -1, DEFAULT_W, DEFAULT_H);
-        setMaximized(false);
+        setMaximized(true);
     }
 
     @Override
@@ -105,8 +107,13 @@ final class ConfigWindowState implements WindowGeometry {
         state.y = intOr(json, "y", state.y);
         state.w = Math.max(1, intOr(json, "width", state.w));
         state.h = Math.max(1, intOr(json, "height", state.h));
-        state.maximized = json.has("maximized") && json.get("maximized").isJsonPrimitive()
-                && json.get("maximized").getAsBoolean();
+        boolean current = intOr(json, "version", 0) >= VERSION;
+        if (current && json.has("maximized") && json.get("maximized").isJsonPrimitive()) {
+            state.maximized = json.get("maximized").getAsBoolean();
+        } else if (json.has("version")) {
+            // An older file: opened maximized from now on, and saved as such.
+            state.dirty = true;
+        }
         return state;
     }
 

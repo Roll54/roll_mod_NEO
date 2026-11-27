@@ -3746,5 +3746,13 @@
   "gui.roll_mod.tasks.admin.look": "Інше",
   "gui.roll_mod.tasks.admin.f.mod_none": "— не потрібен —",
   "gui.roll_mod.hub.moderation.tasks_page.rewards": "Нагороди",
-  "gui.roll_mod.hub.moderation.tasks_page.tasks": "Завдання"
+  "gui.roll_mod.hub.moderation.tasks_page.tasks": "Завдання",
+  "command.roll_mod.forceloads.no_opac": "Open Parties and Claims не встановлено.",
+  "command.roll_mod.forceloads.failed": "Не вдалося додати примусово завантажені чанки гравцю %s (див. лог сервера).",
+  "command.roll_mod.forceloads.added": "Додано %s примусово завантажених чанків гравцю %s; тепер бонус: %s.",
+  "command.roll_mod.forceloads.received": "Ти отримав +%s примусово завантажених чанків. Тепер бонус: %s.",
+  "command.roll_mod.forceloads.removed": "Забрано %s примусово завантажених чанків у гравця %s; тепер бонус: %s.",
+  "command.roll_mod.forceloads.lost": "У тебе забрали %s примусово завантажених чанків. Тепер бонус: %s.",
+  "gui.roll_mod.config.commands": "Команди",
+  "gui.roll_mod.config.commands.tip": "Налаштування команд: /back, /rtp, /fly, /heal."
 }

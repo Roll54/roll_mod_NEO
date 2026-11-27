@@ -44,7 +44,7 @@ import java.util.function.BooleanSupplier;
  * and what is shown follows {@link ClientItemSkinCache}, so a refused change never sticks. No sync
  * values; the tree is the same on both sides and only the client's copy ever sends anything.
  *
- * <p>Its bookmark shows only while {@code hub.skinsTab} is on in the roll_mod config.
+ * <p>Its bookmark always shows ({@code hub.skinsTab} is deprecated and no longer read).
  */
 final class SkinsTab {
 

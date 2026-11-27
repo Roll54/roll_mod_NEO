@@ -457,7 +457,10 @@ public class MyConfig extends Config {
     public HubSettings hub = new HubSettings();
 
     public static class HubSettings extends ConfigSection {
-        @Comment("Show the Skins tab in the player hub. Off while the tab is unfinished. Synced to clients; applies live.")
+        /** Deprecated: the Skins tab is always shown now. Kept so old config files still read; hidden from the screen. */
+        @Deprecated
+        @me.fzzyhmstrs.fzzy_config.annotations.ConfigDeprecated
+        @Comment("Deprecated: the Skins tab is always shown; this switch is no longer read.")
         public ValidatedBoolean skinsTab = new ValidatedBoolean(false);
         @Comment("The leaderboard's quest chapter board: the FTB Quests chapters that count as stages, highest first, each with the name the board shows, as CHAPTER_ID=Name separated by ';' (for example 1A2B3C4D5E6F7A8B=IV;0123456789ABCDEF=HV). A team is on the highest listed chapter it has started. Set from the hub's moderation tab, Settings.")
         public String leaderboardChapters = "";

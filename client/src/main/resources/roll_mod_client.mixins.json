@@ -19,6 +19,7 @@
     "theme.AbstractContainerScreenLabelMixin",
     "theme.GuiGraphicsTextRecolorMixin",
     "theme.GuiHudNoRecolorMixin",
+    "theme.LdLib1TextureRecolorMixin",
     "mi.MITextureManagerOverrideMixin",
     "mi.MITextureManagerAccessor",
     "mi.MICasingConnectedTexturesMixin",

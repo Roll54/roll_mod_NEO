@@ -59,14 +59,20 @@ final class ConfigModel {
         final String scope;
         final Component name;
         @Nullable final Component desc;
-        @Nullable final Page parent;
+        /** Not final: a section moved under a screen-only page ({@link #groupCommands}) gets that page as parent. */
+        @Nullable Page parent;
         final ConfigSingleUpdateManager manager;
         final List<Node> children = new ArrayList<>();
 
         Page(String scope, Translatable.Result texts, @Nullable Page parent, ConfigSingleUpdateManager manager) {
+            this(scope, texts.getName(), texts.getDesc(), parent, manager);
+        }
+
+        Page(String scope, Component name, @Nullable Component desc, @Nullable Page parent,
+             ConfigSingleUpdateManager manager) {
             this.scope = scope;
-            this.name = texts.getName();
-            this.desc = texts.getDesc();
+            this.name = name;
+            this.desc = desc;
             this.parent = parent;
             this.manager = manager;
         }
@@ -120,6 +126,7 @@ final class ConfigModel {
             model.walkConfig(new ConfigSet(active, base, FzzyBridge.clientOnly(key), FzzyBridge.isRootConfig(active)), perm);
         }
         model.configs.sort(Comparator.comparing(p -> p.name.getString().toLowerCase(Locale.ROOT)));
+        for (Page config : model.configs) model.groupCommands(config);
         // Snapshot every value, so "changed" means "changed since the screen opened".
         for (ConfigSingleUpdateManager m : model.managers) {
             m.invalidatePush();
@@ -202,6 +209,36 @@ final class ConfigModel {
             }
             FzzyBridge.popGroup(annotations, groups);
         });
+    }
+
+    /** The sections of a config that set up a command (/back, /rtp, /fly, /heal), by their field name. */
+    private static final List<String> COMMAND_SECTIONS = List.of("back", "rtp", "fly", "heal");
+
+    /**
+     * Puts a config's command sections under one "Commands" page, each a sub-page of it. Only the screen's tree
+     * changes: the sections keep their scopes, so the file and its keys stay exactly as they were.
+     */
+    private void groupCommands(Page config) {
+        List<Page> commands = new ArrayList<>();
+        int at = -1;
+        for (int i = 0; i < config.children.size(); i++) {
+            if (config.children.get(i) instanceof Page section
+                    && COMMAND_SECTIONS.contains(section.scope.substring(section.scope.lastIndexOf('.') + 1))) {
+                if (at < 0) at = i;
+                commands.add(section);
+            }
+        }
+        if (commands.isEmpty()) return;
+        Page group = new Page(config.scope + ".roll_mod_commands",
+                Component.translatable("gui.roll_mod.config.commands"),
+                Component.translatable("gui.roll_mod.config.commands.tip"), config, config.manager);
+        config.children.removeAll(commands);
+        config.children.add(Math.min(at, config.children.size()), group);
+        for (Page section : commands) {
+            section.parent = group;
+            group.children.add(section);
+        }
+        pages.put(group.scope, group);
     }
 
     /**

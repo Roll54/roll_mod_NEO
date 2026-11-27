@@ -165,7 +165,11 @@ final class ConfigEditors {
         boolean bounded = range != null && typeBounds != null
                 && range[0].doubleValue() > typeBounds[0].doubleValue()
                 && range[1].doubleValue() < typeBounds[1].doubleValue();
-        if (FzzyBridge.numberWidget(template) != FzzyBridge.NumberWidget.SLIDER || !bounded) {
+        // A slider only for a share (a fraction between 0 and 1): there it says something a number does not.
+        // Counts, limits, ticks and multipliers are typed; their slider was too short to aim and squeezed the number.
+        boolean fraction = bounded && !isIntegral(current)
+                && range[0].doubleValue() >= 0 && range[1].doubleValue() <= 1;
+        if (FzzyBridge.numberWidget(template) != FzzyBridge.NumberWidget.SLIDER || !fraction) {
             text.setTextResponder(s -> binding.set(parse.apply(s)));
             return text;
         }
@@ -174,7 +178,7 @@ final class ConfigEditors {
         slider.setRange(range[0].floatValue(), range[1].floatValue());
         slider.setValue(current instanceof Number n ? n.floatValue() : range[0].floatValue(), false);
         slider.layout(l -> l.height(CONTROL_H).flexGrow(2));
-        text.layout(l -> l.flexGrow(0).width(46));
+        text.layout(l -> l.flexGrow(0).flexShrink(0).width(56));
         boolean integral = isIntegral(current);
         slider.setOnValueChanged(f -> {
             Number n = convert(current, integral ? Math.round(f) : f);
@@ -593,7 +597,16 @@ final class ConfigEditors {
     }
 
     private static String formatNumber(Object value) {
-        return value == null ? "" : value.toString();
+        if (value == null) return "";
+        // A double such as 0.998730000001 at six significant digits, so it fits its field; the value is unchanged.
+        if (value instanceof Double || value instanceof Float) {
+            double d = ((Number) value).doubleValue();
+            if (Double.isFinite(d)) {
+                return java.math.BigDecimal.valueOf(d).round(new java.math.MathContext(6))
+                        .stripTrailingZeros().toPlainString();
+            }
+        }
+        return value.toString();
     }
 
     /** {@code SOME_ENUM_NAME} -> {@code Some enum name}. */

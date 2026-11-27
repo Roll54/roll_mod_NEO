@@ -589,14 +589,8 @@ public final class BattlePassTab {
 
     static void fillTasks(ScrollerView list, CompoundTag data, boolean seasonal) {
         list.clearAllScrollViewChildren();
-        // The daily tasks count too: a line saying what each claimed one is worth (or, for the season, what it is).
-        Label daily = new Label();
-        daily.setText(Component.translatable(seasonal ? "gui.roll_mod.battlepass.season_note" : "gui.roll_mod.battlepass.daily_note",
-                seasonal ? new Object[]{data.getInt("pSeason")} : new Object[]{data.getInt("pEasy"), data.getInt("pHard")})
-                .withStyle(s -> s.withColor(0xD8D8D8)));
-        daily.layout(l -> l.widthPercent(100).marginBottom(4));
-        daily.textStyle(t -> t.textWrap(TextWrap.WRAP).adaptiveHeight(true));
-        list.addScrollViewChild(daily);
+        // No note above the rows any more (gui.roll_mod.battlepass.daily_note / season_note, kept in the lang files):
+        // each row's tooltip says what to do, and its right side what it pays.
         ListTag tasks = data.getList(seasonal ? "seasonal" : "tasks", Tag.TAG_COMPOUND);
         if (tasks.isEmpty()) {
             Label none = new Label();

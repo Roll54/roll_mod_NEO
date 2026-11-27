@@ -205,7 +205,11 @@ public final class GuiRecolor {
      * green "on" states the recolour cannot touch, in the player's notification colour ({@link TeiButtonSheet}).
      */
     public static net.minecraft.resources.ResourceLocation swapTexture(net.minecraft.resources.ResourceLocation texture) {
-        return TEI_BUTTONS.equals(texture) && active() != null ? TeiButtonSheet.texture() : texture;
+        if (active() == null) return texture;
+        if (TEI_BUTTONS.equals(texture)) return TeiButtonSheet.texture();
+        // AE2-style art drawn on a recoloured screen (an AE2 addon's recipe in TEI): its blue-greys as vanilla greys.
+        if (Ae2Greys.applies(texture)) return Ae2Greys.greyed(texture);
+        return texture;
     }
 
     /** How deep we are in drawing the theme's own art (its panel, buttons, fields), which must not be recoloured. */
