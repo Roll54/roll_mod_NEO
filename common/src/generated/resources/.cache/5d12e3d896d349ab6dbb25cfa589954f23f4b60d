@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-22T23:04:19.452606972	Tags for minecraft:block mod id roll_mod
+// 1.21.1	2026-11-27T14:42:25.739229147	Tags for minecraft:block mod id roll_mod
 093929a215bb66b0fac556c6ba10fbf4addc0c1f data/c/tags/block/ores.json
 26f4e95f349237ac89ddcd813de66bea747b8c50 data/c/tags/block/storage_blocks.json
 b6c82e782af773c9bf55bf765167db9f2bf571ef data/c/tags/block/storage_blocks/meteorite_metal.json
@@ -72,6 +72,7 @@ f075f8d04fb4270912d841ce8ea7eee5d4e43a65 data/roll_mod/tags/block/hematite_ore_i
 928bc75fab199f2a986302d763661a6d18e0cfd6 data/roll_mod/tags/block/hematite_ore_in_netherrack.json
 a1bd8d6cf4f512ce0720c306f7d7a9d2aabd67dc data/roll_mod/tags/block/hematite_ore_in_stone.json
 c3b4e4f5c70f4569d1ec70db5c139c1d98545831 data/roll_mod/tags/block/ilmenite_ore_in_moon.json
+35133e95f1c8fdd7a1c21afcc231fc0bffefb9a8 data/roll_mod/tags/block/incorrect_for_meteorite_metal_tool.json
 c7f60dddfdb9f114ab1ea459ed96e17f7ca8a340 data/roll_mod/tags/block/iridium_ore_in_mars.json
 a83d6ca3354a41f64a1a1d067b4e1b84a692496a data/roll_mod/tags/block/lapis_lazuli_ore_in_end.json
 76451cbeafeff25f65e7d9501a2a3679387442a4 data/roll_mod/tags/block/lapis_lazuli_ore_in_moon.json

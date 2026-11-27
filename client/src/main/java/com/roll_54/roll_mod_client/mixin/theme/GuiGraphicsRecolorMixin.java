@@ -48,6 +48,40 @@ public abstract class GuiGraphicsRecolorMixin {
     }
 
     /**
+     * Sheets with black icons on grey buttons ({@link com.roll_54.roll_mod.minestar.theme.ThemeGlyphs}, Extreme Sound
+     * Muffler's): drawn recoloured, then their icons over that in the theme's text colour, so they stay visible on a
+     * dark theme.
+     */
+    @WrapMethod(method = "innerBlit(Lnet/minecraft/resources/ResourceLocation;IIIIIFFFF)V", require = 0)
+    private void roll_mod$glyphs(ResourceLocation texture, int x1, int x2, int y1, int y2, int z,
+                                 float minU, float maxU, float minV, float maxV, Operation<Void> original) {
+        original.call(texture, x1, x2, y1, y2, z, minU, maxU, minV, maxV);
+        ResourceLocation icons = glyphs(texture);
+        if (icons != null) {
+            com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+            GuiRecolor.withoutRecolor(() -> original.call(icons, x1, x2, y1, y2, z, minU, maxU, minV, maxV));
+        }
+    }
+
+    @WrapMethod(method = "innerBlit(Lnet/minecraft/resources/ResourceLocation;IIIIIFFFFFFFF)V", require = 0)
+    private void roll_mod$glyphsTinted(ResourceLocation texture, int x1, int x2, int y1, int y2, int z,
+                                       float minU, float maxU, float minV, float maxV,
+                                       float red, float green, float blue, float alpha, Operation<Void> original) {
+        original.call(texture, x1, x2, y1, y2, z, minU, maxU, minV, maxV, red, green, blue, alpha);
+        ResourceLocation icons = glyphs(texture);
+        if (icons != null) {
+            com.mojang.blaze3d.systems.RenderSystem.enableBlend();
+            GuiRecolor.withoutRecolor(() -> original.call(icons, x1, x2, y1, y2, z, minU, maxU, minV, maxV,
+                    1f, 1f, 1f, alpha));
+        }
+    }
+
+    private static ResourceLocation glyphs(ResourceLocation texture) {
+        if (!com.roll_54.roll_mod.minestar.theme.ThemeGlyphs.has(texture) || !GuiRecolor.on()) return null;
+        return com.roll_54.roll_mod.minestar.theme.ThemeGlyphs.overlay(texture, GuiRecolor.labelColor(0x404040));
+    }
+
+    /**
      * The furnace's fire (furnace, blast furnace, smoker: {@code …/lit_progress}): its grey background takes the theme,
      * the flame keeps vanilla's colours ({@link com.roll_54.roll_mod.minestar.theme.FurnaceFlame}).
      */

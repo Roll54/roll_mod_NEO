@@ -55,35 +55,128 @@ public final class DailyRewardConfig {
     public static final class BonusEntry {
         public String id = "";
         public int weight = 1;
+        /** What it pays at the start, a line each; a blank line pays nothing until a stage gives it something. */
         public List<String> payout = new ArrayList<>();
         /**
          * Per quest stage past the first (bronze … IV), what the bonus pays from that stage on instead; an empty list
          * keeps what the stage before paid.
+         * @deprecated each payout line has stages of its own now ({@link #lineStages}); an older file's stages are read
+         * into them once ({@link #migrate}) and this is left empty. Kept so such a file still loads.
          */
+        @Deprecated
         public List<List<String>> stages = new ArrayList<>();
+        /**
+         * Per payout line (same index as {@link #payout}), what that line pays from each quest stage on (bronze … IV,
+         * {@link TaskRewardPool#STAGES} of them): blank keeps what the stage before paid, {@link #NONE} stops paying it.
+         */
+        public List<List<String>> lineStages = new ArrayList<>();
 
         public BonusEntry() {}
 
         BonusEntry(String id, int weight, List<String> payout) {
-            this(id, weight, payout, List.of());
-        }
-
-        public BonusEntry(String id, int weight, List<String> payout, List<List<String>> stages) {
             this.id = id;
             this.weight = weight;
             this.payout = new ArrayList<>(payout);
-            this.stages = new ArrayList<>();
-            for (List<String> st : stages) this.stages.add(new ArrayList<>(st));
         }
 
-        /** {@code id|weight|line;line|stage~stage}, each stage's lines {@code ;}-joined. */
+        /** With per-line stages: {@code lineStages.get(i)} is line {@code i}'s value at each stage. */
+        public static BonusEntry withLineStages(String id, int weight, List<String> payout, List<List<String>> lineStages) {
+            BonusEntry entry = new BonusEntry(id, weight, payout);
+            for (List<String> per : lineStages) entry.lineStages.add(new ArrayList<>(per));
+            entry.normalize();
+            return entry;
+        }
+
+        /**
+         * @deprecated with whole-payout stages, the old shape; read into per-line stages at once.
+         */
+        @Deprecated
+        public BonusEntry(String id, int weight, List<String> payout, List<List<String>> stages) {
+            this(id, weight, payout);
+            for (List<String> st : stages) this.stages.add(new ArrayList<>(st));
+            migrate();
+        }
+
+        /**
+         * An older entry's whole-payout stages into per-line ones. A stage that listed lines paid exactly those: line
+         * {@code i} takes that stage's line {@code i}, a line the stage left out stops ({@link #NONE}), and a stage
+         * with more lines than the start adds lines that pay nothing before it. Nothing is lost.
+         */
+        void migrate() {
+            if (payout == null) payout = new ArrayList<>();
+            if (lineStages == null) lineStages = new ArrayList<>();
+            if (stages != null && !stages.isEmpty() && lineStages.isEmpty()) {
+                int lines = payout.size();
+                for (List<String> st : stages) if (st != null) lines = Math.max(lines, st.size());
+                while (payout.size() < lines) payout.add("");
+                for (int i = 0; i < lines; i++) lineStages.add(new ArrayList<>());
+                for (int s = 0; s < stages.size() && s < TaskRewardPool.STAGES; s++) {
+                    List<String> st = stages.get(s);
+                    for (int i = 0; i < lines; i++) {
+                        String value = "";
+                        if (st != null && !st.isEmpty()) {
+                            String own = i < st.size() && st.get(i) != null ? st.get(i).strip() : "";
+                            String before = lineAt(i, s);
+                            String now = own.isEmpty() ? NONE : own;
+                            // Only where it changes: a stage that repeats what came before stays blank.
+                            if (!(now.equals(NONE) ? before.isEmpty() : now.equals(before))) value = now;
+                        }
+                        lineStages.get(i).add(value);
+                    }
+                }
+                stages = new ArrayList<>();
+            }
+            if (stages == null) stages = new ArrayList<>();
+            normalize();
+        }
+
+        /** One stage list per payout line, each {@link TaskRewardPool#STAGES} long. */
+        void normalize() {
+            if (payout == null) payout = new ArrayList<>();
+            if (lineStages == null) lineStages = new ArrayList<>();
+            while (lineStages.size() < payout.size()) lineStages.add(new ArrayList<>());
+            while (lineStages.size() > payout.size()) lineStages.remove(lineStages.size() - 1);
+            for (int i = 0; i < lineStages.size(); i++) {
+                List<String> per = lineStages.get(i) == null ? new ArrayList<>() : new ArrayList<>(lineStages.get(i));
+                per.replaceAll(v -> v == null ? "" : v.strip());
+                while (per.size() < TaskRewardPool.STAGES) per.add("");
+                while (per.size() > TaskRewardPool.STAGES) per.remove(per.size() - 1);
+                lineStages.set(i, per);
+            }
+        }
+
+        /** What line {@code i} pays at quest stage {@code stage} (0 the start, 1 … STAGES); "" for nothing. */
+        public String lineAt(int i, int stage) {
+            String value = i < payout.size() && payout.get(i) != null ? payout.get(i).strip() : "";
+            List<String> per = i < lineStages.size() && lineStages.get(i) != null ? lineStages.get(i) : List.of();
+            for (int s = 1; s <= stage && s - 1 < per.size(); s++) {
+                String own = per.get(s - 1);
+                if (own != null && !own.isBlank()) value = own.strip();
+            }
+            return NONE.equals(value) ? "" : value;
+        }
+
+        /** Everything it pays at {@code stage}, blank lines left out. */
+        public List<String> payoutAt(int stage) {
+            List<String> out = new ArrayList<>();
+            for (int i = 0; i < payout.size(); i++) {
+                String line = lineAt(i, stage);
+                if (!line.isEmpty()) out.add(line);
+            }
+            return out;
+        }
+
+        /** {@code id|weight|line;line||line1stage,…~line2stage,…}: the old stages part stays empty, positions kept. */
         String row() {
-            List<String> st = new ArrayList<>();
-            if (stages != null) for (List<String> lines : stages) st.add(String.join(";", lines == null ? List.of() : lines));
-            while (!st.isEmpty() && st.get(st.size() - 1).isBlank()) st.remove(st.size() - 1);
-            return id + "|" + weight + "|" + String.join(";", payout == null ? List.of() : payout) + "|" + String.join("~", st);
+            normalize();
+            List<String> per = new ArrayList<>();
+            for (List<String> l : lineStages) per.add(String.join(",", l));
+            return id + "|" + weight + "|" + String.join(";", payout) + "||" + String.join("~", per);
         }
     }
+
+    /** A stage value that stops a bonus line from paying. */
+    public static final String NONE = "none";
 
     /** Per configured bonus id, the reward id it pays at each quest stage 0 … {@link TaskRewardPool#STAGES}. */
     private static volatile java.util.Map<String, String[]> bonusByStage = java.util.Map.of();
@@ -138,10 +231,8 @@ public final class DailyRewardConfig {
         }
         for (Entry e : config.pool) if (e.stages == null) e.stages = new ArrayList<>();
         if (config.bonus == null) config.bonus = defaultBonus();
-        for (BonusEntry b : config.bonus) {
-            if (b.payout == null) b.payout = new ArrayList<>();
-            if (b.stages == null) b.stages = new ArrayList<>();
-        }
+        // An older file's whole-payout stages become each line's own (BonusEntry.migrate).
+        for (BonusEntry b : config.bonus) b.migrate();
         // An older file's one ingot list becomes the iron entry's own stages.
         if (config.stageIngots != null && !config.stageIngots.isEmpty()) {
             for (Entry e : config.pool) {
@@ -176,16 +267,18 @@ public final class DailyRewardConfig {
         for (BonusEntry b : entries) {
             if (b.id == null || b.id.isBlank()) continue;
             String id = b.id.strip();
-            List<String> payout = b.payout == null ? List.of() : b.payout;
+            b.migrate();
             rewards.add(new com.roll_54.roll_mod.minestar.dailytasks.rewards.ConfiguredBonusReward(
-                    id, Math.max(0, b.weight), payout));
+                    id, Math.max(0, b.weight), b.payoutAt(0)));
             String[] ids = new String[TaskRewardPool.STAGES + 1];
             ids[0] = id;
+            // Each line follows its own stages: a stage where any line changes is a variant with every line as it
+            // stands there; one where nothing changes pays as the stage before.
             for (int st = 1; st <= TaskRewardPool.STAGES; st++) {
-                List<String> own = b.stages != null && st - 1 < b.stages.size() ? b.stages.get(st - 1) : null;
-                if (own != null && own.stream().anyMatch(l -> l != null && !l.isBlank())) {
+                List<String> now = b.payoutAt(st);
+                if (!now.equals(b.payoutAt(st - 1))) {
                     String variant = id + "@s" + st;
-                    rewards.add(com.roll_54.roll_mod.minestar.dailytasks.rewards.ConfiguredBonusReward.variant(variant, own));
+                    rewards.add(com.roll_54.roll_mod.minestar.dailytasks.rewards.ConfiguredBonusReward.variant(variant, now));
                     ids[st] = variant;
                 } else {
                     ids[st] = ids[st - 1];
@@ -203,7 +296,7 @@ public final class DailyRewardConfig {
         ListTag list = tag.getList("bonus", Tag.TAG_STRING);
         for (int i = 0; i < list.size(); i++) {
             String[] parts = list.getString(i).split("\\|", -1);
-            if ((parts.length != 3 && parts.length != 4) || parts[0].isBlank()) continue;
+            if (parts.length < 3 || parts.length > 5 || parts[0].isBlank()) continue;
             int weight;
             try {
                 weight = Math.max(0, Integer.parseInt(parts[1].strip()));
@@ -211,6 +304,16 @@ public final class DailyRewardConfig {
                 weight = 1;
             }
             List<String> payout = new ArrayList<>();
+            if (parts.length == 5) {
+                // Per-line stages: line positions matter, so a blank line (paid only from a stage on) is kept.
+                if (!parts[2].isEmpty()) for (String line : parts[2].split(";", -1)) payout.add(line.strip());
+                List<List<String>> lineStages = new ArrayList<>();
+                if (!parts[4].isEmpty()) {
+                    for (String per : parts[4].split("~", -1)) lineStages.add(new ArrayList<>(List.of(per.split(",", -1))));
+                }
+                out.add(BonusEntry.withLineStages(parts[0].strip(), weight, payout, lineStages));
+                continue;
+            }
             for (String line : parts[2].split(";", -1)) if (!line.isBlank()) payout.add(line.strip());
             List<List<String>> stages = new ArrayList<>();
             if (parts.length == 4 && !parts[3].isBlank()) {
@@ -230,8 +333,15 @@ public final class DailyRewardConfig {
         return new BonusEntry(id, weight, payout).row();
     }
 
+    /** @deprecated with whole-payout stages; see {@link #bonusRowByLine}. */
+    @Deprecated
     public static String bonusRow(String id, int weight, List<String> payout, List<List<String>> stages) {
         return new BonusEntry(id, weight, payout, stages).row();
+    }
+
+    /** One bonus as a tag row, with each line's own stages. */
+    public static String bonusRowByLine(String id, int weight, List<String> payout, List<List<String>> lineStages) {
+        return BonusEntry.withLineStages(id, weight, payout, lineStages).row();
     }
 
     /* ----------------------------------------------------- sync ------------------------------------------------------ */

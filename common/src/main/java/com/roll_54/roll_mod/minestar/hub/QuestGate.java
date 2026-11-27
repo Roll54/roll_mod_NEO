@@ -128,8 +128,14 @@ public final class QuestGate {
             dev.ftb.mods.ftbquests.quest.BaseQuestFile file = file(player.level().isClientSide());
             if (file == null) return false;
             dev.ftb.mods.ftbquests.quest.Quest quest = file.getQuest(questId);
-            if (quest == null) return true; // Deleted from the book: see the class javadoc.
             dev.ftb.mods.ftbquests.quest.TeamData data = file.getTeamData(player).orElse(null);
+            if (quest == null) {
+                // A quest stage saved before stages were quests names a chapter: it counts once the team has started
+                // the chapter, as on the stage board. Taken for a missing quest, it opened its pass block for everyone.
+                dev.ftb.mods.ftbquests.quest.Chapter chapter = file.getChapter(questId);
+                if (chapter != null) return data != null && data.isStarted(chapter);
+                return true; // Deleted from the book: see the class javadoc.
+            }
             return data != null && data.isCompleted(quest);
         }
 
@@ -149,7 +155,9 @@ public final class QuestGate {
             dev.ftb.mods.ftbquests.quest.BaseQuestFile file = file(client);
             if (file == null) return null;
             dev.ftb.mods.ftbquests.quest.Quest quest = file.getQuest(questId);
-            return quest == null ? null : quest.getTitle();
+            if (quest != null) return quest.getTitle();
+            dev.ftb.mods.ftbquests.quest.Chapter chapter = file.getChapter(questId);
+            return chapter == null ? null : chapter.getTitle();
         }
 
         static List<Entry> all(boolean client) {

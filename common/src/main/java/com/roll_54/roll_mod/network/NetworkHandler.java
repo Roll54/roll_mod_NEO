@@ -131,7 +131,7 @@ public class NetworkHandler {
                 ChatChannelPacket.STREAM_CODEC,
                 ChatChannelPacket::handle
         );
-        registrar.playToServer(
+        registrar.playBidirectional(
                 ServerSettingPacket.TYPE,
                 ServerSettingPacket.STREAM_CODEC,
                 ServerSettingPacket::handle

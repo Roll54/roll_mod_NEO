@@ -4,6 +4,7 @@
   "package": "com.roll_54.roll_mod.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "mi.MultipliedMachineTooltipGuardMixin",
     "recipebook.ServerRecipeBookMixin",
     "recipebook.RecipeBookContainsMixin",
     "recipebook.RecipeBookPacketsMixin",

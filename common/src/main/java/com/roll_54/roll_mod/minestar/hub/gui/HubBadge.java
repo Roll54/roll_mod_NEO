@@ -132,7 +132,9 @@ public final class HubBadge {
         if (argb == tintedFor && tinted != null) return tinted;
         // The white body in the notification colour, the "!" over it untinted. Built once per colour, not per frame.
         tintedFor = argb;
-        tinted = new GuiTextureGroup(SpriteTexture.of(BADGE_BODY).setColor(argb), SpriteTexture.of(BADGE_MARK));
+        // Blended: drawn over an item icon (a letter's custom icon), the item renderer had left blending off, and the
+        // badge came out a solid square in the notification colour without its "!".
+        tinted = HubIcons.blended(new GuiTextureGroup(SpriteTexture.of(BADGE_BODY).setColor(argb), SpriteTexture.of(BADGE_MARK)));
         return tinted;
     }
 

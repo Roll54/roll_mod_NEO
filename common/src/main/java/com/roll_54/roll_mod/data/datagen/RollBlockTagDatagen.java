@@ -36,6 +36,10 @@ public class RollBlockTagDatagen extends BlockTagsProvider {
 
         var commonOreBlocks = tag(ORE_BLOCKS);
 
+        // The meteorite metal tier's "too weak for" tag: empty, as vanilla's incorrect_for_netherite_tool (it mines
+        // everything). Written so the tag exists; a tier naming a missing tag made the game warn on every load.
+        tag(com.roll_54.roll_mod.data.ModTags.Blocks.INCORRECT_METEORITE_METAL_TOOL);
+
         // Machine blocks that should be pickaxe-mineable.
         pickaxeTag.add(
                 BlockRegistry.HYDROPONIC_GARDEN_BED.get(),

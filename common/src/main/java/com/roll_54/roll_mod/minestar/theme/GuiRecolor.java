@@ -102,10 +102,69 @@ public final class GuiRecolor {
      * dark tones they vanished into the panel (Extreme Sound Muffler's speaker button in the inventory, the play and
      * mute buttons on its screen).
      */
-    private static final java.util.Set<String> OWN_COLOURS = java.util.Set.of("extremesoundmuffler");
+    private static final java.util.Set<String> OWN_COLOURS = java.util.Set.of();
 
     public static boolean keepsOwnColours(@Nullable net.minecraft.resources.ResourceLocation texture) {
-        return texture != null && OWN_COLOURS.contains(texture.getNamespace());
+        if (texture == null) return false;
+        // Atlases of pictures, not of GUI frames: potion effect icons (mob_effects), and items or blocks drawn as flat
+        // sprites (TEI's item icons, from the block atlas). Their greys are the picture's own: recoloured, a diamond
+        // pickaxe's iron or a Slowness icon turned into the theme's dark tones.
+        if (texture.getPath().startsWith("textures/atlas/") && !texture.getPath().equals("textures/atlas/gui.png")) return true;
+        return OWN_COLOURS.contains(texture.getNamespace());
+    }
+
+    /**
+     * {@code argb} as the recolour shader would draw it: an opaque grey mapped through the theme's five tones, anything
+     * coloured or see-through as it is. For what is not a texture blit: other mods' panels and frames drawn with
+     * {@code fill} (Extreme Sound Muffler's side panel, many mods' grey boxes) take the theme like their textures do.
+     */
+    public static int fillColor(int argb) {
+        UiTheme.Recolor recolor = active();
+        if (recolor == null || (argb >>> 24) != 0xFF) return argb;
+        int r = (argb >> 16) & 0xFF, g = (argb >> 8) & 0xFF, b = argb & 0xFF;
+        int hi = Math.max(r, Math.max(g, b)), lo = Math.min(r, Math.min(g, b));
+        if (hi - lo > 10) return argb;
+        float v = hi / 255f;
+        int mapped;
+        if (v < 0.333f) mapped = mix(recolor.outline(), recolor.shadow(), v / 0.333f);
+        else if (v < 0.545f) mapped = mix(recolor.shadow(), recolor.well(), (v - 0.333f) / 0.212f);
+        else if (v < 0.776f) mapped = mix(recolor.well(), recolor.surface(), (v - 0.545f) / 0.231f);
+        else mapped = mix(recolor.surface(), recolor.highlight(), (v - 0.776f) / 0.224f);
+        return 0xFF000000 | (mapped & 0xFFFFFF);
+    }
+
+    private static int mix(int a, int b, float t) {
+        t = Math.max(0f, Math.min(1f, t));
+        int r = Math.round(((a >> 16) & 0xFF) * (1 - t) + ((b >> 16) & 0xFF) * t);
+        int g = Math.round(((a >> 8) & 0xFF) * (1 - t) + ((b >> 8) & 0xFF) * t);
+        int bl = Math.round((a & 0xFF) * (1 - t) + (b & 0xFF) * t);
+        return (r << 16) | (g << 8) | bl;
+    }
+
+    /**
+     * The colour for text a screen writes in {@code rgb}. On the screens of {@link #BLACK_TEXT_ON_PANEL} mods, black
+     * and near-black text sits on their grey panel, which the recolour darkens: there it takes the theme's text colour.
+     * Everywhere else black is kept — a book's page or a sign is not recoloured, and its black text must stay black.
+     */
+    public static int textColor(int rgb) {
+        int r = (rgb >> 16) & 0xFF, g = (rgb >> 8) & 0xFF, b = rgb & 0xFF;
+        int hi = Math.max(r, Math.max(g, b)), lo = Math.min(r, Math.min(g, b));
+        if (hi > 0x40 || hi - lo > 8) return rgb;
+        UiTheme.Recolor recolor = active();
+        if (recolor == null || !blackTextOnPanel(Minecraft.getInstance().screen)) return rgb;
+        return recolor.text() & 0xFFFFFF;
+    }
+
+    /** Packages of mods whose screens write black text straight on their grey (recoloured) panel. */
+    private static final java.util.List<String> BLACK_TEXT_ON_PANEL = java.util.List.of("com.leobeliik.extremesoundmuffler.");
+
+    private static boolean blackTextOnPanel(@Nullable Screen screen) {
+        if (screen == null) return false;
+        String name = screen.getClass().getName();
+        for (String prefix : BLACK_TEXT_ON_PANEL) {
+            if (name.startsWith(prefix)) return true;
+        }
+        return false;
     }
 
     /** The palette each shader last got, and which shader instance it went to. */

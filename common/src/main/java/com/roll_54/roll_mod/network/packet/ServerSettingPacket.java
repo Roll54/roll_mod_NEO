@@ -14,9 +14,10 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 import java.util.Locale;
 
 /**
- * Client → server: one server setting changed from the moderation tab's Settings mode — the switches for what was
+ * Both ways. Client → server: one server setting changed from the moderation tab's Settings mode — the switches for what was
  * ported from Eden_LD (join history, mentions) and the chat's other knobs. Only for staff who may ban
- * ({@link ModerationPermissions#canBan}); anyone else is ignored. Written to {@code MyConfig} and saved.
+ * ({@link ModerationPermissions#canBan}); anyone else is ignored. Written to {@code MyConfig} and saved. Server →
+ * client ({@link #syncTo}): the server's values, written into the client's copy so the tab shows them.
  *
  * @param key   which setting, one of {@link Key}
  * @param value its new value, as text
@@ -53,6 +54,19 @@ public record ServerSettingPacket(String key, String value) implements CustomPac
     }
 
     public static void handle(ServerSettingPacket payload, IPayloadContext context) {
+        if (context.flow().isClientbound()) {
+            // Server → client: the server's value, so the moderation tab's Settings show the server's settings, not
+            // whatever the player's own config file holds (on a dedicated server the stage table showed empty there).
+            context.enqueueWork(() -> {
+                if (ModConfigs.MAIN == null) return;
+                try {
+                    apply(ModConfigs.MAIN, Key.valueOf(payload.key), payload.value);
+                } catch (IllegalArgumentException ignored) {
+                    // A key this client does not know.
+                }
+            });
+            return;
+        }
         context.enqueueWork(() -> {
             if (!(context.player() instanceof ServerPlayer player) || !ModerationPermissions.canBan(player)) return;
             MyConfig config = ModConfigs.MAIN;
@@ -70,7 +84,35 @@ public record ServerSettingPacket(String key, String value) implements CustomPac
                 com.roll_54.roll_mod.minestar.battlepass.BattlePassService.sendAdmin(player);
             }
             RollMod.LOGGER.info("[Moderation] {} set {} to {}", player.getGameProfile().getName(), payload.key, payload.value);
+            // Other staff online see the change on their next look at the tab.
+            for (ServerPlayer other : player.server.getPlayerList().getPlayers()) {
+                if (other != player) syncTo(other);
+            }
         });
+    }
+
+    /** The server's current value of {@code key}, as {@link #apply} reads it back. */
+    public static String current(MyConfig config, Key key) {
+        return switch (key) {
+            case JOIN_HISTORY_MINUTES -> String.valueOf(config.chat_changes.joinHistoryMinutes.get());
+            case JOIN_HISTORY_LINES -> String.valueOf(config.chat_changes.joinHistoryLines.get());
+            case MENTIONS -> String.valueOf(config.chat_changes.mentions);
+            case HIDE_ADVANCEMENTS -> String.valueOf(config.chat_changes.hideAdvancementMessages);
+            case DISCORD_MARKER -> config.chat_changes.discordLineMarker;
+            case WIXIE_MINUTES -> String.valueOf(Math.max(1, config.messages.TIME_TO_BROADCAST / 1200));
+            case LEADERBOARD_CHAPTERS -> config.hub.leaderboardChapters;
+        };
+    }
+
+    /** Sends {@code player} every setting the tab shows, if they may change them. On login and after each change. */
+    public static void syncTo(ServerPlayer player) {
+        MyConfig config = ModConfigs.MAIN;
+        if (config == null || !ModerationPermissions.canBan(player)) return;
+        for (Key key : Key.values()) {
+            String value = current(config, key);
+            net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player,
+                    new ServerSettingPacket(key.name(), value == null ? "" : value));
+        }
     }
 
     /** Writes {@code value} into {@code config}; also used on the client to show the change at once. */

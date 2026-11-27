@@ -1,6 +1,12 @@
 package com.roll_54.roll_mod.compat.mi.machines;
 
 import aztech.modern_industrialization.MI;
+import aztech.modern_industrialization.MIItem;
+import aztech.modern_industrialization.MIText;
+import aztech.modern_industrialization.util.TextHelper;
+import aztech.modern_industrialization.machines.recipe.MachineRecipe;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.item.ItemStack;
 import aztech.modern_industrialization.compat.rei.machines.MachineCategoryParams;
 import aztech.modern_industrialization.compat.rei.machines.ReiMachineRecipes;
 import aztech.modern_industrialization.compat.rei.machines.SteamMode;
@@ -40,7 +46,7 @@ import static aztech.modern_industrialization.machines.multiblocks.HatchTypes.*;
  * <p>Each one is Tesseract's {@link ElectricMultipliedCraftingMultiblockBlockEntity} at
  * {@link MachineTier#MULTIBLOCK}, with every extra parallel costing {@link Spec#euPerParallel()} of a
  * recipe's EU — the same block entity MI Tweaks' batch multiblocks build, minus MI Tweaks'
- * {@code mi_tweaks:} id. A spec with a {@link Spec#maxBaseEu()} also refuses recipes above that EU/t,
+ * {@code mi_tweaks:} id. A spec with a {@link Spec#maxBaseEu()} also refuses recipes above that EU/t (and one with a {@link Spec#minBaseEu()} those below it),
  * the way an EBF's coil tier does.
  *
  * <h2>Reading the shapes</h2>
@@ -77,13 +83,28 @@ public final class ParallelMultiblocks {
      *
      * @param euPerParallel share of a recipe's EU each parallel costs (1 = full price)
      * @param maxBaseEu  highest recipe EU/t accepted, like an EBF coil tier's heat; 0 for no limit
+     * @param minBaseEu  lowest recipe EU/t accepted; 0 for no limit
      * @param hatchKey   the one key whose blocks can be swapped for hatches
      * @param overlays   texture folder of the controller's front overlay, reused from the machine this
      *                   one is the big version of
      */
     public record Spec(String id, String englishName, Supplier<MachineRecipeType> recipeType, int parallel,
                        float euPerParallel, long maxBaseEu, String casing, char hatchKey, HatchFlags hatches, Map<Character, String> members, String[][] layers,
-                       ResourceLocation overlays) {}
+                       ResourceLocation overlays, long minBaseEu) {
+
+        /** A spec with no lower EU limit. */
+        public Spec(String id, String englishName, Supplier<MachineRecipeType> recipeType, int parallel,
+                    float euPerParallel, long maxBaseEu, String casing, char hatchKey, HatchFlags hatches,
+                    Map<Character, String> members, String[][] layers, ResourceLocation overlays) {
+            this(id, englishName, recipeType, parallel, euPerParallel, maxBaseEu, casing, hatchKey, hatches, members,
+                    layers, overlays, 0);
+        }
+
+        /** Whether a recipe of {@code eu} EU/t is within this machine's limits. */
+        public boolean accepts(long eu) {
+            return (maxBaseEu <= 0 || eu <= maxBaseEu) && (minBaseEu <= 0 || eu >= minBaseEu);
+        }
+    }
 
     private static final HatchFlags ITEM_FLUID_ENERGY = new HatchFlags.Builder()
             .with(ITEM_INPUT, ITEM_OUTPUT, FLUID_INPUT, FLUID_OUTPUT, ENERGY_INPUT).build();
@@ -124,9 +145,12 @@ public final class ParallelMultiblocks {
             },
             ResourceLocation.parse("modern_industrialization:block/machines/pyrolyse_oven"));
 
+    /** The EU/t from which an EBF recipe is the rotary hearth furnace's own, listed in its REI category. */
+    public static final long ROTARY_OWN_MIN_EU = 1024;
+
     public static final Spec ROTARY_HEARTH_FURNACE = new Spec(
             "rotary_hearth_furnace", "Rotary Hearth Furnace",
-            () -> MIMachineRecipeTypes.BLAST_FURNACE, 128, 0.75f, 1024, CASING, 'C', ITEM_FLUID_ENERGY, MEMBERS,
+            () -> MIMachineRecipeTypes.BLAST_FURNACE, 128, 0.75f, 0, CASING, 'C', ITEM_FLUID_ENERGY, MEMBERS,
             new String[][] {
                     { " CCCCC ", "  N N  ", "  N N  ", "       ", "       ", "       ", "  N N  ", "  N N  ", " CCCCC " },
                     { "CCCCCCC", " NPNPN ", "       ", "  N N  ", "  PNP  ", "  N N  ", "       ", " NPNPN ", "CCCCCCC" },
@@ -449,6 +473,7 @@ public final class ParallelMultiblocks {
                     .filter(params -> params.recipeType == type)
                     .map(params -> params.category)
                     .filter(category -> !aboveHeat(category, spec.maxBaseEu()))
+                    .filter(category -> !belowMin(category, spec.minBaseEu()))
                     .toList();
             for (ResourceLocation category : categories) {
                 ReiMachineRecipes.registerWorkstation(category, machine);
@@ -456,8 +481,12 @@ public final class ParallelMultiblocks {
             RollMod.LOGGER.debug("[MI] '{}' is a workstation for {}", spec.id(), categories);
             // No category of its own: it shows in its recipe type's categories. Only when nothing lists that
             // type's recipes at all does it get one, or its recipes would show nowhere.
-            if (categories.isEmpty()) {
-                registerOwnCategory(spec, type, machine);
+            if (spec == ROTARY_HEARTH_FURNACE) {
+                // It runs every EBF recipe, so it sits in every coil's category above. Its own recipes are the EBF
+                // ones from ROTARY_OWN_MIN_EU up, past any coil: they get its own category.
+                registerOwnCategory(spec, type, machine, recipe -> recipe.eu >= ROTARY_OWN_MIN_EU);
+            } else if (categories.isEmpty()) {
+                registerOwnCategory(spec, type, machine, recipe -> spec.accepts(recipe.eu));
             }
         }
     }
@@ -480,23 +509,101 @@ public final class ParallelMultiblocks {
     }
 
     /**
+     * An EBF coil-tier category whose top EU/t is under {@code minBaseEu} lists no recipe a machine with that lower
+     * limit can run. A category straddling the limit is kept.
+     */
+    private static boolean belowMin(ResourceLocation category, long minBaseEu) {
+        if (minBaseEu <= 0) return false;
+        for (ElectricBlastFurnaceBlockEntity.Tier tier : ElectricBlastFurnaceBlockEntity.tiers) {
+            if (category.equals(MI.id("electric_blast_furnace_" + tier.coilBlockId().getPath()))) {
+                return tier.maxBaseEu() < minBaseEu;
+            }
+        }
+        return false;
+    }
+
+    /**
      * A category for the controller alone, listing every recipe of its type it can run (up to its heat,
      * if it has one). Laid out with two slots of each kind, as the pack's KubeJS pyrolyse oven was —
      * enough for both it and the blast furnace. EBF tiers only go as high as the pack's coils, so blast
      * furnace recipes between the top coil and this machine's heat would otherwise show in no category
      * at all. Titled by the lang key {@code rei_categories.roll_mod.<id>}.
      */
-    private static void registerOwnCategory(Spec spec, MachineRecipeType type, ResourceLocation machine) {
+    private static void registerOwnCategory(Spec spec, MachineRecipeType type, ResourceLocation machine,
+                                            java.util.function.Predicate<MachineRecipe> shown) {
         if (ReiMachineRecipes.categories.containsKey(machine)) return;
-        long maxBaseEu = spec.maxBaseEu();
-        ReiMachineRecipes.registerCategory(machine, new MachineCategoryParams(spec.englishName(), machine,
-                new SlotPositions.Builder().addSlots(56, 35, 1, 2).build(),
-                new SlotPositions.Builder().addSlots(102, 35, 1, 2).build(),
-                new SlotPositions.Builder().addSlots(36, 35, 1, 2).build(),
-                new SlotPositions.Builder().addSlots(122, 35, 1, 2).build(),
-                new ProgressBar.Params(77, 33, "arrow"), type, recipe -> maxBaseEu <= 0 || recipe.eu <= maxBaseEu, true,
-                SteamMode.ELECTRIC_ONLY));
+        SlotPositions itemIn = new SlotPositions.Builder().addSlots(56, 35, 1, 2).build();
+        SlotPositions itemOut = new SlotPositions.Builder().addSlots(102, 35, 1, 2).build();
+        SlotPositions fluidIn = new SlotPositions.Builder().addSlots(36, 35, 1, 2).build();
+        SlotPositions fluidOut = new SlotPositions.Builder().addSlots(122, 35, 1, 2).build();
+        ProgressBar.Params bar = new ProgressBar.Params(77, 33, "arrow");
+        // The rotary furnace's recipes are EBF recipes: laid out like the pack's EBF coil categories (whatever
+        // shape the pack gave them), so they look the same as in the EBF.
+        MachineCategoryParams ebf = spec == ROTARY_HEARTH_FURNACE ? ebfCategory(type) : null;
+        if (ebf != null) {
+            itemIn = ebf.itemInputs;
+            itemOut = ebf.itemOutputs;
+            fluidIn = ebf.fluidInputs;
+            fluidOut = ebf.fluidOutputs;
+            bar = ebf.progressBarParams;
+        }
+        MachineCategoryParams params = spec == ROTARY_HEARTH_FURNACE
+                ? new NoUpgradeCategoryParams(spec.englishName(), machine, itemIn, itemOut, fluidIn, fluidOut, bar, type, shown)
+                : new MachineCategoryParams(spec.englishName(), machine, itemIn, itemOut, fluidIn, fluidOut, bar, type, shown,
+                        true, SteamMode.ELECTRIC_ONLY);
+        ReiMachineRecipes.registerCategory(machine, params);
         ReiMachineRecipes.registerWorkstation(machine, machine);
+    }
+
+    /** An EBF coil-tier category of {@code type}, the first coil's if it is there, or null. */
+    @org.jetbrains.annotations.Nullable
+    private static MachineCategoryParams ebfCategory(MachineRecipeType type) {
+        for (ElectricBlastFurnaceBlockEntity.Tier tier : ElectricBlastFurnaceBlockEntity.tiers) {
+            MachineCategoryParams params = ReiMachineRecipes.categories.get(
+                    MI.id("electric_blast_furnace_" + tier.coilBlockId().getPath()));
+            if (params != null && params.recipeType == type) return params;
+        }
+        return null;
+    }
+
+    /**
+     * A category whose recipes never ask for upgrades. MI marks every recipe above a multiblock's base 128 EU/t with
+     * the upgrade icon and "requires at least +N EU/t of upgrades"; the rotary hearth furnace's own recipes are all
+     * 1024 EU/t and up, and it needs no upgrades for them, so that mark is left out. Recipe conditions still show.
+     */
+    private static final class NoUpgradeCategoryParams extends MachineCategoryParams {
+        NoUpgradeCategoryParams(String englishName, ResourceLocation category, SlotPositions itemInputs,
+                                SlotPositions itemOutputs, SlotPositions fluidInputs, SlotPositions fluidOutputs,
+                                ProgressBar.Params bar, MachineRecipeType type, java.util.function.Predicate<MachineRecipe> shown) {
+            super(englishName, category, itemInputs, itemOutputs, fluidInputs, fluidOutputs, bar, type, shown,
+                    true, SteamMode.ELECTRIC_ONLY);
+        }
+
+        @Override
+        public boolean includeRecipeConditionDisplay(MachineRecipe recipe) {
+            return !recipe.conditions.isEmpty();
+        }
+
+        @Override
+        public List<ItemStack> getRecipeConditionDisplayItems(MachineRecipe recipe) {
+            List<ItemStack> items = new ArrayList<>();
+            for (var condition : recipe.conditions) {
+                ItemStack icon = condition.icon();
+                if (!icon.isEmpty()) items.add(icon);
+            }
+            if (items.isEmpty()) items.add(MIItem.WRENCH.stack());
+            return items;
+        }
+
+        @Override
+        public List<Component> getRecipeTooltip(MachineRecipe recipe) {
+            List<Component> lines = new ArrayList<>();
+            lines.add(MIText.BaseEuTotal.text(TextHelper.getEuText((long) recipe.duration * recipe.eu)));
+            for (var condition : recipe.conditions) {
+                condition.appendDescription(lines);
+            }
+            return lines;
+        }
     }
 
     /** The first mod a used member block belongs to that is not loaded, or null. */
@@ -529,17 +636,17 @@ public final class ParallelMultiblocks {
      * the EBF checks it, and upgrades do not raise it.
      */
     private static final class BlockEntity extends ElectricMultipliedCraftingMultiblockBlockEntity {
-        private final long maxBaseEu;
+        private final Spec spec;
 
         BlockEntity(BEP bep, Spec spec, MachineRecipeType recipeType, ShapeTemplate shape) {
             super(bep, RollMod.id(spec.id()), new ShapeTemplate[] { shape }, MachineTier.MULTIBLOCK,
                     recipeType, spec.parallel(), EuCostTransformers.percentage(spec::euPerParallel));
-            this.maxBaseEu = spec.maxBaseEu();
+            this.spec = spec;
         }
 
         @Override
         public boolean isRecipeBanned(long recipeEu) {
-            return (maxBaseEu > 0 && recipeEu > maxBaseEu) || super.isRecipeBanned(recipeEu);
+            return !spec.accepts(recipeEu) || super.isRecipeBanned(recipeEu);
         }
     }
 }

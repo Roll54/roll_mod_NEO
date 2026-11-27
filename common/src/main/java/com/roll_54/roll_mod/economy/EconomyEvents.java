@@ -65,6 +65,9 @@ public final class EconomyEvents {
    */
   @SubscribeEvent
   public static void onServerStarted(ServerStartedEvent event) {
+    // Plots live in OPAC's claims; without the mod (a dev run, where its jar is only a library) there is nothing to
+    // repair, and OPAC's API would throw.
+    if (!net.neoforged.fml.ModList.get().isLoaded("openpartiesandclaims")) return;
     try {
       PlotService.protectVacantPlots(event.getServer());
     } catch (Throwable t) {

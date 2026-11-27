@@ -33,8 +33,20 @@ public abstract class GuiGraphicsTextRecolorMixin {
     }
 
     private static int recolor(int color) {
-        if ((color & 0xFFFFFF) != VANILLA_GREY) return color;
+        int rgb = color & 0xFFFFFF;
+        int themed = rgb == VANILLA_GREY ? GuiRecolor.labelColor(VANILLA_GREY) & 0xFFFFFF : GuiRecolor.textColor(rgb);
+        if (themed == rgb) return color;
         int alpha = color & 0xFF000000;
-        return (alpha == 0 ? 0xFF000000 : alpha) | (GuiRecolor.labelColor(VANILLA_GREY) & 0xFFFFFF);
+        return (alpha == 0 ? 0xFF000000 : alpha) | themed;
+    }
+
+    /**
+     * Opaque grey {@code fill}s — the boxes, frames and wells many mods draw instead of a texture — take the theme's
+     * tones the way their textures do ({@link GuiRecolor#fillColor}). Every fill ends in this overload.
+     */
+    @ModifyVariable(method = "fill(Lnet/minecraft/client/renderer/RenderType;IIIIII)V",
+            at = @At("HEAD"), argsOnly = true, ordinal = 5, require = 0)
+    private int roll_mod$themeFill(int color) {
+        return GuiRecolor.fillColor(color);
     }
 }

@@ -600,7 +600,9 @@ public final class BattlePassService {
         ListTag fromTable = new ListTag();
         for (int b = 0; b < BattlePassConfig.BLOCKS; b++) {
             long quest = config.gate(b);
-            fromTable.add(StringTag.valueOf(quest != config.ownGate(b) ? String.format("%016X", quest) : ""));
+            // Always the table's quest: compared with the old per-block setting, a block whose quest happened to match it
+            // showed as "open at once" though it was locked.
+            fromTable.add(StringTag.valueOf(quest != 0 ? String.format("%016X", quest) : ""));
         }
         tag.put("tableGates", fromTable);
         ListTag free = new ListTag();
@@ -640,6 +642,8 @@ public final class BattlePassService {
         rollIfNeeded(player.server);
         sync(player);
         com.roll_54.roll_mod.minestar.dailytasks.DailyRewardConfig.sync(player);
+        // Staff get the server's settings (the quest stage table among them) for the moderation tab.
+        com.roll_54.roll_mod.network.packet.ServerSettingPacket.syncTo(player);
     }
 
     @SubscribeEvent
