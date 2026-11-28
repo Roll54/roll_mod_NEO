@@ -38,6 +38,13 @@ public class KeyMappingRegistry {
             "key.categories.roll_mod"
     ));
 
+    /** Shows or hides prospected ores on Xaero's maps. Unbound by default. */
+    public static final Lazy<KeyMapping> PROSPECT_MAP_TOGGLE = Lazy.of(() -> new KeyMapping(
+            "key.roll_mod.prospect_map_toggle",
+            com.mojang.blaze3d.platform.InputConstants.UNKNOWN.getValue(),
+            "key.categories.roll_mod"
+    ));
+
     /** Opens the held modular drill's config screen. V is unbound in vanilla. */
     public static final Lazy<KeyMapping> DRILL_CONFIG = Lazy.of(() -> new KeyMapping(
             "key.roll_mod.drill_config",

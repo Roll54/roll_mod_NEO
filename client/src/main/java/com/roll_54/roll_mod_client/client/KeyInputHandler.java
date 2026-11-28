@@ -46,6 +46,9 @@ public class KeyInputHandler {
             // travel with the request, because only the client knows which one the hub was left on.
             PacketDistributor.sendToServer(new OpenHubPacket(HubUI.lastTab()));
         }
+        if (KeyMappingRegistry.PROSPECT_MAP_TOGGLE.get().consumeClick()) {
+            com.roll_54.roll_mod_client.compat.xaero.ProspectMapState.toggle();
+        }
         if (KeyMappingRegistry.DRILL_CONFIG.get().consumeClick()) {
             // Cheap pre-check only; the server re-checks the hand before opening anything.
             var player = net.minecraft.client.Minecraft.getInstance().player;

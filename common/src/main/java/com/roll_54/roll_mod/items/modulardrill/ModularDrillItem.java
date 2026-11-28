@@ -5,6 +5,9 @@ import com.roll_54.roll_mod.items.electricItems.DrillDropCollector;
 import com.roll_54.roll_mod.util.EnergyFormatUtils;
 import dev.technici4n.grandpower.api.ISimpleEnergyItem;
 import com.roll_54.roll_mod.items.ModToolTiers;
+import com.roll_54.roll_mod.registry.TagRegistry;
+import net.neoforged.neoforge.common.ItemAbilities;
+import net.neoforged.neoforge.common.ItemAbility;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.BlockPos;
@@ -56,8 +59,15 @@ public class ModularDrillItem extends DiggerItem implements ISimpleEnergyItem, M
     private final DrillVoltage voltage;
 
     public ModularDrillItem(DrillVoltage voltage, Properties properties) {
-        super(ModToolTiers.METEORITE_METAL, BlockTags.MINEABLE_WITH_PICKAXE, properties.stacksTo(1));
+        // Pickaxe and shovel blocks both: dirt, sand and gravel dig at the same speed as stone.
+        super(ModToolTiers.METEORITE_METAL, TagRegistry.MINEABLE_WITH_DRILL, properties.stacksTo(1));
         this.voltage = voltage;
+    }
+
+    /** Digs as a pickaxe and as a shovel (no path making: right click stays the drill's own). */
+    @Override
+    public boolean canPerformAction(ItemStack stack, ItemAbility ability) {
+        return ability == ItemAbilities.PICKAXE_DIG || ability == ItemAbilities.SHOVEL_DIG;
     }
 
     public DrillVoltage voltage() {

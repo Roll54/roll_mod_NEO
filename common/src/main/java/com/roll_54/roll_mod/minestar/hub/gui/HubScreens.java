@@ -21,8 +21,10 @@ public final class HubScreens {
     public static boolean hidesRecipeBrowser(Object screen) {
         if (!(screen instanceof ModularUIContainerScreen container)) return false;
         var ui = container.getMenu().getModularUI();
+        // The ore scanner fills the screen with its own map and list: a recipe browser only covers them. (The Crop
+        // Manager used to be here too; it shows the recipe browser again, its inputs are looked up there.)
         return HubUI.isHub(ui)
                 || com.roll_54.roll_mod.economy.service.gui.ServiceUI.isService(ui)
-                || com.roll_54.roll_mod.compat.MBD2.machine.CropManagerUI.isCropManager(ui);
+                || com.roll_54.roll_mod.items.electricItems.orescanner.gui.OreScannerUI.isOreScanner(ui);
     }
 }

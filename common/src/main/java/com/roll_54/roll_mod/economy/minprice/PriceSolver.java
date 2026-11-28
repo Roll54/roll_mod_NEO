@@ -34,7 +34,7 @@ public final class PriceSolver {
   /** One ingredient slot: any of {@code options} (cheapest one counts), {@code count} times. */
   public record Input(List<String> options, double count) {}
 
-  /** One product, {@code count} being the expected amount (count × chance). */
+  /** One sure product, {@code count} of it; chanced products are not read at all. */
   public record Output(String key, double count) {}
 
   public record Recipe(
@@ -135,20 +135,35 @@ public final class PriceSolver {
     TreeSet<String> open = new TreeSet<>();
     for (String key : makers.keySet()) if (!frozen.containsKey(key)) open.add(key);
 
+    // Strict is driven by counts, not rescans: each open key counts the distinct keys its recipes still wait on
+    // (inputs' options and remainders), and freezing a key only touches the keys waiting on it. A key whose count
+    // reaches zero has every recipe priceable, so it is priced right then. One pass over the graph in all.
+    Map<String, Integer> waiting = new HashMap<>();
+    Map<String, List<String>> waitedOnBy = new HashMap<>();
+    ArrayDeque<String> ready = new ArrayDeque<>();
+    for (String key : open) {
+      Set<String> deps = new HashSet<>();
+      for (Recipe recipe : makers.get(key)) {
+        for (Input in : recipe.inputs()) {
+          for (String option : in.options()) if (!frozen.containsKey(option)) deps.add(option);
+        }
+        for (Output rem : recipe.remainders()) if (!frozen.containsKey(rem.key())) deps.add(rem.key());
+      }
+      waiting.put(key, deps.size());
+      for (String dep : deps) waitedOnBy.computeIfAbsent(dep, k -> new ArrayList<>()).add(key);
+      if (deps.isEmpty()) ready.add(key);
+    }
+
     while (!open.isEmpty()) {
       // Strict: only once every recipe of a key can be priced, so the maximum is the real one.
-      boolean progress = true;
-      while (progress) {
-        progress = false;
-        for (var it = open.iterator(); it.hasNext(); ) {
-          String key = it.next();
-          Best best = best(key, makers.get(key), frozen, true);
-          if (best != null) {
-            frozen.put(key, new Entry(best.price, Source.RECIPE, best.recipeId));
-            it.remove();
-            progress = true;
-          }
-        }
+      while (!ready.isEmpty()) {
+        String key = ready.poll();
+        if (!open.contains(key)) continue;
+        Best best = best(key, makers.get(key), frozen, true);
+        if (best == null) continue;
+        frozen.put(key, new Entry(best.price, Source.RECIPE, best.recipeId));
+        open.remove(key);
+        release(key, waiting, waitedOnBy, ready);
       }
       if (open.isEmpty()) break;
 
@@ -177,6 +192,7 @@ public final class PriceSolver {
           frozen.put(key, new Entry(minimum, Source.UNRESOLVED, null));
           unresolved.add(key);
           open.remove(key);
+          release(key, waiting, waitedOnBy, ready);
         }
         continue;
       }
@@ -186,11 +202,25 @@ public final class PriceSolver {
             cycles.add(key);
             open.remove(key);
           });
+      cut.keySet().forEach(key -> release(key, waiting, waitedOnBy, ready));
     }
     return new Result(frozen, cycles, unresolved);
   }
 
   private record Best(double price, String recipeId) {}
+
+  /** {@code key} was just priced: every key waiting on it waits on one fewer, and is ready once none are left. */
+  private static void release(
+      String key, Map<String, Integer> waiting, Map<String, List<String>> waitedOnBy, ArrayDeque<String> ready) {
+    List<String> dependents = waitedOnBy.remove(key);
+    if (dependents == null) return;
+    for (String dependent : dependents) {
+      Integer left = waiting.get(dependent);
+      if (left == null) continue;
+      waiting.put(dependent, left - 1);
+      if (left - 1 == 0) ready.add(dependent);
+    }
+  }
 
   /**
    * The open keys in loops that depend on no other open key: the strongly connected components of the

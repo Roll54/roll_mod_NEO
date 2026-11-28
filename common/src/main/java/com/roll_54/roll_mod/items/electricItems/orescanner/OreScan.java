@@ -37,16 +37,20 @@ public final class OreScan {
         ChunkPos center = new ChunkPos(player);
         // Per scan, so the shared block → material table is consulted once per block type, not once per block.
         Map<Block, Optional<OreDefinition>> materials = new IdentityHashMap<>();
-        List<List<PalettedContainer<BlockState>>> chunks = new ArrayList<>();
+        List<List<Section>> chunks = new ArrayList<>();
         for (int dz = -radius; dz <= radius; dz++) {
             for (int dx = -radius; dx <= radius; dx++) {
                 ChunkAccess chunk = level.getChunk(center.x + dx, center.z + dz);
-                List<PalettedContainer<BlockState>> sections = new ArrayList<>();
-                for (LevelChunkSection section : chunk.getSections()) {
+                List<Section> sections = new ArrayList<>();
+                LevelChunkSection[] all = chunk.getSections();
+                for (int i = 0; i < all.length; i++) {
+                    LevelChunkSection section = all[i];
                     if (section.hasOnlyAir()) continue;
                     PalettedContainer<BlockState> states = section.getStates();
                     // The palette says whether any ore can be in here at all; most sections have none.
-                    if (states.maybeHas(state -> material(state, materials).isPresent())) sections.add(states.copy());
+                    if (states.maybeHas(state -> material(state, materials).isPresent())) {
+                        sections.add(new Section(chunk.getSectionYFromSectionIndex(i) << 4, states.copy()));
+                    }
                 }
                 chunks.add(sections);
             }
@@ -54,9 +58,12 @@ public final class OreScan {
         return new Snapshot(radius, center.x, center.z, player.getX(), player.getZ(), chunks, materials);
     }
 
+    /** One copied section and the Y of its lowest block. */
+    public record Section(int bottomY, PalettedContainer<BlockState> states) {}
+
     /** Copied sections, chunk by chunk; nothing in here is shared with the live world. */
     public record Snapshot(int radius, int centerX, int centerZ, int playerX, int playerZ,
-                           List<List<PalettedContainer<BlockState>>> chunks,
+                           List<List<Section>> chunks,
                            Map<Block, Optional<OreDefinition>> materials) {
 
         /** Any thread: the per-column counts. */
@@ -64,20 +71,22 @@ public final class OreScan {
             List<String> palette = new ArrayList<>();
             Map<String, Integer> paletteIndex = new HashMap<>();
             List<OreScanResult.Chunk> result = new ArrayList<>();
-            for (List<PalettedContainer<BlockState>> sections : chunks) {
+            for (List<Section> sections : chunks) {
                 result.add(OreScanResult.Chunk.of(columns(sections, materials, palette, paletteIndex), palette));
             }
             return new OreScanResult(radius, centerX, centerZ, playerX, playerZ, List.copyOf(palette), result);
         }
     }
 
-    private static int[][] columns(List<PalettedContainer<BlockState>> sections,
+    private static int[][] columns(List<Section> sections,
                                    Map<Block, Optional<OreDefinition>> materials,
                                    List<String> palette, Map<String, Integer> paletteIndex) {
         @SuppressWarnings("unchecked")
-        Map<Integer, Integer>[] counts = new Map[256];
-        for (PalettedContainer<BlockState> states : sections) {
+        Map<Integer, int[]>[] counts = new Map[256]; // palette index -> {count, min Y, max Y}
+        for (Section section : sections) {
+            PalettedContainer<BlockState> states = section.states();
             for (int y = 0; y < 16; y++) {
+                int worldY = section.bottomY() + y;
                 for (int z = 0; z < 16; z++) {
                     for (int x = 0; x < 16; x++) {
                         Optional<OreDefinition> def = material(states.get(x, y, z), materials);
@@ -88,7 +97,11 @@ public final class OreScan {
                         });
                         int column = z * 16 + x;
                         if (counts[column] == null) counts[column] = new HashMap<>(4);
-                        counts[column].merge(index, 1, Integer::sum);
+                        int[] c = counts[column].computeIfAbsent(index,
+                                k -> new int[] { 0, Integer.MAX_VALUE, Integer.MIN_VALUE });
+                        c[0]++;
+                        c[1] = Math.min(c[1], worldY);
+                        c[2] = Math.max(c[2], worldY);
                     }
                 }
             }
@@ -99,12 +112,16 @@ public final class OreScan {
                 columns[i] = EMPTY;
                 continue;
             }
-            List<Map.Entry<Integer, Integer>> entries = new ArrayList<>(counts[i].entrySet());
-            entries.sort(Map.Entry.<Integer, Integer>comparingByValue().reversed());
-            int[] column = new int[entries.size() * 2];
+            List<Map.Entry<Integer, int[]>> entries = new ArrayList<>(counts[i].entrySet());
+            entries.sort((a, b) -> Integer.compare(b.getValue()[0], a.getValue()[0]));
+            int stride = OreScanResult.STRIDE;
+            int[] column = new int[entries.size() * stride];
             for (int j = 0; j < entries.size(); j++) {
-                column[2 * j] = entries.get(j).getKey();
-                column[2 * j + 1] = entries.get(j).getValue();
+                int[] c = entries.get(j).getValue();
+                column[stride * j] = entries.get(j).getKey();
+                column[stride * j + 1] = c[0];
+                column[stride * j + 2] = c[1];
+                column[stride * j + 3] = c[2];
             }
             columns[i] = column;
         }

@@ -6,6 +6,7 @@ import com.lowdragmc.lowdraglib2.gui.ui.UIElement;
 import com.lowdragmc.lowdraglib2.gui.ui.ModularUI;
 
 import javax.annotation.Nullable;
+import org.joml.Vector2f;
 
 /**
  * Where an LdLib screen's window actually is, for recipe viewers (TEI) that lay their sidebars out around a
@@ -16,10 +17,11 @@ public final class LdlibScreenBounds {
 
     private LdlibScreenBounds() {}
 
-    /** Ids of the windows that mark themselves: an ME hatch's, the service block's. */
+    /** Ids of the windows that mark themselves: an ME hatch's, the service block's, the Crop Manager's. */
     private static final String[] WINDOW_IDS = {
             com.roll_54.roll_mod.compat.mi.machines.me.MeHatchUI.ROOT_ID,
-            com.roll_54.roll_mod.economy.service.gui.ServiceUI.ROOT_ID};
+            com.roll_54.roll_mod.economy.service.gui.ServiceUI.ROOT_ID,
+            com.roll_54.roll_mod.compat.MBD2.machine.CropManagerUI.ROOT_ID};
 
     /**
      * {x, y, w, h} in GUI pixels: the UI root, or — when the root spans the whole screen — the union of its shown
@@ -37,7 +39,7 @@ public final class LdlibScreenBounds {
         for (String id : WINDOW_IDS) {
             UIElement window = ui.getElementById(id);
             if (window != null && window.isDisplayed()) {
-                int[] r = rect(window);
+                int[] r = withShownChildren(window);
                 if (r != null) return r;
             }
         }
@@ -60,10 +62,11 @@ public final class LdlibScreenBounds {
                 if (depth < 6) union(child, screenW, screenH, box, depth + 1);
                 continue;
             }
-            box[0] = Math.min(box[0], child.getPositionX());
-            box[1] = Math.min(box[1], child.getPositionY());
-            box[2] = Math.max(box[2], child.getPositionX() + child.getSizeWidth());
-            box[3] = Math.max(box[3], child.getPositionY() + child.getSizeHeight());
+            float[] r = world(child);
+            box[0] = Math.min(box[0], r[0]);
+            box[1] = Math.min(box[1], r[1]);
+            box[2] = Math.max(box[2], r[0] + r[2]);
+            box[3] = Math.max(box[3], r[1] + r[3]);
         }
     }
 
@@ -86,7 +89,39 @@ public final class LdlibScreenBounds {
     @Nullable
     private static int[] rect(UIElement element) {
         if (element.getSizeWidth() <= 0 || element.getSizeHeight() <= 0) return null;
-        return new int[] {(int) element.getPositionX(), (int) element.getPositionY(),
-                (int) Math.ceil(element.getSizeWidth()), (int) Math.ceil(element.getSizeHeight())};
+        float[] r = world(element);
+        return new int[] {Math.round(r[0]), Math.round(r[1]), (int) Math.ceil(r[2]), (int) Math.ceil(r[3])};
+    }
+
+    /**
+     * A window and whatever of its shown children sticks out of it (the Crop Manager's settings panel and gear
+     * beside its right edge), so the recipe viewer keeps clear of those too.
+     */
+    @Nullable
+    private static int[] withShownChildren(UIElement window) {
+        int[] r = rect(window);
+        if (r == null) return null;
+        int x0 = r[0], y0 = r[1], x1 = r[0] + r[2], y1 = r[1] + r[3];
+        for (UIElement child : window.getChildren()) {
+            if (!child.isDisplayed() || !child.isVisible()) continue;
+            int[] c = rect(child);
+            if (c == null) continue;
+            x0 = Math.min(x0, c[0]);
+            y0 = Math.min(y0, c[1]);
+            x1 = Math.max(x1, c[0] + c[2]);
+            y1 = Math.max(y1, c[1] + c[3]);
+        }
+        return new int[] {x0, y0, x1 - x0, y1 - y0};
+    }
+
+    /**
+     * {x, y, w, h} on screen. Layout position and size are before the parents' transforms and the UI's draw pose
+     * (MBD2 machine UIs are moved and scaled by them), so they go through {@code localToWorld} the way LdLib2's own
+     * JEI/EMI bridge does; read raw, the box sat beside the real window and TEI laid its sidebars over the machine.
+     */
+    private static float[] world(UIElement element) {
+        Vector2f pos = element.localToWorld(new Vector2f(element.getPositionX(), element.getPositionY()));
+        Vector2f size = element.localToWorldNormal(new Vector2f(element.getSizeWidth(), element.getSizeHeight()));
+        return new float[] {pos.x, pos.y, Math.abs(size.x), Math.abs(size.y)};
     }
 }

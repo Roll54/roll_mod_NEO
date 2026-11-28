@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod_client.compat.emi;
 
+import com.roll_54.roll_mod_client.compat.jei.ThemedText;
 import com.roll_54.roll_mod_client.compat.jei.HydroponicReagentRecipe;
 import dev.emi.emi.api.recipe.BasicEmiRecipe;
 import dev.emi.emi.api.stack.EmiStack;
@@ -20,9 +21,13 @@ import java.util.Locale;
 public class EmiHydroponicReagentRecipe extends BasicEmiRecipe {
     private static final int TEXT_X = 46;
 
+    private static final int COLOR_ACID_LIGHT = 0xFFFFD54F;
     private static final int COLOR_ACID = 0xFF8A6D00;
+    private static final int COLOR_BASE_LIGHT = 0xFFCE93D8;
     private static final int COLOR_BASE = 0xFF6A1B9A;
+    private static final int COLOR_WATER_LIGHT = 0xFF64B5F6;
     private static final int COLOR_WATER = 0xFF1565C0;
+    private static final int COLOR_FERTILIZER_LIGHT = 0xFF81C784;
     private static final int COLOR_FERTILIZER = 0xFF2E7D32;
     private static final int COLOR_UNIT = 0xFF555555;
 
@@ -70,13 +75,14 @@ public class EmiHydroponicReagentRecipe extends BasicEmiRecipe {
             case FERTILIZER -> Component.translatable("jei.roll_mod.hydroponic_reagents.fertilizer", amount);
         };
         int color = switch (recipe.kind()) {
-            case ACIDITY -> value > 0 ? COLOR_ACID : COLOR_BASE;
-            case WATER -> COLOR_WATER;
-            case FERTILIZER -> COLOR_FERTILIZER;
+            case ACIDITY -> value > 0 ? ThemedText.accent(COLOR_ACID, COLOR_ACID_LIGHT)
+                    : ThemedText.accent(COLOR_BASE, COLOR_BASE_LIGHT);
+            case WATER -> ThemedText.accent(COLOR_WATER, COLOR_WATER_LIGHT);
+            case FERTILIZER -> ThemedText.accent(COLOR_FERTILIZER, COLOR_FERTILIZER_LIGHT);
         };
         widgets.addText(line, TEXT_X, 6, color, false);
         widgets.addText(Component.translatable(recipe.isFluid()
                 ? "jei.roll_mod.hydroponic_reagents.per_bucket"
-                : "jei.roll_mod.hydroponic_reagents.per_item"), TEXT_X, 17, COLOR_UNIT, false);
+                : "jei.roll_mod.hydroponic_reagents.per_item"), TEXT_X, 17, ThemedText.muted(COLOR_UNIT), false);
     }
 }

@@ -75,6 +75,9 @@ dependencies {
     runtimeOnly "maven.modrinth:common-storage-lib:${common_storage_lib_modrinth_id}"
     runtimeOnly "maven.modrinth:resourceful-config:${resourceful_config_modrinth_id}"
     runtimeOnly "maven.modrinth:resourceful-lib:${resourceful_lib_modrinth_id}"
+    // compileOnly too: economy/minprice/ModRecipeAdapters reads Ad Astra's machine recipes, whose classes implement
+    // resourcefullib's CodecRecipe, so javac needs it to check them against Recipe. Still provided at runtime only.
+    compileOnly "maven.modrinth:resourceful-lib:${resourceful_lib_modrinth_id}"
 
     jarJar(implementation("io.github.llamalad7:mixinextras-neoforge:${mixinextras_version}")) {
         version {

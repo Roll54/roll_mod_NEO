@@ -111,7 +111,7 @@ public final class CropManagerUI {
         // plate would never be seen. paddingAll(0) because .panel_bg carries padding-all: 5, and
         // every child below is placed at an absolute pixel coordinate measured without it.
         UIElement root = VendorUIHelper.styledPanel(panelWidth, PANEL_HEIGHT);
-        // Marks the screen as a Crop Manager's, so the recipe browser stays off it (HubScreens.hidesRecipeBrowser).
+        // Marks the screen as a Crop Manager's (HubSidebarButtons takes other mods' buttons off it).
         root.setId(ROOT_ID);
         root.layout(l -> l.paddingAll(0));
         // The settings window hangs off the right edge of the panel; without this it is clipped away.

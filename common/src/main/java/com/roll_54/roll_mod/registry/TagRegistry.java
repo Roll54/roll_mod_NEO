@@ -55,6 +55,12 @@ public class TagRegistry {
     /** Fluids the HV Crop Manager's mutagen tank accepts. */
     public static final TagKey<Fluid> MUTAGEN_FLUIDS = TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "mutagens"));
 
+    /**
+     * What the modular drills dig at full speed and with drops: everything a pickaxe and everything a shovel digs, so
+     * dirt, sand and gravel go as fast as stone. Filled by RollBlockTagDatagen.
+     */
+    public static final TagKey<Block> MINEABLE_WITH_DRILL = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath(RollMod.MODID, "mineable/drill"));
+
     //for blockogriz
     public static final TagKey<Block> MINEABLE_WITH_PAXEL = TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("cucumber", "mineable/paxel"));
 

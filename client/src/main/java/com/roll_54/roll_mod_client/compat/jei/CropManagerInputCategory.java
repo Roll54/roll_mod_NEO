@@ -33,6 +33,8 @@ public class CropManagerInputCategory implements IRecipeCategory<CropManagerInpu
     public static final int TEXT_X = 46;
     public static final int COLOR_SLOT = 0xFF2E7D32;
     public static final int COLOR_INFO = 0xFF555555;
+    /** {@link #COLOR_SLOT} on a dark theme's panel. */
+    public static final int COLOR_SLOT_LIGHT = 0xFF81C784;
 
     private final IDrawable icon;
 
@@ -91,8 +93,8 @@ public class CropManagerInputCategory implements IRecipeCategory<CropManagerInpu
     public void draw(@NotNull CropManagerInputRecipe recipe, @NotNull IRecipeSlotsView recipeSlotsView,
                      @NotNull GuiGraphics gui, double mouseX, double mouseY) {
         var font = Minecraft.getInstance().font;
-        gui.drawString(font, slotLine(recipe), TEXT_X, 6, COLOR_SLOT, false);
-        gui.drawString(font, infoLine(recipe), TEXT_X, 17, COLOR_INFO, false);
+        gui.drawString(font, slotLine(recipe), TEXT_X, 6, ThemedText.accent(COLOR_SLOT, COLOR_SLOT_LIGHT), false);
+        gui.drawString(font, infoLine(recipe), TEXT_X, 17, ThemedText.muted(COLOR_INFO), false);
     }
 
     public static Component slotLine(CropManagerInputRecipe recipe) {

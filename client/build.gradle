@@ -106,6 +106,11 @@ dependencies {
     // EMI tree uses.
     compileOnly files(teiCompileJar)
 
+    // compileOnly: compat/xaero draws prospected ores on Xaero's World Map and Minimap. Soft: those classes are
+    // only touched after ModList.isLoaded, and neoforge.mods.toml lists both as optional.
+    compileOnly files("../common/jars/xaerominimap-neoforge-1.21.1-${xaero_minimap_version}.jar")
+    compileOnly files("../common/jars/xaeroworldmap-neoforge-1.21.1-${xaero_worldmap_version}.jar")
+
     // Dev runs: TEI declares EMI and JEI incompatible, so only one side is put on the run classpath.
     // gradle.properties recipe_viewer=tei (default) runs TEI, =emi runs EMI + JEI as before.
     if ((project.findProperty("recipe_viewer") ?: "tei") == "emi") {
@@ -160,12 +165,26 @@ neoForge.ideSyncTask generateModMetadata
 ['client', 'client2', 'data'].each { runName ->
     def runCfg = neoForge.runs.getByName(runName).additionalRuntimeClasspathConfiguration
     dbLibs.each { dependencies.add(runCfg.name, it) }
+    // Only when that run's mods/ has no copy of its own: two copies of a mod (one from mods/, one from here) export
+    // the same packages and the run fails module resolution before the game starts. A *.jar.disabled does not count.
+    def runMods = neoForge.runs.getByName(runName).gameDirectory.get().asFile.toPath().resolve("mods").toFile()
+    def hasOwn = { String prefix ->
+        runMods.listFiles()?.any { it.name.startsWith(prefix) && it.name.endsWith('.jar') } ?: false
+    }
     // Open Parties and Claims backs plot ownership and :common only compiles against it, so the run
     // needs its own copy or PlotService throws NoClassDefFoundError the first time plots are opened.
+    // A copy in mods/ is preferred: from this classpath it is a plain library, not a mod, and cannot see Minecraft's
+    // classes, so Xaero's maps (which initialise OPAC on startup when they find it) crash the game.
+    if (!hasOwn("open-parties-and-claims")) {
+        dependencies.add(runCfg.name, "maven.modrinth:open-parties-and-claims:neoforge-1.21.1-${opac_version}")
+    }
     // The Xaero maps are its usual companions and make the plot map worth looking at.
-    dependencies.add(runCfg.name, "maven.modrinth:open-parties-and-claims:neoforge-1.21.1-${opac_version}")
-    dependencies.add(runCfg.name, "maven.modrinth:xaeros-minimap:neoforge-1.21.1-${xaero_minimap_version}")
-    dependencies.add(runCfg.name, "maven.modrinth:xaeros-world-map:neoforge-1.21.1-${xaero_worldmap_version}")
+    if (!hasOwn("xaerominimap")) {
+        dependencies.add(runCfg.name, "maven.modrinth:xaeros-minimap:neoforge-1.21.1-${xaero_minimap_version}")
+    }
+    if (!hasOwn("xaeroworldmap")) {
+        dependencies.add(runCfg.name, "maven.modrinth:xaeros-world-map:neoforge-1.21.1-${xaero_worldmap_version}")
+    }
 }
 // Sophisticated Core supplies the liquid XP (sophisticatedcore:xp_still) the service block's XP
 // services trade in. Test runs only; nothing compiles against it. Not for `client`: its run/mods has its own

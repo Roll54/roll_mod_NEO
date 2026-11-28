@@ -76,7 +76,7 @@ public class OreLangProvider extends LanguageProvider {
     /**
      * Ukrainian, "what + of what" ({@link UkOreGrammar}): "Пил гематиту" (or "Сірчаний пил" where the language has
      * the adjective), "Необроблений гематит", "Блок необробленого гематиту", "Дроблена руда гематиту",
-     * "Глибинносланцева руда гематиту", "Глибинносланцевий зразок гематиту".
+     * "Глибосланцева руда гематиту", "Глибосланцевий зразок гематиту".
      */
     private void ukrainian(OreDefinition def, String name) {
         String id = def.id();
@@ -98,7 +98,7 @@ public class OreLangProvider extends LanguageProvider {
         for (var base : def.bases()) {
             String ore = switch (base) {
                 case STONE -> "Кам'яна руда " + gen;
-                case DEEPSLATE -> "Глибинносланцева руда " + gen;
+                case DEEPSLATE -> "Глибосланцева руда " + gen;
                 case NETHERRACK -> "Незеракова руда " + gen;
                 case END -> "Руда " + gen + " з каменю Енду";
                 case MOON -> "Місячна руда " + gen;
@@ -110,7 +110,7 @@ public class OreLangProvider extends LanguageProvider {
             // Named by its rock too, so the samples of one ore can be told apart.
             String sample = switch (base) {
                 case STONE -> "Кам'яний зразок " + gen;
-                case DEEPSLATE -> "Глибинносланцевий зразок " + gen;
+                case DEEPSLATE -> "Глибосланцевий зразок " + gen;
                 case NETHERRACK -> "Незераковий зразок " + gen;
                 case END -> "Зразок " + gen + " з каменю Енду";
                 case MOON -> "Місячний зразок " + gen;

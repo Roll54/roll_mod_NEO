@@ -76,7 +76,9 @@ public class OreChunkMap extends UIElement {
         if (column.length > 0) {
             lines.add(Component.translatable("gui.roll_mod.ore_scanner.column", chunkX * 16 + x, chunkZ * 16 + z)
                     .withStyle(style -> style.withColor(COLUMN & 0xFFFFFF)));
-            for (int i = 0; i < column.length; i += 2) lines.add(line(scan.palette().get(column[i]), column[i + 1]));
+            for (int i = 0; i < column.length; i += OreScanResult.STRIDE) {
+                lines.add(line(scan.palette().get(column[i]), column[i + 1]));
+            }
         }
         return lines;
     }
@@ -140,13 +142,43 @@ public class OreChunkMap extends UIElement {
             outline(context, px(cellLeft, cell, hoveredX) - 1, px(cellTop, cell, hoveredZ) - 1,
                     px(cellLeft, cell, hoveredX + 1) + 1, px(cellTop, cell, hoveredZ + 1) + 1, COLUMN);
         }
-        drawPlayer(context, scan, x0, y0, cell);
+        drawArrow(context, scan, x0, y0, cell);
+    }
+
+    /** Vanilla's map marker for the player: the white arrow of a filled map, in its own atlas sprite file. */
+    private static final net.minecraft.resources.ResourceLocation MAP_PLAYER =
+            net.minecraft.resources.ResourceLocation.withDefaultNamespace("textures/map/decorations/player.png");
+
+    /**
+     * Where the player scanned from, marked as a filled map marks them: vanilla's arrow, pointing where the player
+     * looks now, turned in vanilla's 16 steps. Drawn at its own 8 px or a whole multiple of it, on whole pixels.
+     */
+    private static void drawArrow(GUIContext context, OreScanResult scan, float x0, float y0, float cell) {
+        float cellLeft = x0 + scan.radius() * (cell + GAP);
+        float cellTop = y0 + scan.radius() * (cell + GAP);
+        int cx = Math.round(cellLeft + cell * (Math.floorMod(scan.playerX(), 16) + 0.5f) / 16f);
+        int cy = Math.round(cellTop + cell * (Math.floorMod(scan.playerZ(), 16) + 0.5f) / 16f);
+        int scale = Math.max(1, Math.round(cell / 48f));
+        int size = 8 * scale;
+        var player = net.minecraft.client.Minecraft.getInstance().player;
+        float yaw = player == null ? 0f : player.getYRot();
+        // As a map does: north up, the arrow's tip up at yaw 180 (facing north); 16 steps of 22.5°.
+        int step = Math.floorMod(Math.round((yaw + 180f) / 22.5f), 16);
+        var pose = context.graphics.pose();
+        pose.pushPose();
+        pose.translate(cx, cy, 0);
+        pose.mulPose(com.mojang.math.Axis.ZP.rotationDegrees(step * 22.5f));
+        context.graphics.blit(MAP_PLAYER, -size / 2, -size / 2, size, size, 0f, 0f, 8, 8, 8, 8);
+        pose.popPose();
     }
 
     /**
+     * @deprecated The scanner marks the player with vanilla's map arrow now ({@link #drawArrow}).
+     *
      * A green dot on the block column the player scanned from, at least 3 px across, with F3's axis lines out of it:
      * red towards +X (east, right on the map), blue towards +Z (south, down).
      */
+    @Deprecated
     private static void drawPlayer(GUIContext context, OreScanResult scan, float x0, float y0, float cell) {
         float cellLeft = x0 + scan.radius() * (cell + GAP);
         float cellTop = y0 + scan.radius() * (cell + GAP);
@@ -187,7 +219,7 @@ public class OreChunkMap extends UIElement {
 
     /** The colour of the column's most abundant shown material (columns are sorted most first), or 0 for none. */
     private static int columnColor(int[] column, int[] colors, boolean[] shown) {
-        for (int i = 0; i < column.length; i += 2) {
+        for (int i = 0; i < column.length; i += OreScanResult.STRIDE) {
             if (shown[column[i]]) return colors[column[i]];
         }
         return 0;

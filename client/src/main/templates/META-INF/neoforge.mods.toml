@@ -89,3 +89,17 @@ type = "required"
 versionRange = "[4.8,)"
 ordering = "BEFORE"
 side = "CLIENT"
+
+[[dependencies."${mod_id_client}"]]
+modId = "xaerominimap"
+type = "optional"
+versionRange = "[26.1.0,)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies."${mod_id_client}"]]
+modId = "xaeroworldmap"
+type = "optional"
+versionRange = "[1.41.2,)"
+ordering = "NONE"
+side = "CLIENT"

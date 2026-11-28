@@ -107,18 +107,21 @@ public class GTOreVeinWidget extends WidgetGroup {
         return (width - SLOT * inRow) / 2 + SLOT * (index % PER_ROW);
     }
 
+    /** One line of text at {@code y}, the page's width less 5 px each side, rolling when it does not fit. */
+    private static ImageWidget line(int y, String text) {
+        return new ImageWidget(5, y, width - 10, 10, new TextTexture(text).setType(TextTexture.TextType.LEFT_ROLL)
+                .setWidth(width - 10));
+    }
+
     private void setupText(OreVeinDefinition vein) {
         addWidget(new ImageWidget(5, 0, width - 10, 16,
                 new TextTexture(translationKey).setType(TextTexture.TextType.LEFT_ROLL)
                         .setWidth(width - 10)));
-        addWidget(new LabelWidget(5, 40 + shift,
-                LocalizationUtils.format("gtmogs.jei.ore_vein_diagram.spawn_range")));
-        addWidget(new LabelWidget(5, 50 + shift, range));
-
-        addWidget(new LabelWidget(5, 60 + shift,
-                LocalizationUtils.format("gtmogs.jei.ore_vein_diagram.weight", weight)));
-        addWidget(new LabelWidget(5, 70 + shift,
-                LocalizationUtils.format("gtmogs.jei.ore_vein_diagram.dimensions")));
+        // Lines that may not fit the 120 px page roll inside it rather than run past its edge.
+        addWidget(line(40 + shift, LocalizationUtils.format("gtmogs.jei.ore_vein_diagram.spawn_range")));
+        addWidget(line(50 + shift, range));
+        addWidget(line(60 + shift, LocalizationUtils.format("gtmogs.jei.ore_vein_diagram.weight", weight)));
+        addWidget(line(70 + shift, LocalizationUtils.format("gtmogs.jei.ore_vein_diagram.dimensions")));
         setupDimensionMarker(vein, 80 + shift);
     }
 

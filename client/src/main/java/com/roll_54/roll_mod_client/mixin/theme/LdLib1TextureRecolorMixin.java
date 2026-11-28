@@ -23,7 +23,9 @@ public abstract class LdLib1TextureRecolorMixin {
     @Shadow
     public ResourceLocation imageLocation;
 
-    @WrapOperation(method = "drawSubArea",
+    // LDLib 1.0.35 sets the shader in drawSubAreaInternal (drawSubArea only forwards to it); older builds set it in
+    // drawSubArea itself. Both are named, so the recolour reaches the slots on either.
+    @WrapOperation(method = { "drawSubArea", "drawSubAreaInternal" },
             at = @At(value = "INVOKE",
                     target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShader(Ljava/util/function/Supplier;)V"),
             require = 0)

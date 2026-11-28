@@ -74,6 +74,8 @@ public final class RollModClient {
     @SuppressWarnings("deprecation")
     private void onClientSetup(final FMLClientSetupEvent event) {
         RollMod.LOGGER.info("[{}] client setup", MODID);
+        // Prospected ores on Xaero's World Map and Minimap, when either is installed.
+        com.roll_54.roll_mod_client.compat.xaero.XaeroProspectCompat.init();
 
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.LATEX_DANDELION.get(), RenderType.cutout());
         ItemBlockRenderTypes.setRenderLayer(BlockRegistry.SULFUR_BERRY_BLOCK.get(), RenderType.cutout());
@@ -266,6 +268,7 @@ public final class RollModClient {
             event.register(KeyMappingRegistry.CHESTPLATE_TOGGLE_THREE.get());
             event.register(KeyMappingRegistry.HUB.get());
             event.register(KeyMappingRegistry.DRILL_CONFIG.get());
+            event.register(KeyMappingRegistry.PROSPECT_MAP_TOGGLE.get());
         }
 
         @SubscribeEvent

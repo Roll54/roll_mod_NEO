@@ -1,4 +1,4 @@
-// 1.21.1	2026-11-27T14:42:25.739229147	Tags for minecraft:block mod id roll_mod
+// 1.21.1	2026-11-28T08:13:31.311005994	Tags for minecraft:block mod id roll_mod
 093929a215bb66b0fac556c6ba10fbf4addc0c1f data/c/tags/block/ores.json
 26f4e95f349237ac89ddcd813de66bea747b8c50 data/c/tags/block/storage_blocks.json
 b6c82e782af773c9bf55bf765167db9f2bf571ef data/c/tags/block/storage_blocks/meteorite_metal.json
@@ -94,6 +94,7 @@ c61dcb22136c05052c2bf0edd0bedca2e9723139 data/roll_mod/tags/block/magnetite_ore_
 35442b0a81964737407805ad2fa47935fdd547f7 data/roll_mod/tags/block/malachite_ore_in_deepslate.json
 ead80100d6555cd17d90f56bb9125c01fc65f8c9 data/roll_mod/tags/block/malachite_ore_in_mars.json
 b6d5c3521f34a187cfa5fa6324e52f6e03649160 data/roll_mod/tags/block/mica_ore_in_netherrack.json
+c2f6fb7224bd1e2fdb87249751113c4d66dbc21f data/roll_mod/tags/block/mineable/drill.json
 1ef0686a85b0ce06f218909b07e068fc5c73d7b0 data/roll_mod/tags/block/molybdenite_ore_in_mercury.json
 9d5b0f376ecbfd8b33470b3fc84ec5fa0e407386 data/roll_mod/tags/block/molybdenite_ore_in_moon.json
 f847673cbbd744ecdae266dc0fa030b866768205 data/roll_mod/tags/block/molybdenite_ore_in_netherrack.json

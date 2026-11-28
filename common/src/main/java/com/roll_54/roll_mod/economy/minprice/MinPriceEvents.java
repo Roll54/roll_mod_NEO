@@ -62,12 +62,23 @@ public final class MinPriceEvents {
                     .then(Commands.literal("missing").executes(ctx -> auto(ctx.getSource(), false)))))));
   }
 
+  /** Answers once the picks are written; the work itself runs off the server thread (see {@link MinPriceAuto}). */
   private static int auto(CommandSourceStack source, boolean all) {
-    MinPriceAuto.Result result = MinPriceAuto.run(source.getServer(), all);
-    source.sendSuccess(() -> Component.translatable(
-        all ? "msg.roll_mod.minprice.auto_all" : "msg.roll_mod.minprice.auto_missing",
-        result.picked(), result.blacklisted()), true);
-    return result.picked();
+    var running = MinPriceAuto.runAsync(source.getServer(), all);
+    running.whenComplete((result, error) -> {
+      if (error != null) {
+        RollMod.LOGGER.error("[MinPrice] auto failed", error);
+        source.sendFailure(Component.translatable("msg.roll_mod.minprice.auto_failed"));
+      } else if (result == null) {
+        source.sendFailure(Component.translatable("msg.roll_mod.minprice.auto_busy"));
+      } else {
+        source.sendSuccess(() -> Component.translatable(
+            all ? "msg.roll_mod.minprice.auto_all" : "msg.roll_mod.minprice.auto_missing",
+            result.picked(), result.blacklisted()), true);
+      }
+    });
+    if (!running.isDone()) source.sendSuccess(() -> Component.translatable("msg.roll_mod.minprice.auto_started"), false);
+    return 1;
   }
 
   @SubscribeEvent

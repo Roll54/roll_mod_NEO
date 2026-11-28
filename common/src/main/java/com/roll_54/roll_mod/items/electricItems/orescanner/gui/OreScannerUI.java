@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * The ore scanner's screen, 600 x 400: the scanned chunks on the left ({@link OreChunkMap}), a search field and the
+ * The ore scanner's screen, covering the whole screen opaquely: the scanned chunks on the left ({@link OreChunkMap}), a search field and the
  * materials found, with their totals, on the right. Everything shown comes from {@link ClientOreScanCache}, which
  * the scan packet fills just before the screen opens, so no LDLib sync values are involved and the server's copy
  * of the tree is just an empty frame.
@@ -43,6 +43,13 @@ import java.util.Map;
 public final class OreScannerUI {
 
     public static final ResourceLocation UI_ID = RollMod.id("ore_scanner");
+    /** The id on the scanner window's root: marks the screen as the scanner's (HubScreens, HubSidebarButtons). */
+    public static final String ROOT_ID = "roll_mod_ore_scanner";
+
+    /** Whether {@code ui} is the ore scanner's screen. */
+    public static boolean isOreScanner(@org.jetbrains.annotations.Nullable ModularUI ui) {
+        return ui != null && ui.getElementById(ROOT_ID) != null;
+    }
 
     /** The panel's full size; it shrinks to fit smaller screens (high GUI scales), keeping {@link #MARGIN} free. */
     private static final int MAX_W = 600;
@@ -60,6 +67,7 @@ public final class OreScannerUI {
 
     public static ModularUI createUI(Player player) {
         UIElement root = VendorUIHelper.styledPanel(MAX_W, MAX_H);
+        root.setId(ROOT_ID);
         root.layout(l -> l.paddingAll(0));
 
         Label title = new Label();
@@ -112,9 +120,11 @@ public final class OreScannerUI {
         // Laid out for the full size here (all the server's copy ever gets), then re-fitted to the screen on every
         // screen init — opening, resizing the window, changing the GUI scale — and centred by LDLib.
         fit(root, title, map, side, MAX_W, MAX_H);
+        // The whole screen, opaque: nothing of the world or the HUD shows behind the scanner.
+        root.style(s -> s.backgroundTexture(new ColorRectTexture(0xFF101014)));
         return ModularUI.of(RollUi.of(player, root, screen -> {
-            int w = Math.min(MAX_W, screen.width - 2 * MARGIN);
-            int h = Math.min(MAX_H, screen.height - 2 * MARGIN);
+            int w = screen.width;
+            int h = screen.height;
             fit(root, title, map, side, w, h);
             return Size.of(w, h);
         }), player);

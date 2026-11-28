@@ -30,14 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A pickaxe that, used on a block, reports which ores lie in a 5x5 column running {@link #DEPTH} blocks into the face
- * it was used on (plus the cube around the first and last steps, as it always reached).
- *
- * <p>The scan runs on the client, from the chunks it already has: the server only wears the pick and starts its
- * cooldown, so prospecting costs the server nothing. The findings go to the chat's Local tab, nearest ore first.
- *
- * <p>The scanned volume is one box (the column), read once, chunk section by chunk section; a section whose palette
- * holds no ore at all is skipped without looking at a single block in it.
+ * A pickaxe that, used on a block, reports which ores lie in the 5x5 column under it down to bedrock — or, used on a
+ * ceiling, above it up to the top of the world — and at what heights ({@code ProspectService}, on the server). What
+ * it finds is kept per player and chunk for the map. Mint-green particles mark where it works.
  */
 public class ProspectorPickItem extends PickaxeItem {
 
@@ -62,10 +57,17 @@ public class ProspectorPickItem extends PickaxeItem {
             return InteractionResultHolder.pass(stack);
         }
 
-        if (level.isClientSide) {
-            Client.report(scan(level, blockHit.getBlockPos(), blockHit.getDirection().getOpposite()));
-        } else {
+        // The scan runs on the server now: it records what the player found for the map, and sends the report
+        // back (ProspectService). Used on a ceiling (the block's underside) the column runs up; anywhere else, down
+        // to bedrock.
+        if (!level.isClientSide && player instanceof net.minecraft.server.level.ServerPlayer serverPlayer) {
             stack.hurtAndBreak(1, player, player.getEquipmentSlotForItem(stack));
+            com.roll_54.roll_mod.prospecting.ProspectService.prospect(serverPlayer, blockHit.getBlockPos(),
+                    blockHit.getDirection() == Direction.DOWN, RADIUS);
+        } else if (level.isClientSide) {
+            // The first blocks of the column glow mint green where the particle cloud used to be.
+            com.roll_54.roll_mod.prospecting.ClientProspects.markColumn(blockHit.getBlockPos(),
+                    blockHit.getDirection() == Direction.DOWN, RADIUS);
         }
         // Both sides, as vanilla does: the client's copy stops a second scan before the server's arrives.
         player.getCooldowns().addCooldown(this, COOLDOWN);
@@ -79,6 +81,8 @@ public class ProspectorPickItem extends PickaxeItem {
      * steps: along the axis from one block behind {@code start} to {@code DEPTH + RADIUS} ahead, {@code RADIUS} to
      * every side.
      */
+    /** @deprecated The pick scans on the server, down to bedrock or up to the top: {@code ProspectService}. */
+    @Deprecated
     static List<Block> scan(Level level, BlockPos start, Direction face) {
         Direction.Axis axis = face.getAxis();
         int sign = face.getAxisDirection().getStep();
@@ -132,7 +136,12 @@ public class ProspectorPickItem extends PickaxeItem {
         return ordered;
     }
 
-    /** Client only: the findings into the chat's Local tab. Kept apart so the server never loads the chat store. */
+    /**
+     * Client only: the findings into the chat's Local tab. Kept apart so the server never loads the chat store.
+     *
+     * @deprecated The report now comes from the server with height ranges ({@code ClientProspects}).
+     */
+    @Deprecated
     private static final class Client {
         static void report(List<Block> ores) {
             if (ores.isEmpty()) {

@@ -16,7 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Takes FTB Library's sidebar buttons back off the hub and the starting screen.
+ * Takes other mods' buttons back off roll_mod's own full screens: FTB Library's sidebar off the hub, the starting
+ * screen and the ore scanner; Sophisticated Inventory Interactions' sort buttons off the ore scanner and the Crop
+ * Manager.
  *
  * <p>FTB Library adds its button group to <em>every</em> {@code AbstractContainerScreen} on screen
  * init ({@code FTBLibraryClient.guiInit}), and an LdLib screen is one. Over the hub they sit on top
@@ -35,16 +37,31 @@ public final class HubSidebarButtons {
 
     private HubSidebarButtons() {}
 
+    /**
+     * Sophisticated Inventory Interactions' sort and transfer buttons, which it adds beside the player's inventory on
+     * every container screen; on the Crop Manager one sat over the end of the energy bar.
+     */
+    private static final String SOPHISTICATED = "net.p3pp3rf1y.sophisticated";
+
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onScreenInit(ScreenEvent.Init.Post event) {
         if (!(event.getScreen() instanceof ModularUIContainerScreen screen)) return;
         ModularUI ui = screen.getMenu().getModularUI();
-        if (!HubUI.isHub(ui) && !WelcomeUI.isWelcome(ui)) return;
+        boolean scanner = com.roll_54.roll_mod.items.electricItems.orescanner.gui.OreScannerUI.isOreScanner(ui);
+        boolean cropManager = com.roll_54.roll_mod.compat.MBD2.machine.CropManagerUI.isCropManager(ui);
+        // FTB's sidebar (teams, quests, time and weather) off the hub, the starting screen and the ore scanner.
+        boolean dropSidebar = HubUI.isHub(ui) || WelcomeUI.isWelcome(ui) || scanner;
+        // Other mods' inventory buttons off the screens that have no player-inventory use for them.
+        boolean dropSophisticated = scanner || cropManager;
+        if (!dropSidebar && !dropSophisticated) return;
 
-        List<GuiEventListener> sidebar = new ArrayList<>();
+        List<GuiEventListener> foreign = new ArrayList<>();
         for (GuiEventListener listener : event.getListenersList()) {
-            if (FTB_SIDEBAR.equals(listener.getClass().getName())) sidebar.add(listener);
+            String name = listener.getClass().getName();
+            if ((dropSidebar && FTB_SIDEBAR.equals(name)) || (dropSophisticated && name.startsWith(SOPHISTICATED))) {
+                foreign.add(listener);
+            }
         }
-        sidebar.forEach(event::removeListener);
+        foreign.forEach(event::removeListener);
     }
 }

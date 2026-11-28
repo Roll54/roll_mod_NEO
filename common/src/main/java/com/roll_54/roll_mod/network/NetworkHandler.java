@@ -127,6 +127,11 @@ public class NetworkHandler {
                 HueriStatueSeenPacket::handle
         );
         registrar.playToClient(
+                com.roll_54.roll_mod.prospecting.ProspectPacket.TYPE,
+                com.roll_54.roll_mod.prospecting.ProspectPacket.STREAM_CODEC,
+                com.roll_54.roll_mod.prospecting.ProspectPacket::handle
+        );
+        registrar.playToClient(
                 ChatChannelPacket.TYPE,
                 ChatChannelPacket.STREAM_CODEC,
                 ChatChannelPacket::handle

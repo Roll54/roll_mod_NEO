@@ -143,7 +143,10 @@ public record RecipeSnapshot(
           case InscriberRecipe inscriber -> fromInscriber(id, type, multiplier, inscriber);
           case CuttingBoardRecipe cutting -> fromCuttingBoard(id, type, multiplier, cutting);
           case CookingPotRecipe pot -> fromCookingPot(id, type, multiplier, pot, server);
-          default -> fromGeneric(id, type, multiplier, holder.value(), server);
+          default -> {
+            Recipe fromMod = ModRecipeAdapters.adapt(id, type, multiplier, holder.value());
+            yield fromMod != null ? fromMod : fromGeneric(id, type, multiplier, holder.value(), server);
+          }
         };
       } catch (Throwable t) {
         problems.add("recipe " + id + " could not be read: " + t);
@@ -313,14 +316,15 @@ public record RecipeSnapshot(
       if (in.probability() <= 0) continue; // catalyst: never consumed
       List<String> options = options(in.ingredient());
       if (options.isEmpty()) return null;
-      inputs.add(new Input(options, in.amount() * (double) in.probability()));
+      // A chance to be used up is not weighed in: what goes in counts in full, like a sure input.
+      inputs.add(new Input(options, in.amount()));
     }
     for (MachineRecipe.FluidInput in : recipe.fluidInputs) {
       if (in.probability() <= 0) continue;
       List<String> options = new ArrayList<>();
       for (Fluid fluid : in.getInputFluids()) options.add(fluidKey(fluid));
       if (options.isEmpty()) return null;
-      inputs.add(new Input(dedupe(options), in.amount() / 1000.0 * in.probability()));
+      inputs.add(new Input(dedupe(options), in.amount() / 1000.0));
     }
     List<Output> outputs = new ArrayList<>();
     for (MachineRecipe.ItemOutput out : recipe.itemOutputs) {
@@ -351,7 +355,7 @@ public record RecipeSnapshot(
       if (content.chance <= 0 || !(content.content instanceof SizedIngredient sized)) continue;
       List<String> options = options(sized.ingredient());
       if (options.isEmpty()) return null;
-      inputs.add(new Input(options, sized.count() * (double) Math.min(1f, content.chance) * ticks(content, recipe)));
+      inputs.add(new Input(options, sized.count() * (double) ticks(content, recipe)));
     }
     for (Content content : recipe.getInputContents(FluidRecipeCapability.CAP)) {
       if (content.chance <= 0 || !(content.content instanceof SizedFluidIngredient sized)) continue;
@@ -359,7 +363,7 @@ public record RecipeSnapshot(
       for (FluidStack fluid : sized.getFluids()) options.add(fluidKey(fluid.getFluid()));
       if (options.isEmpty()) return null;
       inputs.add(new Input(dedupe(options),
-          sized.amount() / 1000.0 * Math.min(1f, content.chance) * ticks(content, recipe)));
+          sized.amount() / 1000.0 * ticks(content, recipe)));
     }
     List<Output> outputs = new ArrayList<>();
     for (Content content : recipe.getOutputContents(ItemRecipeCapability.CAP)) {
@@ -464,7 +468,7 @@ public record RecipeSnapshot(
   }
 
 
-  private static List<String> options(Ingredient ingredient) {
+  static List<String> options(Ingredient ingredient) {
     List<String> options = new ArrayList<>();
     for (ItemStack stack : ingredient.getItems()) {
       if (!stack.isEmpty()) options.add(itemKey(stack.getItem()));
@@ -486,7 +490,7 @@ public record RecipeSnapshot(
     return shared;
   }
 
-  private static List<String> dedupe(List<String> list) {
+  static List<String> dedupe(List<String> list) {
     return List.copyOf(new LinkedHashSet<>(list));
   }
 

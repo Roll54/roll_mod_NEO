@@ -1,5 +1,6 @@
 package com.roll_54.roll_mod_client.compat.emi;
 
+import com.roll_54.roll_mod_client.compat.jei.ThemedText;
 import com.roll_54.roll_mod_client.compat.jei.CropManagerInputCategory;
 import com.roll_54.roll_mod_client.compat.jei.CropManagerInputRecipe;
 import dev.emi.emi.api.recipe.BasicEmiRecipe;
@@ -54,8 +55,8 @@ public class EmiCropManagerInputRecipe extends BasicEmiRecipe {
         }
         widgets.addSlot(catalysts.get(0), CropManagerInputCategory.MACHINE_X - 1, 6).catalyst(true);
         widgets.addText(CropManagerInputCategory.slotLine(recipe), CropManagerInputCategory.TEXT_X, 6,
-                CropManagerInputCategory.COLOR_SLOT, false);
+                ThemedText.accent(CropManagerInputCategory.COLOR_SLOT, CropManagerInputCategory.COLOR_SLOT_LIGHT), false);
         widgets.addText(CropManagerInputCategory.infoLine(recipe), CropManagerInputCategory.TEXT_X, 17,
-                CropManagerInputCategory.COLOR_INFO, false);
+                ThemedText.muted(CropManagerInputCategory.COLOR_INFO), false);
     }
 }

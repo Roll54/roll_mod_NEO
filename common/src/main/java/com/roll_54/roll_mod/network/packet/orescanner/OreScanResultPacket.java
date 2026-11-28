@@ -30,7 +30,7 @@ public record OreScanResultPacket(OreScanResult result) implements CustomPacketP
         result.palette().forEach(buf::writeUtf);
         for (OreScanResult.Chunk chunk : result.chunks()) {
             for (int[] column : chunk.columns()) {
-                buf.writeVarInt(column.length / 2);
+                buf.writeVarInt(column.length / OreScanResult.STRIDE);
                 for (int value : column) buf.writeVarInt(value);
             }
         }
@@ -50,7 +50,7 @@ public record OreScanResultPacket(OreScanResult result) implements CustomPacketP
         for (int i = 0; i < size * size; i++) {
             int[][] columns = new int[256][];
             for (int c = 0; c < 256; c++) {
-                int[] column = new int[buf.readVarInt() * 2];
+                int[] column = new int[buf.readVarInt() * OreScanResult.STRIDE];
                 for (int j = 0; j < column.length; j++) column[j] = buf.readVarInt();
                 columns[c] = column;
             }
